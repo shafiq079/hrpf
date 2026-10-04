@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+/*
+  HRPF — Human Rights Protection Foundation
+  Final website color scheme (committed palette):
+
+  Brand blue   #009EDB  — links, icons, brand accents (token: teal)
+  Deep navy    #0B2A3A  — headings, main buttons, footer (token: navy)
+  Warm gold    #F2A900  — donate / important CTAs
+  Soft white   #F7FAFC  — main page background (token: off-white)
+  Light blue   #EAF7FC  — alternate sections / soft cards (token: soft-gray)
+  Dark slate   #374151  — body text
+  Pure white   #FFFFFF
+*/
+
+:root {
+  --color-navy: #0b2a3a;
+  --color-navy-dark: #081f2b;
+  --color-teal: #009edb;
+  --color-teal-dark: #0082b5;
+  --color-red: #e5383b;
+  --color-red-dark: #c92e31;
+  --color-gold: #f2a900;
+  --color-gold-dark: #d49200;
+  --color-off-white: #f7fafc;
+  --color-soft-gray: #eaf7fc;
+  --color-border: #cde8f2;
+  --color-text: #374151;
+  --color-muted: #6b7280;
+  --color-white: #ffffff;
+}
+
+@theme inline {
+  --color-navy: var(--color-navy);
+  --color-navy-dark: var(--color-navy-dark);
+  --color-teal: var(--color-teal);
+  --color-teal-dark: var(--color-teal-dark);
+  --color-red: var(--color-red);
+  --color-red-dark: var(--color-red-dark);
+  --color-gold: var(--color-gold);
+  --color-gold-dark: var(--color-gold-dark);
+  --color-off-white: var(--color-off-white);
+  --color-soft-gray: var(--color-soft-gray);
+  --color-border: var(--color-border);
+  --color-text: var(--color-text);
+  --color-muted: var(--color-muted);
+
+  --font-serif: var(--font-lora), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Sharp institutional UI — no rounded corners on buttons, cards, sections. */
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --radius-4xl: 0;
+  --radius: 0;
+  --radius-full: 0;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-off-white);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-serif);
+    color: var(--color-navy);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-teal);
+    outline-offset: 2px;
+    border-radius: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-teal-dark);
+  }
+}
