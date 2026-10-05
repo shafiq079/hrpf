@@ -15,6 +15,7 @@ Updated: 2026-10-05
 - Live built-service probe passed: direct and Next-proxied liveness 200, unavailable-dependency readiness 503, allowed-origin 200 and foreign-origin 403.
 - Compose/workflow YAML and devcontainer JSON parsed; the pinned Node 24 image manifest returned 200.
 - Verified nested env files, dependencies and seed assets are ignored; env example is trackable.
+- GitHub PR CI passed for implementation commit f0cd57e2f8f4ad4327961de357f5ad75625a5846 (run 37311094157).
 
 ## In progress
 - M1 Codespaces acceptance: rebuild, Atlas/Redis readiness and desktop/mobile visual comparison.
@@ -43,7 +44,7 @@ Report command, connectivity and visual results; never send env contents or cred
 
 ## Verification boundary
 - Tests use injected dependency status; successful real Atlas/Redis readiness remains owner verification.
-- CI workflow is added; its actual GitHub result must be checked on PR #1.
+- CI passed for the implementation commit; Codespaces acceptance is still pending. Later documentation-only commits do not change application code.
 - No organization data was seeded, sensitive files uploaded or email sent.
 - Prototype forms and content still use local sample data; M1 is not a production release.
 - main remains stable; implementation stays on development.

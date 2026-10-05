@@ -35,7 +35,7 @@ Updated: 2026-10-05
 - backend/: Express API, MongoDB models, upload services, email worker and seed scripts.
 - MongoDB Atlas is authoritative; separate hrpf_dev and hrpf_prod databases.
 - Cloudinary stores public assets and authenticated sensitive assets under separate environment namespaces.
-- Redis supports public cache, rate limiting, form tickets and BullMQ jobs.
+- Planned Redis uses: public cache, rate limiting, form tickets and BullMQ jobs.
 - Implemented: Next beforeFiles rewrites /api/* to Express on port 5000.
 - INTERNAL_API_URL is an optional server-only upstream origin, default http://127.0.0.1:5000.
 - Frontend port 3000; backend port 5000; only 3000 is automatically forwarded.
@@ -44,8 +44,8 @@ Updated: 2026-10-05
 - backend/.env is ignored; secret-free .env.example is tracked; inherited secrets override .env.
 - M1 security: Helmet, exact-origin CORS, bounded JSON, Zod configuration/query validation, redacted errors.
 - M1 rate limiter is process-local; Redis rate limits and trusted proxy handling must precede forms in M2.
-- JWT access/rotating refresh cookies are httpOnly; backend roles and CSRF checks enforce authorization.
-- MongoDB email outbox makes submissions durable independently of email delivery.
+- Planned auth: httpOnly JWT access/rotating refresh cookies, backend roles and CSRF checks.
+- Planned MongoDB email outbox makes submissions durable independently of email delivery.
 
 ## Planned public routes and endpoints
 - Navigation: Home, About, What We Do, Gallery, Blogs, Get Involved, Contact.
