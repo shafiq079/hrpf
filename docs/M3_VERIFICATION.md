@@ -37,8 +37,10 @@ are reported instead of overwriting. See backend/seed/README.md for usage.
   dimensions matched the CSV. No source credential entry was read.
 - Source plan verified 227 references; local preparation produced 216 candidates
   and reused them safely. Offline import dry run passed.
-- CI includes manifest validation and real seed integration. Publication status
-  is recorded in HANDOFF/PROGRESS after CI finishes.
+- CI includes manifest validation and real seed integration. Implementation
+  61eb156fd7cc300d078a7659c9d096fa881f9e00 passed: GitHub run
+  37380616908 succeeded in both independent jobs, both backend integration suites
+  and production dependency audits. Published in the updated M2/M3 PR #2.
 
 ## Limits
 

@@ -132,4 +132,5 @@ Updated: 2026-10-05
 - Source/seed preparation is implemented and locally verified; see M3_VERIFICATION.md and backend/seed/README.md.
 - Checks passed: 22 unit/source tests, eight real seed integration scenarios, all 16 M2 integration checks, typechecks/build/OpenAPI and zero production audit findings.
 - Source ZIP verification, decoding of all 200 gallery images and built CLI import/rerun/dry-run smoke passed. No organizational Atlas records, external uploads or live email were created.
-- Existing PR #2 remains open from development to main and will include M2/M3. Frontend tree is unchanged; public source-driven pages/APIs and reviewed asset release follow next.
+- Existing PR #2 remains open from development to main and includes M2/M3. Frontend tree is unchanged; public source-driven pages/APIs and reviewed asset release follow next.
+- Published M3 implementation: 61eb156fd7cc300d078a7659c9d096fa881f9e00. GitHub CI run 37380616908 passed both independent jobs, backend/seed integration and production audits. PR #2 now describes M2/M3; later handoff edits are documentation only.

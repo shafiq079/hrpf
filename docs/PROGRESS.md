@@ -49,9 +49,9 @@ Updated: 2026-10-05
 - Built API smoke passed: automatic index preparation, liveness/readiness and CSRF issuance all succeeded.
 
 ## Exact next step
-M3 source/seed preparation is implemented and locally verified. Publish it on
-development in the existing PR #2 and verify CI. Then continue public content
-APIs and source-driven frontend pages, including the release workflow for assets.
+M3 source/seed preparation is published and verified on development in PR #2.
+Continue public content APIs and source-driven frontend pages, including the
+release workflow for assets.
 
 ## M3 — source/seed preparation
 - Added an audited manifest: 231 unpublished metadata records and 227 exact source references.
@@ -64,6 +64,7 @@ APIs and source-driven frontend pages, including the release workflow for assets
 - Original ZIP inputs verified; all 200 gallery images decoded and matched CSV dimensions. Built CLI apply/rerun/dry-run smoke passed against disposable MongoDB.
 - Prepared 216 local candidates and safely reran preparation; no organizational database/provider/email writes occurred.
 - See M3_VERIFICATION.md and backend/seed/README.md. Provider upload/public release are not automatic.
+- M3 implementation 61eb156fd7cc300d078a7659c9d096fa881f9e00 is published in the updated M2/M3 PR #2. GitHub CI run 37380616908 passed both jobs, all backend/source integration checks and production audits. Subsequent handoff changes are documentation only.
 
 ## Next milestone boundary
 - Implement public content projections/cache invalidation and source-driven pages without changing the prototype theme.
