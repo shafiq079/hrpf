@@ -49,5 +49,7 @@ M4 implementation fa56aceb455e23a11685538650475e54dc7828b0 is published in
 passed both independent jobs, including the new frontend SSR suite, all backend
 integration/source checks and production audits. Follow-up hardening restricts
 review lists to public-setting keys and enforces authenticated provider delivery;
-source pillars retain the existing animated focus-area card grid. Final-head
-checks are verified before handoff.
+source pillars retain the existing animated focus-area card grid. The final implementation is
+6b994a33468525286dbf50a6e335761f77f88d7e; GitHub CI run 37386325272 passed
+both jobs with the follow-up checks. Subsequent handoff edits are documentation
+only.

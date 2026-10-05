@@ -70,6 +70,7 @@ release workflow for assets.
 - Public content projections, reviewed file delivery and atomic audited publish/withdraw controls are implemented.
 - Frontend routes consume published backend data; unsupported prototype content and fake receipts are removed from public routes.
 - Independent frontend/backend checks, 23 integration scenarios, eight seed recovery scenarios, independent frontend SSR checks, full-stack source SSR smoke and both production dependency audits pass.
+- M4 is published in PR #3; final implementation 6b994a33468525286dbf50a6e335761f77f88d7e passed GitHub CI run 37386325272 (both jobs).
 - See M4_VERIFICATION.md for scope, verification and browser access limitation. Source files are not automatically published.
 
 ## Next milestone boundary

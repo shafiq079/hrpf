@@ -29,5 +29,6 @@ credentials/data/provider configuration were changed.
 
 M4 PR: https://github.com/shafiq079/hrpf/pull/3. Initial implementation
 fa56aceb455e23a11685538650475e54dc7828b0 passed GitHub CI run 37385928032
-(both jobs). Follow-up release hardening/card reuse is tested and published in
-the same PR; check its current head before continuing. Main is unchanged by M4.
+(both jobs). Final implementation 6b994a33468525286dbf50a6e335761f77f88d7e includes release
+hardening and card reuse; GitHub CI run 37386325272 passed both jobs. Subsequent
+handoff edits are documentation only. Main is unchanged by M4.
