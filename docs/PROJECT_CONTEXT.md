@@ -13,7 +13,7 @@ Updated: 2026-10-05
 ## Repository and audit baseline
 - Repository: https://github.com/shafiq079/hrpf
 - Prototype baseline: d3848c940d8bf260c7b2657a66473df991777296.
-- Next.js 16.2.11 App Router, React/React DOM 19.2.4, Tailwind 4, TypeScript, npm/package-lock.json.
+- Next.js 16.3.8 App Router (upgraded from prototype 16.2.11), React/React DOM 19.2.4, Tailwind 4, TypeScript, npm/package-lock.json.
 - M1 moved the application to frontend/: app/, components/, data/, lib/, public/.
 - Frontend and backend are independent packages with separate lockfiles; no root package.json, npm workspaces or shared app runner.
 - Hosting target: Vercel Root Directory frontend; Render Root Directory backend.
@@ -22,9 +22,12 @@ Updated: 2026-10-05
 - Baseline had no backend, app API routes, admin panel, CI workflows or tests.
 - M1 adds Express 5/TypeScript, MongoDB/Redis connections, health endpoints and CI; business modules remain planned.
 - Source audit completed. Assistant baseline lint, typecheck and build passed.
-- All 182 application/content/asset files were byte-identical after the move. Owner visual verification is pending.
+- All 182 application/content/asset files were byte-identical immediately after the folder move. M1 acceptance subsequently fixes the mobile drawer in one component: unmount when closed and use a body portal when open to remove overflow/focusability and the sticky-header height constraint; theme and content remain unchanged.
 - Owner Codespaces localhost live/ready checks returned 200 on 2026-10-05: frontend proxy, Express and real MongoDB/Redis connectivity verified.
-- Frontend dependency audit has 10 high and 1 critical findings, including Next.js; remediation remains open. Build/CI success is not security-audit clearance.
+- Updated Next.js and matching ESLint config to 16.3.8; applied compatible transitive dependency fixes. Production dependency audit reports zero findings.
+- Full audit retains five dev-only package findings caused by one unpatched braces advisory in the Next ESLint rootDir-glob dependency chain; no custom rootDir glob is configured and it is not a runtime dependency. See docs/M1_VERIFICATION.md.
+- Owner delegated UI review and explicitly authorized M1 merge on 2026-10-05; no further owner review is required.
+- Delegated Chromium review passed on seven desktop routes and five mobile routes, including open-drawer height/navigation, with no browser errors. See docs/M1_VERIFICATION.md for evidence and limits.
 - See docs/FRONTEND_AUDIT.md for evidence and migration decisions.
 
 ## Preserve the prototype

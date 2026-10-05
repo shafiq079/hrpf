@@ -32,16 +32,17 @@ Updated: 2026-10-05
 - Owner supplied localhost port-3000 results at 13:53 UTC: /api/health/live returned 200 alive; /api/health/ready returned 200 ready.
 - This confirms the frontend rewrite reaches Express and both MongoDB and Redis ping successfully in the owner environment.
 - Backend startup validation is no longer blocking these requests. Persistence of the corrected database-name configuration after restart is not yet confirmed.
-- Frontend npm audit independently confirmed 11 findings: 10 high and 1 critical, including the installed Next.js package. Dependency remediation is pending; passing CI/builds is not security-audit clearance.
+- Initial frontend audit confirmed 11 findings. Updated Next.js/matching ESLint config to 16.3.8 and applied compatible transitive fixes. Production audit now has zero findings; full audit retains five dev-only entries from one unpatched braces advisory, documented in M1_VERIFICATION.md.
 
 ## In progress
-- M1 remaining acceptance: frontend dependency security review/remediation, desktop/mobile visual comparison and explicit container-rebuild confirmation.
-- Draft PR #1 from development to main includes M0 and M1; do not merge before acceptance and CI pass.
+- M1 acceptance complete locally: targeted dependency fixes, fresh builds, 10 backend tests and delegated desktop/mobile browser review passed.
+- Final-head CI and authorized PR #1 merge are the remaining release actions.
+- PR #1 from development to main includes M0/M1; owner explicitly authorized merging after assistant review. No further owner signoff is required.
 
 ## Exact next step
-Review and remediate the frontend dependency findings with targeted compatible updates; do not blindly run npm audit fix --force. Re-run frontend checks and the audit after changes.
-Owner should confirm the database-name correction persists in private configuration/Codespaces secrets after restart, plus container rebuild and desktop/mobile visual results. Preserve existing UI and independent frontend/backend commands.
-Health connectivity has already passed; repeat only after relevant changes or a reported regression.
+Wait for final-head CI and merge PR #1 as explicitly authorized by the owner.
+Keep working on development after merge; next implementation milestone is M2 backend core.
+See M1_VERIFICATION.md for checks, browser coverage and the remaining dev-tool advisory.
 
 ## Next milestone
 - M2 backend core, beginning with models, admin permissions, cookie authentication and CSRF.
@@ -49,8 +50,8 @@ Health connectivity has already passed; repeat only after relevant changes or a 
 - Business endpoints, admin pages, imports and content replacement are not implemented in M1.
 
 ## Open items
-- TODO-CONFIRM: explicit Codespaces rebuild and visual acceptance; real Atlas/Redis readiness was confirmed by owner-provided 200 responses.
-- OPEN: frontend audit findings (10 high, 1 critical) require review/remediation before M1 merge.
+- Codespaces real connectivity passed; owner delegated visual acceptance and waived further personal review. Local Docker execution was unavailable; configuration validation and owner-hosted health results are recorded in M1_VERIFICATION.md.
+- OPEN: five dev-only audit entries from unpatched braces in ESLint tooling; production dependency audit is clean. Monitor upstream; do not force a Next 14 ESLint downgrade.
 - TODO-CONFIRM: membership fee/types/duration and legacy register; paid native submissions stay disabled.
 - TODO-CONFIRM: SMTP sender/provider/notification settings; no email is sent in M1.
 - TODO-CONFIRM: renewed Charity Commission certificate and clearer PCP/FBR details; show historical dates only.
@@ -59,7 +60,7 @@ Health connectivity has already passed; repeat only after relevant changes or a 
 
 ## Verification boundary
 - Automated tests use injected dependency status; owner-provided localhost readiness 200 confirms real Atlas/Redis connectivity in Codespaces at the verification time.
-- CI passed for the implementation commit; remaining security/visual/container acceptance is still pending. Later documentation-only commits do not change application code.
+- Earlier CI passed; final acceptance changes await final-head CI before authorized merge. Desktop/mobile checks and runtime dependency remediation passed; remaining dev-tool advisory is documented. Later documentation-only commits do not change application code.
 - No organization data was seeded, sensitive files uploaded or email sent.
 - Prototype forms and content still use local sample data; M1 is not a production release.
 - main remains stable; implementation stays on development.

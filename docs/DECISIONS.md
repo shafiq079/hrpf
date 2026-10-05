@@ -36,3 +36,10 @@
 - Preserve the /api proxy: independent deployment still uses HTTP communication between services. INTERNAL_API_URL points to Render from Vercel.
 - Observed Codespaces backend startup failure: invalid MONGODB_DB_NAME. Trim surrounding whitespace and default blank values; reject unsafe names and keep values redacted. Owner must correct any invalid inherited secret.
 - Real Atlas/Redis readiness and UI acceptance remain pending; this follow-up does not advance to M2.
+
+## 2026-10-05 — M1 merge review delegated to assistant
+- Owner authorized merging M1 into main after assistant verification and does not want to review it personally. This supersedes the earlier owner-visual-signoff requirement.
+- Update Next.js and matching ESLint config from 16.2.11 to 16.3.8 to remove reported runtime vulnerabilities; apply compatible transitive fixes without a forced major downgrade. React and the design remain unchanged.
+- Add a production dependency audit to frontend CI. Keep the unpatched dev-only braces dependency documented rather than replacing current Next lint rules with an incompatible Next 14 configuration.
+- Browser review found closed-drawer horizontal overflow on mobile. Unmount the drawer when closed and render the open drawer via a body portal to avoid the sticky-header containing block; retain its styling. Full focus trapping remains a later navigation accessibility improvement.
+- M1 covers independently running packages/infrastructure only; prototype forms and demo content remain scheduled for later milestones.

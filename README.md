@@ -114,9 +114,9 @@ Production deployment remains a later milestone; no hosting resources are create
 Each app provides `npm run check`. Frontend: lint, route type generation,
 TypeScript and build. Backend: TypeScript, tests and build. CI runs separate jobs
 from their respective directories without external service credentials.
+Frontend CI also audits production dependencies at high severity or above. Next.js and matching ESLint config are pinned to 16.3.8. The full audit still reports five dev-only package entries from one unpatched braces advisory in the ESLint tooling chain; see docs/M1_VERIFICATION.md.
 The existing Google fonts require network access for the frontend build.
 
 Read the Project Files brief, docs/PROJECT_CONTEXT.md, docs/DECISIONS.md and
 docs/PROGRESS.md for current state. M2 implements auth, models, permissions,
-Redis limits, uploads and the email outbox. Draft PR #1 stays unmerged until CI,
-Codespaces connectivity and visual acceptance pass.
+Redis limits, uploads and the email outbox. The owner delegated visual review and authorized the assistant to merge M1 after checks; see docs/M1_VERIFICATION.md for acceptance evidence.
