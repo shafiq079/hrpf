@@ -1,12 +1,15 @@
 import mongoose from 'mongoose';
 import { createClient } from 'redis';
+import { ensureIndexes } from '../domain/models.js';
 import type { Environment } from '../config/env.js';
 
 export type DependencyStatus = { mongo: boolean; redis: boolean };
 export type Readiness = () => Promise<DependencyStatus>;
 export function createDependencies(env: Environment) {
   mongoose.set('strictQuery', true);
-  mongoose.set('sanitizeFilter', true);
+  // HTTP contracts reject unknown keys/operators. Every query is constructed here,
+  // never from req.body/query; allow our own explicit $gt/$or transaction filters.
+  mongoose.set('sanitizeFilter', false);
   mongoose.set('bufferCommands', false);
   const redis = createClient({
     url: env.REDIS_URL,
@@ -17,6 +20,7 @@ export function createDependencies(env: Environment) {
   redis.on('error', () => {});
   mongoose.connection.on('error', () => {});
   let stopping = false;
+  let indexesReady = false;
   let mongoRetry: ReturnType<typeof setTimeout> | undefined;
   async function connectMongo() {
     if (stopping || !env.MONGODB_URI) return;
@@ -25,6 +29,8 @@ export function createDependencies(env: Environment) {
         dbName: env.MONGODB_DB_NAME, serverSelectionTimeoutMS: 3000,
         connectTimeoutMS: 3000, socketTimeoutMS: 3000, autoIndex: false,
       });
+      await ensureIndexes();
+      indexesReady = true;
     } catch {
       if (!stopping) mongoRetry = setTimeout(() => { void connectMongo(); }, 5000);
     }
@@ -41,7 +47,7 @@ export function createDependencies(env: Environment) {
       });
     });
     const checks = await Promise.allSettled([
-      mongoose.connection.readyState === 1 && mongoose.connection.db
+      indexesReady && mongoose.connection.readyState === 1 && mongoose.connection.db
         ? deadline(mongoose.connection.db.admin().ping()) : Promise.reject(new Error('Mongo unavailable')),
       redis.isReady ? deadline(redis.ping()) : Promise.reject(new Error('Redis unavailable')),
     ]);
@@ -53,5 +59,6 @@ export function createDependencies(env: Environment) {
     if (redis.isOpen) redis.destroy();
     await mongoose.disconnect();
   }
-  return { start, readiness, close };
+  const available = () => indexesReady && mongoose.connection.readyState === 1 && redis.isReady;
+  return { start, readiness, close, redis, available };
 }

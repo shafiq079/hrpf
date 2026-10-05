@@ -86,12 +86,13 @@ docker compose up -d redis
 For this host alternative set REDIS_URL privately to `redis://127.0.0.1:6379`.
 If an inherited secret sets it, update that secret. Atlas Network Access must
 allow the Codespace's outbound IP. Failed MongoDB connections are retried.
-No database records are seeded in M1.
+M2 ensures additive indexes after MongoDB connects. Business endpoints and readiness stay unavailable until preparation succeeds. No organization records are seeded.
 
 FRONTEND_URL may be empty in development: localhost and the current Codespace's
 exact frontend origin are allowed automatically. Optional CORS_ORIGINS adds
-exact origins. Cloudinary, JWT, SMTP and seed-admin names are reserved for later
-milestones. Never paste secrets or commit .env files.
+exact origins. M2 consumes the private JWT, Cloudinary, SMTP and seed-admin
+configuration. Never paste secrets or commit .env files. See backend/README.md
+for security setup, first administrator, uploads and the independent email worker.
 
 ## Separate hosting configuration
 
@@ -106,17 +107,19 @@ milestones. Never paste secrets or commit .env files.
 | Public frontend origin | N/A | FRONTEND_URL = Vercel/custom frontend HTTPS origin |
 
 Backend production environment also requires private MongoDB/Redis configuration
-and NODE_ENV=production. Render supplies PORT; Express binds to 0.0.0.0.
+and NODE_ENV=production, plus CLOUDINARY_NAMESPACE=hrpf/prod. Render supplies PORT; Express binds to 0.0.0.0.
 Production deployment remains a later milestone; no hosting resources are created here.
 
 ## Checks and continuity
 
 Each app provides `npm run check`. Frontend: lint, route type generation,
-TypeScript and build. Backend: TypeScript, tests and build. CI runs separate jobs
-from their respective directories without external service credentials.
+TypeScript and build. Backend: TypeScript, security tests, build and OpenAPI
+consistency. Backend CI also runs real MongoDB replica-set/Redis integration tests
+and a production dependency audit without organizational credentials.
 Frontend CI also audits production dependencies at high severity or above. Next.js and matching ESLint config are pinned to 16.3.8. The full audit still reports five dev-only package entries from one unpatched braces advisory in the ESLint tooling chain; see docs/M1_VERIFICATION.md.
 The existing Google fonts require network access for the frontend build.
 
 Read the Project Files brief, docs/PROJECT_CONTEXT.md, docs/DECISIONS.md and
-docs/PROGRESS.md for current state. M2 implements auth, models, permissions,
-Redis limits, uploads and the email outbox. The owner delegated visual review and authorized the assistant to merge M1 after checks; see docs/M1_VERIFICATION.md for acceptance evidence.
+docs/PROGRESS.md for current state. M2 adds models/indexes, cookie auth and CSRF,
+role permissions, Redis limits/cache/tickets, scanned authenticated uploads,
+transactional submissions and the Mongo/BullMQ email outbox. See docs/M2_VERIFICATION.md. The owner delegated visual review and authorized the assistant to merge M1 after checks; see docs/M1_VERIFICATION.md for acceptance evidence.

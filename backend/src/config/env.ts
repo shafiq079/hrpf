@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isIP } from 'node:net';
 
 export class ConfigurationError extends Error {}
 
@@ -20,10 +21,30 @@ const schema = z.object({
   }, 'Must use redis or rediss').default('redis://127.0.0.1:6379'),
   MONGODB_URI: z.string().regex(/^mongodb(?:\+srv)?:\/\//).optional(),
   MONGODB_DB_NAME: z.string().regex(/^[A-Za-z0-9_-]+$/).default('hrpf_dev'),
+  JWT_ACCESS_SECRET: z.string().min(43).optional(),
+  JWT_REFRESH_SECRET: z.string().min(43).optional(),
+  DATA_ENCRYPTION_KEY: z.string().regex(/^[a-fA-F0-9]{64}$/).optional(),
+  CNIC_HASH_KEY: z.string().min(43).optional(),
+  TRUST_PROXY_CIDRS: z.array(z.string().refine(value => { const [address, bits] = value.split('/'); const kind = isIP(address ?? ''); return !!kind && (bits === undefined || (/^\d+$/.test(bits) && Number(bits) <= (kind === 4 ? 32 : 128))); })).default([]),
+  CLOUDINARY_CLOUD_NAME: z.string().regex(/^[a-z0-9_-]+$/).optional(),
+  CLOUDINARY_API_KEY: z.string().optional(), CLOUDINARY_API_SECRET: z.string().optional(),
+  CLOUDINARY_NAMESPACE: z.enum(['hrpf/dev', 'hrpf/prod']).default('hrpf/dev'),
+  CLAMAV_HOST: z.string().optional(), CLAMAV_PORT: z.coerce.number().int().min(1).max(65535).default(3310),
+  TURNSTILE_SECRET_KEY: z.string().optional(),
+  TURNSTILE_HOSTNAMES: z.array(z.string().regex(/^[a-zA-Z0-9.-]+$/)).default([]),
+  SMTP_HOST: z.string().optional(), SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(587),
+  SMTP_USER: z.string().optional(), SMTP_PASS: z.string().optional(),
+  SMTP_SECURE: z.enum(['true', 'false']).default('false').transform(value => value === 'true'),
+  MAIL_FROM: z.email().optional(), ADMIN_NOTIFY_EMAILS: z.array(z.email()).default([]),
+
 });
 export function parseEnv(input: NodeJS.ProcessEnv) {
+  const normalized = Object.fromEntries(Object.entries(input).map(([key, value]) => [key, value?.trim() || undefined]));
   const result = schema.safeParse({
-    ...input,
+    ...normalized,
+    TRUST_PROXY_CIDRS: input.TRUST_PROXY_CIDRS?.split(',').map(v => v.trim()).filter(Boolean) ?? [],
+    TURNSTILE_HOSTNAMES: input.TURNSTILE_HOSTNAMES?.split(',').map(v => v.trim()).filter(Boolean) ?? [],
+    ADMIN_NOTIFY_EMAILS: input.ADMIN_NOTIFY_EMAILS?.split(',').map(v => v.trim()).filter(Boolean) ?? [],
     FRONTEND_URL: input.FRONTEND_URL?.trim() || undefined,
     MONGODB_URI: input.MONGODB_URI?.trim() || undefined,
     MONGODB_DB_NAME: input.MONGODB_DB_NAME?.trim() || undefined,
@@ -36,6 +57,9 @@ export function parseEnv(input: NodeJS.ProcessEnv) {
   const env = result.data;
   if (env.NODE_ENV === 'production' && (!env.MONGODB_URI || !env.FRONTEND_URL)) {
     throw new ConfigurationError('Production requires MONGODB_URI and FRONTEND_URL. Values have been omitted.');
+  }
+  if (env.JWT_ACCESS_SECRET && env.JWT_ACCESS_SECRET === env.JWT_REFRESH_SECRET) {
+    throw new ConfigurationError('JWT_ACCESS_SECRET and JWT_REFRESH_SECRET must be distinct.');
   }
   const origins = new Set(env.CORS_ORIGINS.map(value => new URL(value).origin));
   if (env.FRONTEND_URL) origins.add(new URL(env.FRONTEND_URL).origin);
@@ -51,6 +75,9 @@ export function parseEnv(input: NodeJS.ProcessEnv) {
   }
   if (env.NODE_ENV === 'production' && [...origins].some(value => !value.startsWith('https://'))) {
     throw new ConfigurationError('Production frontend origins must use HTTPS.');
+  }
+  if (env.NODE_ENV === 'production' && env.CLOUDINARY_NAMESPACE !== 'hrpf/prod') {
+    throw new ConfigurationError('Production requires CLOUDINARY_NAMESPACE=hrpf/prod.');
   }
   return { ...env, allowedOrigins: [...origins] };
 }

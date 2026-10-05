@@ -2,19 +2,18 @@ import { randomUUID } from 'node:crypto';
 import express, { type ErrorRequestHandler } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import { rateLimit } from 'express-rate-limit';
 import { z } from 'zod';
 import type { Environment } from './config/env.js';
 import type { Readiness } from './infrastructure/dependencies.js';
+import { ApiError } from './http/errors.js';
+import { createBusiness, type BusinessAdapters } from './http/business.js';
+export { ApiError } from './http/errors.js';
 
-export class ApiError extends Error {
-  constructor(readonly status: number, readonly code: string, message: string) { super(message); }
-}
-export function createApp(env: Environment, readiness: Readiness) {
+export function createApp(env: Environment, readiness: Readiness, adapters?: BusinessAdapters) {
   const app = express();
   app.disable('x-powered-by');
-  // Deployment-specific proxy trust is established in M2 before public forms.
-  app.set('trust proxy', false);
+  // Trust only explicitly configured deployment proxy addresses, never arbitrary hops.
+  app.set('trust proxy', env.TRUST_PROXY_CIDRS.length ? env.TRUST_PROXY_CIDRS : false);
   app.use((_req, res, next) => {
     res.locals.requestId = randomUUID();
     res.setHeader('X-Request-ID', res.locals.requestId);
@@ -29,16 +28,9 @@ export function createApp(env: Environment, readiness: Readiness) {
       callback(new ApiError(403, 'ORIGIN_NOT_ALLOWED', 'Request origin is not allowed.'));
     },
     methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'X-CSRF-Token'],
+    allowedHeaders: ['Content-Type', 'X-CSRF-Token', 'X-Form-Ticket'],
   }));
   app.use(express.json({ limit: '32kb', strict: true }));
-  // M1 has health endpoints only. Replace process-local protection with Redis
-  // per-client limits in M2 before business endpoints or public submissions.
-  app.use('/api', rateLimit({
-    windowMs: 60_000, limit: 120, standardHeaders: 'draft-8', legacyHeaders: false,
-    skip: req => req.path === '/health/live' || req.path === '/health/ready',
-    handler: (_req, _res, next) => next(new ApiError(429, 'RATE_LIMITED', 'Too many requests. Try again later.')),
-  }));
   const emptyQuery = z.object({}).strict();
   app.use(['/api/health/live', '/api/health/ready'], (req, _res, next) => {
     if (!emptyQuery.safeParse(req.query).success) {
@@ -54,6 +46,7 @@ export function createApp(env: Environment, readiness: Readiness) {
     }
     res.json({ data: { status: 'ready' } });
   });
+  if (adapters) app.use('/api', createBusiness(env, adapters).router);
   app.use((_req, _res, next) => next(new ApiError(404, 'NOT_FOUND', 'Endpoint not found.')));
   const errorHandler: ErrorRequestHandler = (error: unknown, _req, res, _next) => {
     let known = error instanceof ApiError ? error : undefined;
@@ -61,10 +54,13 @@ export function createApp(env: Environment, readiness: Readiness) {
       if (error.type === 'entity.too.large') known = new ApiError(413, 'PAYLOAD_TOO_LARGE', 'Request body is too large.');
       if (error.type === 'entity.parse.failed') known = new ApiError(400, 'INVALID_JSON', 'Request body must be valid JSON.');
     }
+    if (res.headersSent) { res.destroy(); return; }
+    if (!known && error && typeof error === 'object' && 'code' in error && error.code === 11000) known = new ApiError(409, 'CONFLICT', 'A record with this unique value already exists.');
     res.status(known?.status ?? 500).json({ error: {
       code: known?.code ?? 'INTERNAL_ERROR',
       message: known?.message ?? 'An unexpected error occurred.',
       requestId: res.locals.requestId,
+      ...(known?.fields ? { fields: known.fields } : {}),
     } });
   };
   app.use(errorHandler);
