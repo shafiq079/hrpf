@@ -100,3 +100,9 @@ Updated: 2026-10-05
 - DECISIONS.md: dated decisions and reasons.
 - PROGRESS.md: completed work, current work, next action and blockers.
 - Every working session ends with a HANDOFF and complete changed docs text.
+
+## M1 handoff
+- PR #1 merged into main on 2026-10-05 at 68865eff5fff6225eb4b97fbaf06662d5d5a8095.
+- Final reviewed implementation: 32e473c481f3f1816aa66873d634669d2ce1a412; GitHub run 37323882076 passed.
+- Development was fast-forwarded to the main merge; handoff docs continue on development.
+- M1 is complete. Exact next implementation is M2 backend core; no M2 application code has been written yet.
