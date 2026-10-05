@@ -1,12 +1,12 @@
 # M4 public content and publication controls
 
-M4 replaces public prototype content with independently fetched backend projections.
+M4 replaces fictional prototype text with supplied fixed NGO copy and uses backend projections for managed records.
 It is an implementation milestone, not a production activation or document release.
 
 ## Implemented
 
 - Public settings allow only identity, contact, social links and donations, with field-level schemas that strip extra properties. Private settings are excluded.
-- Content and blogs require approved review, publication at or before the current time, and the exact requested English/Urdu locale. Unpublished articles return 404; outages render an unavailable state rather than invented content.
+- Managed blogs require approved review, publication at or before the current time, and the exact requested English/Urdu locale. Unpublished articles return 404; outages render an unavailable state rather than invented content.
 - Public board records require activation and retain authoritative designation/slot distinctions. Photos are optional; missing photos show initials rather than invented people.
 - Gallery, reports and certificates join clean public claimed files to the exact released entity before pagination/counting. Duplicate gallery entries are excluded.
 - Bounded literal blog-title search, gallery categories, pagination, masonry and an accessible native-dialog image viewer with zoom and keyboard navigation.
@@ -20,7 +20,7 @@ It is an implementation milestone, not a production activation or document relea
 
 ## Verification
 
-- Frontend lint, route-aware TypeScript and production build pass. Independent `npm run test:public` covers 19 rendered routes, five real 404s, publication freshness, pending/unavailable states and cookie isolation; it is included in frontend CI.
+- Frontend lint, route-aware TypeScript and production build pass. Independent `npm run test:public` covers 19 rendered routes, five real 404s, blog freshness, cookie isolation and 14 fixed-content routes with the backend stopped; it is included in frontend CI.
 - Full-stack production SSR smoke against real disposable seeded MongoDB/Redis passes for 14 public routes plus article detail, literal no-results, gallery category/pagination, five 404s, three legacy redirects, same-origin asset streaming and backend outage. Synthetic image/PDF fixtures replace real source binaries.
 - Backend TypeScript, build, 22 unit/source tests, manifest checks and generated OpenAPI consistency pass.
 - All 23 real MongoDB replica-set/Redis/BullMQ integration scenarios pass, including seven new public/publication checks: secret exclusion, draft visibility, RBAC/CSRF/review attestation, concurrent version conflicts, reviewed asset publication/withdrawal, foreign/identity asset rollback, PDF downloads/HEAD and bounded literal blog searches.
@@ -34,12 +34,10 @@ The cloud browser rejects the local preview URL with `ERR_BLOCKED_BY_CLIENT`.
 Desktop/mobile visual and interactive lightbox review could not be completed in this
 session. The server-rendered checks above do not claim browser interaction or visual coverage.
 
-No organizational sources are automatically published. After seeding drafts, an
-operator must review record text/descriptions and any public file copy, scan/upload
-it, and use the publication endpoint. Restricted report originals stay separate;
+Fixed source text is already bundled and final; no admin publication is needed. Managed documents/images remain separate: public file copies must be prepared, scanned/uploaded and enabled through their managed endpoint. Restricted report originals stay separate;
 the 2024 DOCX still requires a reviewed PDF conversion. Sensitive document/image
 redaction, chairman-photo cleanup and source-specific alt text remain release work.
-The admin interface, form wiring, operational review/approval workflows, Urdu
+The managed admin interfaces, form wiring, membership/case workflows, Urdu
 translations and production provider/hosting preflight remain later steps.
 
 ## Publication history
@@ -53,3 +51,10 @@ source pillars retain the existing animated focus-area card grid. The final impl
 6b994a33468525286dbf50a6e335761f77f88d7e; GitHub CI run 37386325272 passed
 both jobs with the follow-up checks. Subsequent handoff edits are documentation
 only.
+
+## Fixed-copy correction
+Fixed NGO copy uses the owner-supplied page text, profile and current public details bundled in the frontend. Home, ten About sections, What We Do, contact, social links and donation details require no database seed, admin approval or publishing step. The fixed-page API and admin publishing kind were removed; legacy ContentPage seed rows remain source inventory without destructive database cleanup.
+
+Admin scope remains users, members, membership applications, complaints, board, blogs, gallery, reports, certificates, settings, contact inbox and audit logs. Fixed-page CMS/review is excluded. Blog/gallery/document/board data remain managed records. File protection and membership/complaint operational approvals remain separate from fixed text.
+
+The original full-stack smoke above is historical. The updated independent SSR regression verifies fixed source copy without the backend and preserves dynamic blog freshness/outage behavior.

@@ -9,7 +9,7 @@ import express from 'express';
 import { unavailable } from '../src/http/errors.js';
 import { createApp } from '../src/app.js';
 import { parseEnv } from '../src/config/env.js';
-import { Asset, AuditLog, BlogPost, BoardMember, ContentPage, GalleryItem, Report, AuthSession, Complaint, ContactMessage, Counter, EmailOutbox, FormTicket, MembershipApplication, Setting, User, ensureIndexes, roles, type Role } from '../src/domain/models.js';
+import { Asset, AuditLog, BlogPost, BoardMember, GalleryItem, Report, AuthSession, Complaint, ContactMessage, Counter, EmailOutbox, FormTicket, MembershipApplication, Setting, User, ensureIndexes, roles, type Role } from '../src/domain/models.js';
 import { createRedisServices } from '../src/infrastructure/redis-services.js';
 import { digest, hashPassword } from '../src/security/crypto.js';
 import { createOutbox, startOutboxWorker, type Mail } from '../src/services/outbox.js';
@@ -241,7 +241,7 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     const uploads = createUploads(env, createForms(services, bot), provider, scanner);
     await uploads.prune(); assert.equal(await Asset.countDocuments(), 1); assert.ok(await Asset.findById(claimed.id));
   });
-  it('M4 public settings strip extra private fields and content requires review and publication', async () => {
+  it('M4 public settings strip private fields and managed blogs respect publication', async () => {
     const { publicSettingSchemas } = await import('../src/http/public-content.js');
     const setting = await Setting.create({ key: 'contact', visibility: 'public', value: { address: 'Test address', postalCode: '50490', phone: '+923001234567', landline: '+92546123456', emails: ['test@example.org'], notificationEmails: ['private@example.org'], password: 'private-secret' } });
     await Setting.create({ key: 'smtp', visibility: 'public', value: { password: 'private-secret' } });
@@ -249,21 +249,23 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     const settings = await request(app).get('/api/settings/public').expect(200);
     assert.deepEqual(Object.keys(settings.body.data), ['contact']);
     assert.ok(!JSON.stringify(settings.body).includes('private'));
-    const page = await ContentPage.create({ key: 'mission', locale: 'en', title: 'Reviewed test mission', blocks: [{ type: 'paragraph', text: '<script>text, not markup</script>' }], provenance: ['restricted source filename'] });
-    await request(app).get('/api/content/mission').expect(404);
+    const page = await BlogPost.create({ slug: 'test-mission', locale: 'en', title: { en: 'Reviewed test mission' }, blocks: [{ type: 'paragraph', text: '<script>text, not markup</script>' }], sourceReferences: ['restricted source filename'] });
+    await request(app).get('/api/blogs/test-mission').expect(404);
     const admin = await login('admin');
+    await admin.agent.get('/api/admin/publication/page').expect(400);
+    await request(app).get('/api/content/mission').expect(404);
     const review = await admin.agent.get('/api/admin/publication/setting').expect(200);
     assert.equal(review.body.data.length, 1); assert.ok(!JSON.stringify(review.body).includes('private-secret'));
     const auth = await login('editor');
-    const release = (version: number, action = 'publish') => auth.agent.post(`/api/admin/publication/page/${page.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send({ version, action, releaseReviewed: true });
+    const release = (version: number, action = 'publish') => auth.agent.post(`/api/admin/publication/blog/${page.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send({ version, action, releaseReviewed: true });
     await release(0).expect(200);
-    const content = await request(app).get('/api/content/mission').expect(200);
+    const content = await request(app).get('/api/blogs/test-mission').expect(200);
     assert.equal(content.body.data.title, 'Reviewed test mission');
     assert.ok(!JSON.stringify(content.body).includes('restricted source'));
-    await request(app).get('/api/content/mission?locale=ur').expect(404);
+    await request(app).get('/api/blogs/test-mission?locale=ur').expect(404);
     await release(0, 'withdraw').expect(409);
     await release(1, 'withdraw').expect(200);
-    await request(app).get('/api/content/mission').expect(404);
+    await request(app).get('/api/blogs/test-mission').expect(404);
     assert.equal(await AuditLog.countDocuments({ action: { $in: ['publication.publish', 'publication.withdraw'] } }), 2);
   });
   it('M4 publication enforces role, CSRF and an explicit review attestation', async () => {
@@ -279,11 +281,11 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     assert.equal((await request(app).get('/api/board').expect(200)).body.data.length, 0);
   });
   it('M4 concurrent publication uses optimistic versions and cannot expose a draft twice', async () => {
-    const page = await ContentPage.create({ key: 'vision', locale: 'en', title: 'Test vision', blocks: [{ type: 'paragraph', text: 'Synthetic source' }] });
+    const page = await BlogPost.create({ slug: 'test-vision', locale: 'en', title: { en: 'Test vision' }, blocks: [{ type: 'paragraph', text: 'Synthetic source' }] });
     const auth = await login('editor');
-    const responses = await Promise.all([1, 2].map(() => auth.agent.post(`/api/admin/publication/page/${page.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send({ version: 0, action: 'publish', releaseReviewed: true })));
+    const responses = await Promise.all([1, 2].map(() => auth.agent.post(`/api/admin/publication/blog/${page.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send({ version: 0, action: 'publish', releaseReviewed: true })));
     assert.deepEqual(responses.map(r => r.status).sort(), [200, 409]);
-    assert.equal((await ContentPage.findById(page.id))!.__v, 1);
+    assert.equal((await BlogPost.findById(page.id))!.__v, 1);
     assert.equal(await AuditLog.countDocuments({ action: 'publication.publish' }), 1);
   });
   it('M4 reviewed gallery release joins clean bound files, filters before pagination and revokes URLs on withdrawal', async () => {

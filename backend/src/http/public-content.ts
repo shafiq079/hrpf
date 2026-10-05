@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { z } from 'zod';
-import { Asset, BlogCategory, BlogPost, BoardMember, Certificate, ContentPage, GalleryItem, Report, Setting } from '../domain/models.js';
+import { Asset, BlogCategory, BlogPost, BoardMember, Certificate, GalleryItem, Report, Setting } from '../domain/models.js';
 import type { UploadProvider } from '../services/uploads.js';
 import { ApiError, unavailable, validate } from './errors.js';
 
@@ -41,12 +41,6 @@ export function publicRouter(provider: UploadProvider) {
       if (parsed?.success) data[row.key] = parsed.data;
     }
     res.json({ data });
-  });
-  router.get('/content/:key', async (req, res) => {
-    const key = validate(slug, req.params.key), query = validate(publicQuery, req.query);
-    const row = await ContentPage.findOne({ key, locale: query.locale, reviewStatus: 'approved', ...publicationFilter() }).select('key locale title blocks seo').lean();
-    if (!row) throw missing();
-    res.json({ data: { key: row.key, locale: row.locale, title: row.title, blocks: publicBlocks(row.blocks), description: row.seo } });
   });
   router.get('/board', async (req, res) => {
     const { locale } = validate(publicQuery, req.query);

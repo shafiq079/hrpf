@@ -128,9 +128,16 @@ layout, offline plan and explicit database apply. Reruns preserve admin edits an
 deletions. Nothing uploads or publishes automatically. `npm run test:seed` uses
 disposable MongoDB and no organizational credentials.
 
-## M4 public content and reviewed publication
+## M4 managed public content
 
-Public reads: `/api/settings/public`, `/api/content/:key`, `/api/board`,
+Fixed NGO copy is bundled in `frontend/data/ngo-pages.json` and public contact,
+social and donation defaults in `frontend/data/ngo-details.json`. Those pages
+need no database seed, admin review or publication step. Legacy ContentPage seed
+records remain source inventory only; there is no fixed-page publishing endpoint.
+Admin work remains users, members, applications, complaints, board, blogs, gallery,
+reports, certificates, settings, inboxes and audit logs.
+
+Public reads: `/api/settings/public`, `/api/board`,
 `/api/blog-categories`, `/api/blogs`, `/api/blogs/:slug`, `/api/gallery`,
 `/api/reports`, `/api/certificates`. Lists use bounded `page`/`limit`; all content
 supports exact `locale=en|ur`. Blog `q` is a bounded literal title search; gallery
@@ -154,7 +161,7 @@ and POST `/api/admin/publication/:kind/:id` with:
 {"version":0,"action":"publish","releaseReviewed":true,"assetId":"clean-staged-asset-id"}
 ```
 
-Kinds: `page`, `blog`, `board`, `gallery`, `report`, `certificate`, `setting`.
+Kinds: `blog`, `board`, `gallery`, `report`, `certificate`, `setting`.
 Omit `assetId` for text/settings; it is optional for board photos and required for
 initial gallery/report/certificate release. Upload public copies first through
 `/api/admin/assets?purpose=content|certificate`. Files must be clean, unexpired

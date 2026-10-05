@@ -68,13 +68,13 @@ release workflow for assets.
 
 ## M4 implemented
 - Public content projections, reviewed file delivery and atomic audited publish/withdraw controls are implemented.
-- Frontend routes consume published backend data; unsupported prototype content and fake receipts are removed from public routes.
+- Fixed frontend copy is bundled from supplied sources; managed board/blog/gallery/document routes consume backend data. Unsupported prototype content and fake receipts are removed.
 - Independent frontend/backend checks, 23 integration scenarios, eight seed recovery scenarios, independent frontend SSR checks, full-stack source SSR smoke and both production dependency audits pass.
 - M4 is published in PR #3; final implementation 6b994a33468525286dbf50a6e335761f77f88d7e passed GitHub CI run 37386325272 (both jobs).
 - See M4_VERIFICATION.md for scope, verification and browser access limitation. Source files are not automatically published.
 
 ## Next milestone boundary
-- Build the admin interface/content editing and wire actual frontend intake flows.
+- Build admin interfaces for users, members, applications, complaints, board, blogs, gallery, documents, settings, inboxes and audit; wire actual frontend intake flows. No fixed-page CMS or review.
 - Require reviewed clean assets for public release; convert/review the 2024 report and redact public document copies.
 - Do not seed invented fees, members, statistics, validity or legal outcomes.
 - Keep payment verification, member approval and complaint operational workflows separate from the M2 receipt/storage foundations.
@@ -96,3 +96,8 @@ release workflow for assets.
 - No organizational database was seeded, sensitive files uploaded externally or live email sent. M3 tests use audited metadata in disposable MongoDB; M2 uses synthetic operational fixtures.
 - Public routes now consume reviewed API content. Intake forms are explicitly unavailable pending wiring; source imports remain draft-only. This is not a production activation.
 - main remains stable; implementation stays on development.
+
+## Owner correction: fixed page copy
+Fixed NGO copy uses the owner-supplied page text, profile and current public details bundled in the frontend. Home, ten About sections, What We Do, contact, social links and donation details require no database seed, admin approval or publishing step. The fixed-page API and admin publishing kind were removed; legacy ContentPage seed rows remain source inventory without destructive database cleanup.
+
+Admin scope remains users, members, membership applications, complaints, board, blogs, gallery, reports, certificates, settings, contact inbox and audit logs. Fixed-page CMS/review is excluded. Blog/gallery/document/board data remain managed records. File protection and membership/complaint operational approvals remain separate from fixed text.

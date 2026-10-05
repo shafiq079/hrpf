@@ -3,7 +3,7 @@
   "info": {
     "title": "HRPF API",
     "version": "0.4.0",
-    "description": "Backend foundations, reviewed public content and atomic publication controls. Operational member/case review workflows remain later milestones. Public reads are no-store and withdrawals take effect immediately. Browser clients use the frontend same-origin /api rewrite and credentials. All mutating auth/admin requests require the exact configured Origin and X-CSRF-Token. Production cookies use Secure, HttpOnly, SameSite=Lax, Path=/, no Domain; development names omit __Host-."
+    "description": "Backend foundations, managed public content and atomic publication controls. Fixed NGO page copy is bundled in the frontend and needs no publication approval. Operational member/case review workflows remain later milestones. Public reads are no-store and withdrawals take effect immediately. Browser clients use the frontend same-origin /api rewrite and credentials. All mutating auth/admin requests require the exact configured Origin and X-CSRF-Token. Production cookies use Secure, HttpOnly, SameSite=Lax, Path=/, no Domain; development names omit __Host-."
   },
   "paths": {
     "/api/health/live": {
@@ -1757,157 +1757,6 @@
         }
       }
     },
-    "/api/content/{key}": {
-      "get": {
-        "summary": "Read reviewed published content in the exact requested locale",
-        "security": [],
-        "parameters": [
-          {
-            "name": "key",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
-              "maxLength": 100
-            }
-          },
-          {
-            "name": "locale",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "en",
-                "ur"
-              ],
-              "default": "en"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 1000,
-              "default": 1
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 48,
-              "default": 12
-            }
-          },
-          {
-            "name": "q",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "maxLength": 80
-            }
-          },
-          {
-            "name": "category",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "media-coverage",
-                "in-action"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "title": {
-                          "type": "string"
-                        },
-                        "blocks": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "type": {
-                                "type": "string",
-                                "enum": [
-                                  "paragraph",
-                                  "heading",
-                                  "list"
-                                ]
-                              },
-                              "text": {
-                                "type": "string"
-                              },
-                              "items": {
-                                "type": "array",
-                                "items": {
-                                  "type": "string"
-                                }
-                              }
-                            },
-                            "required": [
-                              "type"
-                            ]
-                          }
-                        },
-                        "key": {
-                          "type": "string"
-                        },
-                        "locale": {
-                          "type": "string",
-                          "enum": [
-                            "en",
-                            "ur"
-                          ]
-                        },
-                        "description": {
-                          "type": "string"
-                        }
-                      },
-                      "required": [
-                        "title",
-                        "blocks",
-                        "key",
-                        "locale"
-                      ]
-                    }
-                  },
-                  "required": [
-                    "data"
-                  ]
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/blogs/{slug}": {
       "get": {
         "summary": "Read a reviewed published article; drafts and future releases return 404",
@@ -2978,7 +2827,6 @@
             "schema": {
               "type": "string",
               "enum": [
-                "page",
                 "blog",
                 "board",
                 "gallery",
@@ -3056,7 +2904,6 @@
             "schema": {
               "type": "string",
               "enum": [
-                "page",
                 "blog",
                 "board",
                 "gallery",

@@ -136,8 +136,9 @@ Updated: 2026-10-05
 - Published M3 implementation: 61eb156fd7cc300d078a7659c9d096fa881f9e00. GitHub CI run 37380616908 passed both independent jobs, backend/seed integration and production audits. PR #2 now describes M2/M3; later handoff edits are documentation only.
 
 ## Current M4 boundary
-M1 and M2/M3 are merged into main. Development now implements reviewed public
-content APIs, publication controls and sourced frontend pages. Source imports
-remain unpublished/private; real file releases require review. Admin UI/content
-editing, native form wiring and operational workflows are next. See
-M4_VERIFICATION.md for verified checks and current browser review limitation.
+M1 and M2/M3 are merged into main. M4 is on development in PR #3.
+Fixed NGO copy uses the owner-supplied page text, profile and current public details bundled in the frontend. Home, ten About sections, What We Do, contact, social links and donation details require no database seed, admin approval or publishing step. The fixed-page API and admin publishing kind were removed; legacy ContentPage seed rows remain source inventory without destructive database cleanup.
+
+Admin scope remains users, members, membership applications, complaints, board, blogs, gallery, reports, certificates, settings, contact inbox and audit logs. Fixed-page CMS/review is excluded. Blog/gallery/document/board data remain managed records. File protection and membership/complaint operational approvals remain separate from fixed text.
+
+Admin UI, real form wiring and operational workflows are next. See M4_VERIFICATION.md.

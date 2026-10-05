@@ -132,9 +132,8 @@ transactional submissions and the Mongo/BullMQ email outbox. See docs/M2_VERIFIC
 
 ## Public content (M4)
 
-Public pages now read reviewed published records from the independent backend.
-Run `backend` and `frontend` separately as above. Source imports create drafts;
-pending-publication notices are expected until reviewed records/files are released.
-Missing backend connectivity shows an unavailable state. The backend includes
-audited publication controls; the admin UI and frontend form wiring are next.
-See [M4 verification](docs/M4_VERIFICATION.md) and backend README/OpenAPI.
+Fixed NGO copy uses the owner-supplied page text, profile and current public details bundled in the frontend. Home, ten About sections, What We Do, contact, social links and donation details require no database seed, admin approval or publishing step. The fixed-page API and admin publishing kind were removed; legacy ContentPage seed rows remain source inventory without destructive database cleanup.
+
+Admin scope remains users, members, membership applications, complaints, board, blogs, gallery, reports, certificates, settings, contact inbox and audit logs. Fixed-page CMS/review is excluded. Blog/gallery/document/board data remain managed records. File protection and membership/complaint operational approvals remain separate from fixed text.
+
+Run frontend and backend independently as above. Admin UI and real form wiring are next. See [M4 verification](docs/M4_VERIFICATION.md).

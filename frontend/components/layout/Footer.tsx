@@ -7,7 +7,7 @@ import {
 } from "@/data/navigation";
 import Container from "@/components/shared/Container";
 import BrandLogo from "@/components/shared/BrandLogo";
-import { publicSettings } from "@/lib/public-content";
+import { ngoDetails } from "@/data/ngo";
 function FooterColumn({
   heading,
   links,
@@ -35,9 +35,8 @@ function FooterColumn({
     </div>
   );
 }
-export default async function Footer() {
-  const result = await publicSettings(),
-    settings = result.status === "ok" ? result.data : {};
+export default function Footer() {
+  const settings = ngoDetails;
   return (
     <footer className="bg-navy-dark text-white">
       <Container className="py-14 lg:py-16">

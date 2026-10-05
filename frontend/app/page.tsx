@@ -5,15 +5,12 @@ import FinalCallToAction from "@/components/home/FinalCallToAction";
 import Container from "@/components/shared/Container";
 import SectionHeading from "@/components/shared/SectionHeading";
 import { Blocks, ContentState } from "@/components/content/ContentView";
-import { publicRead, type Content, type Article } from "@/lib/public-content";
+import { ngoPages, homeCopy } from "@/data/ngo";
+import { publicRead, type Article } from "@/lib/public-content";
 export default async function Home() {
-  const [about, mission, vision, work, blogs] = await Promise.all([
-    publicRead<Content>("content/who-we-are"),
-    publicRead<Content>("content/mission"),
-    publicRead<Content>("content/vision"),
-    publicRead<Content>("content/thematic-pillars"),
-    publicRead<Article[]>("blogs?limit=3"),
-  ]);
+  const about = ngoPages["who-we-are"];
+  const work = ngoPages["thematic-pillars"];
+  const blogs = await publicRead<Article[]>("blogs?limit=3");
   return (
     <main id="main-content">
       <HeroSection />
@@ -25,11 +22,7 @@ export default async function Home() {
                 eyebrow="About HRPF Pakistan"
                 title="Who We Are"
               />
-              {about.status === "ok" ? (
-                <Blocks blocks={about.data.blocks.slice(0, 2)} />
-              ) : (
-                <ContentState status={about.status} />
-              )}
+              <Blocks blocks={about.blocks.slice(0, 2)} />
               <Link
                 className="mt-6 inline-block font-semibold text-teal-dark"
                 href="/about/who-we-are"
@@ -39,17 +32,13 @@ export default async function Home() {
             </div>
             <div className="space-y-10 border-l border-border pl-8">
               {[
-                { title: "Mission", result: mission },
-                { title: "Vision", result: vision },
-              ].map(({ title, result: r }) => {
+                { title: "Mission", text: homeCopy.mission },
+                { title: "Vision", text: homeCopy.vision },
+              ].map(({ title, text }) => {
                 return (
                   <section key={title}>
                     <h2 className="font-serif text-3xl text-navy">{title}</h2>
-                    {r.status === "ok" ? (
-                      <Blocks blocks={r.data.blocks} />
-                    ) : (
-                      <ContentState status={r.status} />
-                    )}
+                    <p className="mt-4 leading-relaxed text-muted">{text}</p>
                   </section>
                 );
               })}
@@ -64,11 +53,7 @@ export default async function Home() {
             title="Our Thematic Pillars"
             align="center"
           />
-          {work.status === "ok" ? (
-            <PillarCards blocks={work.data.blocks} limit={6} />
-          ) : (
-            <ContentState status={work.status} />
-          )}
+          <PillarCards blocks={work.blocks} limit={6} />
           <Link
             className="mt-6 inline-block font-semibold text-teal-dark"
             href="/what-we-do"

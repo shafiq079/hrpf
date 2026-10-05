@@ -70,11 +70,11 @@ export default async function Blogs({
               </div>
             ) : (
               <EmptyState
-                title={q ? "No matching blogs" : "Blogs awaiting publication"}
+                title={q ? "No matching blogs" : "No blog posts yet"}
                 description={
                   q
                     ? "Try another search."
-                    : "Reviewed articles will appear here once published."
+                    : "New articles will appear here as they are added."
                 }
               />
             )}

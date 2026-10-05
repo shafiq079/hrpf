@@ -75,5 +75,10 @@
 - Keep public reads no-store instead of introducing revocation-sensitive caches. Stream authenticated files through an entity release gate; bypass Next image optimization for those URLs.
 - Publish/withdraw only with current entity permissions, exact-Origin CSRF, release attestation, optimistic versions and atomic asset/audit updates. Serialize with user-governance changes.
 - Keep source imports draft-only. Actual public PDF conversion/redaction and image review are distinct operator release steps.
-- Preserve existing page components/theme, replace invented content with publication/unavailable states, and remove simulated receipts from public routes. Supplied Google Forms remains the membership fallback.
+- Preserve existing page components/theme, replace invented fixed text with supplied NGO copy; managed lists use empty/unavailable states, and remove simulated receipts from public routes. Supplied Google Forms remains the membership fallback.
 - Add navigation focus trapping/restoration; gallery uses a native modal dialog. Browser verification was blocked by the cloud browser's local-preview access; do not claim interactive/visual coverage.
+
+## Fixed-copy correction (owner instruction, 2026-10-06)
+Fixed NGO copy uses the owner-supplied page text, profile and current public details bundled in the frontend. Home, ten About sections, What We Do, contact, social links and donation details require no database seed, admin approval or publishing step. The fixed-page API and admin publishing kind were removed; legacy ContentPage seed rows remain source inventory without destructive database cleanup.
+
+Admin scope remains users, members, membership applications, complaints, board, blogs, gallery, reports, certificates, settings, contact inbox and audit logs. Fixed-page CMS/review is excluded. Blog/gallery/document/board data remain managed records. File protection and membership/complaint operational approvals remain separate from fixed text.

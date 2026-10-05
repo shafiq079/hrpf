@@ -32,12 +32,12 @@ export function ContentState({
       title={
         status === "unavailable"
           ? "Content temporarily unavailable"
-          : "Content awaiting publication"
+          : "No items available yet"
       }
       description={
         status === "unavailable"
           ? "Please try again later. Published content could not be loaded."
-          : "Reviewed information will appear here once it is published."
+          : "New items will appear here as they are added."
       }
     />
   );

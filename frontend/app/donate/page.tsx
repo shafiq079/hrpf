@@ -1,11 +1,9 @@
 import PageHero from "@/components/shared/PageHero";
 import Container from "@/components/shared/Container";
 import CopyValue from "@/components/content/CopyValue";
-import { ContentState } from "@/components/content/ContentView";
-import { publicSettings } from "@/lib/public-content";
-export default async function Donate() {
-  const result = await publicSettings(),
-    donations = result.status === "ok" ? result.data.donations : undefined;
+import { ngoDetails } from "@/data/ngo";
+export default function Donate() {
+  const donations = ngoDetails.donations;
   const labels: Record<string, string> = {
     accountTitle: "Account title",
     bank: "Bank",
@@ -19,8 +17,6 @@ export default async function Donate() {
       <PageHero title="Donate" eyebrow="Support HRPF Pakistan" />
       <Container className="py-14 lg:py-20">
         <div className="mx-auto max-w-3xl">
-          {donations ? (
-            <>
               <h2 className="font-serif text-3xl text-navy">
                 Donation details
               </h2>
@@ -33,14 +29,6 @@ export default async function Donate() {
                   />
                 ))}
               </dl>
-            </>
-          ) : (
-            <ContentState
-              status={
-                result.status === "unavailable" ? "unavailable" : "missing"
-              }
-            />
-          )}
         </div>
       </Container>
     </main>

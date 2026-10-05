@@ -18,17 +18,13 @@ See backend/seed/README.md for commands. M3 implementation is published at
 61eb156fd7cc300d078a7659c9d096fa881f9e00. GitHub CI run 37380616908 passed
 both jobs, including all backend/source tests, both integration suites and
 production dependency audits. Subsequent handoff edits are documentation only.
-Next: admin interface/content editing and real frontend form wiring, followed by
-operational review/approval workflows. Public pages use approved published API
-content; source imports still produce unpublished/private drafts. Missing content
-shows pending publication; backend failures show unavailable. Legacy fake forms
-are no longer exposed. Membership uses the supplied Google Form until policy is
-confirmed. Public source documents/photos are not automatically released; review,
-redaction, upload and publication remain explicit operator steps. No organization
-credentials/data/provider configuration were changed.
+Fixed NGO copy uses the owner-supplied page text, profile and current public details bundled in the frontend. Home, ten About sections, What We Do, contact, social links and donation details require no database seed, admin approval or publishing step. The fixed-page API and admin publishing kind were removed; legacy ContentPage seed rows remain source inventory without destructive database cleanup.
+
+Admin scope remains users, members, membership applications, complaints, board, blogs, gallery, reports, certificates, settings, contact inbox and audit logs. Fixed-page CMS/review is excluded. Blog/gallery/document/board data remain managed records. File protection and membership/complaint operational approvals remain separate from fixed text.
+
+Next: admin interfaces for the listed managed entities and real form wiring. Membership currently uses the supplied Google Form; no live provider writes were made.
 
 M4 PR: https://github.com/shafiq079/hrpf/pull/3. Initial implementation
 fa56aceb455e23a11685538650475e54dc7828b0 passed GitHub CI run 37385928032
 (both jobs). Final implementation 6b994a33468525286dbf50a6e335761f77f88d7e includes release
-hardening and card reuse; GitHub CI run 37386325272 passed both jobs. Subsequent
-handoff edits are documentation only. Main is unchanged by M4.
+hardening and card reuse; GitHub CI run 37386325272 passed both jobs. The fixed-copy correction supersedes the earlier fixed-page publication design. Main is unchanged by M4.
