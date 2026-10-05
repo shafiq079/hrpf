@@ -134,3 +134,10 @@ Updated: 2026-10-05
 - Source ZIP verification, decoding of all 200 gallery images and built CLI import/rerun/dry-run smoke passed. No organizational Atlas records, external uploads or live email were created.
 - Existing PR #2 remains open from development to main and includes M2/M3. Frontend tree is unchanged; public source-driven pages/APIs and reviewed asset release follow next.
 - Published M3 implementation: 61eb156fd7cc300d078a7659c9d096fa881f9e00. GitHub CI run 37380616908 passed both independent jobs, backend/seed integration and production audits. PR #2 now describes M2/M3; later handoff edits are documentation only.
+
+## Current M4 boundary
+M1 and M2/M3 are merged into main. Development now implements reviewed public
+content APIs, publication controls and sourced frontend pages. Source imports
+remain unpublished/private; real file releases require review. Admin UI/content
+editing, native form wiring and operational workflows are next. See
+M4_VERIFICATION.md for verified checks and current browser review limitation.

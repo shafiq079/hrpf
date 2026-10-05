@@ -1,11 +1,13 @@
 # HRPF handoff
 
-2026-10-05: M1 is merged into main. M2 backend foundations and M3 source/seed
-preparation are implemented and verified on development with PR #2 open to main. Frontend/backend remain independent; the
-prototype design and frontend tree are unchanged.
+2026-10-05: M1 and M2/M3 are merged into main (PR #1 and PR #2).
+M4 public content APIs, audited publication controls and source-driven frontend
+pages are implemented on development. Packages remain independent and the
+prototype's visual components/theme are retained. See M4_VERIFICATION.md for
+checks and the browser verification limitation.
 
 Start with the Project Files brief, PROJECT_CONTEXT.md, PROGRESS.md,
-DECISIONS.md, M2_VERIFICATION.md and M3_VERIFICATION.md. Backend README/OpenAPI describe exact setup
+DECISIONS.md, M2_VERIFICATION.md, M3_VERIFICATION.md and M4_VERIFICATION.md. Backend README/OpenAPI describe exact setup
 and implemented routes. Do not read source credential documents or request secrets.
 
 M2 implementation commit is 160c81561080d1cac235701cc0229dcf16aa7e14;
@@ -16,7 +18,11 @@ See backend/seed/README.md for commands. M3 implementation is published at
 61eb156fd7cc300d078a7659c9d096fa881f9e00. GitHub CI run 37380616908 passed
 both jobs, including all backend/source tests, both integration suites and
 production dependency audits. Subsequent handoff edits are documentation only.
-Next: public content APIs and source-driven pages with reviewed asset release.
-Existing frontend forms still simulate
-submissions. Native membership stays disabled until policy is configured. Live
-provider/hosting configuration and operational approvals are not complete.
+Next: admin interface/content editing and real frontend form wiring, followed by
+operational review/approval workflows. Public pages use approved published API
+content; source imports still produce unpublished/private drafts. Missing content
+shows pending publication; backend failures show unavailable. Legacy fake forms
+are no longer exposed. Membership uses the supplied Google Form until policy is
+confirmed. Public source documents/photos are not automatically released; review,
+redaction, upload and publication remain explicit operator steps. No organization
+credentials/data/provider configuration were changed.

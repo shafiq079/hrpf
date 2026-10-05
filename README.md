@@ -129,3 +129,12 @@ Read the Project Files brief, docs/PROJECT_CONTEXT.md, docs/DECISIONS.md and
 docs/PROGRESS.md for current state. M2 adds models/indexes, cookie auth and CSRF,
 role permissions, Redis limits/cache/tickets, scanned authenticated uploads,
 transactional submissions and the Mongo/BullMQ email outbox. See docs/M2_VERIFICATION.md. The owner delegated visual review and authorized the assistant to merge M1 after checks; see docs/M1_VERIFICATION.md for acceptance evidence.
+
+## Public content (M4)
+
+Public pages now read reviewed published records from the independent backend.
+Run `backend` and `frontend` separately as above. Source imports create drafts;
+pending-publication notices are expected until reviewed records/files are released.
+Missing backend connectivity shows an unavailable state. The backend includes
+audited publication controls; the admin UI and frontend form wiring are next.
+See [M4 verification](docs/M4_VERIFICATION.md) and backend README/OpenAPI.

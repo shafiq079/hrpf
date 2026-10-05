@@ -127,3 +127,46 @@ with `npm run seed:check`, then follow [seed/README.md](seed/README.md) for sour
 layout, offline plan and explicit database apply. Reruns preserve admin edits and
 deletions. Nothing uploads or publishes automatically. `npm run test:seed` uses
 disposable MongoDB and no organizational credentials.
+
+## M4 public content and reviewed publication
+
+Public reads: `/api/settings/public`, `/api/content/:key`, `/api/board`,
+`/api/blog-categories`, `/api/blogs`, `/api/blogs/:slug`, `/api/gallery`,
+`/api/reports`, `/api/certificates`. Lists use bounded `page`/`limit`; all content
+supports exact `locale=en|ur`. Blog `q` is a bounded literal title search; gallery
+`category` is `in-action|media-coverage`. Unknown query fields are rejected.
+Drafts, future publication dates and non-approved records are excluded. Gallery,
+report and certificate listings require a clean claimed public file bound to the
+same entity. Paginated responses include `meta.page/limit/total/pages`.
+
+Public asset delivery uses `/api/public-assets/:id`; report download links use
+`/api/reports/:id/download`. The backend rechecks current release and streams the
+authenticated provider file with no-store. It never returns provider URLs, original
+source files or identity evidence. GET report downloads count after successful
+streaming; HEAD does not. Reads deliberately bypass Redis content caching, so
+publication and withdrawal take effect without waiting for a cache TTL. Shared
+security limits and service readiness still use Redis.
+
+Authorized operators can inspect `/api/admin/publication/:kind?page=1` (20 records)
+and POST `/api/admin/publication/:kind/:id` with:
+
+```json
+{"version":0,"action":"publish","releaseReviewed":true,"assetId":"clean-staged-asset-id"}
+```
+
+Kinds: `page`, `blog`, `board`, `gallery`, `report`, `certificate`, `setting`.
+Omit `assetId` for text/settings; it is optional for board photos and required for
+initial gallery/report/certificate release. Upload public copies first through
+`/api/admin/assets?purpose=content|certificate`. Files must be clean, unexpired
+staged uploads owned by the operator, or already bound to that same record.
+Report releases require PDF; board/gallery require raster images. Never upload
+an unreviewed sensitive original as a public copy. The API attestation records
+operator approval; it does not perform content redaction or certify legal validity.
+Inline rich-text image release is not supported yet and publication rejects it.
+
+`{"version":1,"action":"withdraw","releaseReviewed":true}` withdraws the record
+and restricts its bound assets in one audited transaction. Stale versions return
+409. Every mutation needs the existing session cookies, exact configured Origin
+and X-CSRF-Token. Content editors can release text/blog/gallery/reports; board,
+certificates and settings require admin/super_admin. Admin UI and full content
+editing are later milestones. See OpenAPI and docs/M4_VERIFICATION.md.

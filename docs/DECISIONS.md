@@ -68,3 +68,12 @@
 - Use native session transaction retries for create-only seed imports; no document instances are retained across retries. This avoids Mongoose document-state rollback errors on strict nested schemas while preserving atomicity.
 - Prepare local asset candidates atomically, with checksums and no provider requests. Keep 2024 DOCX conversion, public report redaction, gallery consent/privacy checks and the chairman crop explicit release tasks.
 - Source current individual content first; use the profile only for fallback values, curated aims and thematic pillars. Import no profile-only people, invented membership policy, operational records or notifications.
+
+## 2026-10-05 — M4 public content
+- PR #2 is merged. Continue directly on development from merged main; open a new development-to-main PR for M4.
+- Use explicit public DTOs and setting allowlists; no raw model documents/provider URLs in public responses.
+- Keep public reads no-store instead of introducing revocation-sensitive caches. Stream authenticated files through an entity release gate; bypass Next image optimization for those URLs.
+- Publish/withdraw only with current entity permissions, exact-Origin CSRF, release attestation, optimistic versions and atomic asset/audit updates. Serialize with user-governance changes.
+- Keep source imports draft-only. Actual public PDF conversion/redaction and image review are distinct operator release steps.
+- Preserve existing page components/theme, replace invented content with publication/unavailable states, and remove simulated receipts from public routes. Supplied Google Forms remains the membership fallback.
+- Add navigation focus trapping/restoration; gallery uses a native modal dialog. Browser verification was blocked by the cloud browser's local-preview access; do not claim interactive/visual coverage.

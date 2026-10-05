@@ -72,7 +72,7 @@ export const Complaint = mongoose.model('Complaint', complaint);
 export const BoardMember = mongoose.model('BoardMember', new Schema({
   name: requiredText(150), slug: { ...requiredText(200), unique: true }, seedKey: { ...text(200), unique: true, sparse: true },
   designation: requiredText(200), slotLabel: text(200), rank: { type: Number, min: 1, required: true },
-  photo: assetRefSchema, bio: localized, isActive: { type: Boolean, default: true },
+  photo: assetRefSchema, bio: localized, isActive: { type: Boolean, default: false },
 }, options));
 export const BlogCategory = mongoose.model('BlogCategory', new Schema({
   name: { type: localized, required: true }, slug: { ...requiredText(200), unique: true }, sortOrder: { type: Number, default: 0 }, isActive: { type: Boolean, default: true },

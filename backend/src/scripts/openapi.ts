@@ -3,11 +3,14 @@ import { z } from 'zod';
 import { complaintInput, contactInput, membershipInput } from '../http/contracts.js';
 import { credentials, newPassword } from '../security/auth.js';
 import { purpose } from '../services/forms.js';
+import { publicationInput } from '../http/publication.js';
+import { publicSettingSchemas } from '../http/public-content.js';
 import { roles } from '../domain/models.js';
 const jsonSchema = (value: z.ZodType) => { const { $schema: _schema, ...schema } = z.toJSONSchema(value, { io: 'input', unrepresentable: 'any' }); return schema; };
 const user = z.object({ id: z.string(), name: z.string(), email: z.email(), role: z.enum(roles) });
 const safeAdminUser = user.extend({ active: z.boolean(), version: z.number().int() });
 const schemas = {
+  PublicationInput: jsonSchema(publicationInput),
   ComplaintInput: jsonSchema(complaintInput), MembershipInput: jsonSchema(membershipInput), ContactInput: jsonSchema(contactInput),
   LoginInput: jsonSchema(credentials), FormSessionInput: jsonSchema(z.object({ purpose, botToken: z.string().min(1).max(2048) }).strict()),
   ForgotInput: jsonSchema(z.object({ email: z.email().max(254) }).strict()),
@@ -58,7 +61,41 @@ const assetGet = paths['/api/admin/assets/{id}/content']!.get as Record<string, 
 operation('/api/admin/audit', 'get', 'Read up to 100 redacted append-only audit records; admin/super_admin', z.array(z.object({ _id: z.string(), action: z.string(), entityType: z.string(), entityId: z.string().optional(), outcome: z.enum(['success', 'denied']), changedFields: z.array(z.string()).optional(), createdAt: z.string() })), { security: [adminSecurity] });
 operation('/api/admin/outbox', 'get', 'Read up to 100 delivery statuses; excludes recipients and tokens; admin/super_admin', z.array(z.object({ _id: z.string(), template: z.string(), entityType: z.string(), entityId: z.string().optional(), status: z.string(), attempts: z.number(), nextAttemptAt: z.string(), errorCode: z.string().optional(), createdAt: z.string() })), { security: [adminSecurity] });
 operation('/api/admin/outbox/{id}/retry', 'post', 'Retry a failed outbox record; admin/super_admin', z.object({ status: z.literal('retry_queued') }), { parameters: [parameter('id')], security: [{ ...csrfSecurity, ...adminSecurity }] });
-const document = { openapi: '3.1.0', info: { title: 'HRPF M2 API', version: '0.2.0', description: 'Implemented backend foundations. Content reads and operational review/approval workflows are later milestones. Browser clients use the frontend same-origin /api rewrite and credentials. All mutating auth/admin requests require the exact configured Origin and X-CSRF-Token. Production cookies use Secure, HttpOnly, SameSite=Lax, Path=/, no Domain; development names omit __Host-.' }, paths, components: { schemas, securitySchemes: {
+const publicParameters = [
+  { name: 'locale', in: 'query', schema: { type: 'string', enum: ['en', 'ur'], default: 'en' } },
+  { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 1000, default: 1 } },
+  { name: 'limit', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 48, default: 12 } },
+  { name: 'q', in: 'query', schema: { type: 'string', maxLength: 80 } },
+  { name: 'category', in: 'query', schema: { type: 'string', enum: ['media-coverage', 'in-action'] } },
+];
+const publicContent = z.object({ title: z.string(), blocks: z.array(z.object({ type: z.enum(['paragraph', 'heading', 'list']), text: z.string().optional(), items: z.array(z.string()).optional() })) });
+operation('/api/settings/public', 'get', 'Read whitelisted public settings with field-level secret exclusion', z.object(Object.fromEntries(Object.entries(publicSettingSchemas).map(([key, schema]) => [key, schema.optional()]))));
+operation('/api/content/{key}', 'get', 'Read reviewed published content in the exact requested locale', publicContent.extend({ key: z.string(), locale: z.enum(['en', 'ur']), description: z.string().optional() }), { parameters: [{ name: 'key', in: 'path', required: true, schema: { type: 'string', pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$', maxLength: 100 } }, ...publicParameters] });
+operation('/api/blogs/{slug}', 'get', 'Read a reviewed published article; drafts and future releases return 404', publicContent.extend({ slug: z.string(), excerpt: z.string(), publishedAt: z.string() }), { parameters: [{ name: 'slug', in: 'path', required: true, schema: { type: 'string', pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$', maxLength: 100 } }, ...publicParameters] });
+const listSchemas = {
+  board: z.object({ name: z.string(), slug: z.string(), designation: z.string(), slotLabel: z.string().optional(), rank: z.number(), bio: z.string(), photo: z.string().nullable() }),
+  'blog-categories': z.object({ slug: z.string(), name: z.string() }),
+  blogs: z.object({ title: z.string(), slug: z.string(), excerpt: z.string(), publishedAt: z.string() }),
+  gallery: z.object({ id: z.string(), title: z.string(), file: z.string(), category: z.enum(['in-action', 'media-coverage']), alt: z.string(), caption: z.string(), treatment: z.enum(['ORIGINAL', 'AI_RESTORATION']), width: z.number().optional(), height: z.number().optional() }),
+  reports: z.object({ id: z.string(), title: z.string(), file: z.string(), slug: z.string(), year: z.number().optional(), summary: z.string(), pages: z.number().optional(), download: z.string() }),
+  certificates: z.object({ id: z.string(), title: z.string(), file: z.string(), issuer: z.string(), reference: z.string().optional(), issuedAt: z.string().optional(), validFrom: z.string().optional(), expiresAt: z.string().optional() }),
+};
+for (const [path, schema] of Object.entries(listSchemas)) {
+  operation(`/api/${path}`, 'get', 'Read explicitly projected published records; no provider URLs or private source fields', z.array(schema), { parameters: publicParameters });
+  if (['blogs', 'gallery', 'reports', 'certificates'].includes(path)) {
+    const op = paths[`/api/${path}`]!.get as { responses: Record<string, unknown> };
+    op.responses['200'] = { description: 'Bounded page of reviewed public records', content: { 'application/json': { schema: jsonSchema(z.object({ data: z.array(schema), meta: z.object({ page: z.number(), limit: z.number(), total: z.number(), pages: z.number() }) })) } } };
+  }
+}
+for (const path of ['/api/public-assets/{id}', '/api/reports/{id}/download']) {
+  operation(path, 'get', 'Recheck released entity and clean bound file before streaming; never expose restricted originals', z.unknown(), { parameters: [parameter('id')] });
+  const op = paths[path]!.get as { responses: Record<string, unknown> };
+  op.responses['200'] = { description: 'No-store reviewed file; PDF attachment or inline raster image. Report downloads increment after successful GET, never HEAD.', content: { 'application/octet-stream': { schema: { type: 'string', format: 'binary' } } } };
+}
+const kindParameter = { name: 'kind', in: 'path', required: true, schema: { type: 'string', enum: ['page', 'blog', 'board', 'gallery', 'report', 'certificate', 'setting'] } };
+operation('/api/admin/publication/{kind}', 'get', 'Read bounded publication review records with versions; requires entity permission', z.array(z.record(z.string(), z.unknown())), { parameters: [kindParameter, { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 1000, default: 1 } }], security: [adminSecurity] });
+operation('/api/admin/publication/{kind}/{id}', 'post', 'Publish or withdraw a reviewed record atomically; version, CSRF, current role and audited release attestation required', z.object({ status: z.enum(['published', 'withdrawn']), version: z.number() }), { body: 'PublicationInput', parameters: [kindParameter, parameter('id')], security: [{ ...csrfSecurity, ...adminSecurity }] });
+const document = { openapi: '3.1.0', info: { title: 'HRPF API', version: '0.4.0', description: 'Backend foundations, reviewed public content and atomic publication controls. Operational member/case review workflows remain later milestones. Public reads are no-store and withdrawals take effect immediately. Browser clients use the frontend same-origin /api rewrite and credentials. All mutating auth/admin requests require the exact configured Origin and X-CSRF-Token. Production cookies use Secure, HttpOnly, SameSite=Lax, Path=/, no Domain; development names omit __Host-.' }, paths, components: { schemas, securitySchemes: {
   accessCookie: { type: 'apiKey', in: 'cookie', name: '__Host-hrpf-access' }, refreshCookie: { type: 'apiKey', in: 'cookie', name: '__Host-hrpf-refresh' },
   csrfCookie: { type: 'apiKey', in: 'cookie', name: '__Host-hrpf-csrf' }, csrfHeader: { type: 'apiKey', in: 'header', name: 'X-CSRF-Token' },
   formTicketHeader: { type: 'apiKey', in: 'header', name: 'X-Form-Ticket' },

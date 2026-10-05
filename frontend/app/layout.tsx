@@ -24,11 +24,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
     default:
-      "Human Rights Protection Foundation | Protecting Dignity and Defending Rights",
-    template: "%s | Human Rights Protection Foundation",
+      "Human Rights Protection Foundation Pakistan | Protecting Dignity and Defending Rights",
+    template: "%s | Human Rights Protection Foundation Pakistan",
   },
   description:
-    "Human Rights Protection Foundation works to protect vulnerable communities, advance justice and promote human dignity through advocacy, education, research and legal support.",
+    "Human Rights Protection Foundation Pakistan works to protect vulnerable communities, advance justice and promote human dignity through advocacy, education, research and legal support.",
   keywords: [
     "human rights",
     "nonprofit",
@@ -44,9 +44,9 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    siteName: "Human Rights Protection Foundation",
+    siteName: "Human Rights Protection Foundation Pakistan",
     title:
-      "Human Rights Protection Foundation | Protecting Dignity and Defending Rights",
+      "Human Rights Protection Foundation Pakistan | Protecting Dignity and Defending Rights",
     description:
       "Protecting vulnerable communities and advancing justice through advocacy, education, research and legal support.",
     url: siteUrl,
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Human Rights Protection Foundation",
+    title: "Human Rights Protection Foundation Pakistan",
     description:
       "Protecting vulnerable communities and advancing justice through advocacy, education, research and legal support.",
   },
@@ -72,12 +72,11 @@ export const metadata: Metadata = {
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "NGO",
-  name: "Human Rights Protection Foundation",
+  name: "Human Rights Protection Foundation Pakistan",
   alternateName: "HRPF",
   url: siteUrl,
   description:
-    "Human Rights Protection Foundation works to protect vulnerable communities, advance justice and promote human dignity.",
-  foundingDate: "2015",
+    "Human Rights Protection Foundation Pakistan works to protect vulnerable communities, advance justice and promote human dignity.",
 };
 
 export default function RootLayout({

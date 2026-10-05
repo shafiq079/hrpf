@@ -66,8 +66,14 @@ release workflow for assets.
 - See M3_VERIFICATION.md and backend/seed/README.md. Provider upload/public release are not automatic.
 - M3 implementation 61eb156fd7cc300d078a7659c9d096fa881f9e00 is published in the updated M2/M3 PR #2. GitHub CI run 37380616908 passed both jobs, all backend/source integration checks and production audits. Subsequent handoff changes are documentation only.
 
+## M4 implemented
+- Public content projections, reviewed file delivery and atomic audited publish/withdraw controls are implemented.
+- Frontend routes consume published backend data; unsupported prototype content and fake receipts are removed from public routes.
+- Independent frontend/backend checks, 23 integration scenarios, eight seed recovery scenarios, independent frontend SSR checks, full-stack source SSR smoke and both production dependency audits pass.
+- See M4_VERIFICATION.md for scope, verification and browser access limitation. Source files are not automatically published.
+
 ## Next milestone boundary
-- Implement public content projections/cache invalidation and source-driven pages without changing the prototype theme.
+- Build the admin interface/content editing and wire actual frontend intake flows.
 - Require reviewed clean assets for public release; convert/review the 2024 report and redact public document copies.
 - Do not seed invented fees, members, statistics, validity or legal outcomes.
 - Keep payment verification, member approval and complaint operational workflows separate from the M2 receipt/storage foundations.
@@ -87,5 +93,5 @@ release workflow for assets.
 - M1 health unit tests use injected dependency status; owner-provided localhost readiness 200 confirmed Atlas/Redis in Codespaces at that time. M2 also runs actual isolated MongoDB transactions and Redis/BullMQ integration locally.
 - M1 final-head CI passed and PR #1 is merged. Its desktop/mobile checks and runtime dependency remediation remain applicable; frontend is unchanged in M2.
 - No organizational database was seeded, sensitive files uploaded externally or live email sent. M3 tests use audited metadata in disposable MongoDB; M2 uses synthetic operational fixtures.
-- Prototype forms and content still use local sample data; M2/M3 add backend foundations and draft preparation without UI wiring and are not a production release.
+- Public routes now consume reviewed API content. Intake forms are explicitly unavailable pending wiring; source imports remain draft-only. This is not a production activation.
 - main remains stable; implementation stays on development.

@@ -9,7 +9,7 @@ import express from 'express';
 import { unavailable } from '../src/http/errors.js';
 import { createApp } from '../src/app.js';
 import { parseEnv } from '../src/config/env.js';
-import { Asset, AuthSession, Complaint, ContactMessage, Counter, EmailOutbox, FormTicket, MembershipApplication, Setting, User, ensureIndexes, roles, type Role } from '../src/domain/models.js';
+import { Asset, AuditLog, BlogPost, BoardMember, ContentPage, GalleryItem, Report, AuthSession, Complaint, ContactMessage, Counter, EmailOutbox, FormTicket, MembershipApplication, Setting, User, ensureIndexes, roles, type Role } from '../src/domain/models.js';
 import { createRedisServices } from '../src/infrastructure/redis-services.js';
 import { digest, hashPassword } from '../src/security/crypto.js';
 import { createOutbox, startOutboxWorker, type Mail } from '../src/services/outbox.js';
@@ -241,4 +241,98 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     const uploads = createUploads(env, createForms(services, bot), provider, scanner);
     await uploads.prune(); assert.equal(await Asset.countDocuments(), 1); assert.ok(await Asset.findById(claimed.id));
   });
+  it('M4 public settings strip extra private fields and content requires review and publication', async () => {
+    const { publicSettingSchemas } = await import('../src/http/public-content.js');
+    const setting = await Setting.create({ key: 'contact', visibility: 'public', value: { address: 'Test address', postalCode: '50490', phone: '+923001234567', landline: '+92546123456', emails: ['test@example.org'], notificationEmails: ['private@example.org'], password: 'private-secret' } });
+    await Setting.create({ key: 'smtp', visibility: 'public', value: { password: 'private-secret' } });
+    assert.equal(publicSettingSchemas.contact.safeParse(setting.value).success, true);
+    const settings = await request(app).get('/api/settings/public').expect(200);
+    assert.deepEqual(Object.keys(settings.body.data), ['contact']);
+    assert.ok(!JSON.stringify(settings.body).includes('private'));
+    const page = await ContentPage.create({ key: 'mission', locale: 'en', title: 'Reviewed test mission', blocks: [{ type: 'paragraph', text: '<script>text, not markup</script>' }], provenance: ['restricted source filename'] });
+    await request(app).get('/api/content/mission').expect(404);
+    const auth = await login('editor');
+    const release = (version: number, action = 'publish') => auth.agent.post(`/api/admin/publication/page/${page.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send({ version, action, releaseReviewed: true });
+    await release(0).expect(200);
+    const content = await request(app).get('/api/content/mission').expect(200);
+    assert.equal(content.body.data.title, 'Reviewed test mission');
+    assert.ok(!JSON.stringify(content.body).includes('restricted source'));
+    await request(app).get('/api/content/mission?locale=ur').expect(404);
+    await release(0, 'withdraw').expect(409);
+    await release(1, 'withdraw').expect(200);
+    await request(app).get('/api/content/mission').expect(404);
+    assert.equal(await AuditLog.countDocuments({ action: { $in: ['publication.publish', 'publication.withdraw'] } }), 2);
+  });
+  it('M4 publication enforces role, CSRF and an explicit review attestation', async () => {
+    const board = await BoardMember.create({ name: 'Synthetic board member', slug: 'synthetic-board', designation: 'Chair', rank: 1, isActive: false });
+    const editor = await login('editor');
+    await editor.agent.get('/api/admin/publication/board').expect(403);
+    await editor.agent.post(`/api/admin/publication/board/${board.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', editor.csrf).send({ version: 0, action: 'publish', releaseReviewed: true }).expect(403);
+    const admin = await login('admin');
+    await admin.agent.post(`/api/admin/publication/board/${board.id}`).send({ version: 0, action: 'publish', releaseReviewed: true }).expect(403);
+    await admin.agent.post(`/api/admin/publication/board/${board.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', admin.csrf).send({ version: 0, action: 'publish' }).expect(400);
+    const pending = await admin.agent.get('/api/admin/publication/board').expect(200);
+    assert.equal(pending.body.data[0].id, board.id); assert.equal(pending.body.data[0].version, 0);
+    assert.equal((await request(app).get('/api/board').expect(200)).body.data.length, 0);
+  });
+  it('M4 concurrent publication uses optimistic versions and cannot expose a draft twice', async () => {
+    const page = await ContentPage.create({ key: 'vision', locale: 'en', title: 'Test vision', blocks: [{ type: 'paragraph', text: 'Synthetic source' }] });
+    const auth = await login('editor');
+    const responses = await Promise.all([1, 2].map(() => auth.agent.post(`/api/admin/publication/page/${page.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send({ version: 0, action: 'publish', releaseReviewed: true })));
+    assert.deepEqual(responses.map(r => r.status).sort(), [200, 409]);
+    assert.equal((await ContentPage.findById(page.id))!.__v, 1);
+    assert.equal(await AuditLog.countDocuments({ action: 'publication.publish' }), 1);
+  });
+  it('M4 reviewed gallery release joins clean bound files, filters before pagination and revokes URLs on withdrawal', async () => {
+    const auth = await login('editor');
+    const image = await GalleryItem.create({ category: 'in-action', title: { en: 'Synthetic image' }, alt: { en: 'Synthetic one-pixel test image' } });
+    const uploaded = await auth.agent.post('/api/admin/assets?purpose=content').set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).attach('file', png, 'sample.png').expect(201);
+    const file = uploaded.body.data.assetId;
+    await request(app).get(`/api/public-assets/${file}`).expect(404);
+    const release = (version: number, action = 'publish', assetId?: string) => auth.agent.post(`/api/admin/publication/gallery/${image.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send({ version, action, releaseReviewed: true, ...(assetId ? { assetId } : {}) });
+    await release(0, 'publish', file).expect(200);
+    const list = await request(app).get('/api/gallery?category=in-action&limit=1').expect(200);
+    assert.equal(list.body.meta.total, 1); assert.equal(list.body.data[0].file, `/api/public-assets/${file}`);
+    assert.ok(!JSON.stringify(list.body).includes('publicId')); assert.ok(!JSON.stringify(list.body).includes('sha256'));
+    assert.equal((await request(app).get('/api/gallery?category=media-coverage').expect(200)).body.meta.total, 0);
+    const response = await request(app).get(`/api/public-assets/${file}`).expect(200);
+    assert.match(response.headers['cache-control'] ?? '', /no-store/); assert.equal(response.headers['content-type'], 'image/png');
+    await release(1, 'withdraw').expect(200);
+    await request(app).get(`/api/public-assets/${file}`).expect(404);
+    assert.equal((await request(app).get('/api/gallery').expect(200)).body.meta.total, 0);
+    await release(2).expect(200); // Re-publishing the same bound file is supported.
+    await request(app).get(`/api/public-assets/${file}`).expect(200);
+  });
+  it('M4 publication rejects foreign uploads and complaint evidence atomically', async () => {
+    const auth = await login('editor'), other = await login('editor');
+    const image = await GalleryItem.create({ category: 'in-action', alt: { en: 'Test image' } });
+    const foreign = await other.agent.post('/api/admin/assets?purpose=content').set('Origin', 'http://localhost:3000').set('X-CSRF-Token', other.csrf).attach('file', png, 'foreign.png').expect(201);
+    const ticket = await form(), proof = await upload(ticket);
+    for (const assetId of [foreign.body.data.assetId, proof]) await auth.agent.post(`/api/admin/publication/gallery/${image.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send({ version: 0, action: 'publish', releaseReviewed: true, assetId }).expect(400);
+    assert.equal((await GalleryItem.findById(image.id))!.publishedAt, undefined);
+    assert.equal(await AuditLog.countDocuments({ action: 'publication.publish' }), 0);
+    await Asset.updateOne({ _id: proof }, { $set: { visibility: 'public', claimStatus: 'claimed', entityType: 'Complaint', entityId: new Types.ObjectId() } });
+    await request(app).get(`/api/public-assets/${proof}`).expect(404);
+  });
+  it('M4 only public report releases download; HEAD does not count and original stays restricted', async () => {
+    const auth = await login('editor');
+    const report = await Report.create({ title: { en: 'Synthetic report' }, slug: 'synthetic-report', year: 2025 });
+    const uploaded = await auth.agent.post('/api/admin/assets?purpose=content').set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).attach('file', pdf, 'public.pdf').expect(201);
+    await auth.agent.post(`/api/admin/publication/report/${report.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send({ version: 0, action: 'publish', releaseReviewed: true, assetId: uploaded.body.data.assetId }).expect(200);
+    const list = await request(app).get('/api/reports').expect(200);
+    assert.equal(list.body.meta.total, 1); assert.ok(!JSON.stringify(list.body).includes('restrictedOriginal'));
+    await request(app).head(`/api/reports/${report.id}/download`).expect(200);
+    assert.equal((await Report.findById(report.id))!.downloadCount, 0);
+    await request(app).get(`/api/reports/${report.id}/download`).expect(200);
+    assert.equal((await Report.findById(report.id))!.downloadCount, 1);
+  });
+  it('M4 blog queries are bounded, literal and hide scheduled or unreviewed content', async () => {
+    for (const [slug, status, reviewStatus, publishedAt] of [['published', 'published', 'approved', new Date(0)], ['draft', 'draft', 'pending', new Date(0)], ['future', 'published', 'approved', new Date(Date.now() + 86400000)]] as const) await BlogPost.create({ title: { en: slug === 'published' ? 'Literal .* title' : slug }, slug, status, reviewStatus, publishedAt, blocks: [{ type: 'paragraph', text: 'Synthetic article' }], sourceReferences: ['private-source'] });
+    const response = await request(app).get('/api/blogs?q=.*').expect(200);
+    assert.equal(response.body.meta.total, 1); assert.equal(response.body.data[0].slug, 'published');
+    await request(app).get('/api/blogs/draft').expect(404); await request(app).get('/api/blogs/future').expect(404);
+    assert.ok(!JSON.stringify((await request(app).get('/api/blogs/published').expect(200)).body).includes('private-source'));
+    for (const path of ['/api/blogs?limit=100', '/api/gallery?page=-1', '/api/blogs?locale=xx', '/api/blogs?unexpected=true', '/api/public-assets/nope']) await request(app).get(path).expect(400);
+  });
+
 });

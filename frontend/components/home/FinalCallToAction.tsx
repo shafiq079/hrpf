@@ -13,9 +13,8 @@ export default function FinalCallToAction() {
             <br className="hidden sm:block" /> Safety and Justice.
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-white/80 sm:text-base">
-            Join our global network of protectors. Whether you contribute time,
-            funds or information, your action creates a ripple of justice across
-            the world.
+            Contact HRPF Pakistan to learn about its work and ways to get
+            involved.
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
             <PrimaryButton
