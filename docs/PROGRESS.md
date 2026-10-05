@@ -17,15 +17,26 @@ Updated: 2026-10-05
 - Verified nested env files, dependencies and seed assets are ignored; env example is trackable.
 - GitHub PR CI passed for implementation commit f0cd57e2f8f4ad4327961de357f5ad75625a5846 (run 37311094157).
 
+## M1 follow-up — independent app operation
+- Owner reported invalid MONGODB_DB_NAME prevented Express listening; Next proxy returned 500.
+- Removed root package.json and shared app scripts; each app runs/checks independently.
+- Moved Redis Compose into backend/ and adjusted devcontainer paths/setup.
+- Split CI into separate frontend/backend checks; documented Vercel/Render root directories.
+- Added database-name whitespace/blank normalization and a regression check; invalid values remain redacted.
+- Follow-up checks passed independently: frontend lint/typecheck/build; backend typecheck, 10 tests and build.
+- Separate npm start processes verified direct and proxied liveness 200 and dependency-unavailable readiness 503.
+- Compose paths/workspace mount and CI YAML parsed; no root application runner remains.
+- Follow-up CI result pending push; Codespaces real-service and visual acceptance remain owner verification.
+
 ## In progress
 - M1 Codespaces acceptance: rebuild, Atlas/Redis readiness and desktop/mobile visual comparison.
 - Draft PR #1 from development to main includes M0 and M1; do not merge before acceptance and CI pass.
 
 ## Exact next step
 From the repository root: git fetch origin; git switch development; git pull --ff-only origin development.
-Rebuild the Codespaces container, then run npm run setup and npm run check.
-Configure MONGODB_URI privately in backend/.env or Codespaces secrets; keep MONGODB_DB_NAME=hrpf_dev and allow the Codespace outbound IP in Atlas.
-Run npm run dev. In another terminal, curl http://127.0.0.1:3000/api/health/live and /api/health/ready.
+Rebuild the Codespaces container. In backend/: npm ci; npm run setup; npm run check. In frontend/: npm ci; npm run check.
+Correct MONGODB_DB_NAME privately to hrpf_dev (inherited secrets override .env), and configure MONGODB_URI; keep MONGODB_DB_NAME=hrpf_dev and allow the Codespace outbound IP in Atlas.
+Start backend npm run dev from backend/. Start frontend npm run dev -- --hostname 0.0.0.0 from frontend/ in another terminal. Use a third terminal for localhost health checks.
 Confirm liveness 200; readiness becomes 200 when both Atlas and Redis are reachable. Check the original UI through private forwarded port 3000.
 Report command, connectivity and visual results; never send env contents or credentials.
 

@@ -27,3 +27,12 @@
 - Keep configuration error messages limited to variable names; redact driver errors and unexpected startup failures.
 - Forward only port 3000 automatically; keep Express and Redis internal. Atlas credentials stay in backend/.env or Codespaces secrets.
 - Defer business models/auth/uploads/queue and Redis-backed client limits to M2; M1 is infrastructure, not a production release.
+
+## 2026-10-05 — Independent app operation (owner clarification)
+- Owner requires independent frontend/ and backend/ commands and separate Vercel/Render hosting roots.
+- Remove root package.json and shared setup/dev runners. Keep only repository-level documentation and Git/Codespaces/CI configuration at root.
+- Each app owns npm run check; backend owns a non-overwriting env setup script and Redis Compose file.
+- Devcontainer installs the two packages; CI checks them in separate jobs.
+- Preserve the /api proxy: independent deployment still uses HTTP communication between services. INTERNAL_API_URL points to Render from Vercel.
+- Observed Codespaces backend startup failure: invalid MONGODB_DB_NAME. Trim surrounding whitespace and default blank values; reject unsafe names and keep values redacted. Owner must correct any invalid inherited secret.
+- Real Atlas/Redis readiness and UI acceptance remain pending; this follow-up does not advance to M2.

@@ -26,6 +26,7 @@ export function parseEnv(input: NodeJS.ProcessEnv) {
     ...input,
     FRONTEND_URL: input.FRONTEND_URL?.trim() || undefined,
     MONGODB_URI: input.MONGODB_URI?.trim() || undefined,
+    MONGODB_DB_NAME: input.MONGODB_DB_NAME?.trim() || undefined,
     CORS_ORIGINS: input.CORS_ORIGINS?.split(',').map(item => item.trim()).filter(Boolean) ?? [],
   });
   if (!result.success) {

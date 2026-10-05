@@ -4,8 +4,8 @@ services:
     init: true
     command: sleep infinity
     volumes:
-      # Paths resolve relative to the first Compose file: ../compose.yaml.
-      - .:/workspaces/hrpf:cached
+      # Paths resolve relative to the first Compose file: ../backend/compose.yaml.
+      - ..:/workspaces/hrpf:cached
     environment:
       REDIS_URL: redis://redis:6379
     depends_on:

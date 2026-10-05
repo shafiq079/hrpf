@@ -63,3 +63,10 @@ test('Codespaces allow-list includes only this Codespace frontend', () => {
   assert.ok(configured.allowedOrigins.includes('https://hrpf-demo-3000.app.github.dev'));
   assert.ok(!configured.allowedOrigins.includes('https://other-3000.app.github.dev'));
 });
+test('database names accept blank defaults and surrounding spaces, but reject invalid names safely', () => {
+  assert.equal(parseEnv({ MONGODB_DB_NAME: '  ' }).MONGODB_DB_NAME, 'hrpf_dev');
+  assert.equal(parseEnv({ MONGODB_DB_NAME: ' hrpf_dev ' }).MONGODB_DB_NAME, 'hrpf_dev');
+  assert.equal(parseEnv({ MONGODB_DB_NAME: 'hrpf_prod' }).MONGODB_DB_NAME, 'hrpf_prod');
+  assert.throws(() => parseEnv({ MONGODB_DB_NAME: 'private/invalid-name' }), error =>
+    error instanceof Error && error.message.includes('MONGODB_DB_NAME') && !error.message.includes('private/invalid-name'));
+});

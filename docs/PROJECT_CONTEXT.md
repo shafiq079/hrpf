@@ -15,7 +15,9 @@ Updated: 2026-10-05
 - Prototype baseline: d3848c940d8bf260c7b2657a66473df991777296.
 - Next.js 16.2.11 App Router, React/React DOM 19.2.4, Tailwind 4, TypeScript, npm/package-lock.json.
 - M1 moved the application to frontend/: app/, components/, data/, lib/, public/.
-- Root package.json orchestrates separate frontend and backend lockfiles; no npm workspaces.
+- Frontend and backend are independent packages with separate lockfiles; no root package.json, npm workspaces or shared app runner.
+- Hosting target: Vercel Root Directory frontend; Render Root Directory backend.
+- Root holds shared repository documentation, Git and Codespaces/CI configuration only.
 - 31 page files, including five dynamic page files; 13 local data modules.
 - Baseline had no backend, app API routes, admin panel, CI workflows or tests.
 - M1 adds Express 5/TypeScript, MongoDB/Redis connections, health endpoints and CI; business modules remain planned.
@@ -39,7 +41,7 @@ Updated: 2026-10-05
 - Implemented: Next beforeFiles rewrites /api/* to Express on port 5000.
 - INTERNAL_API_URL is an optional server-only upstream origin, default http://127.0.0.1:5000.
 - Frontend port 3000; backend port 5000; only 3000 is automatically forwarded.
-- Node 24 devcontainer uses Compose with Redis 8; Redis is not publicly forwarded.
+- Node 24 devcontainer uses backend/compose.yaml with Redis 8; Redis is not publicly forwarded.
 - Rebuilt workspace gets REDIS_URL=redis://redis:6379; host CLI alternative uses 127.0.0.1.
 - backend/.env is ignored; secret-free .env.example is tracked; inherited secrets override .env.
 - M1 security: Helmet, exact-origin CORS, bounded JSON, Zod configuration/query validation, redacted errors.
@@ -80,10 +82,13 @@ Updated: 2026-10-05
 - Native paid membership submission remains disabled until policy is configured.
 
 ## Working commands
-- npm run setup: install both lockfiles and initialize backend/.env without overwriting it.
-- npm run check: frontend lint/typecheck, backend typecheck/tests and both builds.
-- npm run dev: start both services; Ctrl+C stops their process groups.
-- CI uses the same setup/check sequence and requires no external-service credentials.
+- In backend/: npm ci; npm run setup (preserves existing .env); npm run check; npm run dev.
+- In frontend/: npm ci; npm run check; npm run dev -- --hostname 0.0.0.0.
+- Stop/restart each app independently. npm run build and npm start are local to each app.
+- CI has independent frontend/backend jobs; each runs npm ci and npm run check without service credentials.
+- MONGODB_DB_NAME is a name such as hrpf_dev, never a URI; blank uses default and whitespace is trimmed.
+- Inherited environment/Codespaces secrets take priority over backend/.env.
+- INTERNAL_API_URL on Vercel targets the Render HTTPS origin; FRONTEND_URL on Render targets the public frontend origin.
 
 ## Continuity
 - PROJECT_CONTEXT.md: architecture and authoritative current state.

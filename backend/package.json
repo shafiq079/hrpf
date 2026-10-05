@@ -11,7 +11,9 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
     "build": "tsc",
     "start": "node dist/server.js",
-    "test": "node --import tsx --test test/*.test.ts"
+    "test": "node --import tsx --test test/*.test.ts",
+    "check": "npm run typecheck && npm test && npm run build",
+    "setup": "node scripts/setup-env.mjs"
   },
   "dependencies": {
     "cors": "2.8.6",
