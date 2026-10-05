@@ -251,6 +251,9 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     assert.ok(!JSON.stringify(settings.body).includes('private'));
     const page = await ContentPage.create({ key: 'mission', locale: 'en', title: 'Reviewed test mission', blocks: [{ type: 'paragraph', text: '<script>text, not markup</script>' }], provenance: ['restricted source filename'] });
     await request(app).get('/api/content/mission').expect(404);
+    const admin = await login('admin');
+    const review = await admin.agent.get('/api/admin/publication/setting').expect(200);
+    assert.equal(review.body.data.length, 1); assert.ok(!JSON.stringify(review.body).includes('private-secret'));
     const auth = await login('editor');
     const release = (version: number, action = 'publish') => auth.agent.post(`/api/admin/publication/page/${page.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send({ version, action, releaseReviewed: true });
     await release(0).expect(200);
@@ -291,6 +294,8 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     await request(app).get(`/api/public-assets/${file}`).expect(404);
     const release = (version: number, action = 'publish', assetId?: string) => auth.agent.post(`/api/admin/publication/gallery/${image.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send({ version, action, releaseReviewed: true, ...(assetId ? { assetId } : {}) });
     await release(0, 'publish', file).expect(200);
+    const bound = (await GalleryItem.findById(image.id))!;
+    await GalleryItem.create({ category: 'in-action', title: { en: 'Mismatched entity must stay hidden' }, alt: { en: 'Test image' }, asset: bound.asset!, reviewStatus: 'approved', publishedAt: new Date() });
     const list = await request(app).get('/api/gallery?category=in-action&limit=1').expect(200);
     assert.equal(list.body.meta.total, 1); assert.equal(list.body.data[0].file, `/api/public-assets/${file}`);
     assert.ok(!JSON.stringify(list.body).includes('publicId')); assert.ok(!JSON.stringify(list.body).includes('sha256'));
@@ -308,7 +313,9 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     const image = await GalleryItem.create({ category: 'in-action', alt: { en: 'Test image' } });
     const foreign = await other.agent.post('/api/admin/assets?purpose=content').set('Origin', 'http://localhost:3000').set('X-CSRF-Token', other.csrf).attach('file', png, 'foreign.png').expect(201);
     const ticket = await form(), proof = await upload(ticket);
-    for (const assetId of [foreign.body.data.assetId, proof]) await auth.agent.post(`/api/admin/publication/gallery/${image.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send({ version: 0, action: 'publish', releaseReviewed: true, assetId }).expect(400);
+    const own = await auth.agent.post('/api/admin/assets?purpose=content').set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).attach('file', png, 'unrevocable.png').expect(201);
+    await Asset.updateOne({ _id: own.body.data.assetId }, { $set: { deliveryType: 'upload' } });
+    for (const assetId of [foreign.body.data.assetId, proof, own.body.data.assetId]) await auth.agent.post(`/api/admin/publication/gallery/${image.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send({ version: 0, action: 'publish', releaseReviewed: true, assetId }).expect(400);
     assert.equal((await GalleryItem.findById(image.id))!.publishedAt, undefined);
     assert.equal(await AuditLog.countDocuments({ action: 'publication.publish' }), 0);
     await Asset.updateOne({ _id: proof }, { $set: { visibility: 'public', claimStatus: 'claimed', entityType: 'Complaint', entityId: new Types.ObjectId() } });

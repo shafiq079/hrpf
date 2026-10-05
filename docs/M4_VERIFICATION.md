@@ -41,3 +41,13 @@ the 2024 DOCX still requires a reviewed PDF conversion. Sensitive document/image
 redaction, chairman-photo cleanup and source-specific alt text remain release work.
 The admin interface, form wiring, operational review/approval workflows, Urdu
 translations and production provider/hosting preflight remain later steps.
+
+## Publication history
+
+M4 implementation fa56aceb455e23a11685538650475e54dc7828b0 is published in
+[PR #3](https://github.com/shafiq079/hrpf/pull/3). GitHub CI run 37385928032
+passed both independent jobs, including the new frontend SSR suite, all backend
+integration/source checks and production audits. Follow-up hardening restricts
+review lists to public-setting keys and enforces authenticated provider delivery;
+source pillars retain the existing animated focus-area card grid. Final-head
+checks are verified before handoff.

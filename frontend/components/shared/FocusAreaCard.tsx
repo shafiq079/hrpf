@@ -1,7 +1,7 @@
 import type { FocusArea } from "@/data/focusAreas";
 
 interface FocusAreaCardProps {
-  area: FocusArea;
+  area: Pick<FocusArea, "title" | "description" | "icon">;
 }
 
 /** Compact card presenting a single human-rights focus area. */

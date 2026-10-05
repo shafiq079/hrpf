@@ -24,8 +24,8 @@ export function publicationRouter(auth: ReturnType<typeof createAuth>) {
     const query = validate(z.object({ page: z.coerce.number().int().min(1).max(1000).default(1) }).strict(), req.query), spec = kinds[kind];
     if (!can((res.locals.principal as Principal).role, spec.permission as Permission)) throw new ApiError(403, 'FORBIDDEN', 'You do not have permission for this action.');
     const model = spec.model as mongoose.Model<any>;
-    const rows = await model.find().sort({ _id: 1 }).skip((query.page - 1) * 20).limit(20).select('_id __v key locale name title blocks designation rank bio alt caption category summary issuer reference issuedAt validFrom expiresAt reviewStatus releaseReview publishedAt isActive status visibility value provenance sourceReferences').lean();
-    res.json({ data: rows.map(row => { const { _id, __v, ...fields } = row; return { id: String(_id), version: __v, ...fields }; }), meta: { page: query.page, limit: 20 } });
+    const rows = await model.find(kind === 'setting' ? { key: { $in: Object.keys(publicSettingSchemas) } } : {}).sort({ _id: 1 }).skip((query.page - 1) * 20).limit(20).select('_id __v key locale name title blocks designation rank bio alt caption category summary issuer reference issuedAt validFrom expiresAt reviewStatus releaseReview publishedAt isActive status visibility value provenance sourceReferences').lean();
+    res.json({ data: rows.map(row => { const { _id, __v, ...fields } = row; if (kind === 'setting') { const parsed = publicSettingSchemas[row.key as keyof typeof publicSettingSchemas]?.safeParse(row.value); fields.value = parsed?.success ? parsed.data : null; } return { id: String(_id), version: __v, ...fields }; }), meta: { page: query.page, limit: 20 } });
   });
   router.post('/:kind/:id', auth.csrf, async (req, res) => {
     const kind = validate(z.enum(['page', 'blog', 'board', 'gallery', 'report', 'certificate', 'setting']), req.params.kind);
@@ -60,7 +60,7 @@ export function publicationRouter(auth: ReturnType<typeof createAuth>) {
             const fileId = input.assetId ?? row[spec.field]?.assetId;
             if (!fileId && kind !== 'board') throw new ApiError(400, 'REVIEW_REQUIRED', 'Upload and review a public release file first.');
             if (fileId) {
-              const asset = await Asset.findOne({ _id: fileId, scanStatus: 'clean', purpose: kind === 'certificate' ? 'certificate' : 'content', $or: [{ claimStatus: 'staged', ownerId: principal.id, stagingExpiresAt: { $gt: new Date() } }, { claimStatus: 'claimed', entityType: spec.entity, entityId: row._id }] }).session(tx);
+              const asset = await Asset.findOne({ _id: fileId, deliveryType: 'authenticated', scanStatus: 'clean', purpose: kind === 'certificate' ? 'certificate' : 'content', $or: [{ claimStatus: 'staged', ownerId: principal.id, stagingExpiresAt: { $gt: new Date() } }, { claimStatus: 'claimed', entityType: spec.entity, entityId: row._id }] }).session(tx);
               if (!asset || (kind === 'report' && asset.format !== 'pdf') || (['board', 'gallery'].includes(kind) && !['jpg', 'jpeg', 'png', 'webp'].includes(asset.format))) throw new ApiError(400, 'INVALID_ASSET', 'Use your own clean staged file or the file already bound to this record.');
               await Asset.updateMany({ entityType: spec.entity, entityId: row._id, _id: { $ne: asset._id } }, { $set: { visibility: 'restricted' } }, { session: tx });
               asset.visibility = 'public'; asset.claimStatus = 'claimed'; asset.entityType = spec.entity; asset.entityId = row._id; asset.set('stagingExpiresAt', undefined);

@@ -26,3 +26,8 @@ are no longer exposed. Membership uses the supplied Google Form until policy is
 confirmed. Public source documents/photos are not automatically released; review,
 redaction, upload and publication remain explicit operator steps. No organization
 credentials/data/provider configuration were changed.
+
+M4 PR: https://github.com/shafiq079/hrpf/pull/3. Initial implementation
+fa56aceb455e23a11685538650475e54dc7828b0 passed GitHub CI run 37385928032
+(both jobs). Follow-up release hardening/card reuse is tested and published in
+the same PR; check its current head before continuing. Main is unchanged by M4.

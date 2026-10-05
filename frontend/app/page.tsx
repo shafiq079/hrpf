@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PillarCards from "@/components/content/PillarCards";
 import HeroSection from "@/components/home/HeroSection";
 import FinalCallToAction from "@/components/home/FinalCallToAction";
 import Container from "@/components/shared/Container";
@@ -58,9 +59,13 @@ export default async function Home() {
       </section>
       <section className="bg-soft-gray py-20 lg:py-28">
         <Container>
-          <SectionHeading eyebrow="What We Do" title="Our Thematic Pillars" />
+          <SectionHeading
+            eyebrow="What We Do"
+            title="Our Thematic Pillars"
+            align="center"
+          />
           {work.status === "ok" ? (
-            <Blocks blocks={work.data.blocks} />
+            <PillarCards blocks={work.data.blocks} limit={6} />
           ) : (
             <ContentState status={work.status} />
           )}
