@@ -32,7 +32,9 @@ organization data.
 - `npm audit --omit=dev --audit-level=high`: zero backend runtime findings.
 - Security-key setup checked in an isolated temporary directory: blank keys filled,
   existing settings preserved, rerun idempotent, no values printed.
+- Built API smoke passed with actual Mongo/Redis: automatic index preparation, liveness 200, readiness 200 and CSRF issuance 200.
 - Frontend tree unchanged; M1 browser/design acceptance remains applicable.
+- GitHub implementation CI run 37343608697 passed both independent jobs, including frontend check/audit and backend check/integration/audit.
 
 ## Verification boundaries
 
@@ -72,6 +74,8 @@ review is required for this backend-only milestone.
 
 ## Git delivery
 
-Publish with conventional commit `feat: implement M2 backend foundations` and a
-PR from `development` to `main`. Record the final commit, PR and remote CI result
-below after publishing. M1 merge authorization does not automatically merge M2.
+Published implementation: `160c81561080d1cac235701cc0229dcf16aa7e14`,
+`feat: implement M2 backend foundations`. PR: https://github.com/shafiq079/hrpf/pull/2
+from `development` to `main`. CI: https://github.com/shafiq079/hrpf/actions/runs/37343608697
+— frontend and backend passed. Subsequent handoff edits are documentation only.
+M1 merge authorization does not automatically merge M2.

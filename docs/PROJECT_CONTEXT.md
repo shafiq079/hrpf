@@ -120,5 +120,6 @@ Updated: 2026-10-05
 - Production backend audit: zero findings. Frontend files are unchanged; prior M1 acceptance remains applicable.
 - External Cloudinary, ClamAV, Turnstile, SMTP and production proxy-chain checks remain pending private configuration; fixtures exercise failure gates and services without sending external messages.
 - No organization records imported, sensitive files uploaded externally, or live email sent. Prototype UI forms still simulate submissions.
-- Publishing M2 on development with a PR to main; merge authorization from the owner was specific to M1.
+- M2 implementation 160c81561080d1cac235701cc0229dcf16aa7e14 is published on development in PR #2 to main. GitHub CI run 37343608697 passed frontend/backend jobs, real integration and production audits. Merge authorization from the owner was specific to M1.
+- Built API smoke verified automatic index preparation, live/ready 200 and CSRF 200. Subsequent handoff edits are documentation only.
 - Next work: source/seed preparation in the approved plan, followed by public content and form/admin UI wiring. Do not claim that M2 enables the existing frontend forms.

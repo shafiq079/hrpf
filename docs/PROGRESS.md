@@ -45,10 +45,11 @@ Updated: 2026-10-05
 - Added separate BullMQ/Nodemailer worker, redacted delivery diagnostics and authorized failed-mail retry.
 - Added generated OpenAPI contract and backend setup documentation.
 - Local checks pass: 18 health/security tests, 16 MongoDB replica-set/Redis integration tests, typechecks, build, contract consistency and zero production audit findings.
-- Remote final-head CI/PR publication is the last M2 delivery step; record the results in M2_VERIFICATION.md.
+- M2 implementation 160c81561080d1cac235701cc0229dcf16aa7e14 is published in PR #2 to main. GitHub CI run 37343608697 passed both independent jobs, including real backend integration and both production audits.
+- Built API smoke passed: automatic index preparation, liveness/readiness and CSRF issuance all succeeded.
 
 ## Exact next step
-Publish the verified M2 changes on development and open its PR to main. After M2 delivery, continue the approved source/seed preparation work; UI data migration and public/admin workflows remain later milestones.
+M2 delivery is complete on development with PR #2 open and implementation CI passed. Continue the approved source/seed preparation work; UI data migration and public/admin workflows remain later milestones.
 
 ## Next milestone boundary
 - Use the audited sources and stable checksums/seed keys; preserve administrator edits.
