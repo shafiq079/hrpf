@@ -34,14 +34,14 @@ Updated: 2026-10-05
 - Backend startup validation is no longer blocking these requests. Persistence of the corrected database-name configuration after restart is not yet confirmed.
 - Initial frontend audit confirmed 11 findings. Updated Next.js/matching ESLint config to 16.3.8 and applied compatible transitive fixes. Production audit now has zero findings; full audit retains five dev-only entries from one unpatched braces advisory, documented in M1_VERIFICATION.md.
 
-## In progress
+## Current state
 - M1 acceptance complete locally: targeted dependency fixes, fresh builds, 10 backend tests and delegated desktop/mobile browser review passed.
-- Final-head CI and authorized PR #1 merge are the remaining release actions.
+- Final-head CI passed for 32e473c481f3f1816aa66873d634669d2ce1a412 (run 37323882076).
+- PR #1 merged into main at 68865eff5fff6225eb4b97fbaf06662d5d5a8095; development fast-forwarded to that merge before this documentation handoff.
 - PR #1 from development to main includes M0/M1; owner explicitly authorized merging after assistant review. No further owner signoff is required.
 
 ## Exact next step
-Wait for final-head CI and merge PR #1 as explicitly authorized by the owner.
-Keep working on development after merge; next implementation milestone is M2 backend core.
+M1 is merged and complete. Begin M2 backend core on development: models/indexes, role permissions, cookie authentication and CSRF, then the remaining secure infrastructure in the approved plan.
 See M1_VERIFICATION.md for checks, browser coverage and the remaining dev-tool advisory.
 
 ## Next milestone
@@ -60,7 +60,7 @@ See M1_VERIFICATION.md for checks, browser coverage and the remaining dev-tool a
 
 ## Verification boundary
 - Automated tests use injected dependency status; owner-provided localhost readiness 200 confirms real Atlas/Redis connectivity in Codespaces at the verification time.
-- Earlier CI passed; final acceptance changes await final-head CI before authorized merge. Desktop/mobile checks and runtime dependency remediation passed; remaining dev-tool advisory is documented. Later documentation-only commits do not change application code.
+- Final-head CI passed and PR #1 is merged. Desktop/mobile checks and runtime dependency remediation passed; remaining dev-tool advisory is documented. Later documentation-only commits do not change application code.
 - No organization data was seeded, sensitive files uploaded or email sent.
 - Prototype forms and content still use local sample data; M1 is not a production release.
 - main remains stable; implementation stays on development.
