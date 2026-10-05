@@ -43,3 +43,28 @@
 - Add a production dependency audit to frontend CI. Keep the unpatched dev-only braces dependency documented rather than replacing current Next lint rules with an incompatible Next 14 configuration.
 - Browser review found closed-drawer horizontal overflow on mobile. Unmount the drawer when closed and render the open drawer via a body portal to avoid the sticky-header containing block; retain its styling. Full focus trapping remains a later navigation accessibility improvement.
 - M1 covers independently running packages/infrastructure only; prototype forms and demo content remain scheduled for later milestones.
+
+## 2026-10-05 — M2 backend foundations
+- Continue M2 on development at the owner's instruction; keep independent packages and the M1 design unchanged.
+- Use native Node scrypt (N=131072, r=8, p=1) for administrator passwords, JOSE HS256 tokens with distinct keys, and MongoDB rotating session families; no tokens in frontend localStorage.
+- Bind signed double-submit CSRF to the refresh session, require exact Origin on auth/admin mutations, and consult active/role/authVersion on every authorized request.
+- Serialize super-admin governance writes in a Mongo transaction; optimistic versions prevent overwriting stale edits.
+- Keep Mongo authoritative for tickets and submissions. Redis mirrors recover from restarts; unavailable limits fail closed. Trust only explicitly verified proxy CIDRs.
+- Scan before provider storage; reject unavailable/infected scans, mismatched file signatures/extensions/MIME and excessive file quotas. Stage all M2 assets as authenticated; public copies require later release review.
+- Use entity-bound AES-256-GCM for CNIC and reset payloads, with a separate keyed CNIC lookup hash. Key backup/rotation must be addressed before real production identity data.
+- Persist submissions, clean asset claims, counters and email outbox entries in one replica-set transaction. Same-ticket UUID retries are idempotent within the ticket lifetime; receipt does not imply email delivery, payment verification or case approval.
+- Membership policy remains unset/disabled; never invent organization fees. Snapshot fee and validity from an enabled validated policy.
+- Queue only outbox IDs. Use Mongo leases, bounded retry and stable Message-IDs; SMTP cannot guarantee exactly-once delivery after ambiguous provider acceptance.
+- BullMQ 6's native ESM path requires constructed Redis clients; use existing node-redis rather than implicit optional ioredis loading.
+- Ensure additive indexes at connection preparation; readiness/business gates stay unavailable until preparation succeeds. Never drop production indexes automatically.
+- Add real disposable MongoDB replica-set/Redis tests to CI. External providers are tested with injected adapters; private live preflight remains a production requirement.
+- Publish a separate M2 PR; the earlier explicit merge instruction applied to M1.
+
+## 2026-10-05 — M3 source/seed preparation
+- Continue the approved source preparation step at the owner's instruction. Reuse the open development-to-main PR #2 because branches remain main/development; describe its final M2/M3 scope.
+- Pin exact allowlisted source paths and SHA-256 checksums; never scan the information directory or ingest the credentials document. Keep originals/prepared binaries ignored.
+- Seed only unpublished/inactive/private metadata. Keep neutral gallery captions, AI flags and source CSV duplicates reviewable. Store all five certificate scan references as four distinct documents with historical dates.
+- Preserve administrator edits and deletions through create-only imports. Commit each draft, checkpoint and audit entry in one transaction; report source drift/collisions without a force mode. Database preview remains read-only.
+- Use native session transaction retries for create-only seed imports; no document instances are retained across retries. This avoids Mongoose document-state rollback errors on strict nested schemas while preserving atomicity.
+- Prepare local asset candidates atomically, with checksums and no provider requests. Keep 2024 DOCX conversion, public report redaction, gallery consent/privacy checks and the chairman crop explicit release tasks.
+- Source current individual content first; use the profile only for fallback values, curated aims and thematic pillars. Import no profile-only people, invented membership policy, operational records or notifications.

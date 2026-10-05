@@ -69,6 +69,8 @@ Full keyboard focus trapping/restoration remains a later navigation improvement.
 
 ## Merge gate
 
-Local verification and delegated visual review are complete. Merge PR #1 into
-main only after its final-head GitHub CI succeeds. Owner merge authorization is
-already present. Continue subsequent implementation on development.
+Local verification and delegated visual review are complete. Final-head GitHub
+CI passed for 32e473c481f3f1816aa66873d634669d2ce1a412 (run 37323882076).
+PR #1 merged into main at 68865eff5fff6225eb4b97fbaf06662d5d5a8095 on 2026-10-05,
+using the owner's explicit authorization. Development was fast-forwarded to that
+merge. Continue subsequent implementation on development.

@@ -20,7 +20,7 @@ Updated: 2026-10-05
 - Root holds shared repository documentation, Git and Codespaces/CI configuration only.
 - 31 page files, including five dynamic page files; 13 local data modules.
 - Baseline had no backend, app API routes, admin panel, CI workflows or tests.
-- M1 adds Express 5/TypeScript, MongoDB/Redis connections, health endpoints and CI; business modules remain planned.
+- M1 adds independent app infrastructure. M2 implements the backend foundations described below; public/admin UI wiring remains planned.
 - Source audit completed. Assistant baseline lint, typecheck and build passed.
 - All 182 application/content/asset files were byte-identical immediately after the folder move. M1 acceptance subsequently fixes the mobile drawer in one component: unmount when closed and use a body portal when open to remove overflow/focusability and the sticky-header height constraint; theme and content remain unchanged.
 - Owner Codespaces localhost live/ready checks returned 200 on 2026-10-05: frontend proxy, Express and real MongoDB/Redis connectivity verified.
@@ -42,7 +42,7 @@ Updated: 2026-10-05
 - backend/: Express API, MongoDB models, upload services, email worker and seed scripts.
 - MongoDB Atlas is authoritative; separate hrpf_dev and hrpf_prod databases.
 - Cloudinary stores public assets and authenticated sensitive assets under separate environment namespaces.
-- Planned Redis uses: public cache, rate limiting, form tickets and BullMQ jobs.
+- Implemented Redis uses: shared client/account limits, public read-through cache helpers, purpose-bound form-ticket mirrors and BullMQ outbox jobs.
 - Implemented: Next beforeFiles rewrites /api/* to Express on port 5000.
 - INTERNAL_API_URL is an optional server-only upstream origin, default http://127.0.0.1:5000.
 - Frontend port 3000; backend port 5000; only 3000 is automatically forwarded.
@@ -50,9 +50,9 @@ Updated: 2026-10-05
 - Rebuilt workspace gets REDIS_URL=redis://redis:6379; host CLI alternative uses 127.0.0.1.
 - backend/.env is ignored; secret-free .env.example is tracked; inherited secrets override .env.
 - M1 security: Helmet, exact-origin CORS, bounded JSON, Zod configuration/query validation, redacted errors.
-- M1 rate limiter is process-local; Redis rate limits and trusted proxy handling must precede forms in M2.
-- Planned auth: httpOnly JWT access/rotating refresh cookies, backend roles and CSRF checks.
-- Planned MongoDB email outbox makes submissions durable independently of email delivery.
+- M2 replaces process-local limits with atomic Redis limits. TRUST_PROXY_CIDRS defaults empty; configure only a verified deployment chain before production.
+- Implemented auth: HttpOnly JWT access/rotating refresh cookies, Mongo session families, live role/active/version checks, signed session-bound CSRF, reset-token consumption and immediate session revocation.
+- Implemented MongoDB transactional outbox plus a separate BullMQ/Nodemailer worker. SMTP acceptance followed by a crash can duplicate mail; exactly-once delivery is not promised.
 
 ## Planned public routes and endpoints
 - Navigation: Home, About, What We Do, Gallery, Blogs, Get Involved, Contact.
@@ -63,17 +63,22 @@ Updated: 2026-10-05
 - Main submissions: POST /api/complaints, /api/membership-applications and /api/contact-messages.
 - Form tickets/uploads: /api/forms/session and /api/form-uploads.
 - Auth: /api/auth/*; private operational endpoints: /api/admin/*.
-- Implemented only: GET /api/health/live (200) and GET /api/health/ready (200 only if both MongoDB and Redis ping).
-- Unavailable dependencies return 503; business/auth/submission endpoints above remain planned.
-- Errors: {error:{code,message,requestId}}; success: {data:...}.
+- Implemented M2: health, /api/auth/*, form session/uploads, complaints, membership applications and contact submissions; admin users, staged/restricted assets, audit/outbox reads and outbox retry. backend/openapi.json lists the exact implemented contracts.
+- Health readiness also requires additive index preparation. Production business routes fail closed before Mongo/index/Redis availability. Public content reads and operational review/approval/additional-information endpoints remain planned.
+- Errors: {error:{code,message,fields?,requestId}}; success: {data:...}.
 
-## Planned collections
+## Implemented collection foundations
 - User, Member, MembershipApplication, BoardMember, Complaint.
 - BlogPost, BlogCategory, GalleryItem, Report, Certificate.
 - ContactMessage, Setting, AuditLog.
-- Supporting: ContentPage, Asset, AuthSession, Counter, EmailOutbox.
+- Supporting: ContentPage, Asset, AuthSession, Counter, EmailOutbox and FormTicket.
+- Strict Mongoose schemas, unique/partial/TTL/read indexes; additive preparation never drops indexes.
+- Complaint identity uses entity-bound AES-256-GCM and a separate keyed CNIC lookup hash.
+- Form submission atomically consumes a ticket, claims clean owned files, allocates a reference and stores applicant/admin outbox records. Same-ticket/key retries do not duplicate records.
+- Membership stays disabled without validated enabled policy; applications snapshot fee and validity, remain payment-unverified, and do not create members.
+- Files require a clean ClamAV scan before Cloudinary storage; M2 stages authenticated assets only. Reviewed public publication is a later content workflow.
 - Sensitive attachments require backend authorization on each delivery request.
-- Status changes and membership approval require concurrency controls.
+- User updates use optimistic versions plus a transaction governance lock to preserve the last active super administrator. Operational case statuses and membership approval concurrency follow in later workflows.
 
 ## Source and import decisions
 - Board: seven people from Board of Directors.docx, ordered by the brief.
@@ -83,14 +88,21 @@ Updated: 2026-10-05
 - Three progress reports; convert 2024 DOCX to PDF and review public copies.
 - Five certificate scans represent four distinct documents; show historical validity dates.
 - Seed scripts: dry-run, stable keys, checksums, resume and preservation of admin edits.
+- M3 implements those scripts in backend/: seed:check, seed:plan, seed:prepare and seed:import (offline by default; --database reads, --apply inserts missing drafts).
+- Tracked source manifest contains 231 unpublished records and 227 exact references. SourceImport checkpoints retain checksums/review tasks and commit atomically with drafts/audit; reruns never overwrite edits or recreate deletions.
+- Local preparation creates 216 pending candidates without provider upload. Gallery drafts allow missing assets; document validation prevents publication without a reviewed asset or while a duplicate link remains.
+- Four private settings, ten English pages and three attributed draft report overviews are prepared. Membership policy stays unset. The 2024 PDF conversion/full constitutional proofreading/public release remain pending.
 - No invented members, statistics, partnerships, fees, certificate validity or legal outcomes.
 - Native paid membership submission remains disabled until policy is configured.
 
 ## Working commands
-- In backend/: npm ci; npm run setup (preserves existing .env); npm run check; npm run dev.
+- In backend/: npm ci; npm run setup (preserves .env); npm run setup:security (generates only missing keys); npm run check; npm run dev.
+- First administrator: configure seed variables privately; npm run admin:create on an empty User collection.
+- Separate email process: npm run worker:dev or built npm run worker with configured SMTP.
+- Integration checks: npm run test:integration, using isolated real MongoDB replica-set and disposable Redis; never target organizational Redis.
 - In frontend/: npm ci; npm run check; npm run dev -- --hostname 0.0.0.0.
 - Stop/restart each app independently. npm run build and npm start are local to each app.
-- CI has independent frontend/backend jobs; each runs npm ci and npm run check without service credentials.
+- CI has independent frontend/backend jobs; backend additionally runs MongoDB/Redis integration and production audit without organization credentials.
 - MONGODB_DB_NAME is a name such as hrpf_dev, never a URI; blank uses default and whitespace is trimmed.
 - Inherited environment/Codespaces secrets take priority over backend/.env.
 - INTERNAL_API_URL on Vercel targets the Render HTTPS origin; FRONTEND_URL on Render targets the public frontend origin.
@@ -100,3 +112,25 @@ Updated: 2026-10-05
 - DECISIONS.md: dated decisions and reasons.
 - PROGRESS.md: completed work, current work, next action and blockers.
 - Every working session ends with a HANDOFF and complete changed docs text.
+
+## M1 handoff
+- PR #1 merged into main on 2026-10-05 at 68865eff5fff6225eb4b97fbaf06662d5d5a8095.
+- Final reviewed implementation: 32e473c481f3f1816aa66873d634669d2ce1a412; GitHub run 37323882076 passed.
+- Development was fast-forwarded to the main merge; handoff docs continue on development.
+- M1 is complete. M2 backend foundations are implemented on development; see the M2 handoff below.
+
+## M2 handoff — 2026-10-05
+- Local backend checks passed: 18 health/security tests, 16 real MongoDB/Redis integration tests, both typechecks, build and OpenAPI drift check.
+- Production backend audit: zero findings. Frontend files are unchanged; prior M1 acceptance remains applicable.
+- External Cloudinary, ClamAV, Turnstile, SMTP and production proxy-chain checks remain pending private configuration; fixtures exercise failure gates and services without sending external messages.
+- No organization records imported, sensitive files uploaded externally, or live email sent. Prototype UI forms still simulate submissions.
+- M2 implementation 160c81561080d1cac235701cc0229dcf16aa7e14 is published on development in PR #2 to main. GitHub CI run 37343608697 passed frontend/backend jobs, real integration and production audits. Merge authorization from the owner was specific to M1.
+- Built API smoke verified automatic index preparation, live/ready 200 and CSRF 200. Subsequent handoff edits are documentation only.
+- Next work: source/seed preparation in the approved plan, followed by public content and form/admin UI wiring. Do not claim that M2 enables the existing frontend forms.
+
+## M3 handoff — 2026-10-05
+- Source/seed preparation is implemented and locally verified; see M3_VERIFICATION.md and backend/seed/README.md.
+- Checks passed: 22 unit/source tests, eight real seed integration scenarios, all 16 M2 integration checks, typechecks/build/OpenAPI and zero production audit findings.
+- Source ZIP verification, decoding of all 200 gallery images and built CLI import/rerun/dry-run smoke passed. No organizational Atlas records, external uploads or live email were created.
+- Existing PR #2 remains open from development to main and includes M2/M3. Frontend tree is unchanged; public source-driven pages/APIs and reviewed asset release follow next.
+- Published M3 implementation: 61eb156fd7cc300d078a7659c9d096fa881f9e00. GitHub CI run 37380616908 passed both independent jobs, backend/seed integration and production audits. PR #2 now describes M2/M3; later handoff edits are documentation only.

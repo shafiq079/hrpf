@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
 import { createApp } from './app.js';
 import { ConfigurationError, parseEnv } from './config/env.js';
+import { createRedisServices } from './infrastructure/redis-services.js';
 import { createDependencies } from './infrastructure/dependencies.js';
 
 // src/server.ts and dist/server.js both resolve to backend/.env.
@@ -9,7 +10,7 @@ dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet:
 async function main() {
   const env = parseEnv(process.env);
   const dependencies = createDependencies(env);
-  const server = createApp(env, dependencies.readiness).listen(env.PORT, '0.0.0.0', () => {
+  const server = createApp(env, dependencies.readiness, { ready: dependencies.available, redis: createRedisServices(dependencies.redis, env.CLOUDINARY_NAMESPACE) }).listen(env.PORT, '0.0.0.0', () => {
     console.log(`HRPF API listening on port ${env.PORT}.`);
     dependencies.start();
   });

@@ -34,33 +34,58 @@ Updated: 2026-10-05
 - Backend startup validation is no longer blocking these requests. Persistence of the corrected database-name configuration after restart is not yet confirmed.
 - Initial frontend audit confirmed 11 findings. Updated Next.js/matching ESLint config to 16.3.8 and applied compatible transitive fixes. Production audit now has zero findings; full audit retains five dev-only entries from one unpatched braces advisory, documented in M1_VERIFICATION.md.
 
-## In progress
-- M1 acceptance complete locally: targeted dependency fixes, fresh builds, 10 backend tests and delegated desktop/mobile browser review passed.
-- Final-head CI and authorized PR #1 merge are the remaining release actions.
-- PR #1 from development to main includes M0/M1; owner explicitly authorized merging after assistant review. No further owner signoff is required.
+## Current state
+- M1 is complete and merged into main at 68865eff5fff6225eb4b97fbaf06662d5d5a8095.
+- M2 backend foundations are implemented on development; frontend and backend remain independent.
+- Added all collection schemas/indexes, cookie authentication and refresh-family replay protection, CSRF and role enforcement.
+- Added first-admin setup and versioned user administration with concurrent last-super-admin protection.
+- Added atomic Redis limits, public cache helpers and recoverable purpose-bound form tickets.
+- Added bounded scanned authenticated upload staging, ticket quotas/ownership, restricted delivery and unused-file cleanup.
+- Added transactional complaint/membership/contact persistence, counters, identity encryption, idempotency and durable outbox records.
+- Added separate BullMQ/Nodemailer worker, redacted delivery diagnostics and authorized failed-mail retry.
+- Added generated OpenAPI contract and backend setup documentation.
+- Local checks pass: 18 health/security tests, 16 MongoDB replica-set/Redis integration tests, typechecks, build, contract consistency and zero production audit findings.
+- M2 implementation 160c81561080d1cac235701cc0229dcf16aa7e14 is published in PR #2 to main. GitHub CI run 37343608697 passed both independent jobs, including real backend integration and both production audits.
+- Built API smoke passed: automatic index preparation, liveness/readiness and CSRF issuance all succeeded.
 
 ## Exact next step
-Wait for final-head CI and merge PR #1 as explicitly authorized by the owner.
-Keep working on development after merge; next implementation milestone is M2 backend core.
-See M1_VERIFICATION.md for checks, browser coverage and the remaining dev-tool advisory.
+M3 source/seed preparation is published and verified on development in PR #2.
+Continue public content APIs and source-driven frontend pages, including the
+release workflow for assets.
 
-## Next milestone
-- M2 backend core, beginning with models, admin permissions, cookie authentication and CSRF.
-- Redis-backed client limits/proxy trust, cache, email outbox and secure uploads precede public forms.
-- Business endpoints, admin pages, imports and content replacement are not implemented in M1.
+## M3 — source/seed preparation
+- Added an audited manifest: 231 unpublished metadata records and 227 exact source references.
+- Seven inactive board drafts preserve authoritative names/order and the Sidra designation/slot distinction.
+- Gallery drafts preserve all 200 CSV records, 24 hidden duplicates, 17 AI restorations and dimensions/type/treatment.
+- Three reports, four historical certificate documents, ten English content pages, three attributed draft report overviews and four private settings are prepared.
+- Added offline check/plan, atomic local candidate preparation, database dry run and explicit transactional apply.
+- Mongo source checkpoints and audit entries commit with drafts; reruns preserve admin edits, native entries and deletions. Conflicts/source drift are reported.
+- All local checks passed: 22 unit/source tests, eight real seed integration scenarios, all 16 existing MongoDB/Redis/BullMQ checks, typechecks/build/contract consistency and clean production audit.
+- Original ZIP inputs verified; all 200 gallery images decoded and matched CSV dimensions. Built CLI apply/rerun/dry-run smoke passed against disposable MongoDB.
+- Prepared 216 local candidates and safely reran preparation; no organizational database/provider/email writes occurred.
+- See M3_VERIFICATION.md and backend/seed/README.md. Provider upload/public release are not automatic.
+- M3 implementation 61eb156fd7cc300d078a7659c9d096fa881f9e00 is published in the updated M2/M3 PR #2. GitHub CI run 37380616908 passed both jobs, all backend/source integration checks and production audits. Subsequent handoff changes are documentation only.
+
+## Next milestone boundary
+- Implement public content projections/cache invalidation and source-driven pages without changing the prototype theme.
+- Require reviewed clean assets for public release; convert/review the 2024 report and redact public document copies.
+- Do not seed invented fees, members, statistics, validity or legal outcomes.
+- Keep payment verification, member approval and complaint operational workflows separate from the M2 receipt/storage foundations.
 
 ## Open items
 - Codespaces real connectivity passed; owner delegated visual acceptance and waived further personal review. Local Docker execution was unavailable; configuration validation and owner-hosted health results are recorded in M1_VERIFICATION.md.
 - OPEN: five dev-only audit entries from unpatched braces in ESLint tooling; production dependency audit is clean. Monitor upstream; do not force a Next 14 ESLint downgrade.
 - TODO-CONFIRM: membership fee/types/duration and legacy register; paid native submissions stay disabled.
-- TODO-CONFIRM: SMTP sender/provider/notification settings; no email is sent in M1.
+- TODO-CONFIRM: SMTP sender/provider/notification settings and live worker transport; M2 tests use a capture sender, never real delivery.
+- TODO-CONFIRM: Turnstile exact hostname/action configuration, private ClamAV daemon and Cloudinary authenticated delivery preflight.
+- TODO-CONFIRM: production Vercel/Render proxy chain before setting TRUST_PROXY_CIDRS; blank is deliberately conservative.
 - TODO-CONFIRM: renewed Charity Commission certificate and clearer PCP/FBR details; show historical dates only.
 - TODO-CONFIRM: reviewed Urdu scope/translations, missing OCR Markdown, clean chairman photo, Threads/interview URLs and retention policy.
 - TODO-CONFIRM: Cloudinary limits/PDF delivery and production hosting before relevant stages.
 
 ## Verification boundary
-- Automated tests use injected dependency status; owner-provided localhost readiness 200 confirms real Atlas/Redis connectivity in Codespaces at the verification time.
-- Earlier CI passed; final acceptance changes await final-head CI before authorized merge. Desktop/mobile checks and runtime dependency remediation passed; remaining dev-tool advisory is documented. Later documentation-only commits do not change application code.
-- No organization data was seeded, sensitive files uploaded or email sent.
-- Prototype forms and content still use local sample data; M1 is not a production release.
+- M1 health unit tests use injected dependency status; owner-provided localhost readiness 200 confirmed Atlas/Redis in Codespaces at that time. M2 also runs actual isolated MongoDB transactions and Redis/BullMQ integration locally.
+- M1 final-head CI passed and PR #1 is merged. Its desktop/mobile checks and runtime dependency remediation remain applicable; frontend is unchanged in M2.
+- No organizational database was seeded, sensitive files uploaded externally or live email sent. M3 tests use audited metadata in disposable MongoDB; M2 uses synthetic operational fixtures.
+- Prototype forms and content still use local sample data; M2/M3 add backend foundations and draft preparation without UI wiring and are not a production release.
 - main remains stable; implementation stays on development.
