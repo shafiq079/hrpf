@@ -26,19 +26,22 @@ Updated: 2026-10-05
 - Follow-up checks passed independently: frontend lint/typecheck/build; backend typecheck, 10 tests and build.
 - Separate npm start processes verified direct and proxied liveness 200 and dependency-unavailable readiness 503.
 - Compose paths/workspace mount and CI YAML parsed; no root application runner remains.
-- GitHub follow-up CI passed for fa1ace780ec3344636a717467fdb43f794dffd4b (run 37318742183), with independent frontend/backend jobs. Codespaces real-service and visual acceptance remain owner verification.
+- GitHub follow-up CI passed for fa1ace780ec3344636a717467fdb43f794dffd4b (run 37318742183), with independent frontend/backend jobs. Owner Codespaces connectivity is verified below; visual acceptance remains pending.
+
+## Codespaces connectivity verification — 2026-10-05
+- Owner supplied localhost port-3000 results at 13:53 UTC: /api/health/live returned 200 alive; /api/health/ready returned 200 ready.
+- This confirms the frontend rewrite reaches Express and both MongoDB and Redis ping successfully in the owner environment.
+- Backend startup validation is no longer blocking these requests. Persistence of the corrected database-name configuration after restart is not yet confirmed.
+- Frontend npm audit independently confirmed 11 findings: 10 high and 1 critical, including the installed Next.js package. Dependency remediation is pending; passing CI/builds is not security-audit clearance.
 
 ## In progress
-- M1 Codespaces acceptance: rebuild, Atlas/Redis readiness and desktop/mobile visual comparison.
+- M1 remaining acceptance: frontend dependency security review/remediation, desktop/mobile visual comparison and explicit container-rebuild confirmation.
 - Draft PR #1 from development to main includes M0 and M1; do not merge before acceptance and CI pass.
 
 ## Exact next step
-From the repository root: git fetch origin; git switch development; git pull --ff-only origin development.
-Rebuild the Codespaces container. In backend/: npm ci; npm run setup; npm run check. In frontend/: npm ci; npm run check.
-Correct MONGODB_DB_NAME privately to hrpf_dev (inherited secrets override .env), and configure MONGODB_URI; keep MONGODB_DB_NAME=hrpf_dev and allow the Codespace outbound IP in Atlas.
-Start backend npm run dev from backend/. Start frontend npm run dev -- --hostname 0.0.0.0 from frontend/ in another terminal. Use a third terminal for localhost health checks.
-Confirm liveness 200; readiness becomes 200 when both Atlas and Redis are reachable. Check the original UI through private forwarded port 3000.
-Report command, connectivity and visual results; never send env contents or credentials.
+Review and remediate the frontend dependency findings with targeted compatible updates; do not blindly run npm audit fix --force. Re-run frontend checks and the audit after changes.
+Owner should confirm the database-name correction persists in private configuration/Codespaces secrets after restart, plus container rebuild and desktop/mobile visual results. Preserve existing UI and independent frontend/backend commands.
+Health connectivity has already passed; repeat only after relevant changes or a reported regression.
 
 ## Next milestone
 - M2 backend core, beginning with models, admin permissions, cookie authentication and CSRF.
@@ -46,7 +49,8 @@ Report command, connectivity and visual results; never send env contents or cred
 - Business endpoints, admin pages, imports and content replacement are not implemented in M1.
 
 ## Open items
-- TODO-CONFIRM: Codespaces container/Atlas/Redis/visual acceptance; assistant has no Docker runtime or owner Atlas access.
+- TODO-CONFIRM: explicit Codespaces rebuild and visual acceptance; real Atlas/Redis readiness was confirmed by owner-provided 200 responses.
+- OPEN: frontend audit findings (10 high, 1 critical) require review/remediation before M1 merge.
 - TODO-CONFIRM: membership fee/types/duration and legacy register; paid native submissions stay disabled.
 - TODO-CONFIRM: SMTP sender/provider/notification settings; no email is sent in M1.
 - TODO-CONFIRM: renewed Charity Commission certificate and clearer PCP/FBR details; show historical dates only.
@@ -54,8 +58,8 @@ Report command, connectivity and visual results; never send env contents or cred
 - TODO-CONFIRM: Cloudinary limits/PDF delivery and production hosting before relevant stages.
 
 ## Verification boundary
-- Tests use injected dependency status; successful real Atlas/Redis readiness remains owner verification.
-- CI passed for the implementation commit; Codespaces acceptance is still pending. Later documentation-only commits do not change application code.
+- Automated tests use injected dependency status; owner-provided localhost readiness 200 confirms real Atlas/Redis connectivity in Codespaces at the verification time.
+- CI passed for the implementation commit; remaining security/visual/container acceptance is still pending. Later documentation-only commits do not change application code.
 - No organization data was seeded, sensitive files uploaded or email sent.
 - Prototype forms and content still use local sample data; M1 is not a production release.
 - main remains stable; implementation stays on development.
