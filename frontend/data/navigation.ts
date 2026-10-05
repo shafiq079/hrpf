@@ -2,52 +2,89 @@ export interface NavLink {
   label: string;
   href: string;
 }
+
 export interface NavItem extends NavLink {
+  /** Optional dropdown children shown on hover/focus (desktop) or expand (mobile). */
   children?: NavLink[];
 }
+
+// Primary site navigation with dropdowns where appropriate.
 export const mainNavigation: NavItem[] = [
-  { label: "Home", href: "/" },
   {
-    label: "About",
-    href: "/about",
+    label: "Our Work",
+    href: "/our-work",
     children: [
-      { label: "Who We Are", href: "/about/who-we-are" },
-      { label: "Mission", href: "/about/mission" },
-      { label: "Vision", href: "/about/vision" },
-      { label: "Aims and Objectives", href: "/about/aims-and-objectives" },
-      { label: "Chairman’s Message", href: "/about/chairman-message" },
-      { label: "Board of Directors", href: "/about/board" },
-      { label: "Our Team", href: "/about/our-team" },
+      { label: "Women's Rights", href: "/our-work/womens-rights" },
+      { label: "Children's Rights", href: "/our-work/childrens-rights" },
+      { label: "Access to Justice", href: "/our-work/access-to-justice" },
+      { label: "Minority Rights", href: "/our-work/minority-rights" },
       {
-        label: "Registration and Certificates",
-        href: "/about/registration-certificates",
+        label: "Education and Awareness",
+        href: "/our-work/education-and-awareness",
       },
-      { label: "Progress Reports", href: "/about/progress-reports" },
+      {
+        label: "Research and Advocacy",
+        href: "/our-work/research-and-advocacy",
+      },
     ],
   },
-  { label: "What We Do", href: "/what-we-do" },
-  { label: "Gallery", href: "/gallery" },
-  { label: "Blogs", href: "/blogs" },
-  { label: "Get Involved", href: "/get-involved" },
-  { label: "Contact", href: "/contact" },
+  { label: "Projects", href: "/projects" },
+  { label: "Impact", href: "/impact" },
+  { label: "News", href: "/news" },
+  { label: "Reports", href: "/reports" },
+  {
+    label: "Get Involved",
+    href: "/get-involved",
+    children: [
+      { label: "Volunteer", href: "/get-involved" },
+      { label: "Become a Member", href: "/get-involved" },
+      { label: "Internships", href: "/careers" },
+      { label: "Campaigns", href: "/campaigns" },
+      { label: "Careers", href: "/careers" },
+    ],
+  },
+  {
+    label: "About Us",
+    href: "/about",
+    children: [
+      { label: "Who We Are", href: "/about" },
+      { label: "Our People", href: "/about#our-people" },
+      { label: "Our Team", href: "/team" },
+      { label: "Governance", href: "/governance" },
+    ],
+  },
 ];
+
+// Footer: main institutional links.
 export const footerFoundationLinks: NavLink[] = [
-  { label: "About", href: "/about" },
-  { label: "Board of Directors", href: "/about/board" },
-  { label: "What We Do", href: "/what-we-do" },
-  { label: "Gallery", href: "/gallery" },
-  { label: "Blogs", href: "/blogs" },
+  { label: "About Us", href: "/about" },
+  { label: "Our Team", href: "/team" },
+  { label: "Governance", href: "/governance" },
+  { label: "Careers", href: "/careers" },
+  { label: "Media Centre", href: "/media" },
 ];
+
+// Footer: support & engagement links.
 export const footerSupportLinks: NavLink[] = [
   { label: "Contact", href: "/contact" },
-  { label: "Get Involved", href: "/get-involved" },
-  { label: "Donate", href: "/donate" },
-  { label: "Progress Reports", href: "/about/progress-reports" },
-  { label: "Certificates", href: "/about/registration-certificates" },
+  { label: "Get Help", href: "/get-help" },
+  { label: "Partner With Us", href: "/partner-with-us" },
+  { label: "Complaints", href: "/complaints" },
+  { label: "Reports & Resources", href: "/reports" },
 ];
-export const footerLegalLinks: NavLink[] = [
-  { label: "Privacy", href: "/privacy-policy" },
-  { label: "Terms", href: "/terms-of-use" },
+
+// Footer: policy links.
+export const footerResourceLinks: NavLink[] = [
+  { label: "Privacy Policy", href: "/privacy-policy" },
+  { label: "Terms of Use", href: "/terms-of-use" },
+  { label: "Safeguarding Policy", href: "/safeguarding-policy" },
   { label: "Accessibility", href: "/accessibility" },
 ];
-export const footerResourceLinks = footerLegalLinks;
+
+// Footer bottom bar legal links.
+export const footerLegalLinks: NavLink[] = [
+  { label: "Privacy Policy", href: "/privacy-policy" },
+  { label: "Terms of Use", href: "/terms-of-use" },
+  { label: "Accessibility", href: "/accessibility" },
+  { label: "Safeguarding", href: "/safeguarding-policy" },
+];

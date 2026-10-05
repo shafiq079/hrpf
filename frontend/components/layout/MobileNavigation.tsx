@@ -21,7 +21,6 @@ export default function MobileNavigation({
   open,
   onClose,
 }: MobileNavigationProps) {
-  const drawerRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
 
@@ -29,33 +28,17 @@ export default function MobileNavigation({
   useEffect(() => {
     if (!open) return;
 
-    const previousFocus = document.activeElement as HTMLElement | null;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     closeButtonRef.current?.focus();
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
-      if (event.key === "Tab") {
-        const items = drawerRef.current?.querySelectorAll<HTMLElement>(
-          "a[href], button:not([disabled])",
-        );
-        const first = items?.[0],
-          last = items?.[items.length - 1];
-        if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault();
-          last?.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault();
-          first?.focus();
-        }
-      }
     };
     document.addEventListener("keydown", onKeyDown);
 
     return () => {
       document.body.style.overflow = previousOverflow;
-      previousFocus?.focus();
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [open, onClose]);
@@ -77,7 +60,6 @@ export default function MobileNavigation({
 
       {/* Drawer */}
       <div
-        ref={drawerRef}
         id="mobile-navigation"
         role="dialog"
         aria-modal="true"
@@ -155,7 +137,7 @@ export default function MobileNavigation({
                     {item.label}
                   </Link>
                 </li>
-              ),
+              )
             )}
           </ul>
         </nav>

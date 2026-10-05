@@ -8,8 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
-    "check": "npm run lint && npm run typecheck && npm run build",
-    "test:public": "node scripts/check-public.mjs"
+    "check": "npm run lint && npm run typecheck && npm run build"
   },
   "dependencies": {
     "framer-motion": "^12.42.2",

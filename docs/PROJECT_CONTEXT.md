@@ -1,5 +1,23 @@
 # HRPF Project Context
 
+## Current owner direction: frontend restored (2026-10-06)
+
+The owner rejected the M4 frontend replacement and subsequent fixed-copy correction.
+The entire frontend is restored to the pre-M4 tree at 9c4f900 (original prototype
+layout, images, social icons and distinct focus-area icons). M4 backend work is
+retained. Earlier descriptions of the M4 public frontend are historical and no
+longer describe the current frontend. Its M4-only SSR command/CI step is removed.
+
+Next work must proceed page by page: preserve the theme, layout, components,
+image positions and icons; replace only default text with supplied NGO copy and
+images with appropriate supplied photos. Additional page redesign is scoped to
+individual pages. Do not impose admin approval for fixed NGO page copy.
+Admin scope includes gallery image AND video management, alongside users,
+memberships, complaints, board, blogs, documents, settings and inboxes.
+Restoring the prototype also restores its original placeholder text/form behavior;
+this rollback is not a claim that those flows are connected or production-ready.
+
+
 Updated: 2026-10-05
 
 ## Authority and workflow

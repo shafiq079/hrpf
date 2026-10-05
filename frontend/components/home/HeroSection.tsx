@@ -20,7 +20,10 @@ export default function HeroSection() {
       </div>
 
       {/* Navy overlay — stronger on the left for readable, left-aligned text */}
-      <div aria-hidden="true" className="absolute inset-0 bg-navy/70" />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-navy/70"
+      />
       <div
         aria-hidden="true"
         className="absolute inset-0 bg-gradient-to-r from-navy-dark/90 via-navy/70 to-navy/40"
@@ -29,7 +32,7 @@ export default function HeroSection() {
       <Container className="relative z-10 py-20 lg:py-28">
         <div className="max-w-2xl">
           <p className="eyebrow text-teal">
-            Human Rights Protection Foundation Pakistan
+            Human Rights Protection Foundation
           </p>
           <h1 className="mt-4 font-serif text-[38px] font-semibold leading-[1.1] text-white sm:text-5xl lg:text-[60px]">
             Protecting Dignity.
@@ -39,12 +42,13 @@ export default function HeroSection() {
             Empowering Communities.
           </h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-white/85 sm:text-[17px]">
-            Human Rights Protection Foundation Pakistan is a non-governmental,
-            non-political, public-interest organization.
+            The Human Rights Protection Foundation works tirelessly at the front
+            lines of justice, ensuring that the most vulnerable populations are
+            heard, protected and empowered to claim their fundamental rights.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <PrimaryButton
-              href="/what-we-do"
+              href="/our-work"
               variant="navy"
               size="lg"
               icon={ArrowRight}

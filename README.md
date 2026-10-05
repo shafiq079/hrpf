@@ -130,10 +130,9 @@ docs/PROGRESS.md for current state. M2 adds models/indexes, cookie auth and CSRF
 role permissions, Redis limits/cache/tickets, scanned authenticated uploads,
 transactional submissions and the Mongo/BullMQ email outbox. See docs/M2_VERIFICATION.md. The owner delegated visual review and authorized the assistant to merge M1 after checks; see docs/M1_VERIFICATION.md for acceptance evidence.
 
-## Public content (M4)
+## Current frontend direction
 
-Fixed NGO copy uses the owner-supplied page text, profile and current public details bundled in the frontend. Home, ten About sections, What We Do, contact, social links and donation details require no database seed, admin approval or publishing step. The fixed-page API and admin publishing kind were removed; legacy ContentPage seed rows remain source inventory without destructive database cleanup.
-
-Admin scope remains users, members, membership applications, complaints, board, blogs, gallery, reports, certificates, settings, contact inbox and audit logs. Fixed-page CMS/review is excluded. Blog/gallery/document/board data remain managed records. File protection and membership/complaint operational approvals remain separate from fixed text.
-
-Run frontend and backend independently as above. Admin UI and real form wiring are next. See [M4 verification](docs/M4_VERIFICATION.md).
+The frontend has been restored to the original pre-M4 design at the owner's request.
+Text and supplied NGO images will be updated one page at a time while preserving
+layout, theme, icons and image positions. The M4 backend remains implemented.
+Admin gallery work must support both images and videos. See docs/HANDOFF.md.
