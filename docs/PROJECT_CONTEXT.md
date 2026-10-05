@@ -14,10 +14,13 @@ Updated: 2026-10-05
 - Repository: https://github.com/shafiq079/hrpf
 - Prototype baseline: d3848c940d8bf260c7b2657a66473df991777296.
 - Next.js 16.2.11 App Router, React/React DOM 19.2.4, Tailwind 4, TypeScript, npm/package-lock.json.
-- Current application is at the repository root: app/, components/, data/, lib/, public/.
+- M1 moved the application to frontend/: app/, components/, data/, lib/, public/.
+- Root package.json orchestrates separate frontend and backend lockfiles; no npm workspaces.
 - 31 page files, including five dynamic page files; 13 local data modules.
-- No Express backend, app API routes, admin panel, CI workflows or test files in the baseline tree.
-- Source audit completed. Build, lint, typecheck and visual baseline are awaiting Codespaces results.
+- Baseline had no backend, app API routes, admin panel, CI workflows or tests.
+- M1 adds Express 5/TypeScript, MongoDB/Redis connections, health endpoints and CI; business modules remain planned.
+- Source audit completed. Assistant baseline lint, typecheck and build passed.
+- All 182 application/content/asset files were byte-identical after the move. Owner visual verification is pending.
 - See docs/FRONTEND_AUDIT.md for evidence and migration decisions.
 
 ## Preserve the prototype
@@ -33,8 +36,14 @@ Updated: 2026-10-05
 - MongoDB Atlas is authoritative; separate hrpf_dev and hrpf_prod databases.
 - Cloudinary stores public assets and authenticated sensitive assets under separate environment namespaces.
 - Redis supports public cache, rate limiting, form tickets and BullMQ jobs.
-- Browser calls /api/* on the Next.js origin; rewrites proxy to Express on port 5000.
-- Frontend port 3000; backend port 5000; Redis is not publicly forwarded.
+- Implemented: Next beforeFiles rewrites /api/* to Express on port 5000.
+- INTERNAL_API_URL is an optional server-only upstream origin, default http://127.0.0.1:5000.
+- Frontend port 3000; backend port 5000; only 3000 is automatically forwarded.
+- Node 24 devcontainer uses Compose with Redis 8; Redis is not publicly forwarded.
+- Rebuilt workspace gets REDIS_URL=redis://redis:6379; host CLI alternative uses 127.0.0.1.
+- backend/.env is ignored; secret-free .env.example is tracked; inherited secrets override .env.
+- M1 security: Helmet, exact-origin CORS, bounded JSON, Zod configuration/query validation, redacted errors.
+- M1 rate limiter is process-local; Redis rate limits and trusted proxy handling must precede forms in M2.
 - JWT access/rotating refresh cookies are httpOnly; backend roles and CSRF checks enforce authorization.
 - MongoDB email outbox makes submissions durable independently of email delivery.
 
@@ -47,7 +56,9 @@ Updated: 2026-10-05
 - Main submissions: POST /api/complaints, /api/membership-applications and /api/contact-messages.
 - Form tickets/uploads: /api/forms/session and /api/form-uploads.
 - Auth: /api/auth/*; private operational endpoints: /api/admin/*.
-- None of these planned backend endpoints is implemented yet.
+- Implemented only: GET /api/health/live (200) and GET /api/health/ready (200 only if both MongoDB and Redis ping).
+- Unavailable dependencies return 503; business/auth/submission endpoints above remain planned.
+- Errors: {error:{code,message,requestId}}; success: {data:...}.
 
 ## Planned collections
 - User, Member, MembershipApplication, BoardMember, Complaint.
@@ -67,6 +78,12 @@ Updated: 2026-10-05
 - Seed scripts: dry-run, stable keys, checksums, resume and preservation of admin edits.
 - No invented members, statistics, partnerships, fees, certificate validity or legal outcomes.
 - Native paid membership submission remains disabled until policy is configured.
+
+## Working commands
+- npm run setup: install both lockfiles and initialize backend/.env without overwriting it.
+- npm run check: frontend lint/typecheck, backend typecheck/tests and both builds.
+- npm run dev: start both services; Ctrl+C stops their process groups.
+- CI uses the same setup/check sequence and requires no external-service credentials.
 
 ## Continuity
 - PROJECT_CONTEXT.md: architecture and authoritative current state.

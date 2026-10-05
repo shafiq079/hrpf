@@ -18,5 +18,12 @@
 - Authenticated uploads plus Express authorization on every sensitive file request are the default; ordinary Cloudinary signatures are not treated as expiring access controls.
 - Use a transactional MongoDB email outbox with Redis/BullMQ retries to avoid losing saved submissions when email is unavailable.
 - Native paid membership submissions remain disabled until fee and validity policies are configured.
-- M0 is source audit plus documentation only. Build and visual checks must be reported from Codespaces before M1 application changes.
-- A documentation-only PR targets main from development; leave it unmerged until M0 verification is recorded.
+- M0 was source audit plus documentation only. The owner explicitly requested M1 continuation before returning Codespaces results; proceed with scaffolding and keep integration/visual acceptance pending.
+- Reuse draft PR #1 from development to main for M0/M1 while it remains open; do not merge until CI and Codespaces acceptance pass.
+- M1 keeps all 182 app/component/data/lib/public files byte-identical; only frontend configuration and command scripts change.
+- Use Node 24 for Codespaces/CI and separate npm lockfiles to preserve the prototype dependency graph.
+- Use Next beforeFiles rewrites and an exact Codespace allowedDevOrigins entry, following the installed Next 16.2.11 guides.
+- Liveness checks the process; readiness pings MongoDB and Redis. Missing dependencies return 503 rather than implying connectivity.
+- Keep configuration error messages limited to variable names; redact driver errors and unexpected startup failures.
+- Forward only port 3000 automatically; keep Express and Redis internal. Atlas credentials stay in backend/.env or Codespaces secrets.
+- Defer business models/auth/uploads/queue and Redis-backed client limits to M2; M1 is infrastructure, not a production release.

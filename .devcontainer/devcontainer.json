@@ -1,0 +1,17 @@
+{
+  "name": "HRPF development",
+  "dockerComposeFile": ["../compose.yaml", "compose.yaml"],
+  "service": "workspace",
+  "workspaceFolder": "/workspaces/hrpf",
+  "remoteUser": "node",
+  "updateRemoteUserUID": true,
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": { "label": "HRPF website", "onAutoForward": "notify" },
+    "5000": { "label": "Internal Express API", "onAutoForward": "ignore" },
+    "6379": { "label": "Internal Redis", "onAutoForward": "ignore" }
+  },
+  "otherPortsAttributes": { "onAutoForward": "ignore" },
+  "postCreateCommand": "npm run setup",
+  "shutdownAction": "stopCompose"
+}
