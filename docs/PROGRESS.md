@@ -49,10 +49,25 @@ Updated: 2026-10-05
 - Built API smoke passed: automatic index preparation, liveness/readiness and CSRF issuance all succeeded.
 
 ## Exact next step
-M2 delivery is complete on development with PR #2 open and implementation CI passed. Continue the approved source/seed preparation work; UI data migration and public/admin workflows remain later milestones.
+M3 source/seed preparation is implemented and locally verified. Publish it on
+development in the existing PR #2 and verify CI. Then continue public content
+APIs and source-driven frontend pages, including the release workflow for assets.
+
+## M3 — source/seed preparation
+- Added an audited manifest: 231 unpublished metadata records and 227 exact source references.
+- Seven inactive board drafts preserve authoritative names/order and the Sidra designation/slot distinction.
+- Gallery drafts preserve all 200 CSV records, 24 hidden duplicates, 17 AI restorations and dimensions/type/treatment.
+- Three reports, four historical certificate documents, ten English content pages, three attributed draft report overviews and four private settings are prepared.
+- Added offline check/plan, atomic local candidate preparation, database dry run and explicit transactional apply.
+- Mongo source checkpoints and audit entries commit with drafts; reruns preserve admin edits, native entries and deletions. Conflicts/source drift are reported.
+- All local checks passed: 22 unit/source tests, eight real seed integration scenarios, all 16 existing MongoDB/Redis/BullMQ checks, typechecks/build/contract consistency and clean production audit.
+- Original ZIP inputs verified; all 200 gallery images decoded and matched CSV dimensions. Built CLI apply/rerun/dry-run smoke passed against disposable MongoDB.
+- Prepared 216 local candidates and safely reran preparation; no organizational database/provider/email writes occurred.
+- See M3_VERIFICATION.md and backend/seed/README.md. Provider upload/public release are not automatic.
 
 ## Next milestone boundary
-- Use the audited sources and stable checksums/seed keys; preserve administrator edits.
+- Implement public content projections/cache invalidation and source-driven pages without changing the prototype theme.
+- Require reviewed clean assets for public release; convert/review the 2024 report and redact public document copies.
 - Do not seed invented fees, members, statistics, validity or legal outcomes.
 - Keep payment verification, member approval and complaint operational workflows separate from the M2 receipt/storage foundations.
 
@@ -70,6 +85,6 @@ M2 delivery is complete on development with PR #2 open and implementation CI pas
 ## Verification boundary
 - M1 health unit tests use injected dependency status; owner-provided localhost readiness 200 confirmed Atlas/Redis in Codespaces at that time. M2 also runs actual isolated MongoDB transactions and Redis/BullMQ integration locally.
 - M1 final-head CI passed and PR #1 is merged. Its desktop/mobile checks and runtime dependency remediation remain applicable; frontend is unchanged in M2.
-- No organization data was seeded, sensitive files uploaded externally or live email sent. Tests use synthetic fixtures.
-- Prototype forms and content still use local sample data; M2 adds backend foundations without UI wiring and is not a production release.
+- No organizational database was seeded, sensitive files uploaded externally or live email sent. M3 tests use audited metadata in disposable MongoDB; M2 uses synthetic operational fixtures.
+- Prototype forms and content still use local sample data; M2/M3 add backend foundations and draft preparation without UI wiring and are not a production release.
 - main remains stable; implementation stays on development.

@@ -113,7 +113,7 @@ is not promised. Only reference numbers and sign-in instructions appear in admin
 notifications, never complaint narratives, CNICs or proof URLs. Password reset
 links use encrypted outbox payloads and single-use expiring tokens.
 
-`npm run check` runs typechecks, 18 security/health tests, build and OpenAPI drift
+`npm run check` runs typechecks, 22 security/health/source tests, manifest validation, build and OpenAPI drift
 validation. `npm run test:integration` runs isolated MongoDB 8.0.5 replica-set tests
 and real Redis. It downloads a test-only Mongo binary; install `redis-server` or
 set `TEST_REDIS_URL` to a **disposable test Redis** (the tests flush its database).
@@ -121,3 +121,9 @@ CI supplies an isolated Redis container. No Atlas, Cloudinary, Turnstile or SMTP
 organization credentials are used by tests. Live provider checks remain required
 before production. `openapi.json` describes implemented M2 endpoints; regenerate
 it with `npm run api:generate` when changing contracts.
+
+M3 adds repeatable unpublished source imports and local asset preparation. Start
+with `npm run seed:check`, then follow [seed/README.md](seed/README.md) for source
+layout, offline plan and explicit database apply. Reruns preserve admin edits and
+deletions. Nothing uploads or publishes automatically. `npm run test:seed` uses
+disposable MongoDB and no organizational credentials.

@@ -119,6 +119,12 @@ and a production dependency audit without organizational credentials.
 Frontend CI also audits production dependencies at high severity or above. Next.js and matching ESLint config are pinned to 16.3.8. The full audit still reports five dev-only package entries from one unpatched braces advisory in the ESLint tooling chain; see docs/M1_VERIFICATION.md.
 The existing Google fonts require network access for the frontend build.
 
+M3 adds audited source metadata, repeatable unpublished imports and local asset
+preparation. Backend CI also runs source checks and isolated seed integration.
+See [backend/seed/README.md](backend/seed/README.md) for commands and the source
+layout, and [docs/M3_VERIFICATION.md](docs/M3_VERIFICATION.md) for evidence. Source
+files stay ignored; no seed command uploads, publishes or overwrites admin edits.
+
 Read the Project Files brief, docs/PROJECT_CONTEXT.md, docs/DECISIONS.md and
 docs/PROGRESS.md for current state. M2 adds models/indexes, cookie auth and CSRF,
 role permissions, Redis limits/cache/tickets, scanned authenticated uploads,

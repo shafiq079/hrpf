@@ -86,21 +86,33 @@ export const BlogPost = mongoose.model('BlogPost', new Schema({
   status: { type: String, enum: ['draft', 'scheduled', 'published', 'archived'], default: 'draft' },
   publishedAt: Date, scheduledAt: Date, seo: localized, sourceReferences: [String], reviewStatus: review,
 }, options));
-export const GalleryItem = mongoose.model('GalleryItem', new Schema({
+const gallery = new Schema({
   category: { type: String, enum: ['media-coverage', 'in-action'], required: true }, title: localized, alt: localized, caption: localized,
-  asset: { type: assetRefSchema, required: true }, sortOrder: { type: Number, default: 0 }, publishedAt: Date,
+  // Source imports can prepare an unpublished draft before a reviewed file exists.
+  asset: assetRefSchema, sortOrder: { type: Number, default: 0 }, publishedAt: Date,
   featured: { type: Boolean, default: false }, duplicateOf: oid('GalleryItem'), sourceImageId: text(200), sourceFilename: text(300),
+  sourceImageType: { type: String, enum: ['newspaper', 'photo', 'graphic'] },
+  sourceTreatment: { type: String, enum: ['STANDARD_CLEANUP', 'AI_RESTORATION'] },
+  sourceWidth: { type: Number, min: 1 }, sourceHeight: { type: Number, min: 1 },
   treatment: { type: String, enum: ['ORIGINAL', 'AI_RESTORATION'], default: 'ORIGINAL' }, reviewStatus: review,
   seedKey: { ...text(200), unique: true, sparse: true },
-}, options));
+}, options);
+gallery.pre('validate', function () {
+  if (this.publishedAt && (!this.asset || this.reviewStatus !== 'approved' || this.duplicateOf)) {
+    this.invalidate('publishedAt', 'Publication requires a reviewed asset and a non-duplicate record.');
+  }
+});
+export const GalleryItem = mongoose.model('GalleryItem', gallery);
 export const Report = mongoose.model('Report', new Schema({
+  seedKey: { ...text(200), unique: true, sparse: true },
   title: { type: localized, required: true }, slug: { ...requiredText(200), unique: true }, year: { type: Number, min: 1900, max: 2200 },
   coverageStart: Date, coverageEnd: Date, summary: localized, publicPdf: assetRefSchema, restrictedOriginal: assetRefSchema,
   cover: assetRefSchema, pages: Number, publishedAt: Date, sortOrder: { type: Number, default: 0 },
   downloadCount: { type: Number, default: 0 }, releaseReview: review,
 }, options));
 export const Certificate = mongoose.model('Certificate', new Schema({
-  title: { type: localized, required: true }, issuer: requiredText(300), reference: text(300), issuedAt: Date, expiresAt: Date,
+  seedKey: { ...text(200), unique: true, sparse: true },
+  title: { type: localized, required: true }, issuer: requiredText(300), reference: text(300), issuedAt: Date, validFrom: Date, expiresAt: Date,
   original: assetRefSchema, publicFile: assetRefSchema, sortOrder: { type: Number, default: 0 }, publishedAt: Date, releaseReview: review,
 }, options));
 export const ContactMessage = mongoose.model('ContactMessage', new Schema({
@@ -137,6 +149,14 @@ export const FormTicket = mongoose.model('FormTicket', new Schema({
   expiresAt: { type: Date, required: true }, consumedAt: Date, submissionKey: text(64), uploadCount: { type: Number, default: 0 }, uploadBytes: { type: Number, default: 0 },
 }, options).index({ expiresAt: 1 }, { expireAfterSeconds: 86400 }));
 export const Counter = mongoose.model('Counter', new Schema({ key: { ...requiredText(100), unique: true }, sequence: { type: Number, default: 0, min: 0 } }, options));
+// A checkpoint is committed in the same transaction as its draft. Reruns never
+// recreate deleted entries or update existing content, including administrator edits.
+export const SourceImport = mongoose.model('SourceImport', new Schema({
+  key: { ...requiredText(200), unique: true }, manifestVersion: requiredText(50), checksum: requiredText(64),
+  entityType: requiredText(100), entityId: { ...oid(''), required: true },
+  references: [new Schema({ path: requiredText(500), sha256: requiredText(64), bytes: { type: Number, min: 1, required: true }, archiveEntry: text(100), width: { type: Number, min: 1 }, height: { type: Number, min: 1 } }, { _id: false, strict: 'throw' })],
+  reviewTasks: [String],
+}, { timestamps: { createdAt: true, updatedAt: false }, strict: 'throw' }));
 export const EmailOutbox = mongoose.model('EmailOutbox', new Schema({
   dedupeKey: { ...requiredText(200), unique: true }, template: { type: String, enum: ['acknowledgement', 'admin-notification', 'password-reset'], required: true },
   entityType: requiredText(100), entityId: text(100), recipient: { ...requiredText(254), select: false },

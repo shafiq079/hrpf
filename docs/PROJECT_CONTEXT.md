@@ -88,6 +88,10 @@ Updated: 2026-10-05
 - Three progress reports; convert 2024 DOCX to PDF and review public copies.
 - Five certificate scans represent four distinct documents; show historical validity dates.
 - Seed scripts: dry-run, stable keys, checksums, resume and preservation of admin edits.
+- M3 implements those scripts in backend/: seed:check, seed:plan, seed:prepare and seed:import (offline by default; --database reads, --apply inserts missing drafts).
+- Tracked source manifest contains 231 unpublished records and 227 exact references. SourceImport checkpoints retain checksums/review tasks and commit atomically with drafts/audit; reruns never overwrite edits or recreate deletions.
+- Local preparation creates 216 pending candidates without provider upload. Gallery drafts allow missing assets; document validation prevents publication without a reviewed asset or while a duplicate link remains.
+- Four private settings, ten English pages and three attributed draft report overviews are prepared. Membership policy stays unset. The 2024 PDF conversion/full constitutional proofreading/public release remain pending.
 - No invented members, statistics, partnerships, fees, certificate validity or legal outcomes.
 - Native paid membership submission remains disabled until policy is configured.
 
@@ -123,3 +127,9 @@ Updated: 2026-10-05
 - M2 implementation 160c81561080d1cac235701cc0229dcf16aa7e14 is published on development in PR #2 to main. GitHub CI run 37343608697 passed frontend/backend jobs, real integration and production audits. Merge authorization from the owner was specific to M1.
 - Built API smoke verified automatic index preparation, live/ready 200 and CSRF 200. Subsequent handoff edits are documentation only.
 - Next work: source/seed preparation in the approved plan, followed by public content and form/admin UI wiring. Do not claim that M2 enables the existing frontend forms.
+
+## M3 handoff — 2026-10-05
+- Source/seed preparation is implemented and locally verified; see M3_VERIFICATION.md and backend/seed/README.md.
+- Checks passed: 22 unit/source tests, eight real seed integration scenarios, all 16 M2 integration checks, typechecks/build/OpenAPI and zero production audit findings.
+- Source ZIP verification, decoding of all 200 gallery images and built CLI import/rerun/dry-run smoke passed. No organizational Atlas records, external uploads or live email were created.
+- Existing PR #2 remains open from development to main and will include M2/M3. Frontend tree is unchanged; public source-driven pages/APIs and reviewed asset release follow next.

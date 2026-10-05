@@ -60,4 +60,5 @@ jobs:
       - run: npm ci --no-fund --no-audit
       - run: npm run check
       - run: npm run test:integration
+      - run: npm run test:seed
       - run: npm audit --omit=dev --audit-level=high

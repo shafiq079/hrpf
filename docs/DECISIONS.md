@@ -59,3 +59,12 @@
 - Ensure additive indexes at connection preparation; readiness/business gates stay unavailable until preparation succeeds. Never drop production indexes automatically.
 - Add real disposable MongoDB replica-set/Redis tests to CI. External providers are tested with injected adapters; private live preflight remains a production requirement.
 - Publish a separate M2 PR; the earlier explicit merge instruction applied to M1.
+
+## 2026-10-05 — M3 source/seed preparation
+- Continue the approved source preparation step at the owner's instruction. Reuse the open development-to-main PR #2 because branches remain main/development; describe its final M2/M3 scope.
+- Pin exact allowlisted source paths and SHA-256 checksums; never scan the information directory or ingest the credentials document. Keep originals/prepared binaries ignored.
+- Seed only unpublished/inactive/private metadata. Keep neutral gallery captions, AI flags and source CSV duplicates reviewable. Store all five certificate scan references as four distinct documents with historical dates.
+- Preserve administrator edits and deletions through create-only imports. Commit each draft, checkpoint and audit entry in one transaction; report source drift/collisions without a force mode. Database preview remains read-only.
+- Use native session transaction retries for create-only seed imports; no document instances are retained across retries. This avoids Mongoose document-state rollback errors on strict nested schemas while preserving atomicity.
+- Prepare local asset candidates atomically, with checksums and no provider requests. Keep 2024 DOCX conversion, public report redaction, gallery consent/privacy checks and the chairman crop explicit release tasks.
+- Source current individual content first; use the profile only for fallback values, curated aims and thematic pillars. Import no profile-only people, invented membership policy, operational records or notifications.

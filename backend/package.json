@@ -11,8 +11,8 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
     "build": "tsc",
     "start": "node dist/server.js",
-    "test": "node --import tsx --test test/app.test.ts test/security.test.ts",
-    "check": "npm run typecheck && npm test && npm run build && npm run api:check",
+    "test": "node --import tsx --test test/app.test.ts test/security.test.ts test/seed.test.ts",
+    "check": "npm run typecheck && npm test && npm run seed:check && npm run build && npm run api:check",
     "setup": "node scripts/setup-env.mjs",
     "worker": "node dist/worker.js",
     "worker:dev": "node --watch --import tsx src/worker.ts",
@@ -21,7 +21,12 @@
     "test:integration": "node test/run-integration.mjs",
     "setup:security": "node scripts/setup-security.mjs",
     "api:generate": "node --import tsx src/scripts/openapi.ts",
-    "api:check": "node --import tsx src/scripts/openapi.ts --check"
+    "api:check": "node --import tsx src/scripts/openapi.ts --check",
+    "seed:check": "node --import tsx src/scripts/seed.ts check",
+    "seed:plan": "node --import tsx src/scripts/seed.ts plan",
+    "seed:prepare": "node --import tsx src/scripts/seed.ts prepare",
+    "seed:import": "node --import tsx src/scripts/seed.ts import",
+    "test:seed": "node --import tsx --test test/seed.integration.test.ts"
   },
   "dependencies": {
     "bullmq": "6.3.11",
