@@ -26,7 +26,7 @@ Updated: 2026-10-05
 - Follow-up checks passed independently: frontend lint/typecheck/build; backend typecheck, 10 tests and build.
 - Separate npm start processes verified direct and proxied liveness 200 and dependency-unavailable readiness 503.
 - Compose paths/workspace mount and CI YAML parsed; no root application runner remains.
-- Follow-up CI result pending push; Codespaces real-service and visual acceptance remain owner verification.
+- GitHub follow-up CI passed for fa1ace780ec3344636a717467fdb43f794dffd4b (run 37318742183), with independent frontend/backend jobs. Codespaces real-service and visual acceptance remain owner verification.
 
 ## In progress
 - M1 Codespaces acceptance: rebuild, Atlas/Redis readiness and desktop/mobile visual comparison.
