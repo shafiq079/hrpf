@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { AlertTriangle, ChevronDown, X } from "lucide-react";
 import { mainNavigation } from "@/data/navigation";
@@ -42,7 +43,9 @@ export default function MobileNavigation({
     };
   }, [open, onClose]);
 
-  return (
+  if (!open) return null;
+
+  return createPortal(
     <div
       className={`lg:hidden ${open ? "" : "pointer-events-none"}`}
       aria-hidden={!open}
@@ -154,6 +157,7 @@ export default function MobileNavigation({
           </PrimaryButton>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

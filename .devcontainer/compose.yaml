@@ -1,0 +1,13 @@
+services:
+  workspace:
+    image: mcr.microsoft.com/devcontainers/typescript-node:5.2.1-24-bookworm
+    init: true
+    command: sleep infinity
+    volumes:
+      # Paths resolve relative to the first Compose file: ../backend/compose.yaml.
+      - ..:/workspaces/hrpf:cached
+    environment:
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
