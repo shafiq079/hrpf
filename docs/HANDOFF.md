@@ -4,8 +4,7 @@
 
 Homepage-only replacement is implemented on development. All nine original
 homepage sections, component order, literal CSS classes, theme and image positions
-are retained. Supplied archive photos replace the three stock photos; card images
-also use source photos. See HOME_SOURCE_MAP.json for exact filenames and hashes.
+are retained. Nine supplied archive photos replace the stock hero, preview, quote and card images. See HOME_SOURCE_MAP.json for exact filenames and hashes.
 Fixed homepage copy is bundled and requires no seed or admin approval. The sourced
 chairman excerpt replaces the invented testimonial. Profile values replace the
 unsubstantiated partner wordmarks in the same strip. Verified counts replace

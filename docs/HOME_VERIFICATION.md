@@ -4,8 +4,7 @@
 
 Homepage-only replacement is implemented on development. All nine original
 homepage sections, component order, literal CSS classes, theme and image positions
-are retained. Supplied archive photos replace the three stock photos; card images
-also use source photos. See HOME_SOURCE_MAP.json for exact filenames and hashes.
+are retained. Nine supplied archive photos replace the stock hero, preview, quote and card images. See HOME_SOURCE_MAP.json for exact filenames and hashes.
 Fixed homepage copy is bundled and requires no seed or admin approval. The sourced
 chairman excerpt replaces the invented testimonial. Profile values replace the
 unsubstantiated partner wordmarks in the same strip. Verified counts replace
@@ -28,7 +27,7 @@ admin scope for subsequent work.
 ## Verification
 
 - Existing component literal CSS classes and section order match the original.
-- Three supplied STANDARD_CLEANUP WebPs are copied byte-for-byte; no AI edits.
+- Nine supplied STANDARD_CLEANUP WebPs are copied byte-for-byte; no AI edits.
 - Frontend lint, typecheck and production build pass.
 - Homepage SSR regression checks sourced copy/photos, excludes fabricated claims,
   verifies live feed refresh, detail routes/404s, source fallback for empty/offline
@@ -44,3 +43,16 @@ Chrome installer hit a certificate-chain error; a manually fetched Chrome binary
 confirmed that this environment denies the Unix sockets needed for browser startup.
 No desktop/mobile screenshot or browser interaction pass is claimed. The SSR suite
 and unchanged original CSS/layout checks do pass.
+
+## CI follow-up
+
+Implementation 2ef792354e88c7ea1a2d722680425967584bdc44 passed CI build and
+homepage SSR, and the entire backend job (run 37450005466). Frontend production
+audit found GHSA-68fv-2mgg-jv7q in pre-existing source-map-js 1.2.1. The lockfile
+now selects the patched 1.2.2; no direct dependency or theme change was made.
+Local production audit now reports zero vulnerabilities. Primary advisory:
+https://github.com/advisories/GHSA-68fv-2mgg-jv7q.
+
+Final image selection uses nine distinct supplied photos across the main sections
+and six source cards. Captions identify archive illustrations and do not invent
+event dates, project results or the identities of pictured people.

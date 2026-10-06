@@ -30,11 +30,12 @@ export default async function Home() {
       status: "Proposed",
       location: "Pakistan",
     }),
+    imageAlt: p.imageAlt,
     href: "/about",
     statusLabel: "Programme area",
     startedLabel: "From HRPF’s mission",
   }));
-  const reportCards = home.reportCards.map((r, i) => ({
+  const reportCards = home.reportCards.map((r) => ({
     ...newsCard({
       title: r.title,
       excerpt: r.summary,
@@ -45,7 +46,8 @@ export default async function Home() {
     category: "Progress Report",
     dateLabel: `${r.year} report`,
     readingTime: "Report overview",
-    image: home.programmeCards[i].image,
+    image: r.image,
+    imageAlt: r.imageAlt,
   }));
 
   return (
