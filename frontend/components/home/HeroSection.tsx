@@ -1,3 +1,4 @@
+import home from "@/data/homepage.json";
 import { AlertTriangle, ArrowRight } from "lucide-react";
 import Container from "@/components/shared/Container";
 import PrimaryButton from "@/components/shared/PrimaryButton";
@@ -10,8 +11,8 @@ export default function HeroSection() {
       {/* Background image */}
       <div className="absolute inset-0">
         <AppImage
-          src="/images/hero-community.jpg"
-          alt="Community members standing together in solidarity."
+          src="/images/hrpf/home-hero.webp"
+          alt="Participants at an HRPF public gathering holding an organisational banner."
           fill
           priority
           sizes="100vw"
@@ -20,10 +21,7 @@ export default function HeroSection() {
       </div>
 
       {/* Navy overlay — stronger on the left for readable, left-aligned text */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-navy/70"
-      />
+      <div aria-hidden="true" className="absolute inset-0 bg-navy/70" />
       <div
         aria-hidden="true"
         className="absolute inset-0 bg-gradient-to-r from-navy-dark/90 via-navy/70 to-navy/40"
@@ -32,7 +30,7 @@ export default function HeroSection() {
       <Container className="relative z-10 py-20 lg:py-28">
         <div className="max-w-2xl">
           <p className="eyebrow text-teal">
-            Human Rights Protection Foundation
+            Human Rights Protection Foundation Pakistan
           </p>
           <h1 className="mt-4 font-serif text-[38px] font-semibold leading-[1.1] text-white sm:text-5xl lg:text-[60px]">
             Protecting Dignity.
@@ -42,9 +40,7 @@ export default function HeroSection() {
             Empowering Communities.
           </h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-white/85 sm:text-[17px]">
-            The Human Rights Protection Foundation works tirelessly at the front
-            lines of justice, ensuring that the most vulnerable populations are
-            heard, protected and empowered to claim their fundamental rights.
+            {home.hero}
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <PrimaryButton
@@ -56,7 +52,7 @@ export default function HeroSection() {
               Explore Our Work
             </PrimaryButton>
             <PrimaryButton
-              href="/report-a-violation"
+              href="/file-a-complaint"
               variant="red"
               size="lg"
               icon={AlertTriangle}

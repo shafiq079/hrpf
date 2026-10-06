@@ -1,5 +1,48 @@
 # HRPF Project Context
 
+## Homepage content update (2026-10-06)
+
+Homepage-only replacement is implemented on development. All nine original
+homepage sections, component order, literal CSS classes, theme and image positions
+are retained. Nine supplied archive photos replace the stock hero, preview, quote and card images. See HOME_SOURCE_MAP.json for exact filenames and hashes.
+Fixed homepage copy is bundled and requires no seed or admin approval. The sourced
+chairman excerpt replaces the invented testimonial. Profile values replace the
+unsubstantiated partner wordmarks in the same strip. Verified counts replace
+invented impact/donation figures. Footer brand glyphs remain icons with actual
+Facebook/TikTok/LinkedIn/YouTube destinations.
+
+Public projects and news feeds are wired to the homepage. News shares BlogPost
+records with blogs. Content roles have authenticated/CSRF-protected create/list,
+versioned edit/delete, and audited publish/withdraw endpoints. Edits return a record
+to draft and revoke its file. Clean owned cover images are delivered through fresh
+entity checks. Supporting reader routes /programmes, /programmes/[slug] and /updates/[slug]
+render managed bodies; existing project/news listing and other page designs remain
+untouched for their later page-by-page work. Admin UI remains future work.
+If feeds are empty or unavailable, the same card layouts show source programme
+priorities and report overviews with honest labels, without invented project
+names, publication dates, beneficiaries or partners. No live NGO database,
+Cloudinary upload or email operation was performed. Gallery videos remain in the
+admin scope for subsequent work.
+
+
+## Current owner direction: frontend restored (2026-10-06)
+
+The owner rejected the M4 frontend replacement and subsequent fixed-copy correction.
+The entire frontend is restored to the pre-M4 tree at 9c4f900 (original prototype
+layout, images, social icons and distinct focus-area icons). M4 backend work is
+retained. Earlier descriptions of the M4 public frontend are historical and no
+longer describe the current frontend. Its M4-only SSR command/CI step is removed.
+
+Next work must proceed page by page: preserve the theme, layout, components,
+image positions and icons; replace only default text with supplied NGO copy and
+images with appropriate supplied photos. Additional page redesign is scoped to
+individual pages. Do not impose admin approval for fixed NGO page copy.
+Admin scope includes gallery image AND video management, alongside users,
+memberships, complaints, board, blogs, documents, settings and inboxes.
+Restoring the prototype also restores its original placeholder text/form behavior;
+this rollback is not a claim that those flows are connected or production-ready.
+
+
 Updated: 2026-10-05
 
 ## Authority and workflow
@@ -134,3 +177,25 @@ Updated: 2026-10-05
 - Source ZIP verification, decoding of all 200 gallery images and built CLI import/rerun/dry-run smoke passed. No organizational Atlas records, external uploads or live email were created.
 - Existing PR #2 remains open from development to main and includes M2/M3. Frontend tree is unchanged; public source-driven pages/APIs and reviewed asset release follow next.
 - Published M3 implementation: 61eb156fd7cc300d078a7659c9d096fa881f9e00. GitHub CI run 37380616908 passed both independent jobs, backend/seed integration and production audits. PR #2 now describes M2/M3; later handoff edits are documentation only.
+
+## Current M4 boundary
+M1 and M2/M3 are merged into main. M4 is on development in PR #3.
+Fixed NGO copy uses the owner-supplied page text, profile and current public details bundled in the frontend. Home, ten About sections, What We Do, contact, social links and donation details require no database seed, admin approval or publishing step. The fixed-page API and admin publishing kind were removed; legacy ContentPage seed rows remain source inventory without destructive database cleanup.
+
+Admin scope remains users, members, membership applications, complaints, board, blogs, gallery, reports, certificates, settings, contact inbox and audit logs. Fixed-page CMS/review is excluded. Blog/gallery/document/board data remain managed records. File protection and membership/complaint operational approvals remain separate from fixed text.
+
+Admin UI, real form wiring and operational workflows are next. See M4_VERIFICATION.md.
+
+
+## Homepage heading and seed correction
+
+User requires the original Featured Projects and Latest News & Updates headings
+and backend-managed records, including during initial setup. Removed programme/
+report fallback cards and conditional headings; empty/offline feeds retain the
+sections and headings without resurrecting withdrawn records. Added the separate
+backend seed:home command with three documented intervention projects and three
+report-derived news summaries, six bundled source covers, offline checksum plan,
+ClamAV/Cloudinary upload and transactional publication. Reruns preserve admin
+edits, withdrawals and deletions. See backend/seed/HOMEPAGE.md. Live import must
+run against the user's privately configured development services; no credentials
+or actual live upload/database execution are claimed here.

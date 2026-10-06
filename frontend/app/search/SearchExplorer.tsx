@@ -7,177 +7,38 @@ import SearchInput from "@/components/shared/SearchInput";
 import FilterSelect from "@/components/shared/FilterSelect";
 import FilterBar from "@/components/shared/FilterBar";
 import EmptyState from "@/components/shared/EmptyState";
-import { projects } from "@/data/projects";
-import { newsArticles } from "@/data/news";
-import { reports } from "@/data/reports";
+import { mainNavigation } from "@/data/navigation";
 import { campaigns } from "@/data/campaigns";
 import { events } from "@/data/events";
 
-/*
-  Fully client-side search over a static, in-memory index built from the
-  project's data files plus a curated list of key pages. Nothing is fetched or
-  persisted; results update as you type.
-*/
-
-type EntryType =
-  | "Pages"
-  | "Projects"
-  | "News"
-  | "Reports"
-  | "Campaigns"
-  | "Events";
-
-interface IndexEntry {
+export type EntryType = "Pages" | "Projects" | "Blogs" | "Progress Reports" | "Campaigns" | "Events";
+export interface IndexEntry {
   type: EntryType;
   title: string;
   description: string;
   href: string;
 }
-
-const entryTypes: EntryType[] = [
-  "Pages",
-  "Projects",
-  "News",
-  "Reports",
-  "Campaigns",
-  "Events",
-];
-
+const entryTypes: EntryType[] = ["Pages", "Projects", "Blogs", "Progress Reports", "Campaigns", "Events"];
 const pageEntries: IndexEntry[] = [
-  {
-    type: "Pages",
-    title: "About HRPF",
-    description:
-      "Who we are, our mission, vision and approach to human-rights protection.",
-    href: "/about",
-  },
-  {
-    type: "Pages",
-    title: "Our Work",
-    description:
-      "Focus areas including women's rights, children's rights and access to justice.",
-    href: "/our-work",
-  },
-  {
-    type: "Pages",
-    title: "Impact",
-    description:
-      "How we measure and report on the difference our work makes.",
-    href: "/impact",
-  },
-  {
-    type: "Pages",
-    title: "Get Involved",
-    description:
-      "Volunteer, become a member, join a campaign or contribute your skills.",
-    href: "/get-involved",
-  },
-  {
-    type: "Pages",
-    title: "Donate",
-    description: "Support responsible human-rights protection with a donation.",
-    href: "/donate",
-  },
-  {
-    type: "Pages",
-    title: "Contact",
-    description: "Get in touch with the HRPF team.",
-    href: "/contact",
-  },
-  {
-    type: "Pages",
-    title: "Reports and Resources",
-    description:
-      "Annual reports, research, policy briefs, guides and awareness materials.",
-    href: "/reports",
-  },
-  {
-    type: "Pages",
-    title: "Team",
-    description: "Meet the people behind HRPF's programmes and operations.",
-    href: "/team",
-  },
-  {
-    type: "Pages",
-    title: "Governance",
-    description:
-      "Our governance structure, accountability and organizational policies.",
-    href: "/governance",
-  },
-  {
-    type: "Pages",
-    title: "FAQ",
-    description:
-      "Answers to common questions about HRPF, reporting, help and privacy.",
-    href: "/faq",
-  },
-  {
-    type: "Pages",
-    title: "Partner With Us",
-    description:
-      "Explore responsible partnerships and submit a partnership inquiry.",
-    href: "/partner-with-us",
-  },
-  {
-    type: "Pages",
-    title: "Get Help",
-    description:
-      "Request general information, guidance or referral to appropriate support.",
-    href: "/get-help",
-  },
-  {
-    type: "Pages",
-    title: "Report a Violation",
-    description:
-      "Confidentially report a human-rights concern, including anonymously.",
-    href: "/report-a-violation",
-  },
-  {
-    type: "Pages",
-    title: "Complaints",
-    description:
-      "Share feedback or a complaint about HRPF and how we work.",
-    href: "/complaints",
-  },
+  ...mainNavigation.flatMap(item => [item, ...(item.children ?? [])]).map(item => ({
+    type: "Pages" as const, title: item.label, description: `Explore ${item.label} at HRPF Pakistan.`, href: item.href,
+  })),
+  { type: "Pages", title: "File a Complaint", description: "Provide information about a human-rights concern.", href: "/file-a-complaint" },
+  { type: "Pages", title: "Donate", description: "Support the Foundation’s work.", href: "/donate" },
+  { type: "Pages", title: "Contact", description: "Get in touch with HRPF.", href: "/contact" },
+  { type: "Pages", title: "Get Help", description: "Request information or guidance.", href: "/get-help" },
+  { type: "Pages", title: "FAQ", description: "Answers to common questions about HRPF.", href: "/faq" },
+  { type: "Pages", title: "Partner With Us", description: "Explore partnerships with the Foundation.", href: "/partner-with-us" },
+  { type: "Pages", title: "Feedback about HRPF", description: "Share feedback about the Foundation’s work.", href: "/complaints" },
 ];
-
-const searchIndex: IndexEntry[] = [
-  ...pageEntries,
-  ...projects.map((project) => ({
-    type: "Projects" as const,
-    title: project.title,
-    description: project.summary,
-    href: project.href,
-  })),
-  ...newsArticles.map((article) => ({
-    type: "News" as const,
-    title: article.title,
-    description: article.summary,
-    href: article.href,
-  })),
-  ...reports.map((report) => ({
-    type: "Reports" as const,
-    title: report.title,
-    description: report.summary,
-    href: "/reports",
-  })),
-  ...campaigns.map((campaign) => ({
-    type: "Campaigns" as const,
-    title: campaign.title,
-    description: campaign.description,
-    href: campaign.href,
-  })),
-  ...events.map((event) => ({
-    type: "Events" as const,
-    title: event.title,
-    description: event.description,
-    href: event.href,
-  })),
+const otherEntries: IndexEntry[] = [
+  ...campaigns.map(row => ({ type: "Campaigns" as const, title: row.title, description: row.description, href: row.href })),
+  ...events.map(row => ({ type: "Events" as const, title: row.title, description: row.description, href: row.href })),
 ];
 
 const popularPages = pageEntries.slice(0, 6);
 
-export default function SearchExplorer() {
+export default function SearchExplorer({ entries }: { entries: IndexEntry[] }) {
   const [query, setQuery] = useState("");
   const [type, setType] = useState("");
 
@@ -185,13 +46,13 @@ export default function SearchExplorer() {
 
   const results = useMemo(() => {
     if (!trimmedQuery) return [];
-    return searchIndex.filter((entry) => {
+    return [...pageEntries, ...entries, ...otherEntries].filter((entry) => {
       const matchesType = !type || entry.type === type;
       if (!matchesType) return false;
       const haystack = `${entry.title} ${entry.description}`.toLowerCase();
       return haystack.includes(trimmedQuery);
     });
-  }, [trimmedQuery, type]);
+  }, [trimmedQuery, type, entries]);
 
   const grouped = useMemo(() => {
     return entryTypes
@@ -216,7 +77,7 @@ export default function SearchExplorer() {
           <SearchInput
             id="site-search"
             label="Search the site"
-            placeholder="Search pages, projects, news, reports…"
+            placeholder="Search pages, projects, blogs, progress reports…"
             value={query}
             onChange={setQuery}
           />
@@ -232,8 +93,7 @@ export default function SearchExplorer() {
       </FilterBar>
 
       <p className="mt-3 text-xs text-muted">
-        Results are matched by title and description across this site&apos;s
-        content, ordered by content type.
+        Results match titles and descriptions from site pages and the latest published content, ordered by content type.
       </p>
 
       {hasQuery && (
@@ -248,7 +108,7 @@ export default function SearchExplorer() {
         {!hasQuery && (
           <EmptyState
             title="Start typing to search."
-            description="Search across pages, projects, news, reports, campaigns and events."
+            description="Search pages and the latest published projects, blogs and progress reports."
           />
         )}
 

@@ -1,0 +1,63 @@
+{
+  "hero": "Human Rights Protection Foundation Pakistan promotes human dignity, justice and transparency through lawful advocacy, public awareness and support for vulnerable communities.",
+  "aboutTitle": "A Voice for Dignity and Justice",
+  "aboutParagraphs": [
+    "HRPF Pakistan is a non-governmental, non-political public-interest organisation. We promote human rights and stand with vulnerable communities through lawful advocacy, public awareness and support for deserving cases.",
+    "Our mission is to protect human dignity and promote transparency, clean water and public health. Our vision is a society where everyone has access to justice, essential services and equal opportunity."
+  ],
+  "quote": "We may not be able to solve every problem, but we can refuse to ignore injustice.",
+  "quoteName": "Muhammad Yousaf Badar",
+  "quoteRole": "Chairman, HRPF Pakistan",
+  "principles": [
+    "Integrity",
+    "Justice",
+    "Accountability",
+    "Inclusivity",
+    "Independence"
+  ],
+  "stats": [
+    {
+      "value": "12",
+      "label": "Thematic Pillars"
+    },
+    {
+      "value": "7",
+      "label": "Board Positions"
+    },
+    {
+      "value": "3",
+      "label": "Progress Reports: 2023–2025"
+    },
+    {
+      "value": "11",
+      "label": "Aims and Objectives"
+    }
+  ],
+  "cta": "Join HRPF Pakistan in promoting human dignity, access to justice and institutional accountability. Support our work, share a concern or get in touch to explore how you can contribute.",
+  "focus": [
+    {
+      "title": "Women’s Rights",
+      "description": "Promoting equal access to justice, education and opportunity, with attention to maternal healthcare."
+    },
+    {
+      "title": "Children’s Rights",
+      "description": "Advocating against child labour and abuse, and promoting access to education and protection."
+    },
+    {
+      "title": "Access to Justice",
+      "description": "Supporting deserving cases and advocating for innocent prisoners and fair legal processes."
+    },
+    {
+      "title": "Minority Rights",
+      "description": "Promoting inclusion, interfaith harmony and respect for human dignity across communities."
+    },
+    {
+      "title": "Education and Awareness",
+      "description": "Building public awareness of fundamental rights, legal protections and access to essential services."
+    },
+    {
+      "title": "Research and Advocacy",
+      "description": "Using research, documentation and requests for information to encourage transparent, accountable institutions."
+    }
+  ]
+}

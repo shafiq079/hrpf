@@ -72,20 +72,47 @@ export const Complaint = mongoose.model('Complaint', complaint);
 export const BoardMember = mongoose.model('BoardMember', new Schema({
   name: requiredText(150), slug: { ...requiredText(200), unique: true }, seedKey: { ...text(200), unique: true, sparse: true },
   designation: requiredText(200), slotLabel: text(200), rank: { type: Number, min: 1, required: true },
-  photo: assetRefSchema, bio: localized, isActive: { type: Boolean, default: true },
+  photo: assetRefSchema, bio: localized, isActive: { type: Boolean, default: false },
 }, options));
 export const BlogCategory = mongoose.model('BlogCategory', new Schema({
   name: { type: localized, required: true }, slug: { ...requiredText(200), unique: true }, sortOrder: { type: Number, default: 0 }, isActive: { type: Boolean, default: true },
 }, options));
 // Rich text is structured blocks, never executable HTML. HTTP contracts further bound the blocks.
 const block = new Schema({ type: { type: String, enum: ['paragraph', 'heading', 'list', 'image'], required: true }, text: text(10000), assetId: oid('Asset'), items: [String] }, { _id: false, strict: 'throw' });
+const blogDetails = new Schema({
+  category: text(80), authorName: text(100), authorRole: text(150), intro: text(10000), coverCaption: text(500), takeaways: [String],
+  sections: [new Schema({ heading: requiredText(150), body: requiredText(10000), bullets: [String], quote: text(2000), attribution: text(200) }, { _id: false, strict: 'throw' })],
+  conclusion: text(10000), sources: [new Schema({ label: requiredText(200), url: text(2000), note: text(1000) }, { _id: false, strict: 'throw' })],
+  seoTitle: text(80), seoDescription: text(170),
+}, { _id: false, strict: 'throw' });
 export const BlogPost = mongoose.model('BlogPost', new Schema({
   title: { type: localized, required: true }, slug: { ...requiredText(200), unique: true }, locale: { type: String, enum: ['en', 'ur'], default: 'en' },
   translationOf: oid('BlogPost'), blocks: [block], excerpt: localized, cover: assetRefSchema, inlineAssets: [assetRefSchema],
   categories: [oid('BlogCategory')], tags: [String], authorId: oid('User'),
+  details: blogDetails, coverAlt: text(300),
+  gallery: [new Schema({ asset: { type: assetRefSchema, required: true }, alt: requiredText(300), caption: text(500) }, { _id: false, strict: 'throw' })],
+  documents: [new Schema({ asset: { type: assetRefSchema, required: true }, label: requiredText(150) }, { _id: false, strict: 'throw' })],
   status: { type: String, enum: ['draft', 'scheduled', 'published', 'archived'], default: 'draft' },
   publishedAt: Date, scheduledAt: Date, seo: localized, sourceReferences: [String], reviewStatus: review,
 }, options));
+const projectDetails = new Schema({
+  overview: text(10000), challenge: text(10000), approach: text(10000), period: text(150), targetCommunity: text(500),
+  objectives: [String], activities: [String], outcomes: [String], partners: [String],
+  milestones: [new Schema({ period: requiredText(150), title: requiredText(500), description: text(2000) }, { _id: false, strict: 'throw' })],
+  metrics: [new Schema({ value: requiredText(80), label: requiredText(150), source: text(500) }, { _id: false, strict: 'throw' })],
+  sections: [new Schema({ heading: requiredText(150), body: requiredText(10000) }, { _id: false, strict: 'throw' })],
+}, { _id: false, strict: 'throw' });
+export const Project = mongoose.model('Project', new Schema({
+  title: { type: localized, required: true }, slug: { ...requiredText(100), unique: true }, locale: { type: String, enum: ['en', 'ur'], default: 'en' },
+  summary: localized, blocks: [block], focusArea: requiredText(150), location: requiredText(150),
+  projectStatus: { type: String, enum: ['Ongoing', 'Completed', 'Proposed', 'Emergency Response'], default: 'Proposed' },
+  startYear: { type: Number, min: 1900, max: 2200 }, cover: assetRefSchema, coverAlt: text(300), details: projectDetails,
+  gallery: [new Schema({ asset: { type: assetRefSchema, required: true }, alt: requiredText(300), caption: text(500) }, { _id: false, strict: 'throw' })],
+  documents: [new Schema({ asset: { type: assetRefSchema, required: true }, label: requiredText(150) }, { _id: false, strict: 'throw' })],
+  sourceReferences: [String],
+  status: { type: String, enum: ['draft', 'published'], default: 'draft' }, reviewStatus: review, publishedAt: Date,
+}, options));
+Project.schema.index({ locale: 1, status: 1, publishedAt: -1 });
 const gallery = new Schema({
   category: { type: String, enum: ['media-coverage', 'in-action'], required: true }, title: localized, alt: localized, caption: localized,
   // Source imports can prepare an unpublished draft before a reviewed file exists.

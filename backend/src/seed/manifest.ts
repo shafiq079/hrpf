@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { Types } from 'mongoose';
 import { z } from 'zod';
-import { BoardMember, BlogPost, Certificate, ContentPage, GalleryItem, Report, Setting } from '../domain/models.js';
+import { BoardMember, BlogPost, Certificate, ContentPage, GalleryItem, Report, Setting, Project } from '../domain/models.js';
 
 const safePath = z.string().min(1).max(500).refine(value =>
   !value.includes('\\') && !value.includes('\0') && !value.split('/').some(part => !part || part === '.' || part === '..') &&
@@ -15,7 +15,7 @@ export const sourceFileSchema = z.object({
   width: z.number().int().positive().max(100000).optional(), height: z.number().int().positive().max(100000).optional(),
 }).strict();
 const recordSchema = z.object({
-  kind: z.enum(['BoardMember', 'GalleryItem', 'Report', 'Certificate', 'ContentPage', 'Setting', 'BlogPost']),
+  kind: z.enum(['BoardMember', 'GalleryItem', 'Report', 'Certificate', 'ContentPage', 'Setting', 'BlogPost', 'Project']),
   key, payload: z.record(z.string(), z.unknown()), files: z.array(key).min(1).max(10),
   reviewTasks: z.array(z.string().min(1).max(1000)).max(10), duplicateOf: key.optional(),
 }).strict();
@@ -23,7 +23,7 @@ const schema = z.object({ version: z.string().regex(/^[a-zA-Z0-9.-]{1,50}$/), fi
 export type SourceFile = z.infer<typeof sourceFileSchema>;
 export type SeedRecord = z.infer<typeof recordSchema>;
 export type Manifest = z.infer<typeof schema>;
-export const seedModels = { BoardMember, GalleryItem, Report, Certificate, ContentPage, Setting, BlogPost };
+export const seedModels = { BoardMember, GalleryItem, Report, Certificate, ContentPage, Setting, BlogPost, Project };
 // Used only for seeded public-content candidates, never users or submissions.
 export const seedId = (value: string) => new Types.ObjectId(createHash('sha256').update(`hrpf-source:${value}`).digest('hex').slice(0, 24));
 function canonical(value: unknown): string {
@@ -39,6 +39,7 @@ export function lookup(record: SeedRecord): Record<string, unknown> {
   switch (record.kind) {
     case 'Setting': return { key: record.payload.key };
     case 'ContentPage': return { key: record.payload.key, locale: record.payload.locale };
+    case 'Project':
     case 'BlogPost': return { slug: record.payload.slug };
     default: return { seedKey: record.key };
   }
@@ -62,7 +63,7 @@ export async function validateManifest(input: unknown): Promise<Manifest> {
     if (record.kind !== 'GalleryItem' && record.duplicateOf) throw new Error('Only gallery records can reference duplicates.');
     if (['Report', 'Certificate'].includes(record.kind) && p.releaseReview !== 'pending') throw new Error('Documents must await release review.');
     if (record.kind === 'ContentPage' && (p.reviewStatus !== 'pending' || p.locale !== 'en' || record.key !== `page:en:${p.key}`)) throw new Error('Content must remain a sourced English draft.');
-    if (record.kind === 'BlogPost' && (p.status !== 'draft' || p.reviewStatus !== 'pending')) throw new Error('Blog imports must remain drafts.');
+    if (['BlogPost', 'Project'].includes(record.kind) && (p.status !== 'draft' || p.reviewStatus !== 'pending')) throw new Error('Blog imports must remain drafts.');
     if (record.kind === 'Setting' && (p.visibility !== 'private' || !['identity', 'contact', 'socialLinks', 'donations'].includes(String(p.key)) || record.key !== `setting:${p.key}`)) throw new Error('Only private sourced settings can be seeded.');
     // Mongoose validates strict fields, lengths and model-specific constraints offline.
     await new seedModels[record.kind](p).validate();

@@ -1,13 +1,16 @@
 import Container from "@/components/shared/Container";
-import { impactStats } from "@/data/impactStats";
+import home from "@/data/homepage.json";
 
-/** Full-width navy band of headline impact statistics. */
+/** Original navy statistics band, displaying verifiable organisation counts. */
 export default function ImpactStatistics() {
   return (
-    <section className="bg-navy py-14 lg:py-16" aria-label="Our impact in numbers">
+    <section
+      className="bg-navy py-14 lg:py-16"
+      aria-label="HRPF organisation at a glance"
+    >
       <Container>
         <dl className="grid grid-cols-2 gap-y-10 sm:gap-y-0 lg:grid-cols-4">
-          {impactStats.map((stat, index) => (
+          {home.stats.map((stat, index) => (
             <div
               key={stat.label}
               className={`px-4 text-center lg:px-6 ${

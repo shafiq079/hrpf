@@ -3,6 +3,11 @@
 Human Rights Protection Foundation Pakistan. Work on `development`; keep `main`
 stable. This is a development prototype, not a production release.
 
+Project administration is available at `/admin/projects` using existing admin or
+editor accounts. Add galleries, structured descriptions, timelines, results and
+PDF reports, preview them, then save a draft or publish. Existing seeded projects
+can be edited without reseeding. See [project details](docs/PROJECT_DETAILS.md).
+
 ## Independent applications
 
 - `frontend/`: Next.js, its own package.json, lockfile, configuration and assets.
@@ -129,3 +134,10 @@ Read the Project Files brief, docs/PROJECT_CONTEXT.md, docs/DECISIONS.md and
 docs/PROGRESS.md for current state. M2 adds models/indexes, cookie auth and CSRF,
 role permissions, Redis limits/cache/tickets, scanned authenticated uploads,
 transactional submissions and the Mongo/BullMQ email outbox. See docs/M2_VERIFICATION.md. The owner delegated visual review and authorized the assistant to merge M1 after checks; see docs/M1_VERIFICATION.md for acceptance evidence.
+
+## Current frontend direction
+
+The frontend has been restored to the original pre-M4 design at the owner's request.
+Text and supplied NGO images will be updated one page at a time while preserving
+layout, theme, icons and image positions. The M4 backend remains implemented.
+Admin gallery work must support both images and videos. See docs/HANDOFF.md.

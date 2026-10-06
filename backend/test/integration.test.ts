@@ -9,7 +9,7 @@ import express from 'express';
 import { unavailable } from '../src/http/errors.js';
 import { createApp } from '../src/app.js';
 import { parseEnv } from '../src/config/env.js';
-import { Asset, AuthSession, Complaint, ContactMessage, Counter, EmailOutbox, FormTicket, MembershipApplication, Setting, User, ensureIndexes, roles, type Role } from '../src/domain/models.js';
+import { Asset, AuditLog, Project, BlogPost, BoardMember, GalleryItem, Report, AuthSession, Complaint, ContactMessage, Counter, EmailOutbox, FormTicket, MembershipApplication, Setting, User, ensureIndexes, roles, type Role } from '../src/domain/models.js';
 import { createRedisServices } from '../src/infrastructure/redis-services.js';
 import { digest, hashPassword } from '../src/security/crypto.js';
 import { createOutbox, startOutboxWorker, type Mail } from '../src/services/outbox.js';
@@ -241,4 +241,328 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     const uploads = createUploads(env, createForms(services, bot), provider, scanner);
     await uploads.prune(); assert.equal(await Asset.countDocuments(), 1); assert.ok(await Asset.findById(claimed.id));
   });
+  it('M4 public settings strip private fields and managed blogs respect publication', async () => {
+    const { publicSettingSchemas } = await import('../src/http/public-content.js');
+    const setting = await Setting.create({ key: 'contact', visibility: 'public', value: { address: 'Test address', postalCode: '50490', phone: '+923001234567', landline: '+92546123456', emails: ['test@example.org'], notificationEmails: ['private@example.org'], password: 'private-secret' } });
+    await Setting.create({ key: 'smtp', visibility: 'public', value: { password: 'private-secret' } });
+    assert.equal(publicSettingSchemas.contact.safeParse(setting.value).success, true);
+    const settings = await request(app).get('/api/settings/public').expect(200);
+    assert.deepEqual(Object.keys(settings.body.data), ['contact']);
+    assert.ok(!JSON.stringify(settings.body).includes('private'));
+    const page = await BlogPost.create({ slug: 'test-mission', locale: 'en', title: { en: 'Reviewed test mission' }, blocks: [{ type: 'paragraph', text: '<script>text, not markup</script>' }], sourceReferences: ['restricted source filename'] });
+    await request(app).get('/api/blogs/test-mission').expect(404);
+    const admin = await login('admin');
+    await admin.agent.get('/api/admin/publication/page').expect(400);
+    await request(app).get('/api/content/mission').expect(404);
+    const review = await admin.agent.get('/api/admin/publication/setting').expect(200);
+    assert.equal(review.body.data.length, 1); assert.ok(!JSON.stringify(review.body).includes('private-secret'));
+    const auth = await login('editor');
+    const release = (version: number, action = 'publish') => auth.agent.post(`/api/admin/publication/blog/${page.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send({ version, action, releaseReviewed: true });
+    await release(0).expect(200);
+    const content = await request(app).get('/api/blogs/test-mission').expect(200);
+    assert.equal(content.body.data.title, 'Reviewed test mission');
+    assert.ok(!JSON.stringify(content.body).includes('restricted source'));
+    await request(app).get('/api/blogs/test-mission?locale=ur').expect(404);
+    await release(0, 'withdraw').expect(409);
+    await release(1, 'withdraw').expect(200);
+    await request(app).get('/api/blogs/test-mission').expect(404);
+    assert.equal(await AuditLog.countDocuments({ action: { $in: ['publication.publish', 'publication.withdraw'] } }), 2);
+  });
+  it('M4 publication enforces role, CSRF and an explicit review attestation', async () => {
+    const board = await BoardMember.create({ name: 'Synthetic board member', slug: 'synthetic-board', designation: 'Chair', rank: 1, isActive: false });
+    const editor = await login('editor');
+    await editor.agent.get('/api/admin/publication/board').expect(403);
+    await editor.agent.post(`/api/admin/publication/board/${board.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', editor.csrf).send({ version: 0, action: 'publish', releaseReviewed: true }).expect(403);
+    const admin = await login('admin');
+    await admin.agent.post(`/api/admin/publication/board/${board.id}`).send({ version: 0, action: 'publish', releaseReviewed: true }).expect(403);
+    await admin.agent.post(`/api/admin/publication/board/${board.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', admin.csrf).send({ version: 0, action: 'publish' }).expect(400);
+    const pending = await admin.agent.get('/api/admin/publication/board').expect(200);
+    assert.equal(pending.body.data[0].id, board.id); assert.equal(pending.body.data[0].version, 0);
+    assert.equal((await request(app).get('/api/board').expect(200)).body.data.length, 0);
+  });
+  it('M4 concurrent publication uses optimistic versions and cannot expose a draft twice', async () => {
+    const page = await BlogPost.create({ slug: 'test-vision', locale: 'en', title: { en: 'Test vision' }, blocks: [{ type: 'paragraph', text: 'Synthetic source' }] });
+    const auth = await login('editor');
+    const responses = await Promise.all([1, 2].map(() => auth.agent.post(`/api/admin/publication/blog/${page.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send({ version: 0, action: 'publish', releaseReviewed: true })));
+    assert.deepEqual(responses.map(r => r.status).sort(), [200, 409]);
+    assert.equal((await BlogPost.findById(page.id))!.__v, 1);
+    assert.equal(await AuditLog.countDocuments({ action: 'publication.publish' }), 1);
+  });
+  it('M4 reviewed gallery release joins clean bound files, filters before pagination and revokes URLs on withdrawal', async () => {
+    const auth = await login('editor');
+    const image = await GalleryItem.create({ category: 'in-action', title: { en: 'Synthetic image' }, alt: { en: 'Synthetic one-pixel test image' } });
+    const uploaded = await auth.agent.post('/api/admin/assets?purpose=content').set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).attach('file', png, 'sample.png').expect(201);
+    const file = uploaded.body.data.assetId;
+    await request(app).get(`/api/public-assets/${file}`).expect(404);
+    const release = (version: number, action = 'publish', assetId?: string) => auth.agent.post(`/api/admin/publication/gallery/${image.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send({ version, action, releaseReviewed: true, ...(assetId ? { assetId } : {}) });
+    await release(0, 'publish', file).expect(200);
+    const bound = (await GalleryItem.findById(image.id))!;
+    await GalleryItem.create({ category: 'in-action', title: { en: 'Mismatched entity must stay hidden' }, alt: { en: 'Test image' }, asset: bound.asset!, reviewStatus: 'approved', publishedAt: new Date() });
+    const list = await request(app).get('/api/gallery?category=in-action&limit=1').expect(200);
+    assert.equal(list.body.meta.total, 1); assert.equal(list.body.data[0].file, `/api/public-assets/${file}`);
+    assert.ok(!JSON.stringify(list.body).includes('publicId')); assert.ok(!JSON.stringify(list.body).includes('sha256'));
+    assert.equal((await request(app).get('/api/gallery?category=media-coverage').expect(200)).body.meta.total, 0);
+    const response = await request(app).get(`/api/public-assets/${file}`).expect(200);
+    assert.match(response.headers['cache-control'] ?? '', /no-store/); assert.equal(response.headers['content-type'], 'image/png');
+    await release(1, 'withdraw').expect(200);
+    await request(app).get(`/api/public-assets/${file}`).expect(404);
+    assert.equal((await request(app).get('/api/gallery').expect(200)).body.meta.total, 0);
+    await release(2).expect(200); // Re-publishing the same bound file is supported.
+    await request(app).get(`/api/public-assets/${file}`).expect(200);
+  });
+  it('M4 publication rejects foreign uploads and complaint evidence atomically', async () => {
+    const auth = await login('editor'), other = await login('editor');
+    const image = await GalleryItem.create({ category: 'in-action', alt: { en: 'Test image' } });
+    const foreign = await other.agent.post('/api/admin/assets?purpose=content').set('Origin', 'http://localhost:3000').set('X-CSRF-Token', other.csrf).attach('file', png, 'foreign.png').expect(201);
+    const ticket = await form(), proof = await upload(ticket);
+    const own = await auth.agent.post('/api/admin/assets?purpose=content').set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).attach('file', png, 'unrevocable.png').expect(201);
+    await Asset.updateOne({ _id: own.body.data.assetId }, { $set: { deliveryType: 'upload' } });
+    for (const assetId of [foreign.body.data.assetId, proof, own.body.data.assetId]) await auth.agent.post(`/api/admin/publication/gallery/${image.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send({ version: 0, action: 'publish', releaseReviewed: true, assetId }).expect(400);
+    assert.equal((await GalleryItem.findById(image.id))!.publishedAt, undefined);
+    assert.equal(await AuditLog.countDocuments({ action: 'publication.publish' }), 0);
+    await Asset.updateOne({ _id: proof }, { $set: { visibility: 'public', claimStatus: 'claimed', entityType: 'Complaint', entityId: new Types.ObjectId() } });
+    await request(app).get(`/api/public-assets/${proof}`).expect(404);
+  });
+  it('M4 only public report releases download; HEAD does not count and original stays restricted', async () => {
+    const auth = await login('editor');
+    const report = await Report.create({ title: { en: 'Synthetic report' }, slug: 'synthetic-report', year: 2025 });
+    const uploaded = await auth.agent.post('/api/admin/assets?purpose=content').set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).attach('file', pdf, 'public.pdf').expect(201);
+    await auth.agent.post(`/api/admin/publication/report/${report.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send({ version: 0, action: 'publish', releaseReviewed: true, assetId: uploaded.body.data.assetId }).expect(200);
+    const list = await request(app).get('/api/reports').expect(200);
+    assert.equal(list.body.meta.total, 1); assert.ok(!JSON.stringify(list.body).includes('restrictedOriginal'));
+    await request(app).head(`/api/reports/${report.id}/download`).expect(200);
+    assert.equal((await Report.findById(report.id))!.downloadCount, 0);
+    await request(app).get(`/api/reports/${report.id}/download`).expect(200);
+    // The stream can finish at the client before the post-delivery counter write.
+    await waitFor(async () => (await Report.findById(report.id))!.downloadCount === 1);
+    assert.equal((await Report.findById(report.id))!.downloadCount, 1);
+  });
+  it('M4 blog queries are bounded, literal and hide scheduled or unreviewed content', async () => {
+    for (const [slug, status, reviewStatus, publishedAt] of [['published', 'published', 'approved', new Date(0)], ['draft', 'draft', 'pending', new Date(0)], ['future', 'published', 'approved', new Date(Date.now() + 86400000)]] as const) await BlogPost.create({ title: { en: slug === 'published' ? 'Literal .* title' : slug }, slug, status, reviewStatus, publishedAt, blocks: [{ type: 'paragraph', text: 'Synthetic article' }], sourceReferences: ['private-source'] });
+    const response = await request(app).get('/api/blogs?q=.*').expect(200);
+    assert.equal(response.body.meta.total, 1); assert.equal(response.body.data[0].slug, 'published');
+    await request(app).get('/api/blogs/draft').expect(404); await request(app).get('/api/blogs/future').expect(404);
+    assert.ok(!JSON.stringify((await request(app).get('/api/blogs/published').expect(200)).body).includes('private-source'));
+    for (const path of ['/api/blogs?limit=100', '/api/gallery?page=-1', '/api/blogs?locale=xx', '/api/blogs?unexpected=true', '/api/public-assets/nope']) await request(app).get(path).expect(400);
+  });
+
+  it('homepage projects and news support authorized audited CRUD, versions and publish/withdraw', async () => {
+    const project={title:{en:'Synthetic project'},slug:'synthetic-project',locale:'en',summary:{en:'Synthetic summary'},focusArea:'Test focus',location:'Test location',projectStatus:'Ongoing',startYear:2026,blocks:[{type:'paragraph',text:'Synthetic body'}]};
+    const news={title:{en:'Synthetic update'},slug:'synthetic-update',locale:'en',excerpt:{en:'Synthetic excerpt'},blocks:[{type:'paragraph',text:'Synthetic update body'}]};
+    await request(app).post('/api/admin/projects').send(project).expect(401);
+    const manager=await login('case_manager');
+    await manager.agent.get('/api/admin/projects').expect(403);
+    const editor=await login('editor');
+    for(const [kind,payload,publicationKind] of [['projects',project,'project'],['news',news,'blog']] as const) {
+      await editor.agent.post(`/api/admin/${kind}`).send(payload).expect(403);
+      const created=await editor.agent.post(`/api/admin/${kind}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(payload).expect(201);
+      const {id}=created.body.data;
+      assert.equal((await request(app).get(`/api/${kind}`).expect(200)).body.data.length,0);
+      await request(app).get(`/api/${kind}/${payload.slug}`).expect(404);
+      assert.equal((await editor.agent.get(`/api/admin/${kind}`).expect(200)).body.data.length,1);
+      const publish=(version:number)=>editor.agent.post(`/api/admin/publication/${publicationKind}/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version,action:'publish',releaseReviewed:true});
+      await publish(0).expect(200);
+      assert.equal((await request(app).get(`/api/${kind}?limit=3`).expect(200)).body.data[0].title,payload.title.en);
+      assert.equal((await request(app).get(`/api/${kind}/${payload.slug}`).expect(200)).body.data.blocks[0].text,payload.blocks[0]!.text);
+      const edit=(version:number)=>editor.agent.patch(`/api/admin/${kind}/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...payload,version,title:{en:'Changed title'}});
+      await edit(0).expect(409);await edit(1).expect(200);
+      await request(app).get(`/api/${kind}/${payload.slug}`).expect(404);
+      await publish(2).expect(200);
+      await editor.agent.delete(`/api/admin/${kind}/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:2}).expect(409);
+      await editor.agent.delete(`/api/admin/${kind}/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:3}).expect(200);
+      await request(app).get(`/api/${kind}/${payload.slug}`).expect(404);
+    }
+    assert.equal(await AuditLog.countDocuments({action:{$in:['projects.post','projects.patch','projects.delete','news.post','news.patch','news.delete']}}),6);
+  });
+  it('canonical blog CRUD retains news compatibility, access checks and shared publication state',async()=>{
+    const input={title:{en:'Canonical blog'},slug:'canonical-blog',locale:'en',excerpt:{en:'Blog excerpt'},blocks:[{type:'paragraph',text:'Blog body'}]};
+    await request(app).post('/api/admin/blogs').send(input).expect(401);
+    const manager=await login('case_manager');
+    await manager.agent.get('/api/admin/blogs').expect(403);
+    const editor=await login('editor');
+    await editor.agent.post('/api/admin/blogs').send(input).expect(403);
+    const created=await editor.agent.post('/api/admin/blogs').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(input).expect(201);
+    const {id}=created.body.data;
+    for(const kind of ['blogs','news']){
+      assert.equal((await editor.agent.get(`/api/admin/${kind}`).expect(200)).body.data[0].id,id);
+      await request(app).get(`/api/${kind}/canonical-blog`).expect(404);
+    }
+    await editor.agent.post(`/api/admin/publication/blog/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:0,action:'publish',releaseReviewed:true}).expect(200);
+    const canonical=(await request(app).get('/api/blogs/canonical-blog').expect(200)).body;
+    assert.deepEqual((await request(app).get('/api/news/canonical-blog').expect(200)).body,canonical);
+    await editor.agent.patch(`/api/admin/blogs/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...input,version:0}).expect(409);
+    await editor.agent.patch(`/api/admin/blogs/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...input,title:{en:'Edited blog'},version:1}).expect(200);
+    for(const kind of ['blogs','news'])await request(app).get(`/api/${kind}/canonical-blog`).expect(404);
+    await editor.agent.delete(`/api/admin/blogs/${id}`).send({version:2}).expect(403);
+    await editor.agent.delete(`/api/admin/blogs/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:2}).expect(200);
+    assert.equal((await editor.agent.get('/api/admin/news').expect(200)).body.data.length,0);
+    assert.equal(await AuditLog.countDocuments({action:{$in:['blogs.post','blogs.patch','blogs.delete']}}),3);
+  });
+  it('homepage cover files are clean, owned, bound and revoked on update or deletion',async()=>{
+    const editor=await login('editor');
+    const input={title:{en:'Synthetic pictured update'},slug:'pictured-update',excerpt:{en:'Synthetic excerpt'},blocks:[{type:'paragraph',text:'Synthetic body'}]};
+    const created=await editor.agent.post('/api/admin/news').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(input).expect(201);
+    const upload=await editor.agent.post('/api/admin/assets?purpose=content').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).attach('file',png,'sample.png').expect(201);
+    const {id}=created.body.data,assetId=upload.body.data.assetId;
+    await editor.agent.post(`/api/admin/publication/blog/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:0,action:'publish',releaseReviewed:true,assetId}).expect(200);
+    assert.equal((await request(app).get('/api/news').expect(200)).body.data[0].image,`/api/public-assets/${assetId}`);
+    await request(app).get(`/api/public-assets/${assetId}`).expect(200);
+    await editor.agent.patch(`/api/admin/news/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...input,version:1}).expect(200);
+    await request(app).get(`/api/public-assets/${assetId}`).expect(404);
+    await request(app).get('/api/news/pictured-update').expect(404);
+    await editor.agent.post('/api/admin/news').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...input,slug:'bad-body',blocks:[{type:'paragraph'}]}).expect(400);
+  });
+
+  it('rich project drafts retain media privately, publish every reviewed file, and revoke removed media', async () => {
+    const editor = await login('editor');
+    const stage = async (bytes = png, filename = 'project.png') => {
+      const result = await editor.agent.post('/api/admin/assets?purpose=content').set('Origin', 'http://localhost:3000').set('X-CSRF-Token', editor.csrf).attach('file', bytes, filename).expect(201);
+      return result.body.data.assetId as string;
+    };
+    const cover = await stage(), first = await stage(), second = await stage(), document = await stage(pdf, 'brief.pdf');
+    const payload = { title: {en:'Project with a complete story'}, summary: {en:'A verified summary'}, slug:'rich-project', locale:'en', focusArea:'Health', location:'Test district', projectStatus:'Completed', blocks:[{type:'paragraph',text:'Existing source text'}], coverAssetId:cover, coverAlt:'Health outreach',
+      gallery:[{assetId:first,alt:'Community meeting',caption:'A reviewed photo'},{assetId:second,alt:'Project activities'}], documents:[{assetId:document,label:'Project brief'}],
+      details:{overview:'About the work',challenge:'A documented need',approach:'Working with communities',period:'2026',targetCommunity:'Local families',objectives:['Improve access'],activities:['Community outreach'],outcomes:['Improved services'],partners:['Confirmed partner'],milestones:[{period:'June 2026',title:'Outreach completed',description:'First stage'}],metrics:[{value:'12',label:'Sessions held',source:'Project report'}],sections:[{heading:'Lessons learned',body:'A longer reflection'}]},
+    };
+    const created = await editor.agent.post('/api/admin/projects').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(payload).expect(201);
+    const id = created.body.data.id;
+    assert.equal(await Asset.countDocuments({entityId:id,claimStatus:'claimed',visibility:'restricted'}),4);
+    await request(app).get('/api/projects/rich-project').expect(404);
+    await request(app).get(`/api/public-assets/${first}`).expect(404);
+    const privateRow = await editor.agent.get(`/api/admin/projects/${id}`).expect(200);
+    assert.equal(privateRow.body.data.coverAssetId,cover);
+    assert.equal(privateRow.body.data.gallery.length,2);
+    assert.ok(!JSON.stringify(privateRow.body).includes('publicId'));
+    const publish = (version:number) => editor.agent.post(`/api/admin/publication/project/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version,action:'publish',releaseReviewed:true});
+    await publish(0).expect(200);
+    const listing = await editor.agent.get('/api/admin/projects').expect(200);
+    const listed = listing.body.data.find((item: {id: string}) => item.id === id);
+    assert.equal(listed.version, 1, 'Project list must include the version required for withdrawal/deletion');
+    assert.ok(!JSON.stringify(listing.body).includes('publicId'));
+    const result = await request(app).get('/api/projects/rich-project').expect(200);
+    assert.equal(result.body.data.gallery.length,2); assert.equal(result.body.data.documents.length,1);
+    assert.equal(result.body.data.details.metrics[0].source,'Project report');
+    assert.equal(result.body.data.imageAlt,'Health outreach');
+    assert.ok(!JSON.stringify(result.body).includes('publicId'));
+    for (const file of [cover,first,second,document]) await request(app).get(`/api/public-assets/${file}`).expect(200);
+    const changed = {...payload,gallery:payload.gallery.slice(0,1),documents:[],version:1};
+    await editor.agent.patch(`/api/admin/projects/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(changed).expect(200);
+    for (const file of [cover,first,second,document]) await request(app).get(`/api/public-assets/${file}`).expect(404);
+    await publish(2).expect(200);
+    await request(app).get(`/api/public-assets/${first}`).expect(200);
+    await request(app).get(`/api/public-assets/${second}`).expect(404);
+    await request(app).get(`/api/public-assets/${document}`).expect(404);
+    const after = await request(app).get('/api/projects/rich-project').expect(200);
+    assert.equal(after.body.data.gallery.length,1); assert.deepEqual(after.body.data.documents,[]);
+    await editor.agent.delete(`/api/admin/projects/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:3}).expect(200);
+    await request(app).get(`/api/public-assets/${cover}`).expect(404);
+    await request(app).get('/api/projects/rich-project').expect(404);
+  });
+  it('project media validation rejects foreign, duplicate, expired, non-image and cross-project files atomically', async () => {
+    const editor = await login('editor'), other = await login('editor');
+    const stage = async (auth:typeof editor, bytes=png, filename='project.png') => (await auth.agent.post('/api/admin/assets?purpose=content').set('Origin','http://localhost:3000').set('X-CSRF-Token',auth.csrf).attach('file',bytes,filename).expect(201)).body.data.assetId as string;
+    const own=await stage(editor),foreign=await stage(other),doc=await stage(editor,pdf,'brief.pdf'),expired=await stage(editor);
+    await Asset.updateOne({_id:expired},{$set:{stagingExpiresAt:new Date(0)}});
+    const base={title:{en:'Draft'},summary:{en:'Summary'},slug:'validation-project',locale:'en',focusArea:'Rights',location:'Test location',projectStatus:'Proposed',blocks:[{type:'paragraph',text:'Body'}]};
+    for(const media of [{coverAssetId:foreign},{gallery:[{assetId:doc,alt:'Not a photo'}]},{coverAssetId:expired},{coverAssetId:own,gallery:[{assetId:own.toUpperCase(),alt:'Duplicate'}]},{documents:[{assetId:own,label:'Not a PDF'}]}]) {
+      await editor.agent.post('/api/admin/projects').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...base,...media}).expect(400);
+      assert.equal(await Project.countDocuments(),0);
+      assert.equal((await Asset.findById(own))!.claimStatus,'staged');
+    }
+    await editor.agent.post('/api/admin/projects').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...base,coverAssetId:own}).expect(201);
+    await editor.agent.post('/api/admin/projects').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...base,slug:'another-project',coverAssetId:own}).expect(400);
+    const row=await Project.findOne({slug:base.slug});
+    await editor.agent.patch(`/api/admin/projects/${row!.id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...base,version:7}).expect(409);
+    const manager=await login('case_manager');
+    await manager.agent.get(`/api/admin/projects/${row!.id}`).expect(403);
+  });
+
+  it('rich blog drafts retain media privately, publish every reviewed file, and revoke removed media', async () => {
+    const editor = await login('editor');
+    const stage = async (bytes = png, filename = 'blog.png') => {
+      const result = await editor.agent.post('/api/admin/assets?purpose=content').set('Origin', 'http://localhost:3000').set('X-CSRF-Token', editor.csrf).attach('file', bytes, filename).expect(201);
+      return result.body.data.assetId as string;
+    };
+    const cover = await stage(), first = await stage(), second = await stage(), document = await stage(pdf, 'brief.pdf');
+    const payload = { title: {en:'BlogPost with a complete story'}, excerpt: {en:'A verified summary'}, slug:'rich-blog', locale:'en', blocks:[{type:'paragraph',text:'Existing source text'}], coverAssetId:cover, coverAlt:'Health outreach',
+      gallery:[{assetId:first,alt:'Community meeting',caption:'A reviewed photo'},{assetId:second,alt:'BlogPost activities'}], documents:[{assetId:document,label:'BlogPost brief'}],
+      tags:['Accountability'], details:{category:'Community advocacy',authorName:'Public author',authorRole:'Editor',intro:'About this article',takeaways:['A documented concern'],sections:[{heading:'What happened',body:'A sourced account',bullets:['Known fact'],quote:'An attributed quotation',attribution:'Supplied report'}],conclusion:'A considered ending',sources:[{label:'Supplied report',url:'https://example.org/report',note:'Historical source'}],seoTitle:'Search title',seoDescription:'Search description'},
+    };
+    const created = await editor.agent.post('/api/admin/blogs').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(payload).expect(201);
+    const id = created.body.data.id;
+    assert.equal(await Asset.countDocuments({entityId:id,claimStatus:'claimed',visibility:'restricted'}),4);
+    await request(app).get('/api/blogs/rich-blog').expect(404);
+    await request(app).get(`/api/public-assets/${first}`).expect(404);
+    const privateRow = await editor.agent.get(`/api/admin/blogs/${id}`).expect(200);
+    assert.equal(privateRow.body.data.coverAssetId,cover);
+    assert.equal(privateRow.body.data.gallery.length,2);
+    assert.ok(!JSON.stringify(privateRow.body).includes('publicId'));
+    const publish = (version:number) => editor.agent.post(`/api/admin/publication/blog/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version,action:'publish',releaseReviewed:true});
+    await publish(0).expect(200);
+    const listing = await editor.agent.get('/api/admin/blogs').expect(200);
+    const listed = listing.body.data.find((item: {id: string}) => item.id === id);
+    assert.equal(listed.version, 1, 'BlogPost list must include the version required for withdrawal/deletion');
+    assert.ok(!JSON.stringify(listing.body).includes('publicId'));
+    const result = await request(app).get('/api/blogs/rich-blog').expect(200);
+    assert.equal(result.body.data.gallery.length,2); assert.equal(result.body.data.documents.length,1);
+    assert.equal(result.body.data.details.sections[0].attribution,'Supplied report');
+    assert.equal(result.body.data.imageAlt,'Health outreach');
+    assert.ok(!JSON.stringify(result.body).includes('publicId'));
+    for (const file of [cover,first,second,document]) await request(app).get(`/api/public-assets/${file}`).expect(200);
+    const changed = {...payload,gallery:payload.gallery.slice(0,1),documents:[],version:1};
+    await editor.agent.patch(`/api/admin/blogs/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(changed).expect(200);
+    for (const file of [cover,first,second,document]) await request(app).get(`/api/public-assets/${file}`).expect(404);
+    await publish(2).expect(200);
+    await request(app).get(`/api/public-assets/${first}`).expect(200);
+    await request(app).get(`/api/public-assets/${second}`).expect(404);
+    await request(app).get(`/api/public-assets/${document}`).expect(404);
+    const after = await request(app).get('/api/blogs/rich-blog').expect(200);
+    assert.equal(after.body.data.gallery.length,1); assert.deepEqual(after.body.data.documents,[]);
+    await editor.agent.post(`/api/admin/publication/blog/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:3,action:'withdraw',releaseReviewed:true}).expect(200);
+    for(const file of [cover,first]) await request(app).get(`/api/public-assets/${file}`).expect(404);
+    await request(app).get('/api/blogs/rich-blog').expect(404);
+    await publish(4).expect(200);
+    assert.equal((await request(app).get('/api/news/rich-blog').expect(200)).body.data.category,'Community advocacy');
+    await editor.agent.delete(`/api/admin/blogs/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:5}).expect(200);
+    await request(app).get(`/api/public-assets/${cover}`).expect(404);
+    await request(app).get('/api/blogs/rich-blog').expect(404);
+  });
+  it('blog media validation rejects foreign, duplicate, expired, non-image and cross-blog files atomically', async () => {
+    const editor = await login('editor'), other = await login('editor');
+    const stage = async (auth:typeof editor, bytes=png, filename='blog.png') => (await auth.agent.post('/api/admin/assets?purpose=content').set('Origin','http://localhost:3000').set('X-CSRF-Token',auth.csrf).attach('file',bytes,filename).expect(201)).body.data.assetId as string;
+    const own=await stage(editor),foreign=await stage(other),doc=await stage(editor,pdf,'brief.pdf'),expired=await stage(editor);
+    await Asset.updateOne({_id:expired},{$set:{stagingExpiresAt:new Date(0)}});
+    const base={title:{en:'Draft'},excerpt:{en:'Summary'},slug:'validation-blog',locale:'en',blocks:[{type:'paragraph',text:'Body'}]};
+    for(const media of [{coverAssetId:foreign},{gallery:[{assetId:doc,alt:'Not a photo'}]},{coverAssetId:expired},{coverAssetId:own,gallery:[{assetId:own.toUpperCase(),alt:'Duplicate'}]},{documents:[{assetId:own,label:'Not a PDF'}]}]) {
+      await editor.agent.post('/api/admin/blogs').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...base,...media}).expect(400);
+      assert.equal(await BlogPost.countDocuments(),0);
+      assert.equal((await Asset.findById(own))!.claimStatus,'staged');
+    }
+    await editor.agent.post('/api/admin/blogs').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...base,coverAssetId:own}).expect(201);
+    await editor.agent.post('/api/admin/blogs').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...base,slug:'another-blog',coverAssetId:own}).expect(400);
+    const row=await BlogPost.findOne({slug:base.slug});
+    await editor.agent.patch(`/api/admin/blogs/${row!.id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...base,version:7}).expect(409);
+    const manager=await login('case_manager');
+    await manager.agent.get(`/api/admin/blogs/${row!.id}`).expect(403);
+  });
+
+  it('blog publication supports section-only stories and rejects unsafe sources, unattributed quotes and excessive media', async () => {
+    const editor = await login('editor');
+    const send = (body: object) => editor.agent.post('/api/admin/blogs').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(body);
+    const base = {title:{en:'Section story'},excerpt:{en:'Summary'},slug:'section-story',blocks:[],details:{intro:'A proper introduction',sections:[{heading:'Context',body:'Reviewed text'}]}};
+    for (const details of [{sources:[{label:'Unsafe',url:'javascript:alert(1)'}]},{sources:[{label:'Unsafe',url:'https://user:pass@example.org/'}]},{sections:[{heading:'Quote',body:'Text',quote:'No attribution'}]}]) await send({...base,details}).expect(400);
+    await send({...base,tags:['Rights','rights']}).expect(400);
+    await send({...base,gallery:Array.from({length:13},()=>({assetId:new Types.ObjectId().toString(),alt:'Photo'}))}).expect(400);
+    await send({...base,documents:Array.from({length:4},()=>({assetId:new Types.ObjectId().toString(),label:'PDF'}))}).expect(400);
+    const created = await send(base).expect(201);
+    await editor.agent.post(`/api/admin/publication/blog/${created.body.data.id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:0,action:'publish',releaseReviewed:true}).expect(200);
+    const response = await request(app).get('/api/blogs/section-story').expect(200);
+    assert.equal(response.body.data.authorName,'HRPF Pakistan');
+    assert.equal(response.body.data.readingMinutes,1);
+    assert.deepEqual(response.body.data.blocks,[]);
+    assert.equal(response.body.data.details.sections[0].heading,'Context');
+    const empty = await send({...base,slug:'empty-story',details:{}}).expect(201);
+    await editor.agent.post(`/api/admin/publication/blog/${empty.body.data.id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:0,action:'publish',releaseReviewed:true}).expect(400);
+  });
+
 });

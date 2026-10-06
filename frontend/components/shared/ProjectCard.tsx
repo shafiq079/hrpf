@@ -5,6 +5,8 @@ import AppImage from "./AppImage";
 
 interface ProjectCardProps {
   project: Project;
+  statusLabel?: string;
+  startedLabel?: string;
 }
 
 const statusStyles: Record<Project["status"], string> = {
@@ -15,7 +17,11 @@ const statusStyles: Record<Project["status"], string> = {
 };
 
 /** Project card with image, status badge, focus area, location and summary. */
-export default function ProjectCard({ project }: ProjectCardProps) {
+export default function ProjectCard({
+  project,
+  statusLabel,
+  startedLabel,
+}: ProjectCardProps) {
   const {
     title,
     focusArea,
@@ -41,7 +47,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         <span
           className={`absolute left-3 top-3 z-10 rounded px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${statusStyles[status]}`}
         >
-          {status}
+          {statusLabel ?? status}
         </span>
       </div>
       <div className="flex flex-1 flex-col p-6">
@@ -62,7 +68,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
             {location}
           </span>
-          <span>Started {startYear}</span>
+          <span>{startedLabel ?? `Started ${startYear}`}</span>
         </div>
         <Link
           href={href}

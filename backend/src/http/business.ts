@@ -3,6 +3,9 @@ import { z } from 'zod';
 import type { Environment } from '../config/env.js';
 import type { RedisServices } from '../infrastructure/redis-services.js';
 import { createAuth } from '../security/auth.js';
+import { publicationRouter } from './publication.js';
+import { publicRouter } from './public-content.js';
+import { managedContentRouter } from './managed-content.js';
 import { adminRouter } from './admin.js';
 import { unavailable, validate } from './errors.js';
 import { uploadQuery } from './contracts.js';
@@ -16,10 +19,13 @@ export function createBusiness(env: Environment, adapters: BusinessAdapters) {
   const auth = createAuth(env), forms = createForms(redis, adapters.bot ?? turnstileVerifier(env));
   const uploads = createUploads(env, forms, adapters.provider ?? cloudinaryProvider(env), adapters.scanner ?? clamScanner(env));
   const submissions = createSubmissions(env, forms);
+  router.use(publicRouter(adapters.provider ?? cloudinaryProvider(env)));
   const account = (body: unknown) => body && typeof body === 'object' && 'email' in body && typeof body.email === 'string' ? body.email.trim().toLowerCase().slice(0, 254) : 'invalid';
   router.use('/auth', redis.limit('auth', 120, 60000));
   router.use(['/auth/login', '/auth/forgot-password', '/auth/reset-password'], redis.limit('login', 10, 15 * 60000, account));
   router.use('/auth', auth.router);
+  router.use('/admin/publication', redis.limit('publication', 60, 60000), publicationRouter(auth));
+  router.use('/admin', redis.limit('managed-content', 120, 60000), managedContentRouter(auth));
   router.use('/admin', redis.limit('admin', 180, 60000), adminRouter(auth, uploads));
   router.post('/forms/session', redis.limit('form-session', 10, 15 * 60000), async (req, res) => res.status(201).json({ data: await forms.issue(req.body) }));
   router.post('/form-uploads', redis.limit('form-upload', 30, 15 * 60000), async (req, res) => {

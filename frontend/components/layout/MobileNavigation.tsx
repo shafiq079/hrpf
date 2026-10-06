@@ -22,6 +22,7 @@ export default function MobileNavigation({
   onClose,
 }: MobileNavigationProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
 
   // Prevent background scrolling and support Escape-to-close while open.
@@ -29,17 +30,30 @@ export default function MobileNavigation({
     if (!open) return;
 
     const previousOverflow = document.body.style.overflow;
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     document.body.style.overflow = "hidden";
     closeButtonRef.current?.focus();
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
+      if (event.key === "Tab") {
+        const controls = dialogRef.current?.querySelectorAll<HTMLElement>("a[href], button:not([disabled])");
+        const first = controls?.[0];
+        const last = controls?.[controls.length - 1];
+        if (!first || !last) return;
+        if (event.shiftKey && (document.activeElement === first || !dialogRef.current?.contains(document.activeElement))) {
+          event.preventDefault(); last.focus();
+        } else if (!event.shiftKey && (document.activeElement === last || !dialogRef.current?.contains(document.activeElement))) {
+          event.preventDefault(); first.focus();
+        }
+      }
     };
     document.addEventListener("keydown", onKeyDown);
 
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", onKeyDown);
+      previousFocus?.focus();
     };
   }, [open, onClose]);
 
@@ -61,6 +75,7 @@ export default function MobileNavigation({
       {/* Drawer */}
       <div
         id="mobile-navigation"
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label="Site menu"
@@ -98,6 +113,7 @@ export default function MobileNavigation({
                       type="button"
                       aria-label={`Toggle ${item.label} submenu`}
                       aria-expanded={expanded === item.label}
+                      aria-controls={`mobile-${item.label.replaceAll(" ", "-")}`}
                       onClick={() =>
                         setExpanded(expanded === item.label ? null : item.label)
                       }
@@ -112,7 +128,7 @@ export default function MobileNavigation({
                     </button>
                   </div>
                   {expanded === item.label && (
-                    <ul className="pb-2 pl-3">
+                    <ul id={`mobile-${item.label.replaceAll(" ", "-")}`} className="pb-2 pl-3">
                       {item.children.map((child) => (
                         <li key={`${child.label}-${child.href}`}>
                           <Link
@@ -144,13 +160,13 @@ export default function MobileNavigation({
 
         <div className="flex flex-col gap-3 border-t border-border px-5 py-5">
           <PrimaryButton
-            href="/report-a-violation"
+            href="/file-a-complaint"
             variant="red"
             icon={AlertTriangle}
             iconPosition="left"
             fullWidth
           >
-            Report a Violation
+            File a Complaint
           </PrimaryButton>
           <PrimaryButton href="/donate" variant="gold" fullWidth>
             Donate

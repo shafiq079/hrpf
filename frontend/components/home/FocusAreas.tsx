@@ -3,6 +3,7 @@ import SectionHeading from "@/components/shared/SectionHeading";
 import FocusAreaCard from "@/components/shared/FocusAreaCard";
 import CardGrid, { cardGridCellClass } from "@/components/shared/CardGrid";
 import Reveal from "@/components/shared/Reveal";
+import home from "@/data/homepage.json";
 import { focusAreas } from "@/data/focusAreas";
 
 /** Border-grid of six human-rights focus areas on a soft gray background. */
@@ -14,14 +15,14 @@ export default function FocusAreas() {
           align="center"
           eyebrow="What We Do"
           title="Our Focus Areas"
-          description="We direct our resources toward critical human-rights sectors where intervention and protection can create lasting social change."
+          description="Our work brings together human rights advocacy, public awareness and institutional accountability to support vulnerable communities in Pakistan."
         />
 
         <CardGrid cols={3} className="mt-12">
           {focusAreas.slice(0, 6).map((area, index) => (
             <li key={area.title} className={cardGridCellClass}>
               <Reveal delay={(index % 3) * 0.08} className="h-full">
-                <FocusAreaCard area={area} />
+                <FocusAreaCard area={{ ...area, ...home.focus[index] }} />
               </Reveal>
             </li>
           ))}

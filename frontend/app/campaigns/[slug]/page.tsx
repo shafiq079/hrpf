@@ -227,7 +227,7 @@ export default async function CampaignDetailPage({
                   </p>
                 )}
                 <PrimaryButton
-                  href="/reports"
+                  href="/about/progress-reports"
                   variant="outline"
                   size="md"
                   className="mt-4"

@@ -1,3 +1,10 @@
+import {
+  readHomeFeed,
+  projectCard,
+  newsCard,
+  type ProjectRecord,
+  type NewsRecord,
+} from "@/lib/home-feed";
 import HeroSection from "@/components/home/HeroSection";
 import AboutPreview from "@/components/home/AboutPreview";
 import FocusAreas from "@/components/home/FocusAreas";
@@ -8,17 +15,24 @@ import PartnersSection from "@/components/home/PartnersSection";
 import LatestNews from "@/components/home/LatestNews";
 import FinalCallToAction from "@/components/home/FinalCallToAction";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const [projects, news] = await Promise.all([
+    readHomeFeed<ProjectRecord>("projects"),
+    readHomeFeed<NewsRecord>("blogs"),
+  ]);
+
   return (
     <main id="main-content" className="flex-1">
       <HeroSection />
       <AboutPreview />
       <FocusAreas />
-      <FeaturedProjects />
+      <FeaturedProjects projects={projects.data.map(projectCard)} />
       <ImpactStatistics />
       <TestimonialSection />
       <PartnersSection />
-      <LatestNews />
+      <LatestNews newsArticles={news.data.map(newsCard)} />
       <FinalCallToAction />
     </main>
   );

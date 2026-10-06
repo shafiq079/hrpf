@@ -1,6 +1,7 @@
 import Container from "@/components/shared/Container";
 import PageHero from "@/components/shared/PageHero";
 import { createMetadata } from "@/lib/seo";
+import { readHomeFeed, projectCard, type ProjectRecord } from "@/lib/home-feed";
 import ProjectsExplorer from "./ProjectsExplorer";
 
 export const metadata = createMetadata({
@@ -10,7 +11,9 @@ export const metadata = createMetadata({
   path: "/projects",
 });
 
-export default function ProjectsPage() {
+export const dynamic = "force-dynamic";
+export default async function ProjectsPage() {
+  const result = await readHomeFeed<ProjectRecord>("projects", 48);
   return (
     <main id="main-content" className="flex-1">
       <PageHero
@@ -22,7 +25,8 @@ export default function ProjectsPage() {
 
       <section className="bg-off-white py-16 sm:py-20 lg:py-24">
         <Container>
-          <ProjectsExplorer />
+          <ProjectsExplorer projects={result.data.map(projectCard)} />
+        {result.status === "unavailable" && <p role="status" className="mt-6 text-sm text-muted">Projects could not be loaded. Please try again later.</p>}
         </Container>
       </section>
     </main>

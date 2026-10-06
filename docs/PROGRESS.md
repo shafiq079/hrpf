@@ -1,5 +1,66 @@
 # HRPF Progress
 
+## Populated project detail seed (2026-10-06)
+
+Added opt-in `seed:projects` enrichment of the three existing homepage projects.
+Source-based narratives/lists/timeline/qualitative results, six gallery placements
+and three bundled project source-brief PDFs allow review of the full new layout.
+The original seed checkpoints/news/record identities are retained. All 22 seed
+tests pass, including seven new real MongoDB enrichment cases. Live application
+uses the owner's private development services in Codespaces.
+
+## Project detail redesign and project console (2026-10-06)
+
+Implemented optional rich project details, cover plus 20 photos, 5 PDFs, safe
+transactional media binding/release, shared detail rendering and `/admin/projects`
+with preview and draft/publish workflows. Existing managed programme links and
+seeded content remain compatible. `/projects` now uses managed records. Full
+verification and the localhost browser limitation are recorded in
+PROJECT_DETAILS.md. Remaining administration modules are unchanged.
+
+## Homepage content update (2026-10-06)
+
+Homepage-only replacement is implemented on development. All nine original
+homepage sections, component order, literal CSS classes, theme and image positions
+are retained. Nine supplied archive photos replace the stock hero, preview, quote and card images. See HOME_SOURCE_MAP.json for exact filenames and hashes.
+Fixed homepage copy is bundled and requires no seed or admin approval. The sourced
+chairman excerpt replaces the invented testimonial. Profile values replace the
+unsubstantiated partner wordmarks in the same strip. Verified counts replace
+invented impact/donation figures. Footer brand glyphs remain icons with actual
+Facebook/TikTok/LinkedIn/YouTube destinations.
+
+Public projects and news feeds are wired to the homepage. News shares BlogPost
+records with blogs. Content roles have authenticated/CSRF-protected create/list,
+versioned edit/delete, and audited publish/withdraw endpoints. Edits return a record
+to draft and revoke its file. Clean owned cover images are delivered through fresh
+entity checks. Supporting reader routes /programmes, /programmes/[slug] and /updates/[slug]
+render managed bodies; existing project/news listing and other page designs remain
+untouched for their later page-by-page work. Admin UI remains future work.
+If feeds are empty or unavailable, the same card layouts show source programme
+priorities and report overviews with honest labels, without invented project
+names, publication dates, beneficiaries or partners. No live NGO database,
+Cloudinary upload or email operation was performed. Gallery videos remain in the
+admin scope for subsequent work.
+
+
+## Current owner direction: frontend restored (2026-10-06)
+
+The owner rejected the M4 frontend replacement and subsequent fixed-copy correction.
+The entire frontend is restored to the pre-M4 tree at 9c4f900 (original prototype
+layout, images, social icons and distinct focus-area icons). M4 backend work is
+retained. Earlier descriptions of the M4 public frontend are historical and no
+longer describe the current frontend. Its M4-only SSR command/CI step is removed.
+
+Next work must proceed page by page: preserve the theme, layout, components,
+image positions and icons; replace only default text with supplied NGO copy and
+images with appropriate supplied photos. Additional page redesign is scoped to
+individual pages. Do not impose admin approval for fixed NGO page copy.
+Admin scope includes gallery image AND video management, alongside users,
+memberships, complaints, board, blogs, documents, settings and inboxes.
+Restoring the prototype also restores its original placeholder text/form behavior;
+this rollback is not a claim that those flows are connected or production-ready.
+
+
 Updated: 2026-10-05
 
 ## Done
@@ -66,8 +127,15 @@ release workflow for assets.
 - See M3_VERIFICATION.md and backend/seed/README.md. Provider upload/public release are not automatic.
 - M3 implementation 61eb156fd7cc300d078a7659c9d096fa881f9e00 is published in the updated M2/M3 PR #2. GitHub CI run 37380616908 passed both jobs, all backend/source integration checks and production audits. Subsequent handoff changes are documentation only.
 
+## M4 implemented
+- Public content projections, reviewed file delivery and atomic audited publish/withdraw controls are implemented.
+- Fixed frontend copy is bundled from supplied sources; managed board/blog/gallery/document routes consume backend data. Unsupported prototype content and fake receipts are removed.
+- Independent frontend/backend checks, 23 integration scenarios, eight seed recovery scenarios, independent frontend SSR checks, full-stack source SSR smoke and both production dependency audits pass.
+- M4 is published in PR #3; final implementation 6b994a33468525286dbf50a6e335761f77f88d7e passed GitHub CI run 37386325272 (both jobs).
+- See M4_VERIFICATION.md for scope, verification and browser access limitation. Source files are not automatically published.
+
 ## Next milestone boundary
-- Implement public content projections/cache invalidation and source-driven pages without changing the prototype theme.
+- Build admin interfaces for users, members, applications, complaints, board, blogs, gallery, documents, settings, inboxes and audit; wire actual frontend intake flows. No fixed-page CMS or review.
 - Require reviewed clean assets for public release; convert/review the 2024 report and redact public document copies.
 - Do not seed invented fees, members, statistics, validity or legal outcomes.
 - Keep payment verification, member approval and complaint operational workflows separate from the M2 receipt/storage foundations.
@@ -87,5 +155,52 @@ release workflow for assets.
 - M1 health unit tests use injected dependency status; owner-provided localhost readiness 200 confirmed Atlas/Redis in Codespaces at that time. M2 also runs actual isolated MongoDB transactions and Redis/BullMQ integration locally.
 - M1 final-head CI passed and PR #1 is merged. Its desktop/mobile checks and runtime dependency remediation remain applicable; frontend is unchanged in M2.
 - No organizational database was seeded, sensitive files uploaded externally or live email sent. M3 tests use audited metadata in disposable MongoDB; M2 uses synthetic operational fixtures.
-- Prototype forms and content still use local sample data; M2/M3 add backend foundations and draft preparation without UI wiring and are not a production release.
+- Public routes now consume reviewed API content. Intake forms are explicitly unavailable pending wiring; source imports remain draft-only. This is not a production activation.
 - main remains stable; implementation stays on development.
+
+## Owner correction: fixed page copy
+Fixed NGO copy uses the owner-supplied page text, profile and current public details bundled in the frontend. Home, ten About sections, What We Do, contact, social links and donation details require no database seed, admin approval or publishing step. The fixed-page API and admin publishing kind were removed; legacy ContentPage seed rows remain source inventory without destructive database cleanup.
+
+Admin scope remains users, members, membership applications, complaints, board, blogs, gallery, reports, certificates, settings, contact inbox and audit logs. Fixed-page CMS/review is excluded. Blog/gallery/document/board data remain managed records. File protection and membership/complaint operational approvals remain separate from fixed text.
+
+
+## Homepage heading and seed correction
+
+User requires the original Featured Projects and Latest News & Updates headings
+and backend-managed records, including during initial setup. Removed programme/
+report fallback cards and conditional headings; empty/offline feeds retain the
+sections and headings without resurrecting withdrawn records. Added the separate
+backend seed:home command with three documented intervention projects and three
+report-derived news summaries, six bundled source covers, offline checksum plan,
+ClamAV/Cloudinary upload and transactional publication. Reruns preserve admin
+edits, withdrawals and deletions. See backend/seed/HOMEPAGE.md. Live import must
+run against the user's privately configured development services; no credentials
+or actual live upload/database execution are claimed here.
+
+
+## Header and canonical route update — 2026-10-06
+Implemented the owner-uploaded changes-file header: Our Work, Projects, Blogs,
+Gallery (Media Coverage / TV Interviews), Get Involved and the eight-item About
+submenu. File a Complaint and Donate are header actions. Removed Impact,
+top-level Reports, Internships, Our People and Governance from navigation.
+Public News/Updates routes redirect to Blogs; Reports moves to About / Progress
+Reports. Existing BlogPost data remains intact; canonical admin Blogs APIs retain
+legacy News compatibility. About text comes from supplied organisation pages;
+board/documents/media remain reviewed public records. Membership uses the supplied
+Google Form. TV recordings, complaint-field/notification changes and translation
+remain subsequent work. See NAVIGATION_PLAN.md for the complete route mapping,
+source interpretations, tests and Codespaces restart instructions.
+
+
+## Rich blogs and administrator editor — 2026-10-06
+Implemented `/blogs/[slug]` as a full article view, with category/public author,
+publication date and reading time, takeaways, structured sections/lists/quotations,
+contents, gallery, sources, PDF downloads, sharing and related released articles.
+`/admin/blogs` supports the existing authenticated content roles, preview, drafts,
+publish, withdraw and delete, using the same atomic media/privacy/version controls
+as projects. Existing BlogPost records and legacy News APIs are retained.
+Added explicit development-only `seed:blogs` enrichment for the three original
+homepage articles, six archive photo attachments and three prepared source brief
+PDFs. The source reports, seed preservation rules and Codespaces commands are in
+BLOG_DETAILS.md and backend/seed/BLOGS.md. Live seeding requires the owner's
+private service configuration; no live database/storage execution is claimed here.

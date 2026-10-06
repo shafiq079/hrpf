@@ -1,0 +1,27 @@
+{
+  "reports": [
+    {
+      "source": "2025 Progress Report.pdf",
+      "sha256": "cfbff888af513ea5cf0af087361e586fa358f2f7b8ec693a485cb89d71ec04f1"
+    },
+    {
+      "source": "PROGRESS REPORT 2024 Revised.docx",
+      "sha256": "5d9067ae4c149423dea1d4558cfd5368b692a186b57ccf03251d409cb7d4cc2f"
+    },
+    {
+      "source": "PROGRESS REPORT HRPF 2023.pdf",
+      "sha256": "d5752de28512319e12cec6188b4fd55a3ca7d2d010d1d65b04574d781bf14c29"
+    }
+  ],
+  "photos": {
+    "home-programme-advocacy.webp": "gallery-053.webp",
+    "home-programme-water.webp": "gallery-164.webp",
+    "home-programme-information.webp": "gallery-149.webp",
+    "home-report-2023.webp": "gallery-126.webp",
+    "home-report-2024.webp": "gallery-151.webp",
+    "home-report-2025.webp": "gallery-175.webp"
+  },
+  "photoArchive": "other_images_final.zip",
+  "photoTreatment": "STANDARD_CLEANUP",
+  "description": "Exact report passages are bundled in home-assets/progress reports/homepage-source-excerpts.txt. Photos are illustrative archive images, not case-specific evidence."
+}

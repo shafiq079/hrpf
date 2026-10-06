@@ -215,7 +215,7 @@ export default function ImpactPage() {
         actions={[
           {
             label: "View Reports and Publications",
-            href: "/reports",
+            href: "/about/progress-reports",
             icon: ArrowRight,
           },
         ]}

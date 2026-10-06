@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { SearchX } from "lucide-react";
-import { projects, projectStatuses } from "@/data/projects";
+import { type Project, projectStatuses } from "@/data/projects";
 import SearchInput from "@/components/shared/SearchInput";
 import FilterSelect from "@/components/shared/FilterSelect";
 import FilterBar from "@/components/shared/FilterBar";
@@ -13,7 +13,7 @@ import PrimaryButton from "@/components/shared/PrimaryButton";
 const INITIAL_VISIBLE = 6;
 
 /** Client-side search, filtering and progressive loading for projects. */
-export default function ProjectsExplorer() {
+export default function ProjectsExplorer({ projects }: { projects: (Project & { startedLabel?: string })[] }) {
   const [query, setQuery] = useState("");
   const [focusArea, setFocusArea] = useState("");
   const [status, setStatus] = useState("");
@@ -23,18 +23,18 @@ export default function ProjectsExplorer() {
 
   const focusAreaOptions = useMemo(
     () => Array.from(new Set(projects.map((p) => p.focusArea))).sort(),
-    [],
+    [projects],
   );
   const locationOptions = useMemo(
     () => Array.from(new Set(projects.map((p) => p.location))).sort(),
-    [],
+    [projects],
   );
   const yearOptions = useMemo(
     () =>
-      Array.from(new Set(projects.map((p) => String(p.startYear)))).sort(
+      Array.from(new Set(projects.filter((p) => p.startYear > 0).map((p) => String(p.startYear)))).sort(
         (a, b) => Number(b) - Number(a),
       ),
-    [],
+    [projects],
   );
 
   const filtered = useMemo(() => {
@@ -57,7 +57,7 @@ export default function ProjectsExplorer() {
         matchesYear
       );
     });
-  }, [query, focusArea, status, location, year]);
+  }, [projects, query, focusArea, status, location, year]);
 
   const hasFilters =
     query !== "" ||
@@ -179,7 +179,7 @@ export default function ProjectsExplorer() {
         <>
           <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {visibleProjects.map((project) => (
-              <ProjectCard key={project.slug} project={project} />
+              <ProjectCard key={project.slug} project={project} startedLabel={project.startedLabel} />
             ))}
           </div>
 

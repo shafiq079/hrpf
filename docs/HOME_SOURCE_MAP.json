@@ -1,0 +1,83 @@
+{
+  "textSources": [
+    "information/given pages text.txt",
+    "information/PROFILE HRPF.docx",
+    "information/Board of Directors.docx",
+    "information/social handles.txt",
+    "progress reports/2025 Progress Report.pdf",
+    "progress reports/PROGRESS REPORT 2024 Revised.docx",
+    "progress reports/PROGRESS REPORT HRPF 2023.pdf"
+  ],
+  "images": [
+    {
+      "sourceArchive": "other_images_final.zip",
+      "sourcePath": "website_webp/gallery-037.webp",
+      "destination": "frontend/public/images/hrpf/home-hero.webp",
+      "sha256": "a298e64af5f512f1c6b8fa0bb3db152822630e0987eda99deba758b8524e2ad3",
+      "treatment": "STANDARD_CLEANUP"
+    },
+    {
+      "sourceArchive": "other_images_final.zip",
+      "sourcePath": "website_webp/gallery-136.webp",
+      "destination": "frontend/public/images/hrpf/home-about.webp",
+      "sha256": "c552850cf802a169565b3a72b4b2b7c32d793e864c7c4d5a816725f5e0fbb5e2",
+      "treatment": "STANDARD_CLEANUP"
+    },
+    {
+      "sourceArchive": "other_images_final.zip",
+      "sourcePath": "website_webp/gallery-125.webp",
+      "destination": "frontend/public/images/hrpf/home-chairman.webp",
+      "sha256": "3ac1177311e44147ce8e552ef68de85ebf5212d3bed3c3bb0105aa49f909e7c8",
+      "treatment": "STANDARD_CLEANUP"
+    },
+    {
+      "sourceArchive": "other_images_final.zip",
+      "sourcePath": "website_webp/gallery-149.webp",
+      "destination": "frontend/public/images/hrpf/home-programme-information.webp",
+      "sha256": "fce2e0b8f03e6cddb37edea5e0c94f8c217790be64cee995449d0e7fe019025b",
+      "treatment": "STANDARD_CLEANUP"
+    },
+    {
+      "sourceArchive": "other_images_final.zip",
+      "sourcePath": "website_webp/gallery-164.webp",
+      "destination": "frontend/public/images/hrpf/home-programme-water.webp",
+      "sha256": "d5b535d5ed54cecfeff257dcfd4a8a04b1b43823e33cd0404abd08043486e6b0",
+      "treatment": "STANDARD_CLEANUP"
+    },
+    {
+      "sourceArchive": "other_images_final.zip",
+      "sourcePath": "website_webp/gallery-053.webp",
+      "destination": "frontend/public/images/hrpf/home-programme-advocacy.webp",
+      "sha256": "c430455aff4b74504460761e856df07c6b16d616ca4bb55ae32daa0d3c9f7bcf",
+      "treatment": "STANDARD_CLEANUP"
+    },
+    {
+      "sourceArchive": "other_images_final.zip",
+      "sourcePath": "website_webp/gallery-175.webp",
+      "destination": "frontend/public/images/hrpf/home-report-2025.webp",
+      "sha256": "5e614e56f14783ba2cddc7bbb9faaa50147fe322b15faa15ee71bbd3544a16b1",
+      "treatment": "STANDARD_CLEANUP"
+    },
+    {
+      "sourceArchive": "other_images_final.zip",
+      "sourcePath": "website_webp/gallery-151.webp",
+      "destination": "frontend/public/images/hrpf/home-report-2024.webp",
+      "sha256": "3649af3bca3fc43c7a2081b2e3fa03b52d176e84e20f618e3811682d2533a44e",
+      "treatment": "STANDARD_CLEANUP"
+    },
+    {
+      "sourceArchive": "other_images_final.zip",
+      "sourcePath": "website_webp/gallery-126.webp",
+      "destination": "frontend/public/images/hrpf/home-report-2023.webp",
+      "sha256": "5eecaea1966461f2663b6b7d36f02a62dbb43b07c4b14bf7b219da28b2a01174",
+      "treatment": "STANDARD_CLEANUP"
+    }
+  ],
+  "editorialChanges": {
+    "testimonial": "Exact excerpt from supplied chairman message; no invented beneficiary",
+    "partners": "No substantiated partners in curated supplied material; same strip presents profile core values",
+    "statistics": "Counts of supplied pillars, board positions, reports and curated aims; not impact or donation claims",
+    "projects": "Admin-controlled projects; no invented project records. Source programme priorities appear if feed has no public records.",
+    "news": "Admin-controlled BlogPost/news records share one collection; source report overviews appear if feed has no public records."
+  }
+}

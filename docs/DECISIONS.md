@@ -1,5 +1,30 @@
 # HRPF Decisions
 
+## 2026-10-06 — Populate the project redesign for review
+
+- Owner explicitly requests updating existing seeded project data rather than
+  manually completing the administrator form.
+- Provide a separate development-only `seed:projects -- --apply` command with
+  project-scoped transactions, versions, release checks and actor audit records.
+- Preserve original covers, identity, stories and news. Enrich only the three
+  published original seed projects; preserve deletions, withdrawals and later
+  rich admin edits. Reuse staged uploads after interruption.
+- Use the supplied report passages and labelled archive photographs. Add prepared
+  source-summary PDFs without exposing complete source documents. Use qualitative
+  reported results; do not fabricate beneficiary counts, costs or partnerships.
+
+## 2026-10-06 — Project detail redesign
+
+- The owner authorizes redesign of project detail pages and corresponding admin
+  inputs, and will manually populate project facts.
+- Use optional structured sections, image galleries, timeline, evidence-labelled
+  impact figures, partners and PDFs; omit unfilled sections.
+- Build project administration first, using the existing accounts and secure
+  upload/publication services. Other administration modules stay out of scope.
+- Preserve seeded stories and programme URLs. Do not reset or reseed live data.
+- Retain draft-on-edit publication policy and bind all project files in the same
+  transaction, with public access checked against current record attachments.
+
 ## 2026-10-05
 - Approved the implementation plan; implementation proceeds one verified milestone at a time.
 - Preserve the prototype design because it is the owner's required baseline.
@@ -68,3 +93,34 @@
 - Use native session transaction retries for create-only seed imports; no document instances are retained across retries. This avoids Mongoose document-state rollback errors on strict nested schemas while preserving atomicity.
 - Prepare local asset candidates atomically, with checksums and no provider requests. Keep 2024 DOCX conversion, public report redaction, gallery consent/privacy checks and the chairman crop explicit release tasks.
 - Source current individual content first; use the profile only for fallback values, curated aims and thematic pillars. Import no profile-only people, invented membership policy, operational records or notifications.
+
+## 2026-10-05 — M4 public content
+- PR #2 is merged. Continue directly on development from merged main; open a new development-to-main PR for M4.
+- Use explicit public DTOs and setting allowlists; no raw model documents/provider URLs in public responses.
+- Keep public reads no-store instead of introducing revocation-sensitive caches. Stream authenticated files through an entity release gate; bypass Next image optimization for those URLs.
+- Publish/withdraw only with current entity permissions, exact-Origin CSRF, release attestation, optimistic versions and atomic asset/audit updates. Serialize with user-governance changes.
+- Keep source imports draft-only. Actual public PDF conversion/redaction and image review are distinct operator release steps.
+- Preserve existing page components/theme, replace invented fixed text with supplied NGO copy; managed lists use empty/unavailable states, and remove simulated receipts from public routes. Supplied Google Forms remains the membership fallback.
+- Add navigation focus trapping/restoration; gallery uses a native modal dialog. Browser verification was blocked by the cloud browser's local-preview access; do not claim interactive/visual coverage.
+
+## Fixed-copy correction (owner instruction, 2026-10-06)
+Fixed NGO copy uses the owner-supplied page text, profile and current public details bundled in the frontend. Home, ten About sections, What We Do, contact, social links and donation details require no database seed, admin approval or publishing step. The fixed-page API and admin publishing kind were removed; legacy ContentPage seed rows remain source inventory without destructive database cleanup.
+
+Admin scope remains users, members, membership applications, complaints, board, blogs, gallery, reports, certificates, settings, contact inbox and audit logs. Fixed-page CMS/review is excluded. Blog/gallery/document/board data remain managed records. File protection and membership/complaint operational approvals remain separate from fixed text.
+
+## Current owner direction: frontend restored (2026-10-06)
+
+The owner rejected the M4 frontend replacement and subsequent fixed-copy correction.
+The entire frontend is restored to the pre-M4 tree at 9c4f900 (original prototype
+layout, images, social icons and distinct focus-area icons). M4 backend work is
+retained. Earlier descriptions of the M4 public frontend are historical and no
+longer describe the current frontend. Its M4-only SSR command/CI step is removed.
+
+Next work must proceed page by page: preserve the theme, layout, components,
+image positions and icons; replace only default text with supplied NGO copy and
+images with appropriate supplied photos. Additional page redesign is scoped to
+individual pages. Do not impose admin approval for fixed NGO page copy.
+Admin scope includes gallery image AND video management, alongside users,
+memberships, complaints, board, blogs, documents, settings and inboxes.
+Restoring the prototype also restores its original placeholder text/form behavior;
+this rollback is not a claim that those flows are connected or production-ready.

@@ -29,16 +29,20 @@ export const mainNavigation: NavItem[] = [
     ],
   },
   { label: "Projects", href: "/projects" },
-  { label: "Impact", href: "/impact" },
-  { label: "News", href: "/news" },
-  { label: "Reports", href: "/reports" },
+  { label: "Blogs", href: "/blogs" },
+  {
+    label: "Gallery",
+    href: "/gallery",
+    children: [
+      { label: "Media Coverage", href: "/gallery/media-coverage" },
+      { label: "TV Interviews", href: "/gallery/tv-interviews" },
+    ],
+  },
   {
     label: "Get Involved",
     href: "/get-involved",
     children: [
-      { label: "Volunteer", href: "/get-involved" },
-      { label: "Become a Member", href: "/get-involved" },
-      { label: "Internships", href: "/careers" },
+      { label: "Become a Member", href: "/become-a-member" },
       { label: "Campaigns", href: "/campaigns" },
       { label: "Careers", href: "/careers" },
     ],
@@ -47,10 +51,14 @@ export const mainNavigation: NavItem[] = [
     label: "About Us",
     href: "/about",
     children: [
-      { label: "Who We Are", href: "/about" },
-      { label: "Our People", href: "/about#our-people" },
-      { label: "Our Team", href: "/team" },
-      { label: "Governance", href: "/governance" },
+      { label: "Who We Are", href: "/about/who-we-are" },
+      { label: "Mission and Vision", href: "/about/mission-and-vision" },
+      { label: "Aims and Objectives", href: "/about/aims-and-objectives" },
+      { label: "Message of CEO", href: "/about/message-of-ceo" },
+      { label: "Board of Directors", href: "/about/board-of-directors" },
+      { label: "Our Team", href: "/about/our-team" },
+      { label: "Registration and Certificates", href: "/about/registration-and-certificates" },
+      { label: "Progress Reports", href: "/about/progress-reports" },
     ],
   },
 ];
@@ -58,10 +66,11 @@ export const mainNavigation: NavItem[] = [
 // Footer: main institutional links.
 export const footerFoundationLinks: NavLink[] = [
   { label: "About Us", href: "/about" },
-  { label: "Our Team", href: "/team" },
-  { label: "Governance", href: "/governance" },
+  { label: "Board of Directors", href: "/about/board-of-directors" },
+  { label: "Our Team", href: "/about/our-team" },
   { label: "Careers", href: "/careers" },
-  { label: "Media Centre", href: "/media" },
+  { label: "Blogs", href: "/blogs" },
+  { label: "Gallery", href: "/gallery" },
 ];
 
 // Footer: support & engagement links.
@@ -69,8 +78,9 @@ export const footerSupportLinks: NavLink[] = [
   { label: "Contact", href: "/contact" },
   { label: "Get Help", href: "/get-help" },
   { label: "Partner With Us", href: "/partner-with-us" },
-  { label: "Complaints", href: "/complaints" },
-  { label: "Reports & Resources", href: "/reports" },
+  { label: "File a Complaint", href: "/file-a-complaint" },
+  { label: "Become a Member", href: "/become-a-member" },
+  { label: "Progress Reports", href: "/about/progress-reports" },
 ];
 
 // Footer: policy links.

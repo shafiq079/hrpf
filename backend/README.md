@@ -127,3 +127,85 @@ with `npm run seed:check`, then follow [seed/README.md](seed/README.md) for sour
 layout, offline plan and explicit database apply. Reruns preserve admin edits and
 deletions. Nothing uploads or publishes automatically. `npm run test:seed` uses
 disposable MongoDB and no organizational credentials.
+
+## M4 managed public content
+
+Fixed NGO copy is bundled in `frontend/data/ngo-pages.json` and public contact,
+social and donation defaults in `frontend/data/ngo-details.json`. Those pages
+need no database seed, admin review or publication step. Legacy ContentPage seed
+records remain source inventory only; there is no fixed-page publishing endpoint.
+Admin work remains users, members, applications, complaints, board, blogs, gallery,
+reports, certificates, settings, inboxes and audit logs.
+
+Public reads: `/api/settings/public`, `/api/board`,
+`/api/blog-categories`, `/api/blogs`, `/api/blogs/:slug`, `/api/gallery`,
+`/api/reports`, `/api/certificates`. Lists use bounded `page`/`limit`; all content
+supports exact `locale=en|ur`. Blog `q` is a bounded literal title search; gallery
+`category` is `in-action|media-coverage`. Unknown query fields are rejected.
+Drafts, future publication dates and non-approved records are excluded. Gallery,
+report and certificate listings require a clean claimed public file bound to the
+same entity. Paginated responses include `meta.page/limit/total/pages`.
+
+Public asset delivery uses `/api/public-assets/:id`; report download links use
+`/api/reports/:id/download`. The backend rechecks current release and streams the
+authenticated provider file with no-store. It never returns provider URLs, original
+source files or identity evidence. GET report downloads count after successful
+streaming; HEAD does not. Reads deliberately bypass Redis content caching, so
+publication and withdrawal take effect without waiting for a cache TTL. Shared
+security limits and service readiness still use Redis.
+
+Authorized operators can inspect `/api/admin/publication/:kind?page=1` (20 records)
+and POST `/api/admin/publication/:kind/:id` with:
+
+```json
+{"version":0,"action":"publish","releaseReviewed":true,"assetId":"clean-staged-asset-id"}
+```
+
+Kinds: `blog`, `project`, `board`, `gallery`, `report`, `certificate`, `setting`.
+Omit `assetId` for settings; it is optional for blog/project covers and board photos and required for
+initial gallery/report/certificate release. Upload public copies first through
+`/api/admin/assets?purpose=content|certificate`. Files must be clean, unexpired
+staged uploads owned by the operator, or already bound to that same record.
+Report releases require PDF; board/gallery require raster images. Never upload
+an unreviewed sensitive original as a public copy. The API attestation records
+operator approval; it does not perform content redaction or certify legal validity.
+Inline rich-text image release is not supported yet and publication rejects it.
+
+`{"version":1,"action":"withdraw","releaseReviewed":true}` withdraws the record
+and restricts its bound assets in one audited transaction. Stale versions return
+409. Every mutation needs the existing session cookies, exact configured Origin
+and X-CSRF-Token. Content editors can release text/blog/gallery/reports; board,
+certificates and settings require admin/super_admin. Admin UI and full content
+editing are later milestones. See OpenAPI and docs/M4_VERIFICATION.md.
+
+## Homepage projects and news
+
+Public: GET `/api/projects` and `/api/projects/:slug`; canonical GET `/api/blogs` and
+`/api/blogs/:slug`. `/api/news` and `/api/news/:slug` remain compatibility aliases;
+News and Blogs share BlogPost records. List reads support
+bounded page/limit/locale; only current approved published records are public.
+Admin content roles: GET/POST `/api/admin/projects` and `/api/admin/blogs`
+(with `/api/admin/news` retained as a compatibility alias),
+PATCH/DELETE their `/:id` routes. PATCH accepts the complete text contract plus
+current `version`; DELETE accepts `version`. Mutations need the exact Origin and
+X-CSRF-Token. Create/edit produce drafts; edit/delete revoke files. Publish with
+`/api/admin/publication/project/:id` or `.../blog/:id`, using a current version,
+releaseReviewed and optional clean owned cover assetId. Covers use content uploads
+and authenticated no-store streaming; no provider URLs are exposed.
+
+The project editor is available at `/admin/projects`; a Blogs admin screen remains
+subsequent work. No live records are created automatically. Fixed homepage copy
+is bundled; project and article cards use published public feeds and do not fall
+back to sample records when the feeds are empty or unavailable.
+
+### Source-backed homepage setup
+
+`npm run seed:home` verifies the bundled three projects, three news summaries and
+six covers offline. `npm run seed:home -- --apply` imports and publishes them to
+configured development MongoDB/Cloudinary with working ClamAV and an existing
+`SEED_ACTOR_EMAIL`. See [seed/HOMEPAGE.md](seed/HOMEPAGE.md) for exact configuration,
+source provenance and preservation rules. This separate command does not publish
+legacy M3 content or alter fixed page copy.
+
+
+Rich blog administration is available at `/admin/blogs`. See [blog details](../docs/BLOG_DETAILS.md) and [sourced preview seed](seed/BLOGS.md) for fields, release controls and `npm run seed:blogs -- --apply`.

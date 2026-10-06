@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AlertTriangle, ChevronDown, Menu } from "lucide-react";
 import { mainNavigation } from "@/data/navigation";
@@ -15,6 +15,7 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const navRef = useRef<HTMLElement>(null);
+  const closeMobileMenu = useCallback(() => setMenuOpen(false), []);
 
   // Add a subtle shadow only after the page has scrolled.
   useEffect(() => {
@@ -64,7 +65,7 @@ export default function Header() {
 
           {/* Center navigation (desktop) */}
           <nav ref={navRef} aria-label="Primary" className="hidden lg:block">
-            <ul className="flex items-center gap-6">
+            <ul className="flex items-center gap-4 xl:gap-6">
               {mainNavigation.map((item, index) =>
                 item.children ? (
                   <li
@@ -74,7 +75,7 @@ export default function Header() {
                     onMouseLeave={() => setOpenIndex(null)}
                   >
                     <span className="flex items-center gap-0.5">
-                      <Link href={item.href} className={linkClasses}>
+                      <Link href={item.href} className={linkClasses} onClick={() => setOpenIndex(null)}>
                         {item.label}
                       </Link>
                       <button
@@ -101,9 +102,9 @@ export default function Header() {
                     <div
                       id={`nav-menu-${index}`}
                       hidden={openIndex !== index}
-                      className="absolute left-0 top-full z-50 pt-2"
+                      className={`absolute top-full z-50 pt-2 ${index === mainNavigation.length - 1 ? "right-0" : "left-0"}`}
                     >
-                      <ul className="w-64 rounded-md border border-border bg-white p-2 shadow-[0_12px_30px_-12px_rgba(8,47,67,0.35)]">
+                      <ul className="w-72 rounded-md border border-border bg-white p-2 shadow-[0_12px_30px_-12px_rgba(8,47,67,0.35)]">
                         {item.children.map((child) => (
                           <li key={`${child.label}-${child.href}`}>
                             <Link
@@ -120,7 +121,7 @@ export default function Header() {
                   </li>
                 ) : (
                   <li key={item.label}>
-                    <Link href={item.href} className={linkClasses}>
+                    <Link href={item.href} className={linkClasses} onClick={() => setOpenIndex(null)}>
                       {item.label}
                     </Link>
                   </li>
@@ -132,12 +133,12 @@ export default function Header() {
           {/* Actions (desktop) */}
           <div className="hidden items-center gap-2.5 lg:flex">
             <PrimaryButton
-              href="/report-a-violation"
+              href="/file-a-complaint"
               variant="red"
               icon={AlertTriangle}
               iconPosition="left"
             >
-              Report a Violation
+              File a Complaint
             </PrimaryButton>
             <PrimaryButton href="/donate" variant="gold">
               Donate
@@ -163,7 +164,7 @@ export default function Header() {
         </div>
       </Container>
 
-      <MobileNavigation open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <MobileNavigation open={menuOpen} onClose={closeMobileMenu} />
     </header>
   );
 }
