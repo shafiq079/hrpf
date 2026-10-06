@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { z } from 'zod';
-import { Asset, BlogCategory, BlogPost, BoardMember, Certificate, GalleryItem, Report, Setting } from '../domain/models.js';
+import { Asset, BlogCategory, BlogPost, BoardMember, Certificate, GalleryItem, Report, Setting, Project } from '../domain/models.js';
 import type { UploadProvider } from '../services/uploads.js';
 import { ApiError, unavailable, validate } from './errors.js';
 
@@ -53,18 +53,31 @@ export function publicRouter(provider: UploadProvider) {
     const rows = await BlogCategory.find({ isActive: true }).sort({ sortOrder: 1, _id: 1 }).select('name slug').lean();
     res.json({ data: rows.map(r => ({ slug: r.slug, name: r.name?.[locale] ?? '' })) });
   });
-  router.get('/blogs', async (req, res) => {
+  router.get(['/blogs', '/news'], async (req, res) => {
     const { locale, page, limit, q } = validate(publicQuery, req.query);
     const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const filter = { locale, status: 'published' as const, reviewStatus: 'approved' as const, ...publicationFilter(), ...(q ? { [`title.${locale}`]: { $regex: escaped, $options: 'i' } } : {}) };
-    const [rows, total] = await Promise.all([BlogPost.find(filter).sort({ publishedAt: -1, _id: 1 }).skip((page - 1) * limit).limit(limit).select('title slug excerpt publishedAt').lean(), BlogPost.countDocuments(filter)]);
-    res.json({ data: rows.map(r => ({ title: r.title?.[locale] ?? '', slug: r.slug, excerpt: r.excerpt?.[locale] ?? '', publishedAt: r.publishedAt })), meta: { page, limit, total, pages: Math.ceil(total / limit) } });
+    const [rows, total] = await Promise.all([BlogPost.find(filter).sort({ publishedAt: -1, _id: 1 }).skip((page - 1) * limit).limit(limit).select('title slug excerpt publishedAt cover').lean(), BlogPost.countDocuments(filter)]);
+    res.json({ data: await Promise.all(rows.map(async r => ({ title: r.title?.[locale] ?? '', slug: r.slug, excerpt: r.excerpt?.[locale] ?? '', publishedAt: r.publishedAt, image: await releasedAsset(r.cover?.assetId, 'BlogPost', r._id) ? `/api/public-assets/${r.cover!.assetId}` : null }))), meta: { page, limit, total, pages: Math.ceil(total / limit) } });
   });
-  router.get('/blogs/:slug', async (req, res) => {
+  router.get(['/blogs/:slug', '/news/:slug'], async (req, res) => {
     const { locale } = validate(publicQuery, req.query);
-    const row = await BlogPost.findOne({ slug: validate(slug, req.params.slug), locale, status: 'published', reviewStatus: 'approved', ...publicationFilter() }).select('title slug excerpt blocks publishedAt').lean();
+    const row = await BlogPost.findOne({ slug: validate(slug, req.params.slug), locale, status: 'published', reviewStatus: 'approved', ...publicationFilter() }).select('title slug excerpt blocks publishedAt cover').lean();
     if (!row) throw missing();
-    res.json({ data: { title: row.title?.[locale] ?? '', slug: row.slug, excerpt: row.excerpt?.[locale] ?? '', blocks: publicBlocks(row.blocks), publishedAt: row.publishedAt } });
+    res.json({ data: { title: row.title?.[locale] ?? '', slug: row.slug, excerpt: row.excerpt?.[locale] ?? '', blocks: publicBlocks(row.blocks), publishedAt: row.publishedAt, image: await releasedAsset(row.cover?.assetId, 'BlogPost', row._id) ? `/api/public-assets/${row.cover!.assetId}` : null } });
+  });
+  const projectView = async (row: any, locale: 'en' | 'ur') => ({ title: row.title?.[locale] ?? '', slug: row.slug, summary: row.summary?.[locale] ?? '', focusArea: row.focusArea, location: row.location, status: row.projectStatus, startYear: row.startYear, image: await releasedAsset(row.cover?.assetId, 'Project', row._id) ? `/api/public-assets/${row.cover.assetId}` : null });
+  router.get('/projects', async (req, res) => {
+    const {locale, page, limit} = validate(publicQuery, req.query);
+    const filter = {locale, status: 'published' as const, reviewStatus: 'approved' as const, ...publicationFilter()};
+    const [rows, total] = await Promise.all([Project.find(filter).sort({publishedAt:-1,_id:1}).skip((page-1)*limit).limit(limit).lean(), Project.countDocuments(filter)]);
+    res.json({data: await Promise.all(rows.map(r => projectView(r, locale))), meta:{page,limit,total,pages:Math.ceil(total/limit)}});
+  });
+  router.get('/projects/:slug', async (req, res) => {
+    const {locale} = validate(publicQuery, req.query);
+    const row = await Project.findOne({slug:validate(slug,req.params.slug),locale,status:'published',reviewStatus:'approved',...publicationFilter()}).lean();
+    if (!row) throw missing();
+    res.json({data:{...await projectView(row,locale),blocks:publicBlocks(row.blocks)}});
   });
   for (const kind of ['gallery', 'reports', 'certificates'] as const) {
     router.get(`/${kind}`, async (req, res) => {
@@ -100,6 +113,8 @@ export function publicRouter(provider: UploadProvider) {
     if (!asset?.entityId || asset.purpose !== (asset.entityType === 'Certificate' ? 'certificate' : 'content')) throw missing();
     let released = false;
     switch (asset.entityType) {
+      case 'Project': released = !!await Project.exists({_id:asset.entityId,status:'published',reviewStatus:'approved','cover.assetId':asset._id,...publicationFilter()}); break;
+      case 'BlogPost': released = !!await BlogPost.exists({_id:asset.entityId,status:'published',reviewStatus:'approved','cover.assetId':asset._id,...publicationFilter()}); break;
       case 'BoardMember': released = !!await BoardMember.exists({ _id: asset.entityId, isActive: true, 'photo.assetId': asset._id }); break;
       case 'GalleryItem': released = !!await GalleryItem.exists({ _id: asset.entityId, reviewStatus: 'approved', duplicateOf: null, 'asset.assetId': asset._id, ...publicationFilter() }); break;
       case 'Report': released = !!await Report.exists({ _id: asset.entityId, releaseReview: 'approved', 'publicPdf.assetId': asset._id, ...publicationFilter() }); break;

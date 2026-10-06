@@ -1,0 +1,200 @@
+import { Router } from "express";
+import mongoose from "mongoose";
+import { z } from "zod";
+import {
+  Project,
+  BlogPost,
+  User,
+  Counter,
+  AuditLog,
+  Asset,
+} from "../domain/models.js";
+import { createAuth, type Principal } from "../security/auth.js";
+import { permit, can } from "../security/permissions.js";
+import { ApiError, validate } from "./errors.js";
+const localized = z
+  .object({
+    en: z.string().trim().min(1).max(10000),
+    ur: z.string().max(10000).optional(),
+  })
+  .strict();
+const blocks = z
+  .array(
+    z
+      .object({
+        type: z.enum(["paragraph", "heading", "list"]),
+        text: z.string().max(10000).optional(),
+        items: z.array(z.string().max(1000)).max(100).optional(),
+      })
+      .strict()
+      .refine(
+        (v) => (v.type === "list" ? !!v.items?.length : !!v.text?.trim()),
+        "Provide text or list items",
+      ),
+  )
+  .min(1)
+  .max(100);
+const common = {
+  title: localized,
+  slug: z
+    .string()
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+    .max(100),
+  locale: z.enum(["en", "ur"]).default("en"),
+  blocks,
+};
+export const projectInput = z
+  .object({
+    ...common,
+    summary: localized,
+    focusArea: z.string().trim().min(1).max(150),
+    location: z.string().trim().min(1).max(150),
+    projectStatus: z.enum([
+      "Ongoing",
+      "Completed",
+      "Proposed",
+      "Emergency Response",
+    ]),
+    startYear: z.number().int().min(1900).max(2200).optional(),
+  })
+  .strict();
+export const newsInput = z.object({ ...common, excerpt: localized }).strict();
+const id = z.string().regex(/^[a-fA-F0-9]{24}$/);
+export function managedContentRouter(auth: ReturnType<typeof createAuth>) {
+  const router = Router();
+  router.use(["/projects", "/news"], auth.authenticate, permit("content"));
+  for (const kind of ["projects", "news"] as const) {
+    const model = (
+        kind === "projects" ? Project : BlogPost
+      ) as mongoose.Model<any>,
+      schema = kind === "projects" ? projectInput : newsInput,
+      entity = kind === "projects" ? "Project" : "BlogPost";
+    router.get(`/${kind}`, async (req, res) => {
+      const { page } = validate(
+        z
+          .object({ page: z.coerce.number().int().min(1).max(1000).default(1) })
+          .strict(),
+        req.query,
+      );
+      const rows = await model
+        .find()
+        .sort({ _id: 1 })
+        .skip((page - 1) * 20)
+        .limit(20)
+        .select("-cover -sourceReferences")
+        .lean();
+      res.json({
+        data: rows.map(({ _id, __v, ...r }: any) => ({
+          id: String(_id),
+          version: __v,
+          ...r,
+        })),
+        meta: { page, limit: 20 },
+      });
+    });
+    for (const method of ["post", "patch", "delete"] as const)
+      router[method](
+        method === "post" ? `/${kind}` : `/${kind}/:id`,
+        auth.csrf,
+        async (req, res) => {
+          const value =
+            method === "post" ? undefined : validate(id, req.params.id);
+          const input = validate<Record<string, any>>(
+            method === "post"
+              ? schema
+              : method === "patch"
+                ? schema.extend({ version: z.number().int().nonnegative() })
+                : z
+                    .object({ version: z.number().int().nonnegative() })
+                    .strict(),
+            req.body,
+          ) as Record<string, any>;
+          const principal = res.locals.principal as Principal;
+          const result = await mongoose.connection.transaction(async (tx) => {
+            await Counter.findOneAndUpdate(
+              { key: "security:user-governance" },
+              { $inc: { sequence: 1 } },
+              { session: tx, upsert: true },
+            );
+            const actor = await User.findOne({
+              _id: principal.id,
+              active: true,
+            }).session(tx);
+            if (!actor || !can(actor.role, "content"))
+              throw new ApiError(
+                403,
+                "FORBIDDEN",
+                "You do not have permission for this action.",
+              );
+            const { version, ...fields } = input;
+            let row =
+              method === "post"
+                ? new model(fields)
+                : await model.findOne({ _id: value, __v: version }).session(tx);
+            if (!row)
+              throw new ApiError(
+                409,
+                "VERSION_CONFLICT",
+                "Refresh this record before changing it.",
+              );
+            if (method === "delete")
+              await model.deleteOne(
+                { _id: row._id, __v: version },
+                { session: tx },
+              );
+            else {
+              if (method === "patch") {
+                row.set(fields);
+                row.status = "draft";
+                row.reviewStatus = "pending";
+                row.publishedAt = undefined;
+                row.__v += 1;
+              }
+              if (method === "post") await row.save({ session: tx });
+              else {
+                await row.validate();
+                const replaced = await model.replaceOne(
+                  { _id: row._id, __v: version },
+                  row.toObject(),
+                  { session: tx },
+                );
+                if (!replaced.matchedCount)
+                  throw new ApiError(
+                    409,
+                    "VERSION_CONFLICT",
+                    "Refresh this record before changing it.",
+                  );
+              }
+            }
+            if (method !== "post")
+              await Asset.updateMany(
+                { entityType: entity, entityId: row._id },
+                { $set: { visibility: "restricted" } },
+                { session: tx },
+              );
+            await AuditLog.create(
+              [
+                {
+                  actorId: principal.id,
+                  action: `${kind}.${method}`,
+                  entityType: entity,
+                  entityId: row._id,
+                  requestId: res.locals.requestId,
+                  outcome: "success",
+                  changedFields: Object.keys(fields),
+                },
+              ],
+              { session: tx },
+            );
+            return {
+              id: String(row._id),
+              version: row.__v,
+              status: method === "delete" ? "deleted" : "draft",
+            };
+          });
+          res.status(method === "post" ? 201 : 200).json({ data: result });
+        },
+      );
+  }
+  return router;
+}

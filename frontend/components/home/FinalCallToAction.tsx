@@ -1,3 +1,4 @@
+import home from "@/data/homepage.json";
 import { AlertTriangle, ArrowRight, Mail } from "lucide-react";
 import Container from "@/components/shared/Container";
 import PrimaryButton from "@/components/shared/PrimaryButton";
@@ -13,9 +14,7 @@ export default function FinalCallToAction() {
             <br className="hidden sm:block" /> Safety and Justice.
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-white/80 sm:text-base">
-            Join our global network of protectors. Whether you contribute time,
-            funds or information, your action creates a ripple of justice across
-            the world.
+            {home.cta}
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
             <PrimaryButton

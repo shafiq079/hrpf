@@ -17,25 +17,21 @@ import NewsletterForm from "./NewsletterForm";
 const socialLinks: { label: string; href: string; icon: ReactNode }[] = [
   {
     label: "Facebook",
-    href: "https://facebook.com",
+    href: "https://www.facebook.com/share/19UmHuUKSb/",
     icon: (
       <path d="M14 8.5h2.2V5.6C15.83 5.55 15 5.5 14 5.5c-2.06 0-3.5 1.26-3.5 3.58V11.5H7.8v3h2.7V22h3.2v-7.5h2.7l.4-3h-3.1V9.4c0-.7.28-.9 1.3-.9Z" />
     ),
   },
   {
-    label: "Instagram",
-    href: "https://instagram.com",
+    label: "TikTok",
+    href: "https://www.tiktok.com/@human.rightspakistan",
     icon: (
-      <>
-        <rect x="4" y="4" width="16" height="16" rx="4.5" />
-        <circle cx="12" cy="12" r="3.5" />
-        <circle cx="16.5" cy="7.5" r="1" fill="currentColor" stroke="none" />
-      </>
+      <path d="M14 3v12a4 4 0 1 1-4-4v3a1 1 0 1 0 1 1V3h3c.4 3 2 4.5 5 5v3c-2-.3-3.6-1.1-5-2.4" />
     ),
   },
   {
     label: "LinkedIn",
-    href: "https://linkedin.com",
+    href: "https://www.linkedin.com/in/human-rights-protection-foundation-pakistan-hrpf-3b545677",
     icon: (
       <>
         <rect x="4" y="4" width="16" height="16" rx="2" />
@@ -45,7 +41,7 @@ const socialLinks: { label: string; href: string; icon: ReactNode }[] = [
   },
   {
     label: "YouTube",
-    href: "https://youtube.com",
+    href: "https://youtube.com/@hrpfpakistan",
     icon: (
       <>
         <rect x="3" y="6" width="18" height="12" rx="3.5" />
@@ -55,7 +51,13 @@ const socialLinks: { label: string; href: string; icon: ReactNode }[] = [
   },
 ];
 
-function FooterColumn({ heading, links }: { heading: string; links: NavLink[] }) {
+function FooterColumn({
+  heading,
+  links,
+}: {
+  heading: string;
+  links: NavLink[];
+}) {
   return (
     <div>
       <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-white">
@@ -93,8 +95,8 @@ export default function Footer() {
               <BrandLogo size={56} onDark />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/60">
-              Protecting fundamental human rights through advocacy, legal aid
-              and community empowerment since 2015.
+              Promoting human dignity, justice and transparency through lawful
+              advocacy and public awareness in Pakistan.
             </p>
             <ul className="mt-5 flex items-center gap-3">
               {socialLinks.map((social) => (
@@ -133,7 +135,8 @@ export default function Footer() {
               Stay Informed
             </h3>
             <p className="mt-4 text-sm leading-relaxed text-white/60">
-              Subscribe to our monthly advocacy digest.
+              Stay connected with the Foundation’s advocacy and public awareness
+              work.
             </p>
             <div className="mt-4">
               <NewsletterForm />
@@ -145,9 +148,7 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-white/10">
         <Container className="flex flex-col gap-4 py-6 text-sm text-white/55 md:flex-row md:items-center md:justify-between">
-          <p>
-            © 2026 Human Rights Protection Foundation. All rights reserved.
-          </p>
+          <p>© 2026 Human Rights Protection Foundation. All rights reserved.</p>
           <ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
             {footerLegalLinks.map((link) => (
               <li key={link.label}>

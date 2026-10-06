@@ -6,10 +6,11 @@ import { formatDate } from "@/lib/format";
 
 interface NewsCardProps {
   article: NewsArticle;
+  dateLabel?: string;
 }
 
 /** Editorial article card for the Latest News section. */
-export default function NewsCard({ article }: NewsCardProps) {
+export default function NewsCard({ article, dateLabel }: NewsCardProps) {
   const { category, title, summary, image, imageAlt, href, date, readingTime } =
     article;
 
@@ -38,7 +39,11 @@ export default function NewsCard({ article }: NewsCardProps) {
           {summary}
         </p>
         <p className="mt-4 text-xs text-muted">
-          <time dateTime={date}>{formatDate(date)}</time>
+          {dateLabel ? (
+            <span>{dateLabel}</span>
+          ) : (
+            <time dateTime={date}>{formatDate(date)}</time>
+          )}
           <span aria-hidden="true"> · </span>
           {readingTime}
         </p>

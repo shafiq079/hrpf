@@ -5,6 +5,7 @@ import { credentials, newPassword } from '../security/auth.js';
 import { purpose } from '../services/forms.js';
 import { publicationInput } from '../http/publication.js';
 import { publicSettingSchemas } from '../http/public-content.js';
+import { projectInput, newsInput } from '../http/managed-content.js';
 import { roles } from '../domain/models.js';
 const jsonSchema = (value: z.ZodType) => { const { $schema: _schema, ...schema } = z.toJSONSchema(value, { io: 'input', unrepresentable: 'any' }); return schema; };
 const user = z.object({ id: z.string(), name: z.string(), email: z.email(), role: z.enum(roles) });
@@ -91,9 +92,26 @@ for (const path of ['/api/public-assets/{id}', '/api/reports/{id}/download']) {
   const op = paths[path]!.get as { responses: Record<string, unknown> };
   op.responses['200'] = { description: 'No-store reviewed file; PDF attachment or inline raster image. Report downloads increment after successful GET, never HEAD.', content: { 'application/octet-stream': { schema: { type: 'string', format: 'binary' } } } };
 }
-const kindParameter = { name: 'kind', in: 'path', required: true, schema: { type: 'string', enum: ['blog', 'board', 'gallery', 'report', 'certificate', 'setting'] } };
+const kindParameter = { name: 'kind', in: 'path', required: true, schema: { type: 'string', enum: ['blog', 'project', 'board', 'gallery', 'report', 'certificate', 'setting'] } };
 operation('/api/admin/publication/{kind}', 'get', 'Read bounded publication review records with versions; requires entity permission', z.array(z.record(z.string(), z.unknown())), { parameters: [kindParameter, { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 1000, default: 1 } }], security: [adminSecurity] });
 operation('/api/admin/publication/{kind}/{id}', 'post', 'Publish or withdraw a reviewed record atomically; version, CSRF, current role and audited release attestation required', z.object({ status: z.enum(['published', 'withdrawn']), version: z.number() }), { body: 'PublicationInput', parameters: [kindParameter, parameter('id')], security: [{ ...csrfSecurity, ...adminSecurity }] });
+const publicNews = z.object({title:z.string(),slug:z.string(),excerpt:z.string(),publishedAt:z.string(),image:z.string().nullable()});
+const publicProject = z.object({title:z.string(),slug:z.string(),summary:z.string(),focusArea:z.string(),location:z.string(),status:z.enum(['Ongoing','Completed','Proposed','Emergency Response']),startYear:z.number().optional(),image:z.string().nullable()});
+for (const [kind, input, output] of [['projects',projectInput,publicProject],['news',newsInput,publicNews]] as const) {
+ operation(`/api/${kind}`,'get','Read published managed homepage records',z.array(output),{parameters:publicParameters});
+ (paths[`/api/${kind}`]!.get as any).responses['200']={description:'Paginated public records',content:{'application/json':{schema:jsonSchema(z.object({data:z.array(output),meta:z.object({page:z.number(),limit:z.number(),total:z.number(),pages:z.number()})}))}}};
+ operation(`/api/${kind}/{slug}`,'get','Read a published record with structured text blocks',output.extend({blocks:publicContent.shape.blocks}),{parameters:[{name:'slug',in:'path',required:true,schema:{type:'string',maxLength:100}},...publicParameters]});
+ operation(`/api/admin/${kind}`,'get','Read bounded managed records and optimistic versions; content role',z.array(z.unknown()),{security:[adminSecurity]});
+ operation(`/api/admin/${kind}`,'post','Create a draft; content role and CSRF',z.object({id:z.string(),version:z.number(),status:z.literal('draft')}),{security:[{...csrfSecurity,...adminSecurity}]});
+ const create=paths[`/api/admin/${kind}`]!.post as any;
+ create.requestBody={required:true,content:{'application/json':{schema:jsonSchema(input)}}};
+ operation(`/api/admin/${kind}/{id}`,'patch','Replace text and return record to draft; requires current version',z.object({id:z.string(),version:z.number(),status:z.literal('draft')}),{parameters:[parameter('id')],security:[{...csrfSecurity,...adminSecurity}]});
+ const edit=paths[`/api/admin/${kind}/{id}`]!.patch as any;
+ edit.requestBody={required:true,content:{'application/json':{schema:jsonSchema(input.extend({version:z.number().int().nonnegative()}))}}};
+ operation(`/api/admin/${kind}/{id}`,'delete','Delete record and restrict its files; requires current version',z.object({id:z.string(),version:z.number(),status:z.literal('deleted')}),{parameters:[parameter('id')],security:[{...csrfSecurity,...adminSecurity}]});
+ const remove=paths[`/api/admin/${kind}/{id}`]!.delete as any;
+ remove.requestBody={required:true,content:{'application/json':{schema:jsonSchema(z.object({version:z.number().int().nonnegative()}).strict())}}};
+}
 const document = { openapi: '3.1.0', info: { title: 'HRPF API', version: '0.4.0', description: 'Backend foundations, managed public content and atomic publication controls. Fixed NGO page copy is bundled in the frontend and needs no publication approval. Operational member/case review workflows remain later milestones. Public reads are no-store and withdrawals take effect immediately. Browser clients use the frontend same-origin /api rewrite and credentials. All mutating auth/admin requests require the exact configured Origin and X-CSRF-Token. Production cookies use Secure, HttpOnly, SameSite=Lax, Path=/, no Domain; development names omit __Host-.' }, paths, components: { schemas, securitySchemes: {
   accessCookie: { type: 'apiKey', in: 'cookie', name: '__Host-hrpf-access' }, refreshCookie: { type: 'apiKey', in: 'cookie', name: '__Host-hrpf-refresh' },
   csrfCookie: { type: 'apiKey', in: 'cookie', name: '__Host-hrpf-csrf' }, csrfHeader: { type: 'apiKey', in: 'header', name: 'X-CSRF-Token' },

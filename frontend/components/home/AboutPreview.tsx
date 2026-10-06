@@ -1,3 +1,4 @@
+import home from "@/data/homepage.json";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import Container from "@/components/shared/Container";
@@ -14,8 +15,8 @@ export default function AboutPreview() {
           <Reveal className="relative">
             <div className="relative aspect-[4/3] overflow-hidden rounded-lg border border-border shadow-[0_16px_40px_-24px_rgba(8,47,67,0.4)]">
               <AppImage
-                src="/images/about-community.jpg"
-                alt="An advocate speaking with community members during an outreach visit."
+                src="/images/hrpf/home-about.webp"
+                alt="HRPF representatives in a meeting at an office table."
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="h-full w-full object-cover"
@@ -23,8 +24,7 @@ export default function AboutPreview() {
             </div>
             <blockquote className="mt-4 rounded-md bg-teal px-5 py-4 text-white lg:absolute lg:-bottom-6 lg:left-6 lg:right-12 lg:mt-0 lg:shadow-lg">
               <p className="font-serif text-[15px] italic leading-snug sm:text-base">
-                &ldquo;Human rights are not a privilege; they are our
-                birthright.&rdquo;
+                &ldquo;Human Rights for All, Justice with Dignity.&rdquo;
               </p>
             </blockquote>
           </Reveal>
@@ -34,18 +34,13 @@ export default function AboutPreview() {
             <div className="lg:pl-2">
               <p className="eyebrow">Who We Are</p>
               <h2 className="mt-3 text-[28px] leading-tight sm:text-[34px] lg:text-[40px]">
-                A Legacy of Advocacy and Impact
+                {home.aboutTitle}
               </h2>
               <p className="mt-5 text-[15px] leading-relaxed text-muted sm:text-base">
-                Since our inception, the Human Rights Protection Foundation has
-                been a beacon of hope for those marginalized by systemic
-                injustice. We operate through a network of legal experts,
-                community organizers and global advocates.
+                {home.aboutParagraphs[0]}
               </p>
               <p className="mt-4 text-[15px] leading-relaxed text-muted sm:text-base">
-                Our approach combines high-level legal advocacy with grassroots
-                empowerment, ensuring that change is not just systemic, but
-                deeply rooted in the communities we serve.
+                {home.aboutParagraphs[1]}
               </p>
               <Link
                 href="/about"

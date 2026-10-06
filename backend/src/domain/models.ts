@@ -86,6 +86,14 @@ export const BlogPost = mongoose.model('BlogPost', new Schema({
   status: { type: String, enum: ['draft', 'scheduled', 'published', 'archived'], default: 'draft' },
   publishedAt: Date, scheduledAt: Date, seo: localized, sourceReferences: [String], reviewStatus: review,
 }, options));
+export const Project = mongoose.model('Project', new Schema({
+  title: { type: localized, required: true }, slug: { ...requiredText(100), unique: true }, locale: { type: String, enum: ['en', 'ur'], default: 'en' },
+  summary: localized, blocks: [block], focusArea: requiredText(150), location: requiredText(150),
+  projectStatus: { type: String, enum: ['Ongoing', 'Completed', 'Proposed', 'Emergency Response'], default: 'Proposed' },
+  startYear: { type: Number, min: 1900, max: 2200 }, cover: assetRefSchema,
+  status: { type: String, enum: ['draft', 'published'], default: 'draft' }, reviewStatus: review, publishedAt: Date,
+}, options));
+Project.schema.index({ locale: 1, status: 1, publishedAt: -1 });
 const gallery = new Schema({
   category: { type: String, enum: ['media-coverage', 'in-action'], required: true }, title: localized, alt: localized, caption: localized,
   // Source imports can prepare an unpublished draft before a reviewed file exists.

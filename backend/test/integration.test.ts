@@ -344,4 +344,47 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     for (const path of ['/api/blogs?limit=100', '/api/gallery?page=-1', '/api/blogs?locale=xx', '/api/blogs?unexpected=true', '/api/public-assets/nope']) await request(app).get(path).expect(400);
   });
 
+  it('homepage projects and news support authorized audited CRUD, versions and publish/withdraw', async () => {
+    const project={title:{en:'Synthetic project'},slug:'synthetic-project',locale:'en',summary:{en:'Synthetic summary'},focusArea:'Test focus',location:'Test location',projectStatus:'Ongoing',startYear:2026,blocks:[{type:'paragraph',text:'Synthetic body'}]};
+    const news={title:{en:'Synthetic update'},slug:'synthetic-update',locale:'en',excerpt:{en:'Synthetic excerpt'},blocks:[{type:'paragraph',text:'Synthetic update body'}]};
+    await request(app).post('/api/admin/projects').send(project).expect(401);
+    const manager=await login('case_manager');
+    await manager.agent.get('/api/admin/projects').expect(403);
+    const editor=await login('editor');
+    for(const [kind,payload,publicationKind] of [['projects',project,'project'],['news',news,'blog']] as const) {
+      await editor.agent.post(`/api/admin/${kind}`).send(payload).expect(403);
+      const created=await editor.agent.post(`/api/admin/${kind}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(payload).expect(201);
+      const {id}=created.body.data;
+      assert.equal((await request(app).get(`/api/${kind}`).expect(200)).body.data.length,0);
+      await request(app).get(`/api/${kind}/${payload.slug}`).expect(404);
+      assert.equal((await editor.agent.get(`/api/admin/${kind}`).expect(200)).body.data.length,1);
+      const publish=(version:number)=>editor.agent.post(`/api/admin/publication/${publicationKind}/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version,action:'publish',releaseReviewed:true});
+      await publish(0).expect(200);
+      assert.equal((await request(app).get(`/api/${kind}?limit=3`).expect(200)).body.data[0].title,payload.title.en);
+      assert.equal((await request(app).get(`/api/${kind}/${payload.slug}`).expect(200)).body.data.blocks[0].text,payload.blocks[0]!.text);
+      const edit=(version:number)=>editor.agent.patch(`/api/admin/${kind}/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...payload,version,title:{en:'Changed title'}});
+      await edit(0).expect(409);await edit(1).expect(200);
+      await request(app).get(`/api/${kind}/${payload.slug}`).expect(404);
+      await publish(2).expect(200);
+      await editor.agent.delete(`/api/admin/${kind}/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:2}).expect(409);
+      await editor.agent.delete(`/api/admin/${kind}/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:3}).expect(200);
+      await request(app).get(`/api/${kind}/${payload.slug}`).expect(404);
+    }
+    assert.equal(await AuditLog.countDocuments({action:{$in:['projects.post','projects.patch','projects.delete','news.post','news.patch','news.delete']}}),6);
+  });
+  it('homepage cover files are clean, owned, bound and revoked on update or deletion',async()=>{
+    const editor=await login('editor');
+    const input={title:{en:'Synthetic pictured update'},slug:'pictured-update',excerpt:{en:'Synthetic excerpt'},blocks:[{type:'paragraph',text:'Synthetic body'}]};
+    const created=await editor.agent.post('/api/admin/news').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(input).expect(201);
+    const upload=await editor.agent.post('/api/admin/assets?purpose=content').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).attach('file',png,'sample.png').expect(201);
+    const {id}=created.body.data,assetId=upload.body.data.assetId;
+    await editor.agent.post(`/api/admin/publication/blog/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:0,action:'publish',releaseReviewed:true,assetId}).expect(200);
+    assert.equal((await request(app).get('/api/news').expect(200)).body.data[0].image,`/api/public-assets/${assetId}`);
+    await request(app).get(`/api/public-assets/${assetId}`).expect(200);
+    await editor.agent.patch(`/api/admin/news/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...input,version:1}).expect(200);
+    await request(app).get(`/api/public-assets/${assetId}`).expect(404);
+    await request(app).get('/api/news/pictured-update').expect(404);
+    await editor.agent.post('/api/admin/news').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...input,slug:'bad-body',blocks:[{type:'paragraph'}]}).expect(400);
+  });
+
 });

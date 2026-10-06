@@ -161,8 +161,8 @@ and POST `/api/admin/publication/:kind/:id` with:
 {"version":0,"action":"publish","releaseReviewed":true,"assetId":"clean-staged-asset-id"}
 ```
 
-Kinds: `blog`, `board`, `gallery`, `report`, `certificate`, `setting`.
-Omit `assetId` for text/settings; it is optional for board photos and required for
+Kinds: `blog`, `project`, `board`, `gallery`, `report`, `certificate`, `setting`.
+Omit `assetId` for settings; it is optional for blog/project covers and board photos and required for
 initial gallery/report/certificate release. Upload public copies first through
 `/api/admin/assets?purpose=content|certificate`. Files must be clean, unexpired
 staged uploads owned by the operator, or already bound to that same record.
@@ -177,3 +177,20 @@ and restricts its bound assets in one audited transaction. Stale versions return
 and X-CSRF-Token. Content editors can release text/blog/gallery/reports; board,
 certificates and settings require admin/super_admin. Admin UI and full content
 editing are later milestones. See OpenAPI and docs/M4_VERIFICATION.md.
+
+## Homepage projects and news
+
+Public: GET `/api/projects` and `/api/projects/:slug`; GET `/api/news` and
+`/api/news/:slug`. News and blogs share BlogPost records. List reads support
+bounded page/limit/locale; only current approved published records are public.
+Admin content roles: GET/POST `/api/admin/projects` and `/api/admin/news`,
+PATCH/DELETE their `/:id` routes. PATCH accepts the complete text contract plus
+current `version`; DELETE accepts `version`. Mutations need the exact Origin and
+X-CSRF-Token. Create/edit produce drafts; edit/delete revoke files. Publish with
+`/api/admin/publication/project/:id` or `.../blog/:id`, using a current version,
+releaseReviewed and optional clean owned cover assetId. Covers use content uploads
+and authenticated no-store streaming; no provider URLs are exposed.
+
+These are API controls; admin screens remain subsequent work. No live records
+are created automatically. The fixed homepage and its source programme/report
+cards are bundled and always available without admin approval.
