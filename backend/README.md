@@ -215,7 +215,7 @@ Rich blog administration is available at `/admin/blogs`. See [blog details](../d
 
 `/admin/gallery` manages archive images and hosted interviews. See
 [Gallery implementation](../docs/GALLERY.md) and
-[sourced preview seed](seed/GALLERY.md). Gallery now supports literal title
+[full archive import](seed/GALLERY.md). Gallery now supports literal title
 search and public source/date metadata. `GET /api/interviews` lists released
 YouTube/Vimeo interviews with optional clean bound thumbnails. Authenticated
 content CRUD is available under `/api/admin/gallery` and `/api/admin/interviews`;
@@ -223,5 +223,10 @@ publication also supports kind `interview`. Images remain private until release,
 and current versions/CSRF/audits apply to all mutations.
 
 `npm run seed:gallery -- --apply` uses the existing development-only private
-services to publish four supplied archive examples without overwriting admin
-work. No real interview links were supplied, so interviews are not fabricated.
+services to import all 200 supplied archive entries: 44 press cuttings and 132
+photographs/graphics publish once; 24 indexed duplicates remain hidden. Existing
+preview publications and later admin work are preserved. The plain command
+verifies source files offline; `--database` gives a read-only plan. Scans complete
+before any new content import or upload, progress/summary counts are printed, and
+completed releases survive an interrupted run. No real interview links were
+supplied, so interviews are not fabricated.

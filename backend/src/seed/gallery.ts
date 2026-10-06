@@ -15,37 +15,24 @@ const presentations: Record<string, {
   alt: string;
   caption: string;
   sourceName?: string;
-}> = {
-  'gallery:media-coverage:016': {
-    title: 'Daily Awami Forum — archive cutting',
-    alt: 'Archived Urdu newspaper cutting with the Daily Awami Forum Karachi masthead and an HRPF article.',
-    caption: 'A cutting from the supplied HRPF newspaper archive, shown in its original archival context. Open the image to read the Urdu report. No current project outcome is inferred from this historical item.',
-    sourceName: 'Daily Awami Forum, Karachi'
-  },
-  'gallery:in-action:003': {
-    title: 'HRPF archive — an indoor photograph',
-    alt: 'Two men seated indoors, with papers and a framed portrait in the background.',
-    caption: 'From the supplied HRPF photograph archive. The event date and the participants’ roles are not confirmed by the source index.'
-  },
-  'gallery:in-action:004': {
-    title: 'HRPF archive — TMA building',
-    alt: 'Three men standing outside a building with a TMA Mandi Bahauddin sign.',
-    caption: 'An archive photograph outside the TMA building in Mandi Bahauddin. The image records the setting; no official decision or project result is inferred.'
-  },
-  'gallery:in-action:005': {
-    title: 'HRPF archive — Lahore Press Club',
-    alt: 'Three men standing in front of a Lahore Press Club banner.',
-    caption: 'An archive photograph with a Lahore Press Club backdrop. The supplied image index does not establish the event date or a specific campaign outcome.'
-  }
-};
+}> = JSON.parse(await readFile(new URL('../../seed/gallery-presentations.json', import.meta.url), 'utf8'));
 export const galleryAssetRoot = new URL('../../seed/gallery-assets/', import.meta.url);
-export async function loadGalleryManifest() {
-  const manifest = await validateManifest(JSON.parse(await readFile(new URL('../../seed/gallery-manifest.json', import.meta.url), 'utf8')));
-  if (manifest.records.length !== 4 || manifest.records.some(record => record.kind !== 'GalleryItem' || record.duplicateOf || !presentations[record.key])) throw new Error('Invalid Gallery preview manifest.');
+export async function loadGalleryManifest(collection: 'archive' | 'preview' = 'archive') {
+  const filename = collection === 'preview' ? 'gallery-manifest.json' : 'gallery-archive-manifest.json';
+  const manifest = await validateManifest(JSON.parse(await readFile(new URL(`../../seed/${filename}`, import.meta.url), 'utf8')));
+  if (manifest.records.length !== (collection === 'preview' ? 4 : 200) ||
+      manifest.records.some(record => record.kind !== 'GalleryItem' || !presentations[record.duplicateOf ?? record.key])) throw new Error('Invalid Gallery archive manifest.');
+  if (collection === 'archive' && (
+    manifest.records.filter(record => record.duplicateOf).length !== 24 ||
+    manifest.records.filter(record => record.payload.category === 'media-coverage').length !== 57 ||
+    manifest.records.filter(record => record.payload.category === 'in-action').length !== 143
+  )) throw new Error('Gallery archive counts changed.');
+  for (const record of manifest.records) presentation(record);
   return manifest;
 }
 function presentation(record: SeedRecord) {
-  const copy = presentations[record.key]!;
+  const copy = presentations[record.duplicateOf ?? record.key];
+  if (!copy) throw new Error('A Gallery source description is missing.');
   return galleryInput.parse({
     title: {
       en: copy.title
@@ -63,6 +50,8 @@ function presentation(record: SeedRecord) {
     sortOrder: record.payload.sortOrder
   });
 }
+// Keep the original key and checksums: the four published preview records are
+// recognised without re-uploading or rewriting an administrator's content.
 const previewKey = (record: SeedRecord) => `gallery-preview:${record.key}`;
 const checksum = (manifest: Manifest, record: SeedRecord) => digest(Buffer.from(JSON.stringify({
   source: recordChecksum(manifest, record),
@@ -79,6 +68,7 @@ async function candidate(manifest: Manifest, record: SeedRecord, session?: mongo
   const source = await SourceImport.findOne({
     key: record.key,
     checksum: recordChecksum(manifest, record),
+    entityType: 'GalleryItem',
     entityId: seedId(record.key)
   }).session(session ?? null);
   if (!source) return null;
@@ -111,14 +101,42 @@ export async function galleryFiles(manifest: Manifest, root: string) {
 }
 export type GallerySeedResult = SeedResult | {
   key: string;
-  status: 'published' | 'admin-preserved' | 'seeded-preserved' | 'would-publish';
+  status: 'published' | 'admin-preserved' | 'seeded-preserved' | 'would-publish' | 'duplicate-hidden' | 'would-hide-duplicate';
 };
+async function checkpointResult(manifest: Manifest, record: SeedRecord): Promise<GallerySeedResult | undefined> {
+  const prior = await SourceImport.findOne({ key: previewKey(record) });
+  if (!prior) return undefined;
+  if (prior.entityType !== 'GalleryItem' || prior.entityId.toString() !== seedId(record.key).toString()) return { key: record.key, status: 'conflict' };
+  return {
+    key: record.key,
+    status: !(await GalleryItem.exists({ _id: prior.entityId })) ? 'deleted-preserved' :
+      prior.checksum === checksum(manifest, record) ? 'seeded-preserved' : 'source-changed'
+  };
+}
+function orderedRecords(manifest: Manifest) {
+  return [...manifest.records.filter(record => !record.duplicateOf), ...manifest.records.filter(record => record.duplicateOf)];
+}
+async function duplicateResult(record: SeedRecord): Promise<GallerySeedResult> {
+  if (!record.duplicateOf) throw new Error('A duplicate source reference is required.');
+  const target = await GalleryItem.findOne({ seedKey: record.duplicateOf });
+  const hidden = target && await GalleryItem.exists({
+    _id: seedId(record.key), __v: 0, reviewStatus: 'hidden',
+    duplicateOf: target._id, asset: null, publishedAt: null
+  });
+  return { key: record.key, status: hidden ? 'duplicate-hidden' : 'admin-preserved' };
+}
 export async function planGallerySeed(manifest: Manifest): Promise<GallerySeedResult[]> {
   const results: GallerySeedResult[] = [];
-  for (const record of manifest.records) {
+  for (const record of orderedRecords(manifest)) {
+    const prior = await checkpointResult(manifest, record);
+    if (prior) { results.push(prior); continue; }
     const imported = await importRecord(manifest, record, false);
     if (imported.status !== 'preserved') {
-      results.push(imported);
+      results.push(record.duplicateOf && imported.status === 'would-create' ? { key: record.key, status: 'would-hide-duplicate' } : imported);
+      continue;
+    }
+    if (record.duplicateOf) {
+      results.push(await duplicateResult(record));
       continue;
     }
     results.push({
@@ -137,6 +155,7 @@ export async function applyGallerySeed(options: {
   scanner: Scanner;
   report?: (result: GallerySeedResult) => void;
   phase?: (phase: string) => void;
+  progress?: (progress: { phase: 'scan'; completed: number; total: number; key: string }) => void;
 }) {
   const {
     manifest,
@@ -146,10 +165,11 @@ export async function applyGallerySeed(options: {
     provider,
     scanner
   } = options;
-  if (namespace !== 'hrpf/dev') throw new Error('Gallery preview setup is limited to hrpf/dev.');
+  if (namespace !== 'hrpf/dev') throw new Error('Gallery archive setup is limited to hrpf/dev.');
   await actorAllowed(actorId);
   options.phase?.('scan');
   // Verify and scan the complete batch before any DB or provider write.
+  let scanned = 0;
   for (const record of manifest.records) {
     const source = manifest.files.find(file => record.files.includes(file.id) && file.id.endsWith(':webp'));
     const bytes = source && files.get(source.id);
@@ -161,22 +181,18 @@ export async function applyGallerySeed(options: {
       mime: 'image/webp'
     });
     if ((await scanner(bytes)) !== 'clean') throw new Error('Gallery scan failed.');
+    options.progress?.({ phase: 'scan', completed: ++scanned, total: manifest.records.length, key: record.key });
   }
   const results: GallerySeedResult[] = [];
-  for (const record of manifest.records) {
+  for (const record of orderedRecords(manifest)) {
     options.phase?.('database');
-    const prior = await SourceImport.findOne({
-      key: previewKey(record)
-    });
+    // A full-archive scan can take time; permission may have changed meanwhile.
+    await actorAllowed(actorId);
+    const prior = await checkpointResult(manifest, record);
     let result: GallerySeedResult;
-    if (prior) result = {
-      key: record.key,
-      status: !(await GalleryItem.exists({
-        _id: prior.entityId
-      })) ? 'deleted-preserved' : prior.checksum === checksum(manifest, record) ? 'seeded-preserved' : 'source-changed'
-    };else {
+    if (prior) result = prior; else {
       const imported = await importRecord(manifest, record, true);
-      if (!['created', 'preserved'].includes(imported.status)) result = imported;else if (!(await candidate(manifest, record))) result = {
+      if (!['created', 'preserved'].includes(imported.status)) result = imported; else if (record.duplicateOf) result = await duplicateResult(record); else if (!(await candidate(manifest, record))) result = {
         key: record.key,
         status: 'admin-preserved'
       };else {

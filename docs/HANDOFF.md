@@ -13,10 +13,17 @@ captions, AI restoration labels and TV interview cards with click-to-load hosted
 players. `/admin/gallery` supports the existing content accounts, private image
 uploads, previews, drafts, publication, withdrawal and deletion for both kinds.
 See GALLERY.md for the complete fields/API/security contract and local checks.
-`npm run seed:gallery -- --apply` publishes four supplied archive examples using
-the owner's existing private Codespaces services. No real individual interview
+`npm run seed:gallery -- --apply` now covers all 200 supplied archive entries:
+44 press cuttings and 132 photographs/graphics publish once; 24 indexed duplicates
+remain hidden. The original four releases are preserved, including later admin
+edits. Original WebP bytes, source CSVs and scene descriptions are bundled; the
+command verifies/scans all files, reports progress and resumes interrupted uploads
+without re-uploading completed releases. Use `seed:gallery` for offline checks
+and `seed:gallery -- --database` for a read-only plan first. Private application
+uses the owner's existing Codespaces services. No real individual interview
 URLs were supplied, so no fake interviews are seeded. No private provider write
 or interactive visual acceptance is claimed in this environment.
+Permanent ClamAV startup/production deployment remains explicitly deferred.
 
 ## Populate the project redesign (2026-10-06)
 

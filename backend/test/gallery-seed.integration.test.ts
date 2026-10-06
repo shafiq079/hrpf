@@ -8,7 +8,7 @@ import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { Asset, AuditLog, GalleryItem, SourceImport, User, ensureIndexes } from '../src/domain/models.js';
 import { applyGallerySeed, galleryAssetRoot, galleryFiles, loadGalleryManifest, planGallerySeed } from '../src/seed/gallery.js';
 import { importRecord } from '../src/seed/importer.js';
-import { seedId, type Manifest } from '../src/seed/manifest.js';
+import { loadManifest, recordChecksum, seedId, type Manifest } from '../src/seed/manifest.js';
 import { publicRouter } from '../src/http/public-content.js';
 import type { UploadProvider } from '../src/services/uploads.js';
 let mongo: MongoMemoryReplSet,
@@ -36,11 +36,11 @@ const seed = () => applyGallerySeed({
   provider,
   scanner: async () => 'clean'
 });
-describe('Gallery source preview seed', {
+describe('Gallery archive import and preview compatibility', {
   timeout: 120000
 }, () => {
   before(async () => {
-    manifest = await loadGalleryManifest();
+    manifest = await loadGalleryManifest('preview');
     files = await galleryFiles(manifest, fileURLToPath(galleryAssetRoot));
     mongo = await MongoMemoryReplSet.create({
       binary: {
@@ -272,5 +272,113 @@ describe('Gallery source preview seed', {
     } finally {
       provider.store = store;
     }
+  });
+  it('extends an existing four-image preview to all 200 source entries with 176 releases and 24 hidden duplicates', async () => {
+    await seed();
+    const previewRows = await GalleryItem.find().lean();
+    const previewCheckpoints = await SourceImport.find().lean();
+    const archive = await loadGalleryManifest();
+    const archiveFiles = await galleryFiles(archive, fileURLToPath(galleryAssetRoot));
+    const original = await loadManifest();
+    assert.equal(archiveFiles.size, 200);
+    for (const record of archive.records) {
+      const source = original.records.find(row => row.key === record.key)!;
+      assert.equal(recordChecksum(archive, record), recordChecksum(original, source));
+    }
+    const plan = await planGallerySeed(archive);
+    assert.equal(plan.filter(row => row.status === 'seeded-preserved').length, 4);
+    assert.equal(plan.filter(row => row.status === 'would-create').length, 172);
+    assert.equal(plan.filter(row => row.status === 'would-hide-duplicate').length, 24);
+    assert.equal(uploads, 4);
+    assert.equal(await GalleryItem.countDocuments(), 4);
+    const scanned: number[] = [];
+    const options = { manifest: archive, files: archiveFiles, actorId, namespace: 'hrpf/dev', provider, scanner: async () => 'clean' as const };
+    const results = await applyGallerySeed({ ...options, progress: value => scanned.push(value.completed) });
+    assert.equal(scanned.length, 200);
+    assert.equal(scanned.at(-1), 200);
+    assert.equal(results.filter(row => row.status === 'published').length, 172);
+    assert.equal(results.filter(row => row.status === 'seeded-preserved').length, 4);
+    assert.equal(results.filter(row => row.status === 'duplicate-hidden').length, 24);
+    assert.equal(uploads, 176);
+    assert.equal(await Asset.countDocuments(), 176);
+    assert.equal(await GalleryItem.countDocuments(), 200);
+    assert.equal(await GalleryItem.countDocuments({ reviewStatus: 'hidden', publishedAt: null, asset: null }), 24);
+    assert.equal(await GalleryItem.countDocuments({ reviewStatus: 'approved', treatment: 'AI_RESTORATION' }), 16);
+    for (const before of previewRows) assert.deepEqual(await GalleryItem.findById(before._id).lean(), before);
+    for (const before of previewCheckpoints) assert.deepEqual(await SourceImport.findById(before._id).lean(), before);
+    const app = express().use('/api', publicRouter(provider));
+    for (const [category, total] of [['media-coverage', 44], ['in-action', 132]] as const) {
+      const first = await request(app).get(`/api/gallery?category=${category}&limit=12`).expect(200);
+      assert.equal(first.body.meta.total, total);
+      const ids = new Set<string>();
+      for (let page = 1; page <= first.body.meta.pages; page++) {
+        const response = await request(app).get(`/api/gallery?category=${category}&limit=12&page=${page}`).expect(200);
+        for (const item of response.body.data) { assert.ok(item.alt); ids.add(item.id); }
+        assert.ok(!JSON.stringify(response.body).includes('sourceFilename'));
+      }
+      assert.equal(ids.size, total);
+    }
+    const audits = await AuditLog.countDocuments();
+    const rerun = await applyGallerySeed(options);
+    assert.equal(rerun.filter(row => row.status === 'seeded-preserved').length, 176);
+    assert.equal(rerun.filter(row => row.status === 'duplicate-hidden').length, 24);
+    assert.equal(uploads, 176);
+    assert.equal(await AuditLog.countDocuments(), audits);
+  });
+  it('rejects a scan failure at the end of the full archive before uploading or importing anything', async () => {
+    const archive = await loadGalleryManifest();
+    const archiveFiles = await galleryFiles(archive, fileURLToPath(galleryAssetRoot));
+    let scans = 0;
+    await assert.rejects(applyGallerySeed({
+      manifest: archive, files: archiveFiles, actorId, namespace: 'hrpf/dev', provider,
+      scanner: async () => ++scans === 200 ? 'infected' : 'clean'
+    }));
+    assert.equal(scans, 200);
+    assert.equal(uploads, 0);
+    assert.equal(await GalleryItem.countDocuments(), 0);
+    assert.equal(await SourceImport.countDocuments(), 0);
+    scans = 0;
+    await assert.rejects(applyGallerySeed({
+      manifest: archive, files: archiveFiles, actorId, namespace: 'hrpf/dev', provider,
+      scanner: async () => {
+        if (++scans === 200) await User.updateOne({ _id: actorId }, { $set: { active: false } });
+        return 'clean';
+      }
+    }));
+    assert.equal(await GalleryItem.countDocuments(), 0);
+    assert.equal(uploads, 0);
+  });
+  it('resumes a partially uploaded archive without re-uploading its completed releases', async () => {
+    const archive = await loadGalleryManifest();
+    const archiveFiles = await galleryFiles(archive, fileURLToPath(galleryAssetRoot));
+    const store = provider.store;
+    let attempts = 0;
+    const options = { manifest: archive, files: archiveFiles, actorId, namespace: 'hrpf/dev', provider, scanner: async () => 'clean' as const };
+    provider.store = async (...args) => {
+      if (++attempts === 7) throw new Error('Simulated provider interruption');
+      return store(...args);
+    };
+    try {
+      await assert.rejects(applyGallerySeed(options));
+      assert.equal(uploads, 6);
+      assert.equal(await GalleryItem.countDocuments({ reviewStatus: 'approved' }), 6);
+      provider.store = store;
+      const resumed = await applyGallerySeed(options);
+      assert.equal(resumed.filter(row => row.status === 'seeded-preserved').length, 6);
+      assert.equal(resumed.filter(row => row.status === 'published').length, 170);
+      assert.equal(resumed.filter(row => row.status === 'duplicate-hidden').length, 24);
+      assert.equal(uploads, 176);
+      assert.equal(await Asset.countDocuments({ visibility: 'public' }), 176);
+    } finally { provider.store = store; }
+  });
+  it('reports an inconsistent publication checkpoint without changing its linked record', async () => {
+    await seed();
+    const first = manifest.records[0]!;
+    const other = await GalleryItem.findById(seedId(manifest.records[1]!.key)).lean();
+    await SourceImport.updateOne({ key: `gallery-preview:${first.key}` }, { $set: { entityId: other!._id } });
+    assert.equal((await planGallerySeed(manifest)).find(row => row.key === first.key)!.status, 'conflict');
+    assert.equal((await seed()).find(row => row.key === first.key)!.status, 'conflict');
+    assert.deepEqual(await GalleryItem.findById(other!._id).lean(), other);
+    assert.equal(uploads, 4);
   });
 });

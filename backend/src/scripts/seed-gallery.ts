@@ -6,7 +6,7 @@ import { ConfigurationError, parseEnv } from '../config/env.js';
 import { User, ensureIndexes } from '../domain/models.js';
 import { cloudinaryProvider, clamScanner } from '../services/uploads.js';
 import { applyGallerySeed, galleryAssetRoot, galleryFiles, loadGalleryManifest, planGallerySeed } from '../seed/gallery.js';
-let phase = 'configuration';
+let phase = 'verification';
 async function main() {
   const args = process.argv.slice(2);
   if (args.some(arg => !['--apply', '--database'].includes(arg))) throw new ConfigurationError('Use seed:gallery, --database (read-only plan), or --apply.');
@@ -14,7 +14,11 @@ async function main() {
   const files = await galleryFiles(manifest, fileURLToPath(galleryAssetRoot));
   console.log(JSON.stringify({
     manifest: manifest.version,
-    images: 4,
+    images: manifest.records.length,
+    pressCuttings: manifest.records.filter(record => record.payload.category === 'media-coverage').length,
+    photographsAndGraphics: manifest.records.filter(record => record.payload.category === 'in-action').length,
+    publishableImages: manifest.records.filter(record => !record.duplicateOf).length,
+    duplicateEntries: manifest.records.filter(record => record.duplicateOf).length,
     interviews: 0,
     verifiedImages: files.size,
     mode: args.includes('--apply') ? 'apply' : 'plan'
@@ -23,6 +27,7 @@ async function main() {
     console.log('Offline plan verified. No database or Cloudinary writes.');
     return;
   }
+  phase = 'configuration';
   dotenv.config({
     path: resolve(fileURLToPath(new URL('../../', import.meta.url)), '.env'),
     quiet: true
@@ -31,6 +36,7 @@ async function main() {
   if (!env.MONGODB_URI) throw new ConfigurationError('Configure MONGODB_URI privately in backend/.env.');
   if (args.includes('--apply') && (env.NODE_ENV !== 'development' || env.CLOUDINARY_NAMESPACE !== 'hrpf/dev')) throw new ConfigurationError('Gallery seed requires NODE_ENV=development and CLOUDINARY_NAMESPACE=hrpf/dev.');
   if (args.includes('--apply') && (!env.CLAMAV_HOST || !env.CLOUDINARY_CLOUD_NAME || !env.CLOUDINARY_API_KEY || !env.CLOUDINARY_API_SECRET || !process.env.SEED_ACTOR_EMAIL)) throw new ConfigurationError('Configure Cloudinary, ClamAV and SEED_ACTOR_EMAIL privately in backend/.env.');
+  phase = 'database';
   await mongoose.connect(env.MONGODB_URI, {
     dbName: env.MONGODB_DB_NAME,
     autoIndex: false,
@@ -39,7 +45,10 @@ async function main() {
   });
   try {
     if (!args.includes('--apply')) {
-      for (const result of await planGallerySeed(manifest)) console.log(JSON.stringify(result));
+      const results = await planGallerySeed(manifest);
+      for (const result of results) console.log(JSON.stringify(result));
+      summary(results);
+      if (results.some(result => ['conflict', 'source-changed'].includes(result.status))) process.exitCode = 2;
       return;
     }
     const actor = await User.findOne({
@@ -59,19 +68,29 @@ async function main() {
       provider: cloudinaryProvider(env),
       scanner: clamScanner(env),
       phase: value => {
+        if (value === phase) return;
         phase = value;
         console.log(JSON.stringify({
           phase
         }));
       },
+      progress: value => {
+        if (value.completed % 10 === 0 || value.completed === value.total) console.log(JSON.stringify(value));
+      },
       report: result => console.log(JSON.stringify(result))
     });
+    summary(results);
     if (results.some(result => ['conflict', 'source-changed'].includes(result.status))) process.exitCode = 2;
   } finally {
     await mongoose.disconnect();
   }
 }
+function summary(results: Awaited<ReturnType<typeof planGallerySeed>>) {
+  const statuses: Record<string, number> = {};
+  for (const result of results) statuses[result.status] = (statuses[result.status] ?? 0) + 1;
+  console.log(JSON.stringify({ phase: 'summary', processed: results.length, statuses }));
+}
 main().catch(error => {
-  console.error(error instanceof ConfigurationError ? error.message : `Gallery seed stopped during ${phase}. Existing admin content is preserved. Check the corresponding private service configuration and rerun safely.`);
+  console.error(error instanceof ConfigurationError ? error.message : `Gallery seed stopped during ${phase}. Existing admin content is preserved. Check the source files or corresponding private service configuration and rerun safely.`);
   process.exitCode = 1;
 });

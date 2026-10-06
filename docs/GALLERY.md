@@ -64,24 +64,42 @@ DTOs omit private provider metadata and source file names. OpenAPI is generated
 from the implemented schemas. Existing GalleryItem/source-import identities and
 legacy publication APIs remain compatible.
 
-## Sourced preview
+## Full sourced collection
 
 See [seed instructions](../backend/seed/GALLERY.md). `seed:gallery -- --apply`
-publishes four selected supplied archive images: Daily Awami Forum cutting 016,
-photographs 003, 004 and 005. Original WebP bytes and source CSV indexes are
-checksummed. Captions describe visible content without inventing dates, identities
-or outcomes. No individual interview recordings were provided, so the seed does
-not fabricate interview videos. The admin editor is ready for real video links.
+imports all 200 supplied source entries. It publishes 44 newspaper cuttings under
+Press coverage and 132 photographs/graphics under HRPF photographs; 24 indexed
+duplicate entries remain hidden. The supplied 200 WebP versions and original
+CSV indexes are bundled and checksummed. Alternative JPEG exports and comparison
+images are not counted as additional gallery entries. AI-restored images retain
+their visible disclosure. No individual interview recordings were provided, so
+the import does not fabricate interview videos. The admin editor is ready for
+real video links.
 
 Existing pristine source-import drafts are enriched without creating duplicates.
 Edits, withdrawals, deletions and unmanaged rows are preserved. Interrupted
 uploads can reuse their staged assets; each image release and checkpoint commit
-atomically. All four files are checked/scanned before any write.
+atomically. All 200 files are checked/scanned before any new content import or
+provider upload. Canonical entries import before duplicates, preserving every
+duplicate relationship even after an interruption. Scan progress and final result
+counts appear in the terminal.
+
+The original four preview releases, their exact descriptions and original source
+checksums remain compatible. On an otherwise unchanged preview database, the full
+command publishes 172 more images and retains the four existing releases. Native
+admin edits and intentional withdrawals/deletions can reduce that total and are
+preserved. Captions describe visible scenes without inventing dates or roles;
+newspaper claims remain attributed to their historical source images.
 
 ## Verification and limits
 
-Local backend checks, 34 MongoDB/Redis API integration tests and 36 source/seed
-integration tests pass. Frontend lint, TypeScript and production build pass.
+Local backend checks, 40 real MongoDB source/seed tests and 34 MongoDB/Redis API
+tests pass. The source/seed integration tests cover the complete
+archive, unchanged preview checksums/documents, 176 public releases across all
+pagination pages, 24 hidden duplicates, retained AI treatment, final-image scan
+failure before writes, recovery after a provider interruption and inconsistent
+checkpoint preservation. Existing API and frontend verification continues to
+cover the public and admin gallery contracts.
 Production SSR checks cover both collections, Gallery labels, viewer entry
 point, interview preview entry point, pagination, admin route, delayed iframe
 loading, empty/unavailable feeds and cookie isolation.
