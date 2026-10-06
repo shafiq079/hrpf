@@ -31,6 +31,7 @@ export function createApp(env: Environment, readiness: Readiness, adapters?: Bus
     allowedHeaders: ['Content-Type', 'X-CSRF-Token', 'X-Form-Ticket'],
   }));
   app.use(['/api/admin/projects', '/api/admin/blogs', '/api/admin/news'], express.json({ limit: '256kb', strict: true }));
+  app.use(['/api/admin/gallery', '/api/admin/interviews'], express.json({ limit: '64kb', strict: true }));
   app.use(express.json({ limit: '32kb', strict: true }));
   const emptyQuery = z.object({}).strict();
   app.use(['/api/health/live', '/api/health/ready'], (req, _res, next) => {

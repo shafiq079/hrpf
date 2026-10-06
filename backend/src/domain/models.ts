@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import { canonicalVideoPattern } from '../services/video-links.js';
 
 const options = { timestamps: true, strict: 'throw' as const, optimisticConcurrency: true };
 const text = (max = 200) => ({ type: String, trim: true, maxlength: max });
@@ -116,6 +117,7 @@ Project.schema.index({ locale: 1, status: 1, publishedAt: -1 });
 const gallery = new Schema({
   category: { type: String, enum: ['media-coverage', 'in-action'], required: true }, title: localized, alt: localized, caption: localized,
   // Source imports can prepare an unpublished draft before a reviewed file exists.
+  mediaType: { type: String, enum: ['newspaper', 'photo', 'graphic'] }, eventDate: Date, sourceName: text(200), sourceUrl: text(2000),
   asset: assetRefSchema, sortOrder: { type: Number, default: 0 }, publishedAt: Date,
   featured: { type: Boolean, default: false }, duplicateOf: oid('GalleryItem'), sourceImageId: text(200), sourceFilename: text(300),
   sourceImageType: { type: String, enum: ['newspaper', 'photo', 'graphic'] },
@@ -130,6 +132,17 @@ gallery.pre('validate', function () {
   }
 });
 export const GalleryItem = mongoose.model('GalleryItem', gallery);
+const interview = new Schema({
+  title: { type: localized, required: true }, description: localized,
+  videoUrl: { ...requiredText(2000), match: canonicalVideoPattern }, thumbnail: assetRefSchema,
+  thumbnailAlt: text(300), sourceName: text(200), eventDate: Date,
+  sortOrder: { type: Number, default: 0 }, reviewStatus: review, publishedAt: Date,
+}, options);
+interview.pre('validate', function () {
+  if (this.publishedAt && (this.reviewStatus !== 'approved' || !this.title?.en?.trim() || (this.thumbnail && !this.thumbnailAlt?.trim()))) this.invalidate('publishedAt', 'Review the title, video and thumbnail description before publication.');
+});
+export const VideoInterview = mongoose.model('VideoInterview', interview);
+VideoInterview.schema.index({ reviewStatus: 1, sortOrder: 1 });
 export const Report = mongoose.model('Report', new Schema({
   seedKey: { ...text(200), unique: true, sparse: true },
   title: { type: localized, required: true }, slug: { ...requiredText(200), unique: true }, year: { type: Number, min: 1900, max: 2200 },

@@ -15,7 +15,7 @@ export async function bindContentMedia(
   actorId: string,
   session: mongoose.ClientSession,
   visibility: "public" | "restricted",
-  entityType: "Project" | "BlogPost" = "Project",
+  entityType: "Project" | "BlogPost" | "GalleryItem" | "VideoInterview" = "Project",
 ) {
   const coverId =
     input.coverAssetId === undefined

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-const publicPaths = ['/blogs', '/about/progress-reports', '/about/registration-and-certificates', '/about/board-of-directors', '/gallery/media-coverage'];
+const publicPaths = ['/blogs', '/about/progress-reports', '/about/registration-and-certificates', '/about/board-of-directors', '/gallery/media-coverage', '/gallery/tv-interviews'];
 
 export async function checkNavigation(read, port) {
   const migrations = [
@@ -48,7 +48,14 @@ export async function checkNavigation(read, port) {
   assert.ok(page.html.includes('Released registration certificate') && page.html.includes('/api/public-assets/012345678901234567890126'));
   page = await read('/gallery/media-coverage');
   assert.ok(page.html.includes('Published media coverage') && page.html.includes('Reviewed media caption'));
-  assert.ok((await read('/gallery/tv-interviews')).html.includes('Interview recordings are not available here yet'));
+  assert.ok(page.html.includes('View full image: Published media coverage') && page.html.includes('<dialog'), 'Gallery viewer entry point and accessible dialog');
+  assert.ok(page.html.includes('AI-restored archive image') && page.html.includes('Published newspaper') && page.html.includes('2020-02-29'));
+  assert.ok(page.html.includes('category=media-coverage') && page.html.includes('page=2'), 'Gallery pagination retains collection');
+  assert.ok((await read('/gallery/media-coverage?category=in-action&q=HRPF')).html.includes('Published HRPF photograph'));
+  page = await read('/gallery/tv-interviews');
+  assert.ok(page.html.includes('Published TV interview') && page.html.includes('Reviewed interview introduction') && page.html.includes('Watch interview: Published TV interview'));
+  assert.ok(!page.html.includes('<iframe'), 'Provider does not load until playback is requested');
+  assert.ok((await read('/admin/gallery')).html.includes('Gallery Administration'), 'Gallery admin route metadata');
   page = await read('/become-a-member');
   assert.ok(page.html.includes('1FAIpQLSfaG3tm0xiiFQrMX9yGSxKW5rSSa4ILvIZrmaLiNSDa86IK5w'));
   assert.ok(!(await read('/get-involved')).html.includes('Volunteer Application'), 'Membership replaces volunteer form');
@@ -64,7 +71,7 @@ export async function checkEmptyNavigation(read) {
   for (const path of publicPaths.slice(1)) {
     const page = await read(path);
     assert.equal(page.status, 200);
-    for (const title of ['Published progress report', 'Released registration certificate', 'Active reviewed director', 'Published media coverage']) assert.ok(!page.html.includes(title), 'Empty public feed must not resurrect drafts');
+    for (const title of ['Published progress report', 'Released registration certificate', 'Active reviewed director', 'Published media coverage', 'Published TV interview']) assert.ok(!page.html.includes(title), 'Empty public feed must not resurrect drafts');
   }
 }
 

@@ -18,9 +18,11 @@ const api=createServer((req,res)=>{
  else if(path==='/api/reports')res.end(JSON.stringify({data:empty?[]:[{id:'012345678901234567890125',title:'Published progress report',summary:'Report summary',year:2025,slug:'progress-report',file:'/api/public-assets/012345678901234567890125',download:'/api/reports/012345678901234567890125/download'}],meta:{pages:empty?0:1}}));
  else if(path==='/api/certificates')res.end(JSON.stringify({data:empty?[]:[{id:'012345678901234567890126',title:'Released registration certificate',issuer:'Test issuer',file:'/api/public-assets/012345678901234567890126'}]}));
  else if(path==='/api/gallery'){
-  assert.equal(new URL(req.url,'http://localhost').searchParams.get('category'),'media-coverage');
-  res.end(JSON.stringify({data:empty?[]:[{id:'012345678901234567890127',title:'Published media coverage',file:'/api/public-assets/012345678901234567890127',alt:'Reviewed coverage image',caption:'Reviewed media caption',category:'media-coverage'}]}));
+  const query=new URL(req.url,'http://localhost').searchParams,category=query.get('category');
+  assert.ok(['media-coverage','in-action'].includes(category));
+  res.end(JSON.stringify({data:empty?[]:[{id:'012345678901234567890127',title:category==='in-action'?'Published HRPF photograph':'Published media coverage',file:'/api/public-assets/012345678901234567890127',alt:'Reviewed coverage image',caption:'Reviewed media caption',category,sourceName:'Published newspaper',eventDate:'2020-02-29',mediaType:category==='in-action'?'photo':'newspaper',treatment:'AI_RESTORATION'}],meta:{page:Number(query.get('page')??1),pages:empty?0:2}}));
  }
+ else if(path==='/api/interviews')res.end(JSON.stringify({data:empty?[]:[{id:'012345678901234567890131',title:'Published TV interview',description:'Reviewed interview introduction',provider:'youtube',watchUrl:'https://www.youtube.com/watch?v=Abcdef123_-',embedUrl:'https://www.youtube-nocookie.com/embed/Abcdef123_-',sourceName:'Reviewed channel',eventDate:'2020-02-29',thumbnail:null,thumbnailAlt:''}],meta:{page:1,pages:empty?0:2}}));
  else if(path==='/api/board')res.end(JSON.stringify({data:empty?[]:[{name:'Active reviewed director',slug:'active-director',designation:'Board member',bio:'Reviewed biography',photo:null}]}));
  else{res.statusCode=404;res.end('{}');}
 });

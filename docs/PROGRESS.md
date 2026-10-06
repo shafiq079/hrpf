@@ -1,5 +1,18 @@
 # HRPF Progress
 
+## Complete Gallery archive import (2026-10-07)
+
+Extended `seed:gallery` on development from four preview releases to the full
+supplied collection. All 57 newspaper entries belong to Press coverage; all 143
+other entries belong to HRPF photographs. The authoritative CSV duplicate links
+retain 200 source records with 176 canonical publications and 24 hidden duplicates.
+Bundled WebP bytes and source records keep their original checksums. Added visible
+scene descriptions and retained the existing preview descriptions/checkpoints.
+Scan progress, summary counts, interrupted upload recovery and admin preservation
+are covered by real MongoDB tests. Backend checks, all 40 source/seed tests and
+34 MongoDB/Redis API tests pass locally. No private owner services were accessed.
+Main and the deferred production scanner configuration remain unchanged.
+
 ## Populated project detail seed (2026-10-06)
 
 Added opt-in `seed:projects` enrichment of the three existing homepage projects.
@@ -204,3 +217,18 @@ homepage articles, six archive photo attachments and three prepared source brief
 PDFs. The source reports, seed preservation rules and Codespaces commands are in
 BLOG_DETAILS.md and backend/seed/BLOGS.md. Live seeding requires the owner's
 private service configuration; no live database/storage execution is claimed here.
+
+
+## 2026-10-07 — prior work merged; Gallery on development
+
+Merged PR #3 into main after its verified checks. Development was aligned to
+that merge before implementing Gallery. The owner's clarified branch instruction
+keeps the new Gallery implementation on development.
+
+Added public press/photo search and modal zoom viewer, restoration/source labels,
+managed TV interviews with allowlisted click-to-load YouTube/Vimeo players,
+Gallery admin editing/preview/draft/publication/withdraw/delete, atomic image
+binding and optimistic versions. Added four real source image examples and a
+preservation/recovery seed, documented in GALLERY.md and backend/seed/GALLERY.md.
+Local API and seed integration suites pass; owner service execution and visual
+acceptance remain Codespaces steps.
