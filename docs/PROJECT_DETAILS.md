@@ -65,6 +65,13 @@ configuration are unchanged. No database reset, migration, administrator
 recreation or homepage reseed is required. Existing project records continue to
 render and can be enriched through the editor.
 
+The owner subsequently requested automatic population of the three seeded
+projects. `npm run seed:projects -- --apply` performs that opt-in update using
+the existing private development configuration. It adds sourced rich details,
+two archive gallery photos and a source-summary PDF per project. See
+backend/seed/HOMEPAGE.md. It preserves the original homepage seed's create-only
+behavior and never automatically replaces later rich administrator content.
+
 ## Verification
 
 - Backend check: TypeScript, 22 unit tests, source verification, homepage seed
@@ -82,3 +89,8 @@ External uploads/scanning use injected test providers; no live NGO database or
 Cloudinary content was changed. The cloud browser rejected access to this
 workspace's localhost server (`ERR_BLOCKED_BY_CLIENT`), so visual interaction,
 slider gestures and mobile browser appearance remain unverified here.
+
+Project enrichment verification adds seven real MongoDB tests for publication,
+idempotency, admin/deletion preservation, corrupted/unsafe files, interrupted
+upload recovery, actor revocation, concurrent edits and source-change detection.
+The complete seed suite now has 22 passing tests.

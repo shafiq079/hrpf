@@ -1,5 +1,16 @@
 # HRPF handoff
 
+## Populate the project redesign (2026-10-06)
+
+Owner wants populated project pages for review without entering the new fields
+manually. Added separate `backend` command `npm run seed:projects -- --apply`
+to enrich the three already-published homepage projects with sourced sections,
+two gallery photos and one prepared source-summary PDF each. Uses the same
+private MongoDB/ClamAV/Cloudinary and SEED_ACTOR_EMAIL configuration. Actual
+private execution must run in Codespaces; no live write is claimed here.
+See backend/seed/HOMEPAGE.md for preservation/recovery behavior. All 22 seed
+tests and backend checks passed locally, including seven new enrichment tests.
+
 ## Project detail redesign and project console (2026-10-06)
 
 The owner's requested project redesign is implemented on development. See

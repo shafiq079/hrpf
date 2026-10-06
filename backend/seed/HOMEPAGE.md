@@ -74,3 +74,38 @@ and the `hrpf/dev` Cloudinary namespace; it refuses production operation.
 When no published feed records exist, the two original headings remain and their
 card grids are empty. There is no renamed programme/report fallback and withdrawn
 content does not reappear from a frontend hardcoded fallback.
+
+## Fill the existing project detail pages
+
+At the owner's request, a separate one-time enrichment updates the three existing
+published homepage projects in place. Use this after the original `seed:home`
+import, with the same private services and active `SEED_ACTOR_EMAIL`:
+
+```bash
+npm run seed:projects                 # offline file/manifest verification
+npm run seed:projects -- --database    # read-only plan
+npm run seed:projects -- --apply       # enrich and publish the three projects
+```
+
+This adds report-grounded overview, challenge, approach, objectives, activities,
+outcomes, community, report period, three timeline milestones, qualitative
+result cards, sources and evidence scope. Each project retains its cover and
+gets two additional archive photos and one downloadable source-summary PDF.
+The exact case dates, numerical impact, budgets and formal partnerships are
+not supplied by these passages, so none are invented. Photo captions identify
+archive illustrations; milestone labels describe the report's sequence rather
+than assert exact dates. PDFs are prepared project source briefs, not copies of
+the complete original reports.
+
+The bundled manifest is `project-details-manifest.json`; its PDFs and source
+checksums are verified before uploads. Assets use ClamAV and authenticated
+Cloudinary, with the same project media binding and release rules as admin edits.
+Each project's details, released files, version increment, checkpoint and actor
+audit commit together. Existing titles, summaries, stories, URLs, covers and
+publication dates are retained. News records are unaffected.
+
+Output `enriched` means the project was updated. Reruns report `already-enriched`
+without further uploads or overwriting later admin edits. Deleted, withdrawn,
+unmanaged and already-rich admin projects are preserved. A version conflict
+preserves a concurrent edit; a later rerun can reuse staged uploads. This command
+does not recreate missing projects and is restricted to development and hrpf/dev.

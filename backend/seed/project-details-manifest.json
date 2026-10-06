@@ -1,0 +1,336 @@
+{
+  "version": "project-details-v1",
+  "files": [
+    {
+      "id": "gallery:homepage-0",
+      "path": "other_images_final/home-programme-advocacy.webp",
+      "sha256": "c430455aff4b74504460761e856df07c6b16d616ca4bb55ae32daa0d3c9f7bcf",
+      "bytes": 37068
+    },
+    {
+      "id": "gallery:homepage-1",
+      "path": "other_images_final/home-programme-water.webp",
+      "sha256": "d5b535d5ed54cecfeff257dcfd4a8a04b1b43823e33cd0404abd08043486e6b0",
+      "bytes": 297978
+    },
+    {
+      "id": "gallery:homepage-2",
+      "path": "other_images_final/home-programme-information.webp",
+      "sha256": "fce2e0b8f03e6cddb37edea5e0c94f8c217790be64cee995449d0e7fe019025b",
+      "bytes": 73088
+    },
+    {
+      "id": "gallery:homepage-3",
+      "path": "other_images_final/home-report-2023.webp",
+      "sha256": "5eecaea1966461f2663b6b7d36f02a62dbb43b07c4b14bf7b219da28b2a01174",
+      "bytes": 142666
+    },
+    {
+      "id": "gallery:homepage-4",
+      "path": "other_images_final/home-report-2024.webp",
+      "sha256": "3649af3bca3fc43c7a2081b2e3fa03b52d176e84e20f618e3811682d2533a44e",
+      "bytes": 97950
+    },
+    {
+      "id": "gallery:homepage-5",
+      "path": "other_images_final/home-report-2025.webp",
+      "sha256": "5e614e56f14783ba2cddc7bbb9faaa50147fe322b15faa15ee71bbd3544a16b1",
+      "bytes": 224248
+    },
+    {
+      "id": "homepage:sources",
+      "path": "progress reports/homepage-source-excerpts.txt",
+      "sha256": "972fdf49d14c08cb8dd98d7570c7003fcb2d8b7dad0289b228daeff0a233281f",
+      "bytes": 7964
+    },
+    {
+      "id": "project-brief:shelter-dignity-advocacy",
+      "path": "progress reports/shelter-dignity-advocacy-source-brief.pdf",
+      "sha256": "3012d3277f363b70899bacc30f3e53df4b7ca638bd18bc275a781bc0ebda7c39",
+      "bytes": 4376
+    },
+    {
+      "id": "project-brief:mianwal-ranjha-sanitation",
+      "path": "progress reports/mianwal-ranjha-sanitation-source-brief.pdf",
+      "sha256": "3bcd40ff7218d04cdbd279c5358f52a4198a550f75010e5a95ddeca516967d19",
+      "bytes": 4244
+    },
+    {
+      "id": "project-brief:childhood-vaccination-access",
+      "path": "progress reports/childhood-vaccination-access-source-brief.pdf",
+      "sha256": "8f9f17366b64857e6f06cd335db19c5f18637242f53fbf427204523b14886737",
+      "bytes": 4319
+    }
+  ],
+  "projects": [
+    {
+      "key": "home-project:shelter-dignity-advocacy",
+      "details": {
+        "period": "Documented in the 2025 progress report",
+        "targetCommunity": "Women residing at Dar-ul-Aman in Mandi Bahauddin",
+        "overview": "A safe shelter should protect the dignity, health and wellbeing of the women who live there. HRPF’s 2025 progress report describes its intervention at Dar-ul-Aman in Mandi Bahauddin after concerns were raised about the condition and management of the facility.\n\nHRPF used a formal complaint and engagement with the Provincial Ombudsman Punjab to seek inspection, corrective action and stronger accountability. The report records improvements in sanitation and facility management following that intervention.",
+        "challenge": "The report describes poor sanitation and cleanliness, inadequate healthcare arrangements, weak oversight and deficiencies in monitoring. These conditions affected women living in a government shelter established to provide protection and rehabilitation.\n\nThe issue required an institutional response to the facilities and accountability concerns identified in the complaint.",
+        "approach": "HRPF brought the reported deficiencies to the attention of an oversight institution through a detailed complaint. The complaint called for urgent inspection, immediate rectification of deficiencies, administrative accountability and protection of residents’ rights.\n\nEngagement with the Provincial Ombudsman’s office helped draw official attention to the shelter and initiate administrative inquiries and corrective measures.",
+        "objectives": [
+          "Protect residents’ dignity and access to basic necessities.",
+          "Seek inspection and correction of sanitation and healthcare deficiencies.",
+          "Strengthen monitoring and administrative accountability."
+        ],
+        "activities": [
+          "Gathered information about deficiencies at the shelter.",
+          "Submitted a detailed complaint to the Provincial Ombudsman Punjab.",
+          "Requested inspection, corrective measures and accountability.",
+          "Engaged with the oversight office about residents’ protection and facility conditions."
+        ],
+        "outcomes": [
+          "The concerns received official attention.",
+          "Administrative inquiries were initiated.",
+          "Corrective measures were undertaken.",
+          "The report records noticeable improvements in sanitation and facility management."
+        ],
+        "milestones": [
+          {
+            "period": "Issue identified",
+            "title": "Shelter conditions brought to HRPF’s attention",
+            "description": "Information from several sources highlighted deficiencies in sanitation, healthcare, cleanliness and oversight."
+          },
+          {
+            "period": "Formal intervention",
+            "title": "Complaint submitted to the Provincial Ombudsman",
+            "description": "HRPF requested inspection, rectification of deficiencies and administrative accountability."
+          },
+          {
+            "period": "Reported outcome — 2025",
+            "title": "Inquiries and facility improvements recorded",
+            "description": "The report describes corrective measures and improvements in sanitation and facility management."
+          }
+        ],
+        "metrics": [
+          {
+            "value": "Sanitation improved",
+            "label": "Reported facility outcome",
+            "source": "2025 Progress Report.pdf, pages 14–15"
+          },
+          {
+            "value": "Inquiries initiated",
+            "label": "Reported accountability response",
+            "source": "2025 Progress Report.pdf, pages 14–15"
+          }
+        ],
+        "sections": [
+          {
+            "heading": "Institutional engagement",
+            "body": "HRPF submitted its complaint to the Office of the Provincial Ombudsman Punjab. The report describes engagement with this oversight office. It does not identify a formal delivery partnership or project donor."
+          },
+          {
+            "heading": "What the report establishes",
+            "body": "The documented intervention produced improvements in the shelter’s condition. The report does not provide a project budget, an exact intervention date, a resident count or evidence that every continuing need has been resolved."
+          },
+          {
+            "heading": "Sources and photographs",
+            "body": "Source: 2025 Progress Report.pdf, pages 14–15. The project description is a website summary of this historical report. Timeline labels describe the sequence in the report and are not exact event dates. Gallery photos come from HRPF’s supplied archive and illustrate the Foundation’s wider work; they are not verified photographs of this specific intervention."
+          }
+        ],
+        "partners": []
+      },
+      "coverAlt": "HRPF archive photograph of an institutional discussion",
+      "gallery": [
+        {
+          "fileId": "gallery:homepage-4",
+          "alt": "HRPF archive photograph of a discussion around an office desk",
+          "caption": "Illustrative HRPF archive photo. Not verified as a photograph of this intervention."
+        },
+        {
+          "fileId": "gallery:homepage-3",
+          "alt": "HRPF archive photograph of a speaker at a public inclusion event",
+          "caption": "Illustrative HRPF archive photo. Not verified as a photograph of this intervention."
+        }
+      ],
+      "documents": [
+        {
+          "fileId": "project-brief:shelter-dignity-advocacy",
+          "label": "Project source brief — 2025"
+        }
+      ]
+    },
+    {
+      "key": "home-project:mianwal-ranjha-sanitation",
+      "details": {
+        "period": "Documented in the 2024 progress report",
+        "targetCommunity": "Residents of Mianwal Ranjha using the local sanitation infrastructure",
+        "overview": "HRPF’s 2024 progress report documents the cleaning and repair of the sewerage scheme in Mianwal Ranjha in the public interest. The work addressed damaged pipes and roadside openings as part of efforts to improve local sanitation.\n\nThe report also records a separate request to the Drain Department Punjab to increase the capacity of the Fifth Drain. That request is distinct from the completed cleaning and repair work.",
+        "challenge": "Damaged sewerage pipes and the condition of roadside openings required attention to support public health and sanitation. The report identifies repair and cleaning of the existing scheme as the immediate work undertaken.\n\nA request for greater drainage capacity was also submitted. The report does not provide technical measurements or confirm that the capacity expansion was completed.",
+        "approach": "The reported intervention focused on cleaning the existing scheme, repairing broken pipes and raising the level of roadside openings. A separate institutional request addressed the capacity of the Fifth Drain.\n\nThe completed repairs and the pending capacity request are presented separately so visitors can understand the reported outcome accurately.",
+        "objectives": [
+          "Support public health and sanitation in Mianwal Ranjha.",
+          "Restore damaged parts of the existing sewerage scheme.",
+          "Raise the drainage-capacity concern with the relevant department."
+        ],
+        "activities": [
+          "Cleaning of the local sewerage scheme.",
+          "Repair of broken pipes.",
+          "Raising of roadside openings.",
+          "Submission of a request to increase the Fifth Drain’s capacity."
+        ],
+        "outcomes": [
+          "The report records completion of cleaning and repair work.",
+          "Broken pipes were repaired.",
+          "Roadside openings were raised.",
+          "The drainage-capacity request was submitted; completion of an expansion is not established."
+        ],
+        "milestones": [
+          {
+            "period": "Documented work",
+            "title": "Scheme cleaning and repairs",
+            "description": "The report records completed cleaning and repairs, including broken pipes and roadside openings."
+          },
+          {
+            "period": "Additional request",
+            "title": "Fifth Drain capacity raised with the department",
+            "description": "A request was submitted to the Drain Department Punjab to increase capacity."
+          },
+          {
+            "period": "Report record — 2024",
+            "title": "Completed repairs recorded separately from the expansion request",
+            "description": "The report confirms the repairs and describes the capacity increase as a request."
+          }
+        ],
+        "metrics": [
+          {
+            "value": "Repairs completed",
+            "label": "Reported infrastructure outcome",
+            "source": "PROGRESS REPORT 2024 Revised.docx, Repair and Cleaning of Sewerage Scheme"
+          },
+          {
+            "value": "Request submitted",
+            "label": "Drainage-capacity action",
+            "source": "PROGRESS REPORT 2024 Revised.docx, Repair and Cleaning of Sewerage Scheme"
+          }
+        ],
+        "sections": [
+          {
+            "heading": "Department contacted",
+            "body": "The Drain Department Punjab is named as the recipient of the request to increase the Fifth Drain’s capacity. The source does not name a formal project partner, contractor or donor."
+          },
+          {
+            "heading": "Scope of the evidence",
+            "body": "This project page describes the work recorded in the 2024 report. Exact work dates, expenditure, pipe lengths and the number of households served are not supplied. The completed repair work should not be read as confirmation of a completed drainage expansion."
+          },
+          {
+            "heading": "Sources and photographs",
+            "body": "Source: PROGRESS REPORT 2024 Revised.docx, Repair and Cleaning of Sewerage Scheme. The project description is a website summary of this historical report. Timeline labels describe the sequence in the report and are not exact event dates. Gallery photos come from HRPF’s supplied archive and illustrate the Foundation’s wider work; they are not verified photographs of this specific intervention."
+          }
+        ],
+        "partners": []
+      },
+      "coverAlt": "HRPF archive photograph of a rural drainage channel",
+      "gallery": [
+        {
+          "fileId": "gallery:homepage-0",
+          "alt": "HRPF archive photograph of an institutional discussion",
+          "caption": "Illustrative HRPF archive photo. Not verified as a photograph of this intervention."
+        },
+        {
+          "fileId": "gallery:homepage-4",
+          "alt": "HRPF archive photograph of a meeting around an office desk",
+          "caption": "Illustrative HRPF archive photo. Not verified as a photograph of this intervention."
+        }
+      ],
+      "documents": [
+        {
+          "fileId": "project-brief:mianwal-ranjha-sanitation",
+          "label": "Project source brief — 2024"
+        }
+      ]
+    },
+    {
+      "key": "home-project:childhood-vaccination-access",
+      "details": {
+        "period": "Documented in the 2022–2023 performance report",
+        "targetCommunity": "Children and families seeking childhood vaccination in Mandi Bahauddin district",
+        "overview": "Childhood vaccination depends on families being able to access functioning public health services. HRPF’s 2022–2023 performance report describes difficulties accessing vaccination in Mandi Bahauddin district because of administrative issues at Basic Health Units and District Health Units.\n\nHRPF visited the facilities and brought the issue to the Director General of Health Punjab. The report records a prompt response to improve the situation in the public interest.",
+        "challenge": "Administrative issues at Basic Health Units and District Health Units were making childhood vaccination difficult to access. The report describes a public-service access problem requiring attention from health authorities.\n\nIt does not identify the number of affected children, the facilities visited or a precise intervention date.",
+        "approach": "HRPF visited health facilities to understand the access difficulties and informed the Director General of Health Punjab. This approach linked observations at local facilities with the authority responsible for addressing the administrative concerns.\n\nThe report records action by the Director General to improve the situation. HRPF also recognised that response by presenting an honorary shield.",
+        "objectives": [
+          "Raise difficulties in childhood vaccination access with health authorities.",
+          "Seek action on administrative problems affecting public health services.",
+          "Support children’s access to vaccination through institutional engagement."
+        ],
+        "activities": [
+          "Visited Basic Health Units and District Health Units.",
+          "Informed the Director General of Health Punjab about vaccination-access difficulties.",
+          "Recorded the authority’s response in the performance report.",
+          "Presented an honorary shield in recognition of the Director General’s efforts."
+        ],
+        "outcomes": [
+          "The vaccination-access concerns were brought to the Director General’s attention.",
+          "The report records a prompt response to improve the situation.",
+          "HRPF formally recognised the Director General’s efforts."
+        ],
+        "milestones": [
+          {
+            "period": "Access concern",
+            "title": "Administrative difficulties identified",
+            "description": "The report describes difficulties obtaining childhood vaccination at local health units."
+          },
+          {
+            "period": "Facility engagement",
+            "title": "HRPF visits and escalation",
+            "description": "HRPF visited facilities and informed the Director General of Health Punjab."
+          },
+          {
+            "period": "Reported response — 2022–2023",
+            "title": "Health authority action and recognition",
+            "description": "The report records a response to improve the situation and HRPF’s presentation of an honorary shield."
+          }
+        ],
+        "metrics": [
+          {
+            "value": "Facility visits",
+            "label": "Documented HRPF activity",
+            "source": "PROGRESS REPORT HRPF 2023.pdf, Improvement in the Health Sector and Access to Vaccination"
+          },
+          {
+            "value": "Authority response",
+            "label": "Reported public-service progress",
+            "source": "PROGRESS REPORT HRPF 2023.pdf, Improvement in the Health Sector and Access to Vaccination"
+          }
+        ],
+        "sections": [
+          {
+            "heading": "Health authority engagement",
+            "body": "The Director General of Health Punjab is the authority named in the report. Basic Health Units and District Health Units were the facilities visited. The source does not establish a formal delivery partnership or a vaccination programme operated by HRPF."
+          },
+          {
+            "heading": "Scope and results",
+            "body": "This intervention concerns advocacy for vaccination access. It does not claim that HRPF administered vaccines, reached a stated number of children or achieved a measured vaccination-coverage increase. Those figures are not supplied in the source."
+          },
+          {
+            "heading": "Sources and photographs",
+            "body": "Source: PROGRESS REPORT HRPF 2023.pdf, Improvement in the Health Sector and Access to Vaccination. The project description is a website summary of this historical report. Timeline labels describe the sequence in the report and are not exact event dates. Gallery photos come from HRPF’s supplied archive and illustrate the Foundation’s wider work; they are not verified photographs of this specific intervention."
+          }
+        ],
+        "partners": []
+      },
+      "coverAlt": "HRPF archive photograph of a group meeting around an office desk",
+      "gallery": [
+        {
+          "fileId": "gallery:homepage-0",
+          "alt": "HRPF archive photograph of an institutional discussion",
+          "caption": "Illustrative HRPF archive photo. Not verified as a photograph of this intervention."
+        },
+        {
+          "fileId": "gallery:homepage-4",
+          "alt": "HRPF archive photograph of another office meeting",
+          "caption": "Illustrative HRPF archive photo. Not verified as a photograph of this intervention."
+        }
+      ],
+      "documents": [
+        {
+          "fileId": "project-brief:childhood-vaccination-access",
+          "label": "Project source brief — 2022–2023"
+        }
+      ]
+    }
+  ]
+}

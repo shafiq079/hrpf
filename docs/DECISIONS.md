@@ -1,5 +1,18 @@
 # HRPF Decisions
 
+## 2026-10-06 — Populate the project redesign for review
+
+- Owner explicitly requests updating existing seeded project data rather than
+  manually completing the administrator form.
+- Provide a separate development-only `seed:projects -- --apply` command with
+  project-scoped transactions, versions, release checks and actor audit records.
+- Preserve original covers, identity, stories and news. Enrich only the three
+  published original seed projects; preserve deletions, withdrawals and later
+  rich admin edits. Reuse staged uploads after interruption.
+- Use the supplied report passages and labelled archive photographs. Add prepared
+  source-summary PDFs without exposing complete source documents. Use qualitative
+  reported results; do not fabricate beneficiary counts, costs or partnerships.
+
 ## 2026-10-06 — Project detail redesign
 
 - The owner authorizes redesign of project detail pages and corresponding admin

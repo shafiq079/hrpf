@@ -1,5 +1,14 @@
 # HRPF Progress
 
+## Populated project detail seed (2026-10-06)
+
+Added opt-in `seed:projects` enrichment of the three existing homepage projects.
+Source-based narratives/lists/timeline/qualitative results, six gallery placements
+and three bundled project source-brief PDFs allow review of the full new layout.
+The original seed checkpoints/news/record identities are retained. All 22 seed
+tests pass, including seven new real MongoDB enrichment cases. Live application
+uses the owner's private development services in Codespaces.
+
 ## Project detail redesign and project console (2026-10-06)
 
 Implemented optional rich project details, cover plus 20 photos, 5 PDFs, safe
