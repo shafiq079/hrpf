@@ -204,3 +204,18 @@ homepage articles, six archive photo attachments and three prepared source brief
 PDFs. The source reports, seed preservation rules and Codespaces commands are in
 BLOG_DETAILS.md and backend/seed/BLOGS.md. Live seeding requires the owner's
 private service configuration; no live database/storage execution is claimed here.
+
+
+## 2026-10-07 — prior work merged; Gallery on development
+
+Merged PR #3 into main after its verified checks. Development was aligned to
+that merge before implementing Gallery. The owner's clarified branch instruction
+keeps the new Gallery implementation on development.
+
+Added public press/photo search and modal zoom viewer, restoration/source labels,
+managed TV interviews with allowlisted click-to-load YouTube/Vimeo players,
+Gallery admin editing/preview/draft/publication/withdraw/delete, atomic image
+binding and optimistic versions. Added four real source image examples and a
+preservation/recovery seed, documented in GALLERY.md and backend/seed/GALLERY.md.
+Local API and seed integration suites pass; owner service execution and visual
+acceptance remain Codespaces steps.

@@ -5,24 +5,16 @@ import Link from "next/link";
 import { FolderOpen, Plus, LogOut, Pencil, ExternalLink } from "lucide-react";
 import Container from "@/components/shared/Container";
 import { adminRequest } from "@/lib/admin-api";
-import ProjectEditor, { newProject, type EditorRecord } from "./ProjectEditor";
+import GalleryEditor, { newMedia, type MediaRecord, type MediaKind } from "./GalleryEditor";
 
 type User = { name: string; email: string; role: string };
-type ProjectRow = {
-  id: string;
-  version: number;
-  title: { en: string; ur?: string };
-  slug: string;
-  locale: "en" | "ur";
-  status: string;
-  projectStatus: string;
-  location: string;
-};
-export default function ProjectConsole() {
+type MediaRow = MediaRecord & { id: string };
+export default function GalleryConsole() {
+  const [kind, setKind] = useState<MediaKind>("gallery");
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [rows, setRows] = useState<ProjectRow[]>([]);
-  const [editor, setEditor] = useState<EditorRecord | null>(null);
+  const [rows, setRows] = useState<MediaRow[]>([]);
+  const [editor, setEditor] = useState<MediaRecord | null>(null);
   const [page, setPage] = useState(1);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -43,23 +35,23 @@ export default function ProjectConsole() {
       active = false;
     };
   }, []);
-  const loadProjects = useCallback(async () => {
+  const loadMedia = useCallback(async () => {
     try {
-      setRows(await adminRequest<ProjectRow[]>(`/admin/projects?page=${page}`));
+      setRows(await adminRequest<MediaRow[]>(`/admin/${kind}?page=${page}`));
     } catch (failure) {
       setError(
         failure instanceof Error
           ? failure.message
-          : "Projects could not be loaded.",
+          : "Gallery records could not be loaded.",
       );
     } finally {
       setBusy(false);
     }
-  }, [page]);
+  }, [page, kind]);
   useEffect(() => {
     if (!allowed || editor) return;
     let active = true;
-    adminRequest<ProjectRow[]>(`/admin/projects?page=${page}`)
+    adminRequest<MediaRow[]>(`/admin/${kind}?page=${page}`)
       .then((result) => {
         if (active) setRows(result);
       })
@@ -68,7 +60,7 @@ export default function ProjectConsole() {
           setError(
             failure instanceof Error
               ? failure.message
-              : "Projects could not be loaded.",
+              : "Gallery records could not be loaded.",
           );
       })
       .finally(() => {
@@ -77,7 +69,7 @@ export default function ProjectConsole() {
     return () => {
       active = false;
     };
-  }, [allowed, editor, page]);
+  }, [allowed, editor, page, kind]);
   async function login(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
@@ -118,23 +110,23 @@ export default function ProjectConsole() {
     setError("");
     setNotice("");
     try {
-      setEditor(await adminRequest<EditorRecord>(`/admin/projects/${id}`));
+      setEditor(await adminRequest<MediaRecord>(`/admin/${kind}/${id}`));
     } catch (failure) {
       setError(
         failure instanceof Error
           ? failure.message
-          : "Project could not be opened.",
+          : "Gallery record could not be opened.",
       );
     } finally {
       setBusy(false);
     }
   }
-  async function act(row: ProjectRow, action: "withdraw" | "delete") {
+  async function act(row: MediaRow, action: "withdraw" | "delete") {
     if (
       !window.confirm(
         action === "delete"
-          ? `Delete “${row.title[row.locale] || row.title.en}”? This removes the project from the website.`
-          : "Withdraw this project from the website? You can edit and publish it again later.",
+          ? `Delete “${row.title.en}”? This removes the record from the website.`
+          : "Withdraw this record from the website? You can edit and publish it again later.",
       )
     )
       return;
@@ -144,8 +136,8 @@ export default function ProjectConsole() {
     try {
       await adminRequest(
         action === "delete"
-          ? `/admin/projects/${row.id}`
-          : `/admin/publication/project/${row.id}`,
+          ? `/admin/${kind}/${row.id}`
+          : `/admin/publication/${kind === "gallery" ? "gallery" : "interview"}/${row.id}`,
         {
           method: action === "delete" ? "DELETE" : "POST",
           body: JSON.stringify(
@@ -160,9 +152,9 @@ export default function ProjectConsole() {
         },
       );
       setNotice(
-        action === "delete" ? "Project deleted." : "Project withdrawn.",
+        action === "delete" ? "Media deleted." : "Media withdrawn.",
       );
-      await loadProjects();
+      await loadMedia();
     } catch (failure) {
       setError(
         failure instanceof Error
@@ -176,7 +168,7 @@ export default function ProjectConsole() {
   if (loading)
     return (
       <Container className="py-16">
-        <p role="status">Loading project management…</p>
+        <p role="status">Loading Gallery management…</p>
       </Container>
     );
   return (
@@ -222,7 +214,7 @@ export default function ProjectConsole() {
           <p className="eyebrow">HRPF administration</p>
           <h1 className="mt-3 text-3xl">Sign in</h1>
           <p className="mt-3 text-sm text-muted">
-            Use your administrator or editor account to manage projects.
+            Use your administrator or editor account to manage Gallery content.
           </p>
           <label className="mt-6 block text-sm font-semibold">
             Email
@@ -254,16 +246,17 @@ export default function ProjectConsole() {
         </form>
       ) : !allowed ? (
         <div className="border border-border bg-white p-8">
-          <h1 className="text-2xl">Project access required</h1>
+          <h1 className="text-2xl">Gallery access required</h1>
           <p className="mt-3">
-            Your account does not have permission to manage projects.
+            Your account does not have permission to manage Gallery content.
           </p>
         </div>
       ) : editor ? (
-        <ProjectEditor
+        <GalleryEditor
+          kind={kind}
           initial={editor}
           onCancel={() => setEditor(null)}
-          onSaved={(_record, message) => {
+          onSaved={(message) => {
             setEditor(null);
             setNotice(message);
             setError("");
@@ -274,26 +267,26 @@ export default function ProjectConsole() {
           <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="eyebrow">Content management</p>
-              <h1 className="mt-2 text-3xl">Projects</h1>
+              <h1 className="mt-2 text-3xl">Gallery</h1>
               <p className="mt-3 text-sm text-muted">
-                Create a complete project story. Save privately or publish it to
-                the website.
+                Manage newspaper cuttings, HRPF photographs and television interviews.
               </p>
             </div>
             <button
               type="button"
               disabled={busy}
               onClick={() => {
-                setEditor(newProject());
+                setEditor(newMedia());
                 setNotice("");
                 setError("");
               }}
               className="inline-flex items-center gap-2 bg-navy px-5 py-3 text-sm font-semibold text-white hover:bg-teal-dark disabled:opacity-50"
             >
               <Plus size={18} aria-hidden="true" />
-              Add project
+              Add media
             </button>
           </div>
+          <nav aria-label="Media management" className="mb-6 flex gap-3">{(["gallery", "interviews"] as MediaKind[]).map(value => <button type="button" key={value} disabled={busy} aria-pressed={kind === value} onClick={() => { setKind(value); setPage(1); setRows([]); setError(""); setNotice(""); }} className={`border border-border px-5 py-3 text-sm font-semibold ${kind === value ? "bg-navy text-white" : "bg-white text-navy"}`}>{value === "gallery" ? "Images and cuttings" : "TV interviews"}</button>)}</nav>
           <div className="space-y-4">
             {rows.map((row) => (
               <article
@@ -307,10 +300,10 @@ export default function ProjectConsole() {
                     {row.status === "published" ? "Published" : "Draft"}
                   </span>
                   <h2 className="mt-3 break-words text-xl">
-                    {row.title[row.locale] || row.title.en}
+                    {row.title.en}
                   </h2>
                   <p className="mt-2 text-sm text-muted">
-                    {row.projectStatus} · {row.location}
+                    {row.sourceName || (kind === "gallery" ? row.category : "TV interview")}
                   </p>
                 </div>
                 <div className="flex shrink-0 flex-wrap gap-x-5 gap-y-3">
@@ -326,7 +319,7 @@ export default function ProjectConsole() {
                   {row.status === "published" && (
                     <>
                       <Link
-                        href={`/projects/${row.slug}${row.locale === "ur" ? "?locale=ur" : ""}`}
+                        href={kind === "gallery" ? `/gallery/media-coverage?category=${row.category}` : "/gallery/tv-interviews"}
                         target="_blank"
                         rel="noopener"
                         className="inline-flex items-center gap-2 text-sm font-semibold text-navy"
@@ -363,9 +356,9 @@ export default function ProjectConsole() {
                 size={32}
                 aria-hidden="true"
               />
-              <h2 className="text-xl">No projects on this page</h2>
+              <h2 className="text-xl">No media on this page</h2>
               <p className="mt-3 text-sm text-muted">
-                Add your first project or return to the previous page.
+                Add your first image or interview or return to the previous page.
               </p>
             </div>
           )}

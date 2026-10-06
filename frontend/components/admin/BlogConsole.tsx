@@ -189,6 +189,7 @@ export default function BlogConsole() {
           <Link href="/admin/blogs" className="text-teal-dark">
             Blogs
           </Link>
+          <Link href="/admin/gallery" className="text-teal-dark">Gallery</Link>
         </nav>
       )}
       {user && (

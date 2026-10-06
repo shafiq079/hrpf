@@ -1,0 +1,187 @@
+{
+  "version": "gallery-preview-v1",
+  "files": [
+    {
+      "id": "index:media-coverage",
+      "path": "newspaper_cuttings_final/image_index.csv",
+      "sha256": "d2e8c29511c7420de9420294d6ea9f3fe2ae4bb62cf7b28f89f6f71ca3c6bf9a",
+      "bytes": 10627
+    },
+    {
+      "id": "gallery:media-coverage:016:webp",
+      "path": "newspaper_cuttings_final/website_webp/news-016.webp",
+      "sha256": "bb89bcacb81816dc17b72ea9c79a000f183b4e227a2e5fa2953ce07b6ded2302",
+      "bytes": 222674,
+      "width": 1280,
+      "height": 1280
+    },
+    {
+      "id": "index:in-action",
+      "path": "other_images_final/image_index.csv",
+      "sha256": "b36f4d6194e1feacacd41075dcbfe3ae52334cf2f2acdc8beefb60953e0f7d08",
+      "bytes": 26383
+    },
+    {
+      "id": "gallery:in-action:003:webp",
+      "path": "other_images_final/website_webp/gallery-003.webp",
+      "sha256": "f775265507a98f124571ce499ddd87dc55b90976d17ccf12387a933c528d38f9",
+      "bytes": 83940,
+      "width": 960,
+      "height": 726
+    },
+    {
+      "id": "gallery:in-action:004:webp",
+      "path": "other_images_final/website_webp/gallery-004.webp",
+      "sha256": "616bea3e6f49b5f0ad802dd26dee5c93733c2fe583f077d439addd7fe2f87897",
+      "bytes": 27372,
+      "width": 872,
+      "height": 366
+    },
+    {
+      "id": "gallery:in-action:005:webp",
+      "path": "other_images_final/website_webp/gallery-005.webp",
+      "sha256": "35db1fb6e4dbbd1c52786cd7f0b425715ba12e940e7d52404d7d5cd816f9edc5",
+      "bytes": 115876,
+      "width": 1139,
+      "height": 640
+    }
+  ],
+  "records": [
+    {
+      "kind": "GalleryItem",
+      "key": "gallery:media-coverage:016",
+      "payload": {
+        "category": "media-coverage",
+        "title": {
+          "en": "Media coverage - HRPF"
+        },
+        "alt": {
+          "en": "Media coverage - HRPF"
+        },
+        "caption": {
+          "en": ""
+        },
+        "sortOrder": 6,
+        "featured": false,
+        "sourceImageId": "16",
+        "sourceFilename": "images/WhatsApp Image 2026-10-04 at 9.04.17 PM (1).jpeg",
+        "treatment": "ORIGINAL",
+        "reviewStatus": "pending",
+        "seedKey": "gallery:media-coverage:016",
+        "sourceImageType": "newspaper",
+        "sourceTreatment": "STANDARD_CLEANUP",
+        "sourceWidth": 1280,
+        "sourceHeight": 1280
+      },
+      "files": [
+        "index:media-coverage",
+        "gallery:media-coverage:016:webp"
+      ],
+      "reviewTasks": [
+        "Review privacy, consent and visible personal details; write accurate alt text before publication."
+      ]
+    },
+    {
+      "kind": "GalleryItem",
+      "key": "gallery:in-action:003",
+      "payload": {
+        "category": "in-action",
+        "title": {
+          "en": "HRPF in Action"
+        },
+        "alt": {
+          "en": "HRPF in Action"
+        },
+        "caption": {
+          "en": ""
+        },
+        "sortOrder": 2,
+        "featured": false,
+        "sourceImageId": "3",
+        "sourceFilename": "images/WhatsApp Image 2026-10-04 at 9.04.08 PM (1).jpeg",
+        "treatment": "ORIGINAL",
+        "reviewStatus": "pending",
+        "seedKey": "gallery:in-action:003",
+        "sourceImageType": "photo",
+        "sourceTreatment": "STANDARD_CLEANUP",
+        "sourceWidth": 960,
+        "sourceHeight": 726
+      },
+      "files": [
+        "index:in-action",
+        "gallery:in-action:003:webp"
+      ],
+      "reviewTasks": [
+        "Review privacy, consent and visible personal details; write accurate alt text before publication."
+      ]
+    },
+    {
+      "kind": "GalleryItem",
+      "key": "gallery:in-action:004",
+      "payload": {
+        "category": "in-action",
+        "title": {
+          "en": "HRPF in Action"
+        },
+        "alt": {
+          "en": "HRPF in Action"
+        },
+        "caption": {
+          "en": ""
+        },
+        "sortOrder": 3,
+        "featured": false,
+        "sourceImageId": "4",
+        "sourceFilename": "images/WhatsApp Image 2026-10-04 at 9.04.08 PM.jpeg",
+        "treatment": "ORIGINAL",
+        "reviewStatus": "pending",
+        "seedKey": "gallery:in-action:004",
+        "sourceImageType": "photo",
+        "sourceTreatment": "STANDARD_CLEANUP",
+        "sourceWidth": 872,
+        "sourceHeight": 366
+      },
+      "files": [
+        "index:in-action",
+        "gallery:in-action:004:webp"
+      ],
+      "reviewTasks": [
+        "Review privacy, consent and visible personal details; write accurate alt text before publication."
+      ]
+    },
+    {
+      "kind": "GalleryItem",
+      "key": "gallery:in-action:005",
+      "payload": {
+        "category": "in-action",
+        "title": {
+          "en": "HRPF in Action"
+        },
+        "alt": {
+          "en": "HRPF in Action"
+        },
+        "caption": {
+          "en": ""
+        },
+        "sortOrder": 4,
+        "featured": false,
+        "sourceImageId": "5",
+        "sourceFilename": "images/WhatsApp Image 2026-10-04 at 9.04.09 PM (1).jpeg",
+        "treatment": "ORIGINAL",
+        "reviewStatus": "pending",
+        "seedKey": "gallery:in-action:005",
+        "sourceImageType": "photo",
+        "sourceTreatment": "STANDARD_CLEANUP",
+        "sourceWidth": 1139,
+        "sourceHeight": 640
+      },
+      "files": [
+        "index:in-action",
+        "gallery:in-action:005:webp"
+      ],
+      "reviewTasks": [
+        "Review privacy, consent and visible personal details; write accurate alt text before publication."
+      ]
+    }
+  ]
+}

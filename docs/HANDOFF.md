@@ -1,5 +1,23 @@
 # HRPF handoff
 
+
+## Current branch state and Gallery — 2026-10-07
+
+All previous homepage, navigation, rich project/blog, admin and source seed work
+is now on `main` through merged PR #3 (`9795ada`). This supersedes the historical
+branch-status statements below. The owner explicitly asked for Gallery work on
+`development`; keep it there until a later explicit merge request.
+
+Gallery now has a searchable press/photo archive, zoomable viewer, sourced
+captions, AI restoration labels and TV interview cards with click-to-load hosted
+players. `/admin/gallery` supports the existing content accounts, private image
+uploads, previews, drafts, publication, withdrawal and deletion for both kinds.
+See GALLERY.md for the complete fields/API/security contract and local checks.
+`npm run seed:gallery -- --apply` publishes four supplied archive examples using
+the owner's existing private Codespaces services. No real individual interview
+URLs were supplied, so no fake interviews are seeded. No private provider write
+or interactive visual acceptance is claimed in this environment.
+
 ## Populate the project redesign (2026-10-06)
 
 Owner wants populated project pages for review without entering the new fields

@@ -3,13 +3,14 @@ import { Router } from 'express';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { z } from 'zod';
-import { Asset, BlogCategory, BlogPost, BoardMember, Certificate, GalleryItem, Report, Setting, Project } from '../domain/models.js';
+import { Asset, BlogCategory, BlogPost, BoardMember, Certificate, GalleryItem, VideoInterview, Report, Setting, Project } from '../domain/models.js';
 import type { UploadProvider } from '../services/uploads.js';
 import { ApiError, unavailable, validate } from './errors.js';
+import { canonicalVideoPattern, videoLink } from '../services/video-links.js';
 import { blogReadingMinutes } from './blog-details.js';
 
 const short = z.string().trim().min(1).max(1000);
-const https = z.url().refine(v => { const u = new URL(v); return u.protocol === 'https:' && !u.username && !u.password; });
+const https = z.url().refine(v => { try { const u = new URL(v); return u.protocol === 'https:' && !u.username && !u.password; } catch { return false; } });
 export const publicSettingSchemas = {
   identity: z.object({ name: short, shortName: short, type: short, website: https, visionLine: short }),
   contact: z.object({ address: short, postalCode: short, phone: short, landline: short, emails: z.array(z.email().max(254)).max(5) }),
@@ -92,11 +93,11 @@ export function publicRouter(provider: UploadProvider) {
   });
   for (const kind of ['gallery', 'reports', 'certificates'] as const) {
     router.get(`/${kind}`, async (req, res) => {
-      const { locale, page, limit, category } = validate(publicQuery, req.query);
+      const { locale, page, limit, category, q } = validate(publicQuery, req.query);
       const model = kind === 'gallery' ? GalleryItem : kind === 'reports' ? Report : Certificate;
       const entityType = kind === 'gallery' ? 'GalleryItem' : kind === 'reports' ? 'Report' : 'Certificate';
       const field = kind === 'gallery' ? 'asset' : kind === 'reports' ? 'publicPdf' : 'publicFile';
-      const filter = { ...publicationFilter(), ...(kind === 'gallery' ? { reviewStatus: 'approved', duplicateOf: null, ...(category ? { category } : {}) } : { releaseReview: 'approved' }) };
+      const filter = { ...publicationFilter(), ...(kind === 'gallery' ? { reviewStatus: 'approved', duplicateOf: null, ...(category ? { category } : {}), ...(q ? { [`title.${locale}`]: { $regex: q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' } } : {}) } : { releaseReview: 'approved' }) };
       // Join before pagination/counting: a missing, restricted or mismatched file is never listed.
       const results = await model.aggregate([
         { $match: filter }, { $lookup: { from: Asset.collection.name, let: { file: `$${field}.assetId`, entity: '$_id' }, pipeline: [{ $match: { $expr: { $and: [{ $eq: ['$_id', '$$file'] }, { $eq: ['$entityId', '$$entity'] }, { $eq: ['$entityType', entityType] }] }, purpose: kind === 'certificates' ? 'certificate' : 'content', deliveryType: 'authenticated', visibility: 'public', scanStatus: 'clean', claimStatus: 'claimed', ...(kind === 'reports' ? { format: 'pdf' } : kind === 'gallery' ? { format: { $in: ['jpg', 'jpeg', 'png', 'webp'] } } : {}) } }], as: 'released' } },
@@ -106,13 +107,20 @@ export function publicRouter(provider: UploadProvider) {
       const result = results[0], total = result.count[0]?.total ?? 0;
       const data = result.rows.map((r: Record<string, any>) => {
         const base = { id: String(r._id), title: r.title?.[locale] ?? '', file: `/api/public-assets/${r.released[0]._id}` };
-        if (kind === 'gallery') return { ...base, category: r.category, alt: r.alt?.[locale] ?? '', caption: r.caption?.[locale] ?? '', treatment: r.treatment, width: r.released[0].width, height: r.released[0].height };
+        if (kind === 'gallery') return { ...base, category: r.category, alt: r.alt?.[locale] ?? '', caption: r.caption?.[locale] ?? '', treatment: r.treatment, mediaType: r.mediaType ?? r.sourceImageType ?? 'photo', sourceName: r.sourceName ?? '', sourceUrl: https.safeParse(r.sourceUrl).success ? r.sourceUrl : '', eventDate: r.eventDate?.toISOString().slice(0,10), width: r.released[0].width, height: r.released[0].height };
         if (kind === 'reports') return { ...base, slug: r.slug, year: r.year, summary: r.summary?.[locale] ?? '', pages: r.pages, download: `/api/reports/${r._id}/download` };
         return { ...base, issuer: r.issuer, reference: r.reference, issuedAt: r.issuedAt, validFrom: r.validFrom, expiresAt: r.expiresAt };
       });
       res.json({ data, meta: { page, limit, total, pages: Math.ceil(total / limit) } });
     });
   }
+  router.get('/interviews', async (req, res) => {
+    const { locale, page, limit, q } = validate(publicQuery, req.query);
+    const filter = { reviewStatus: 'approved', ...publicationFilter(), videoUrl: canonicalVideoPattern, ...(q ? { [`title.${locale}`]: { $regex: q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' } } : {}) };
+    const [rows, total] = await Promise.all([VideoInterview.find(filter).sort({ sortOrder: 1, _id: 1 }).skip((page-1)*limit).limit(limit).lean(), VideoInterview.countDocuments(filter)]);
+    const data = await Promise.all(rows.map(async row => ({ id: String(row._id), title: row.title?.[locale] ?? '', description: row.description?.[locale] ?? '', ...videoLink(row.videoUrl)!, sourceName: row.sourceName ?? '', eventDate: row.eventDate?.toISOString().slice(0,10), thumbnailAlt: row.thumbnailAlt ?? '', thumbnail: await releasedAsset(row.thumbnail?.assetId, 'VideoInterview', row._id) ? `/api/public-assets/${row.thumbnail!.assetId}` : null })));
+    res.json({ data, meta: { page, limit, total, pages: Math.ceil(total/limit) } });
+  });
   const stream: import('express').RequestHandler = async (req, res) => {
     validate(z.object({}).strict(), req.query);
     const isDownload = req.path.startsWith('/reports/');
@@ -128,6 +136,7 @@ export function publicRouter(provider: UploadProvider) {
       case 'BlogPost': released = !!await BlogPost.exists({_id:asset.entityId,status:'published',reviewStatus:'approved',$or:[{'cover.assetId':asset._id},{'gallery.asset.assetId':asset._id},{'documents.asset.assetId':asset._id}],...publicationFilter()}); break;
       case 'BoardMember': released = !!await BoardMember.exists({ _id: asset.entityId, isActive: true, 'photo.assetId': asset._id }); break;
       case 'GalleryItem': released = !!await GalleryItem.exists({ _id: asset.entityId, reviewStatus: 'approved', duplicateOf: null, 'asset.assetId': asset._id, ...publicationFilter() }); break;
+      case 'VideoInterview': released = !!await VideoInterview.exists({ _id: asset.entityId, reviewStatus: 'approved', videoUrl: canonicalVideoPattern, 'thumbnail.assetId': asset._id, ...publicationFilter() }); break;
       case 'Report': released = !!await Report.exists({ _id: asset.entityId, releaseReview: 'approved', 'publicPdf.assetId': asset._id, ...publicationFilter() }); break;
       case 'Certificate': released = !!await Certificate.exists({ _id: asset.entityId, releaseReview: 'approved', 'publicFile.assetId': asset._id, ...publicationFilter() }); break;
     }
