@@ -3,16 +3,16 @@ import {createServer} from 'node:http';
 import {spawn} from 'node:child_process';
 import {once} from 'node:events';
 import {checkNavigation, checkEmptyNavigation, checkOfflineNavigation} from './check-navigation.mjs';
-let revision=1,empty=false;const requests=[];
+let revision=1,empty=false,richBlog=true;const requests=[];
 const api=createServer((req,res)=>{
  requests.push({path:req.url,cookie:req.headers.cookie});res.setHeader('Content-Type','application/json');
  const project={title:`Managed project ${revision}`,slug:'real-project',summary:'Synthetic project summary',focusArea:'Rights',status:'Ongoing',location:'Pakistan',startYear:2026,image:null,blocks:[{type:'paragraph',text:'Managed project body'}],details:{overview:'Project overview text',challenge:'Documented challenge',approach:'Community approach',period:'March–September 2026',targetCommunity:'Local families',objectives:['Improved access'],activities:['Community sessions'],outcomes:['Documented result'],milestones:[{period:'June 2026',title:'First milestone'}],metrics:[{value:'12',label:'Sessions',source:'Project report'}],partners:['Verified partner'],sections:[{heading:'Lessons learned',body:'Project lessons'}]},gallery:[{image:'/api/public-assets/012345678901234567890123',alt:'Community session',caption:'Reviewed caption'},{image:'/api/public-assets/012345678901234567890124',alt:'Project activity'}],documents:[{file:'/api/public-assets/012345678901234567890125',label:'Project report PDF'}]};
- const news={title:`Managed news ${revision}`,slug:'real-news',excerpt:'Synthetic news summary',publishedAt:'2026-01-01T00:00:00.000Z',image:null,blocks:[{type:'paragraph',text:'Managed news body'}]};
+ const news={title:`Managed news ${revision}`,slug:'real-news',excerpt:'Synthetic news summary',publishedAt:'2026-01-01T00:00:00.000Z',image:'/images/hrpf/home-report-2023.webp',imageAlt:'Reviewed blog cover',category:'Community advocacy',authorName:'HRPF Pakistan',readingMinutes:4,blocks:[{type:'paragraph',text:'Managed news body'}],...(richBlog?{tags:['Accountability'],details:{category:'Community advocacy',authorName:'HRPF Pakistan',authorRole:'Foundation team',intro:'Blog introduction text',coverCaption:'Illustrative archive cover',takeaways:['Important blog takeaway'],sections:[{heading:'Story context',body:'Article section text',bullets:['Supported detail'],quote:'A verified quotation',attribution:'Supplied report'}],conclusion:'Blog closing thoughts',sources:[{label:'Blog source reference',url:'https://example.org/source',note:'Historical source note'}]},gallery:[{image:'/api/public-assets/012345678901234567890128',alt:'Blog archive photograph',caption:'Illustrative article photograph'},{image:'/api/public-assets/012345678901234567890129',alt:'Second archive photograph'}],documents:[{file:'/api/public-assets/012345678901234567890130',label:'Blog source brief PDF'}]}:{})};
  const path=new URL(req.url,'http://localhost').pathname;
  if(path==='/api/projects'||path==='/api/blogs'){
   const page=Number(new URL(req.url,'http://localhost').searchParams.get('page')??1);
   const row=path.endsWith('projects')?project:{...news,...(page===2?{title:'Second page blog',slug:'second-page-blog'}:{})};
-  res.end(JSON.stringify({data:empty?[]:[row],meta:{page,pages:empty?0:2}}));
+  res.end(JSON.stringify({data:empty?[]:[row,...(path.endsWith('blogs')&&page===1?[{...news,title:'Related published blog',slug:'related-blog'}]:[])],meta:{page,pages:empty?0:2}}));
  }
  else if(!empty&&(path==='/api/projects/real-project'||path==='/api/blogs/real-news'))res.end(JSON.stringify({data:path.includes('projects')?project:news}));
  else if(path==='/api/reports')res.end(JSON.stringify({data:empty?[]:[{id:'012345678901234567890125',title:'Published progress report',summary:'Report summary',year:2025,slug:'progress-report',file:'/api/public-assets/012345678901234567890125',download:'/api/reports/012345678901234567890125/download'}],meta:{pages:empty?0:1}}));
@@ -41,6 +41,15 @@ try{
  assert.ok((await read('/projects')).html.includes('Managed project 2'),'Project listing must use managed records');assert.equal((await read('/projects/unknown')).status,404);
  assert.ok((await read('/admin/projects')).html.includes('Loading project management'),'Project admin route must render');
  await checkNavigation(read,port);
+ const richPage=await read('/blogs/real-news');
+ for(const content of ['Key takeaways','Important blog takeaway','Story context','Article section text','Supported detail','A verified quotation','Supplied report','Blog closing thoughts','Blog photographs','Sources and references','Historical source note','Blog source brief PDF','Illustrative archive cover','Article contents','Share this blog','Copy link','Related published blog','4','min read']) assert.ok(richPage.html.includes(content),`Blog detail: ${content}`);
+ assert.ok(richPage.html.includes('article:published_time'),'Article SEO metadata');
+ assert.ok((await read('/admin/blogs')).html.includes('Loading blog management'));
+ richBlog=false;
+ const legacyBlog=await read('/blogs/real-news');
+ assert.equal(legacyBlog.status,200);assert.ok(legacyBlog.html.includes('Managed news body'));assert.ok(!legacyBlog.html.includes('Key takeaways'));
+ richBlog=true;
+ console.log('Blog detail checks passed: rich article, legacy text, gallery, sources, downloads, share controls, related articles, admin route and article metadata.');
  empty=true;page=await read();assert.ok(page.html.includes('Featured Projects')&&page.html.includes('Latest News &amp; Updates'));assert.ok(!page.html.includes('Our Programmes &amp; Priorities')&&!page.html.includes('Progress Reports &amp; Updates'));assert.ok(!page.html.includes('Managed project'));
  await checkEmptyNavigation(read);
  await new Promise(r=>api.close(r));page=await read();assert.equal(page.status,200);assert.ok(page.html.includes('Human Rights Protection Foundation Pakistan')&&page.html.includes('Featured Projects')&&page.html.includes('Latest News &amp; Updates'),'Original headings remain visible without backend');

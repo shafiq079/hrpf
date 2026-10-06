@@ -5,23 +5,22 @@ import Link from "next/link";
 import { FolderOpen, Plus, LogOut, Pencil, ExternalLink } from "lucide-react";
 import Container from "@/components/shared/Container";
 import { adminRequest } from "@/lib/admin-api";
-import ProjectEditor, { newProject, type EditorRecord } from "./ProjectEditor";
+import BlogEditor, { newBlog, type EditorRecord } from "./BlogEditor";
 
 type User = { name: string; email: string; role: string };
-type ProjectRow = {
+type BlogRow = {
   id: string;
   version: number;
   title: { en: string; ur?: string };
   slug: string;
   locale: "en" | "ur";
   status: string;
-  projectStatus: string;
-  location: string;
+  details?: { category?: string };
 };
-export default function ProjectConsole() {
+export default function BlogConsole() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [rows, setRows] = useState<ProjectRow[]>([]);
+  const [rows, setRows] = useState<BlogRow[]>([]);
   const [editor, setEditor] = useState<EditorRecord | null>(null);
   const [page, setPage] = useState(1);
   const [busy, setBusy] = useState(false);
@@ -43,14 +42,14 @@ export default function ProjectConsole() {
       active = false;
     };
   }, []);
-  const loadProjects = useCallback(async () => {
+  const loadBlogs = useCallback(async () => {
     try {
-      setRows(await adminRequest<ProjectRow[]>(`/admin/projects?page=${page}`));
+      setRows(await adminRequest<BlogRow[]>(`/admin/blogs?page=${page}`));
     } catch (failure) {
       setError(
         failure instanceof Error
           ? failure.message
-          : "Projects could not be loaded.",
+          : "Blogs could not be loaded.",
       );
     } finally {
       setBusy(false);
@@ -59,7 +58,7 @@ export default function ProjectConsole() {
   useEffect(() => {
     if (!allowed || editor) return;
     let active = true;
-    adminRequest<ProjectRow[]>(`/admin/projects?page=${page}`)
+    adminRequest<BlogRow[]>(`/admin/blogs?page=${page}`)
       .then((result) => {
         if (active) setRows(result);
       })
@@ -68,7 +67,7 @@ export default function ProjectConsole() {
           setError(
             failure instanceof Error
               ? failure.message
-              : "Projects could not be loaded.",
+              : "Blogs could not be loaded.",
           );
       })
       .finally(() => {
@@ -118,23 +117,23 @@ export default function ProjectConsole() {
     setError("");
     setNotice("");
     try {
-      setEditor(await adminRequest<EditorRecord>(`/admin/projects/${id}`));
+      setEditor(await adminRequest<EditorRecord>(`/admin/blogs/${id}`));
     } catch (failure) {
       setError(
         failure instanceof Error
           ? failure.message
-          : "Project could not be opened.",
+          : "Blog could not be opened.",
       );
     } finally {
       setBusy(false);
     }
   }
-  async function act(row: ProjectRow, action: "withdraw" | "delete") {
+  async function act(row: BlogRow, action: "withdraw" | "delete") {
     if (
       !window.confirm(
         action === "delete"
-          ? `Delete “${row.title[row.locale] || row.title.en}”? This removes the project from the website.`
-          : "Withdraw this project from the website? You can edit and publish it again later.",
+          ? `Delete “${row.title[row.locale] || row.title.en}”? This removes the blog from the website.`
+          : "Withdraw this blog from the website? You can edit and publish it again later.",
       )
     )
       return;
@@ -144,8 +143,8 @@ export default function ProjectConsole() {
     try {
       await adminRequest(
         action === "delete"
-          ? `/admin/projects/${row.id}`
-          : `/admin/publication/project/${row.id}`,
+          ? `/admin/blogs/${row.id}`
+          : `/admin/publication/blog/${row.id}`,
         {
           method: action === "delete" ? "DELETE" : "POST",
           body: JSON.stringify(
@@ -159,10 +158,8 @@ export default function ProjectConsole() {
           ),
         },
       );
-      setNotice(
-        action === "delete" ? "Project deleted." : "Project withdrawn.",
-      );
-      await loadProjects();
+      setNotice(action === "delete" ? "Blog deleted." : "Blog withdrawn.");
+      await loadBlogs();
     } catch (failure) {
       setError(
         failure instanceof Error
@@ -176,12 +173,24 @@ export default function ProjectConsole() {
   if (loading)
     return (
       <Container className="py-16">
-        <p role="status">Loading project management…</p>
+        <p role="status">Loading blog management…</p>
       </Container>
     );
   return (
     <Container className="py-10 sm:py-14">
-      {allowed && <nav aria-label="Content administration" className="mb-6 flex gap-5 text-sm font-semibold"><Link href="/admin/projects" className="text-teal-dark">Projects</Link><Link href="/admin/blogs" className="text-teal-dark">Blogs</Link></nav>}
+      {allowed && (
+        <nav
+          aria-label="Content administration"
+          className="mb-6 flex gap-5 text-sm font-semibold"
+        >
+          <Link href="/admin/projects" className="text-teal-dark">
+            Projects
+          </Link>
+          <Link href="/admin/blogs" className="text-teal-dark">
+            Blogs
+          </Link>
+        </nav>
+      )}
       {user && (
         <div className="mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
           <p className="text-sm text-muted">
@@ -222,7 +231,7 @@ export default function ProjectConsole() {
           <p className="eyebrow">HRPF administration</p>
           <h1 className="mt-3 text-3xl">Sign in</h1>
           <p className="mt-3 text-sm text-muted">
-            Use your administrator or editor account to manage projects.
+            Use your administrator or editor account to manage blogs.
           </p>
           <label className="mt-6 block text-sm font-semibold">
             Email
@@ -254,13 +263,13 @@ export default function ProjectConsole() {
         </form>
       ) : !allowed ? (
         <div className="border border-border bg-white p-8">
-          <h1 className="text-2xl">Project access required</h1>
+          <h1 className="text-2xl">Blog access required</h1>
           <p className="mt-3">
-            Your account does not have permission to manage projects.
+            Your account does not have permission to manage blogs.
           </p>
         </div>
       ) : editor ? (
-        <ProjectEditor
+        <BlogEditor
           initial={editor}
           onCancel={() => setEditor(null)}
           onSaved={(_record, message) => {
@@ -274,24 +283,24 @@ export default function ProjectConsole() {
           <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="eyebrow">Content management</p>
-              <h1 className="mt-2 text-3xl">Projects</h1>
+              <h1 className="mt-2 text-3xl">Blogs</h1>
               <p className="mt-3 text-sm text-muted">
-                Create a complete project story. Save privately or publish it to
-                the website.
+                Write a complete article with photographs and sources. Save
+                privately or publish it to the website.
               </p>
             </div>
             <button
               type="button"
               disabled={busy}
               onClick={() => {
-                setEditor(newProject());
+                setEditor(newBlog());
                 setNotice("");
                 setError("");
               }}
               className="inline-flex items-center gap-2 bg-navy px-5 py-3 text-sm font-semibold text-white hover:bg-teal-dark disabled:opacity-50"
             >
               <Plus size={18} aria-hidden="true" />
-              Add project
+              Add blog
             </button>
           </div>
           <div className="space-y-4">
@@ -310,7 +319,7 @@ export default function ProjectConsole() {
                     {row.title[row.locale] || row.title.en}
                   </h2>
                   <p className="mt-2 text-sm text-muted">
-                    {row.projectStatus} · {row.location}
+                    {row.details?.category || "HRPF Blogs"}
                   </p>
                 </div>
                 <div className="flex shrink-0 flex-wrap gap-x-5 gap-y-3">
@@ -326,7 +335,7 @@ export default function ProjectConsole() {
                   {row.status === "published" && (
                     <>
                       <Link
-                        href={`/projects/${row.slug}${row.locale === "ur" ? "?locale=ur" : ""}`}
+                        href={`/blogs/${row.slug}${row.locale === "ur" ? "?locale=ur" : ""}`}
                         target="_blank"
                         rel="noopener"
                         className="inline-flex items-center gap-2 text-sm font-semibold text-navy"
@@ -363,9 +372,9 @@ export default function ProjectConsole() {
                 size={32}
                 aria-hidden="true"
               />
-              <h2 className="text-xl">No projects on this page</h2>
+              <h2 className="text-xl">No blogs on this page</h2>
               <p className="mt-3 text-sm text-muted">
-                Add your first project or return to the previous page.
+                Add your first blog or return to the previous page.
               </p>
             </div>
           )}

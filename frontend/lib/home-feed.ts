@@ -48,6 +48,10 @@ export type ProjectRecord = {
   imageAlt?: string;
 };
 export type NewsRecord = {
+  category?: string;
+  authorName?: string;
+  readingMinutes?: number;
+  imageAlt?: string;
   title: string;
   slug: string;
   excerpt: string;
@@ -81,12 +85,12 @@ export function newsCard(row: NewsRecord): HomeNews {
     title: row.title,
     slug: row.slug,
     summary: row.excerpt,
-    category: "HRPF Blogs",
+    category: row.category || "HRPF Blogs",
     date: row.publishedAt,
-    readingTime: "Foundation update",
+    readingTime: row.readingMinutes ? `${row.readingMinutes} min read` : "Foundation update",
     image: row.image ?? "/images/hrpf/home-chairman.webp",
     imageAlt: row.image
-      ? row.title
+      ? (row.imageAlt || row.title)
       : "HRPF archive photograph illustrating the Foundation’s work",
     href: `/blogs/${row.slug}`,
   } as HomeNews;

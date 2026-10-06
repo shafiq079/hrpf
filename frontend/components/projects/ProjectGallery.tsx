@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import AppImage from "@/components/shared/AppImage";
 
 type Photo = { image: string; alt: string; caption?: string };
-export default function ProjectGallery({ photos }: { photos: Photo[] }) {
+export default function ProjectGallery({ photos, label = "Project photographs" }: { photos: Photo[]; label?: string }) {
   const [index, setIndex] = useState(0);
   const touch = useRef<number | null>(null);
   const current = photos[index] ?? photos[0];
@@ -16,7 +16,7 @@ export default function ProjectGallery({ photos }: { photos: Photo[] }) {
     <div
       role="region"
       aria-roledescription="carousel"
-      aria-label="Project photographs"
+      aria-label={label}
       tabIndex={0}
       onKeyDown={(event) => {
         if (event.key === "ArrowLeft" || event.key === "ArrowRight") {

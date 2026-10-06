@@ -333,6 +333,8 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     await request(app).head(`/api/reports/${report.id}/download`).expect(200);
     assert.equal((await Report.findById(report.id))!.downloadCount, 0);
     await request(app).get(`/api/reports/${report.id}/download`).expect(200);
+    // The stream can finish at the client before the post-delivery counter write.
+    await waitFor(async () => (await Report.findById(report.id))!.downloadCount === 1);
     assert.equal((await Report.findById(report.id))!.downloadCount, 1);
   });
   it('M4 blog queries are bounded, literal and hide scheduled or unreviewed content', async () => {
@@ -473,6 +475,94 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     await editor.agent.patch(`/api/admin/projects/${row!.id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...base,version:7}).expect(409);
     const manager=await login('case_manager');
     await manager.agent.get(`/api/admin/projects/${row!.id}`).expect(403);
+  });
+
+  it('rich blog drafts retain media privately, publish every reviewed file, and revoke removed media', async () => {
+    const editor = await login('editor');
+    const stage = async (bytes = png, filename = 'blog.png') => {
+      const result = await editor.agent.post('/api/admin/assets?purpose=content').set('Origin', 'http://localhost:3000').set('X-CSRF-Token', editor.csrf).attach('file', bytes, filename).expect(201);
+      return result.body.data.assetId as string;
+    };
+    const cover = await stage(), first = await stage(), second = await stage(), document = await stage(pdf, 'brief.pdf');
+    const payload = { title: {en:'BlogPost with a complete story'}, excerpt: {en:'A verified summary'}, slug:'rich-blog', locale:'en', blocks:[{type:'paragraph',text:'Existing source text'}], coverAssetId:cover, coverAlt:'Health outreach',
+      gallery:[{assetId:first,alt:'Community meeting',caption:'A reviewed photo'},{assetId:second,alt:'BlogPost activities'}], documents:[{assetId:document,label:'BlogPost brief'}],
+      tags:['Accountability'], details:{category:'Community advocacy',authorName:'Public author',authorRole:'Editor',intro:'About this article',takeaways:['A documented concern'],sections:[{heading:'What happened',body:'A sourced account',bullets:['Known fact'],quote:'An attributed quotation',attribution:'Supplied report'}],conclusion:'A considered ending',sources:[{label:'Supplied report',url:'https://example.org/report',note:'Historical source'}],seoTitle:'Search title',seoDescription:'Search description'},
+    };
+    const created = await editor.agent.post('/api/admin/blogs').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(payload).expect(201);
+    const id = created.body.data.id;
+    assert.equal(await Asset.countDocuments({entityId:id,claimStatus:'claimed',visibility:'restricted'}),4);
+    await request(app).get('/api/blogs/rich-blog').expect(404);
+    await request(app).get(`/api/public-assets/${first}`).expect(404);
+    const privateRow = await editor.agent.get(`/api/admin/blogs/${id}`).expect(200);
+    assert.equal(privateRow.body.data.coverAssetId,cover);
+    assert.equal(privateRow.body.data.gallery.length,2);
+    assert.ok(!JSON.stringify(privateRow.body).includes('publicId'));
+    const publish = (version:number) => editor.agent.post(`/api/admin/publication/blog/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version,action:'publish',releaseReviewed:true});
+    await publish(0).expect(200);
+    const listing = await editor.agent.get('/api/admin/blogs').expect(200);
+    const listed = listing.body.data.find((item: {id: string}) => item.id === id);
+    assert.equal(listed.version, 1, 'BlogPost list must include the version required for withdrawal/deletion');
+    assert.ok(!JSON.stringify(listing.body).includes('publicId'));
+    const result = await request(app).get('/api/blogs/rich-blog').expect(200);
+    assert.equal(result.body.data.gallery.length,2); assert.equal(result.body.data.documents.length,1);
+    assert.equal(result.body.data.details.sections[0].attribution,'Supplied report');
+    assert.equal(result.body.data.imageAlt,'Health outreach');
+    assert.ok(!JSON.stringify(result.body).includes('publicId'));
+    for (const file of [cover,first,second,document]) await request(app).get(`/api/public-assets/${file}`).expect(200);
+    const changed = {...payload,gallery:payload.gallery.slice(0,1),documents:[],version:1};
+    await editor.agent.patch(`/api/admin/blogs/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(changed).expect(200);
+    for (const file of [cover,first,second,document]) await request(app).get(`/api/public-assets/${file}`).expect(404);
+    await publish(2).expect(200);
+    await request(app).get(`/api/public-assets/${first}`).expect(200);
+    await request(app).get(`/api/public-assets/${second}`).expect(404);
+    await request(app).get(`/api/public-assets/${document}`).expect(404);
+    const after = await request(app).get('/api/blogs/rich-blog').expect(200);
+    assert.equal(after.body.data.gallery.length,1); assert.deepEqual(after.body.data.documents,[]);
+    await editor.agent.post(`/api/admin/publication/blog/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:3,action:'withdraw',releaseReviewed:true}).expect(200);
+    for(const file of [cover,first]) await request(app).get(`/api/public-assets/${file}`).expect(404);
+    await request(app).get('/api/blogs/rich-blog').expect(404);
+    await publish(4).expect(200);
+    assert.equal((await request(app).get('/api/news/rich-blog').expect(200)).body.data.category,'Community advocacy');
+    await editor.agent.delete(`/api/admin/blogs/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:5}).expect(200);
+    await request(app).get(`/api/public-assets/${cover}`).expect(404);
+    await request(app).get('/api/blogs/rich-blog').expect(404);
+  });
+  it('blog media validation rejects foreign, duplicate, expired, non-image and cross-blog files atomically', async () => {
+    const editor = await login('editor'), other = await login('editor');
+    const stage = async (auth:typeof editor, bytes=png, filename='blog.png') => (await auth.agent.post('/api/admin/assets?purpose=content').set('Origin','http://localhost:3000').set('X-CSRF-Token',auth.csrf).attach('file',bytes,filename).expect(201)).body.data.assetId as string;
+    const own=await stage(editor),foreign=await stage(other),doc=await stage(editor,pdf,'brief.pdf'),expired=await stage(editor);
+    await Asset.updateOne({_id:expired},{$set:{stagingExpiresAt:new Date(0)}});
+    const base={title:{en:'Draft'},excerpt:{en:'Summary'},slug:'validation-blog',locale:'en',blocks:[{type:'paragraph',text:'Body'}]};
+    for(const media of [{coverAssetId:foreign},{gallery:[{assetId:doc,alt:'Not a photo'}]},{coverAssetId:expired},{coverAssetId:own,gallery:[{assetId:own.toUpperCase(),alt:'Duplicate'}]},{documents:[{assetId:own,label:'Not a PDF'}]}]) {
+      await editor.agent.post('/api/admin/blogs').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...base,...media}).expect(400);
+      assert.equal(await BlogPost.countDocuments(),0);
+      assert.equal((await Asset.findById(own))!.claimStatus,'staged');
+    }
+    await editor.agent.post('/api/admin/blogs').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...base,coverAssetId:own}).expect(201);
+    await editor.agent.post('/api/admin/blogs').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...base,slug:'another-blog',coverAssetId:own}).expect(400);
+    const row=await BlogPost.findOne({slug:base.slug});
+    await editor.agent.patch(`/api/admin/blogs/${row!.id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...base,version:7}).expect(409);
+    const manager=await login('case_manager');
+    await manager.agent.get(`/api/admin/blogs/${row!.id}`).expect(403);
+  });
+
+  it('blog publication supports section-only stories and rejects unsafe sources, unattributed quotes and excessive media', async () => {
+    const editor = await login('editor');
+    const send = (body: object) => editor.agent.post('/api/admin/blogs').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(body);
+    const base = {title:{en:'Section story'},excerpt:{en:'Summary'},slug:'section-story',blocks:[],details:{intro:'A proper introduction',sections:[{heading:'Context',body:'Reviewed text'}]}};
+    for (const details of [{sources:[{label:'Unsafe',url:'javascript:alert(1)'}]},{sources:[{label:'Unsafe',url:'https://user:pass@example.org/'}]},{sections:[{heading:'Quote',body:'Text',quote:'No attribution'}]}]) await send({...base,details}).expect(400);
+    await send({...base,tags:['Rights','rights']}).expect(400);
+    await send({...base,gallery:Array.from({length:13},()=>({assetId:new Types.ObjectId().toString(),alt:'Photo'}))}).expect(400);
+    await send({...base,documents:Array.from({length:4},()=>({assetId:new Types.ObjectId().toString(),label:'PDF'}))}).expect(400);
+    const created = await send(base).expect(201);
+    await editor.agent.post(`/api/admin/publication/blog/${created.body.data.id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:0,action:'publish',releaseReviewed:true}).expect(200);
+    const response = await request(app).get('/api/blogs/section-story').expect(200);
+    assert.equal(response.body.data.authorName,'HRPF Pakistan');
+    assert.equal(response.body.data.readingMinutes,1);
+    assert.deepEqual(response.body.data.blocks,[]);
+    assert.equal(response.body.data.details.sections[0].heading,'Context');
+    const empty = await send({...base,slug:'empty-story',details:{}}).expect(201);
+    await editor.agent.post(`/api/admin/publication/blog/${empty.body.data.id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:0,action:'publish',releaseReviewed:true}).expect(400);
   });
 
 });

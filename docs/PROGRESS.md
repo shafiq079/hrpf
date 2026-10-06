@@ -190,3 +190,17 @@ board/documents/media remain reviewed public records. Membership uses the suppli
 Google Form. TV recordings, complaint-field/notification changes and translation
 remain subsequent work. See NAVIGATION_PLAN.md for the complete route mapping,
 source interpretations, tests and Codespaces restart instructions.
+
+
+## Rich blogs and administrator editor — 2026-10-06
+Implemented `/blogs/[slug]` as a full article view, with category/public author,
+publication date and reading time, takeaways, structured sections/lists/quotations,
+contents, gallery, sources, PDF downloads, sharing and related released articles.
+`/admin/blogs` supports the existing authenticated content roles, preview, drafts,
+publish, withdraw and delete, using the same atomic media/privacy/version controls
+as projects. Existing BlogPost records and legacy News APIs are retained.
+Added explicit development-only `seed:blogs` enrichment for the three original
+homepage articles, six archive photo attachments and three prepared source brief
+PDFs. The source reports, seed preservation rules and Codespaces commands are in
+BLOG_DETAILS.md and backend/seed/BLOGS.md. Live seeding requires the owner's
+private service configuration; no live database/storage execution is claimed here.

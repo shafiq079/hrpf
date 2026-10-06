@@ -9,12 +9,13 @@ type MediaInput = {
 };
 // Binding is part of the content transaction. A saved draft retains its media,
 // but neither public URLs nor Cloudinary delivery are released until publication.
-export async function bindProjectMedia(
+export async function bindContentMedia(
   row: any,
   input: MediaInput,
   actorId: string,
   session: mongoose.ClientSession,
   visibility: "public" | "restricted",
+  entityType: "Project" | "BlogPost" = "Project",
 ) {
   const coverId =
     input.coverAssetId === undefined
@@ -45,7 +46,7 @@ export async function bindProjectMedia(
     throw new ApiError(
       400,
       "INVALID_ASSET",
-      "Each project file must appear only once.",
+      "Each content file must appear only once.",
     );
   const refs = new Map<string, Record<string, unknown>>();
   for (const request of requests) {
@@ -65,18 +66,18 @@ export async function bindProjectMedia(
           ownerId: actorId,
           stagingExpiresAt: { $gt: new Date() },
         },
-        { claimStatus: "claimed", entityType: "Project", entityId: row._id },
+        { claimStatus: "claimed", entityType, entityId: row._id },
       ],
     }).session(session);
     if (!asset)
       throw new ApiError(
         400,
         "INVALID_ASSET",
-        "Use a clean project file or your own unexpired uploaded file.",
+        "Use a clean bound file or your own unexpired uploaded file.",
       );
     asset.visibility = visibility;
     asset.claimStatus = "claimed";
-    asset.entityType = "Project";
+    asset.entityType = entityType;
     asset.entityId = row._id;
     asset.set("stagingExpiresAt", undefined);
     await asset.save({ session });
@@ -95,7 +96,7 @@ export async function bindProjectMedia(
   }
   await Asset.updateMany(
     {
-      entityType: "Project",
+      entityType,
       entityId: row._id,
       _id: { $nin: requests.map((item) => item.assetId) },
     },
@@ -113,3 +114,4 @@ export async function bindProjectMedia(
     label: item.label,
   }));
 }
+export const bindProjectMedia = bindContentMedia;

@@ -7,12 +7,13 @@ export function collectionPage(value: string | string[] | undefined): number {
   return Number.isInteger(page) && page >= 1 && page <= 1000 ? page : 1;
 }
 /** Only public endpoints; never forward session cookies. */
-export async function readPublicCollection<T>(kind: CollectionKind, page = 1, category?: "media-coverage", limit = 12): Promise<PublicCollection<T>> {
+export async function readPublicCollection<T>(kind: CollectionKind, page = 1, category?: "media-coverage", limit = 12, locale: "en" | "ur" = "en"): Promise<PublicCollection<T>> {
   try {
     const base = new URL(process.env.INTERNAL_API_URL ?? "http://127.0.0.1:5000");
     if (!["http:", "https:"].includes(base.protocol) || base.username || base.password || base.pathname !== "/" || base.search || base.hash) throw new Error("Invalid API origin");
     const url = new URL(`/api/${kind}`, base);
     url.searchParams.set("page", String(page)); url.searchParams.set("limit", String(Math.min(48, Math.max(1, limit))));
+    url.searchParams.set("locale", locale);
     if (category) url.searchParams.set("category", category);
     const response = await fetch(url, { cache: "no-store", credentials: "omit", signal: AbortSignal.timeout(4000) });
     if (!response.ok) throw new Error("Unavailable");

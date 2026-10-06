@@ -14,6 +14,7 @@ import { permit, can } from "../security/permissions.js";
 import { ApiError, validate } from "./errors.js";
 import { projectDetailsInput, projectMediaInput } from "./project-details.js";
 import { bindProjectMedia } from "../services/project-media.js";
+import { blogDetailsInput, blogMediaInput } from "./blog-details.js";
 const localized = z
   .object({
     en: z.string().trim().min(1).max(10000),
@@ -62,7 +63,13 @@ export const projectInput = z
     startYear: z.number().int().min(1900).max(2200).optional(),
   })
   .strict();
-export const newsInput = z.object({ ...common, excerpt: localized }).strict();
+export const newsInput = z.object({ ...common,
+  blocks: z.array(blocks.element).max(100),
+  title: localized.extend({ en: z.string().trim().min(1).max(200), ur: z.string().trim().max(200).optional() }),
+  excerpt: localized.extend({ en: z.string().trim().min(1).max(1000), ur: z.string().trim().max(1000).optional() }),
+  details: blogDetailsInput.optional(), ...blogMediaInput,
+  tags: z.array(z.string().trim().min(1).max(50)).max(12).refine(tags => new Set(tags.map(tag => tag.toLowerCase())).size === tags.length, "Use distinct tags").optional(),
+}).strict();
 const id = z.string().regex(/^[a-fA-F0-9]{24}$/);
 export function managedContentRouter(auth: ReturnType<typeof createAuth>) {
   const router = Router();
@@ -86,7 +93,7 @@ export function managedContentRouter(auth: ReturnType<typeof createAuth>) {
         .sort({ _id: 1 })
         .skip((page - 1) * 20)
         .limit(20)
-        .select(kind === "projects" ? "__v title slug summary projectStatus status focusArea location locale" : "-cover -sourceReferences")
+        .select(kind === "projects" ? "__v title slug summary projectStatus status focusArea location locale" : "__v title slug excerpt status locale details.category")
         .lean();
       res.json({
         data: rows.map(({ _id, __v, ...r }: any) => ({
@@ -97,14 +104,15 @@ export function managedContentRouter(auth: ReturnType<typeof createAuth>) {
         meta: { page, limit: 20 },
       });
     });
-    if (kind === "projects") router.get("/projects/:id", async (req, res) => {
-      const row = await Project.findById(validate(id, req.params.id)).lean();
-      if (!row) throw new ApiError(404, "NOT_FOUND", "Project not found.");
+    router.get(`/${kind}/:id`, async (req, res) => {
+      const row = await model.findById(validate(id, req.params.id)).lean();
+      if (!row) throw new ApiError(404, "NOT_FOUND", "Content not found.");
       const { _id, __v, cover, gallery, documents, sourceReferences: _sources, ...fields } = row;
-      res.json({ data: { id: String(_id), version: __v, ...fields,
+      const safeFields = kind === "projects" ? fields : Object.fromEntries(["title", "slug", "locale", "excerpt", "blocks", "details", "tags", "coverAlt", "status", "publishedAt"].map(key => [key, row[key]]));
+      res.json({ data: { id: String(_id), version: __v, ...safeFields,
         coverAssetId: cover?.assetId?.toString() ?? null,
-        gallery: (gallery ?? []).map(item => ({ assetId: String(item.asset.assetId), alt: item.alt, caption: item.caption ?? "" })),
-        documents: (documents ?? []).map(item => ({ assetId: String(item.asset.assetId), label: item.label })),
+        gallery: (gallery ?? []).map((item: any) => ({ assetId: String(item.asset.assetId), alt: item.alt, caption: item.caption ?? "" })),
+        documents: (documents ?? []).map((item: any) => ({ assetId: String(item.asset.assetId), label: item.label })),
       } });
     });
     for (const method of ["post", "patch", "delete"] as const)
@@ -166,7 +174,7 @@ export function managedContentRouter(auth: ReturnType<typeof createAuth>) {
                 row.publishedAt = undefined;
                 row.__v += 1;
               }
-              if (kind === "projects") await bindProjectMedia(row, { coverAssetId, gallery, documents }, principal.id, tx, "restricted");
+              await bindProjectMedia(row, { coverAssetId, gallery, documents }, principal.id, tx, "restricted", entity);
               if (method === "post") await row.save({ session: tx });
               else {
                 await row.validate();

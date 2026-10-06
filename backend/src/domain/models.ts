@@ -79,10 +79,19 @@ export const BlogCategory = mongoose.model('BlogCategory', new Schema({
 }, options));
 // Rich text is structured blocks, never executable HTML. HTTP contracts further bound the blocks.
 const block = new Schema({ type: { type: String, enum: ['paragraph', 'heading', 'list', 'image'], required: true }, text: text(10000), assetId: oid('Asset'), items: [String] }, { _id: false, strict: 'throw' });
+const blogDetails = new Schema({
+  category: text(80), authorName: text(100), authorRole: text(150), intro: text(10000), coverCaption: text(500), takeaways: [String],
+  sections: [new Schema({ heading: requiredText(150), body: requiredText(10000), bullets: [String], quote: text(2000), attribution: text(200) }, { _id: false, strict: 'throw' })],
+  conclusion: text(10000), sources: [new Schema({ label: requiredText(200), url: text(2000), note: text(1000) }, { _id: false, strict: 'throw' })],
+  seoTitle: text(80), seoDescription: text(170),
+}, { _id: false, strict: 'throw' });
 export const BlogPost = mongoose.model('BlogPost', new Schema({
   title: { type: localized, required: true }, slug: { ...requiredText(200), unique: true }, locale: { type: String, enum: ['en', 'ur'], default: 'en' },
   translationOf: oid('BlogPost'), blocks: [block], excerpt: localized, cover: assetRefSchema, inlineAssets: [assetRefSchema],
   categories: [oid('BlogCategory')], tags: [String], authorId: oid('User'),
+  details: blogDetails, coverAlt: text(300),
+  gallery: [new Schema({ asset: { type: assetRefSchema, required: true }, alt: requiredText(300), caption: text(500) }, { _id: false, strict: 'throw' })],
+  documents: [new Schema({ asset: { type: assetRefSchema, required: true }, label: requiredText(150) }, { _id: false, strict: 'throw' })],
   status: { type: String, enum: ['draft', 'scheduled', 'published', 'archived'], default: 'draft' },
   publishedAt: Date, scheduledAt: Date, seo: localized, sourceReferences: [String], reviewStatus: review,
 }, options));

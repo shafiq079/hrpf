@@ -52,13 +52,13 @@ export function publicationRouter(auth: ReturnType<typeof createAuth>) {
           } else if (kind === 'board') row.isActive = true;
           else {
             if (kind === 'gallery' && (row.duplicateOf || !row.alt?.en?.trim())) throw new ApiError(400, 'REVIEW_REQUIRED', 'Review the image description and duplicate status first.');
-            if (['blog', 'project'].includes(kind) && (!row.blocks?.length || row.blocks.some((b: {type: string}) => b.type === 'image'))) throw new ApiError(400, 'REVIEW_REQUIRED', 'Review text blocks; inline-image release is not supported yet.');
+            if (['blog', 'project'].includes(kind) && ((!row.blocks?.length && !(kind === 'blog' && (row.details?.intro?.trim() || row.details?.sections?.length))) || row.blocks.some((b: {type: string}) => b.type === 'image'))) throw new ApiError(400, 'REVIEW_REQUIRED', 'Provide reviewed article text; use the gallery for images.');
             if (['blog', 'project'].includes(kind)) row.status = 'published';
             if (['report', 'certificate'].includes(kind)) row.releaseReview = 'approved'; else row.reviewStatus = 'approved';
             row.publishedAt = new Date();
           }
-          if (kind === 'project') {
-            await bindProjectMedia(row, { coverAssetId: input.assetId }, principal.id, tx, 'public');
+          if (kind === 'project' || kind === 'blog') {
+            await bindProjectMedia(row, { coverAssetId: input.assetId }, principal.id, tx, 'public', kind === 'blog' ? 'BlogPost' : 'Project');
           } else if (spec.field) {
             const fileId = input.assetId ?? row[spec.field]?.assetId;
             if (!fileId && !['board', 'blog', 'project'].includes(kind)) throw new ApiError(400, 'REVIEW_REQUIRED', 'Upload and review a public release file first.');

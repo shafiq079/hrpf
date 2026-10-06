@@ -206,3 +206,6 @@ configured development MongoDB/Cloudinary with working ClamAV and an existing
 `SEED_ACTOR_EMAIL`. See [seed/HOMEPAGE.md](seed/HOMEPAGE.md) for exact configuration,
 source provenance and preservation rules. This separate command does not publish
 legacy M3 content or alter fixed page copy.
+
+
+Rich blog administration is available at `/admin/blogs`. See [blog details](../docs/BLOG_DETAILS.md) and [sourced preview seed](seed/BLOGS.md) for fields, release controls and `npm run seed:blogs -- --apply`.

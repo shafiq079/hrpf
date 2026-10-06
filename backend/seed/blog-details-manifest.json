@@ -1,0 +1,285 @@
+{
+  "version": "blog-details-v1",
+  "files": [
+    {
+      "id": "gallery:homepage-0",
+      "path": "other_images_final/home-programme-advocacy.webp",
+      "sha256": "c430455aff4b74504460761e856df07c6b16d616ca4bb55ae32daa0d3c9f7bcf",
+      "bytes": 37068
+    },
+    {
+      "id": "gallery:homepage-1",
+      "path": "other_images_final/home-programme-water.webp",
+      "sha256": "d5b535d5ed54cecfeff257dcfd4a8a04b1b43823e33cd0404abd08043486e6b0",
+      "bytes": 297978
+    },
+    {
+      "id": "gallery:homepage-2",
+      "path": "other_images_final/home-programme-information.webp",
+      "sha256": "fce2e0b8f03e6cddb37edea5e0c94f8c217790be64cee995449d0e7fe019025b",
+      "bytes": 73088
+    },
+    {
+      "id": "gallery:homepage-3",
+      "path": "other_images_final/home-report-2023.webp",
+      "sha256": "5eecaea1966461f2663b6b7d36f02a62dbb43b07c4b14bf7b219da28b2a01174",
+      "bytes": 142666
+    },
+    {
+      "id": "gallery:homepage-4",
+      "path": "other_images_final/home-report-2024.webp",
+      "sha256": "3649af3bca3fc43c7a2081b2e3fa03b52d176e84e20f618e3811682d2533a44e",
+      "bytes": 97950
+    },
+    {
+      "id": "gallery:homepage-5",
+      "path": "other_images_final/home-report-2025.webp",
+      "sha256": "5e614e56f14783ba2cddc7bbb9faaa50147fe322b15faa15ee71bbd3544a16b1",
+      "bytes": 224248
+    },
+    {
+      "id": "homepage:sources",
+      "path": "progress reports/homepage-source-excerpts.txt",
+      "sha256": "972fdf49d14c08cb8dd98d7570c7003fcb2d8b7dad0289b228daeff0a233281f",
+      "bytes": 7964
+    },
+    {
+      "id": "blog-brief:school",
+      "path": "progress reports/blog-school-source-brief.pdf",
+      "sha256": "5d1d58243804622406c15b4ef271710e6dd1e32f9d22d3ff32287c4243fe27f7",
+      "bytes": 4167
+    },
+    {
+      "id": "blog-brief:canal",
+      "path": "progress reports/blog-canal-source-brief.pdf",
+      "sha256": "ce15985dc3ecad994210443711ed49cd0ed62dc53f8ca2b839452d9ece538498",
+      "bytes": 4254
+    },
+    {
+      "id": "blog-brief:trafficking",
+      "path": "progress reports/blog-trafficking-source-brief.pdf",
+      "sha256": "76456d7e2d982a45fe325e2392cb326941df363bd1739358045ce3e6355508a6",
+      "bytes": 4161
+    }
+  ],
+  "blogs": [
+    {
+      "key": "home-news:school-accountability-mianwal-ranjha",
+      "details": {
+        "category": "Education and accountability",
+        "intro": "A school is part of the everyday life of a community. When its buildings or basic facilities raise concerns, the effects reach beyond the classroom: families need confidence that children can learn in a safe and properly maintained environment. HRPF’s 2025 progress report records one such concern at Government Primary School Mianwal Ranjha and the Foundation’s decision to raise it with an oversight institution.",
+        "takeaways": [
+          "The 2025 report describes infrastructure and basic-facility concerns at Government Primary School Mianwal Ranjha.",
+          "HRPF submitted a petition to the Provincial Ombudsman Punjab; the report records that the complaint received attention.",
+          "The source does not establish that a complete reconstruction was finished."
+        ],
+        "sections": [
+          {
+            "heading": "The concern behind the petition",
+            "body": "According to the supplied 2025 report, the school faced serious infrastructure deficiencies, a lack of essential facilities and prolonged neglect. It describes concern among students, parents and the local community. These are the conditions recorded by that report; this article does not present a new inspection or an independent assessment of the school today.\n\nThe significance of the story lies in the attention given to a public service that children and families rely on. A documented concern provides a starting point for institutional attention, while a dated source helps readers understand what was known when the matter was reported."
+          },
+          {
+            "heading": "How HRPF raised the issue",
+            "body": "HRPF’s report says the Foundation formally submitted a petition to the Provincial Ombudsman Punjab concerning the school’s deteriorating and unsafe condition. It presents the petition as an example of peaceful civic engagement directed towards institutional accountability.\n\nThe account identifies both the concern and the institution approached. It does not supply the full petition, a case number or a complete chronology, so those details are not added here.",
+            "bullets": [
+              "Concern recorded: infrastructure and essential school facilities.",
+              "Institution approached: the Provincial Ombudsman Punjab.",
+              "Source period: the supplied HRPF 2025 progress report."
+            ]
+          },
+          {
+            "heading": "What the report says about the response",
+            "body": "The report states that the Provincial Ombudsman took notice of the complaint and initiated measures to address the issues and improve the school’s condition. That is the reported response available in the source.\n\nAttention to a complaint and the completion of every requested improvement are different stages. The supplied passage does not demonstrate that the school was fully rebuilt or that all facility concerns were resolved. Any later update should be supported by a dated account or an official record before it is added to this article."
+          },
+          {
+            "heading": "Keeping the story accountable",
+            "body": "This summary keeps the emphasis on the public institution and the reported process. It does not identify children or publish their personal information. Readers can use the source reference and the accompanying prepared brief to distinguish the historical account from future updates.\n\nHRPF’s wider commitment to dignity and public service provides the context for this intervention. The specific school outcome remains limited to what the supplied report records.",
+            "quote": "We firmly believe that access to quality education is a fundamental human right.",
+            "attribution": "HRPF 2025 Progress Report, page 13"
+          }
+        ],
+        "conclusion": "The Mianwal Ranjha school account shows how HRPF documented a community concern and sought a response through an oversight institution. It is a historical account of a reported petition and response. Further progress can be added by an editor when supporting records are available.",
+        "authorName": "HRPF Pakistan",
+        "coverCaption": "Illustrative photograph from the supplied HRPF archive; not verified as a photograph of this particular case.",
+        "sources": [
+          {
+            "label": "HRPF 2025 Progress Report, page 13",
+            "note": "Section on Government Primary School Mianwal Ranjha. This source reports a petition and institutional response; it does not establish completed reconstruction."
+          },
+          {
+            "label": "Prepared source brief",
+            "note": "An editorial summary prepared from the supplied report for this article; not the original report or an official institutional decision."
+          }
+        ]
+      },
+      "tags": [
+        "Education",
+        "Mianwal Ranjha",
+        "Public institutions"
+      ],
+      "coverAlt": "Illustrative HRPF archive photograph accompanying HRPF Raises School Facility Concerns",
+      "gallery": [
+        {
+          "fileId": "gallery:homepage-4",
+          "alt": "Illustrative photograph from the HRPF archive",
+          "caption": "Illustrative photograph from the supplied HRPF archive; not verified as a photograph of this particular case."
+        },
+        {
+          "fileId": "gallery:homepage-2",
+          "alt": "Illustrative photograph from the HRPF archive",
+          "caption": "Illustrative photograph from the supplied HRPF archive; not verified as a photograph of this particular case."
+        }
+      ],
+      "documents": [
+        {
+          "fileId": "blog-brief:school",
+          "label": "HRPF 2025 Progress Report, page 13 — prepared source brief"
+        }
+      ]
+    },
+    {
+      "key": "home-news:canal-water-pollution-advocacy",
+      "details": {
+        "category": "Environment and public interest",
+        "intro": "The supplied 2024 progress report describes HRPF’s concern about contamination of canal freshwater in Mandi Bahauddin. The account brings together reported pollution concerns, engagement with environmental authorities and a further complaint to an oversight institution. This article follows that historical record and makes clear where the available evidence ends.",
+        "takeaways": [
+          "The 2024 source describes concern about sewage discharge and poultry waste entering canal freshwater.",
+          "It records engagement with Punjab environmental authorities, notices to poultry farm owners and some tribunal referrals.",
+          "A later complaint was being pursued at the time of the report; the source does not confirm that pollution ended."
+        ],
+        "sections": [
+          {
+            "heading": "The environmental concern recorded",
+            "body": "The 2024 report attributes canal-water contamination to sewage discharge and the disposal of dead chicks by poultry farm owners. These are the reported concerns in the supplied source, rather than findings from a new water-quality test.\n\nThe account matters because it concerns the condition of a shared natural resource. An advocacy article can explain the concern and the response sought, but it should also identify the date and basis of the claim so readers do not mistake a historical report for a current environmental measurement."
+          },
+          {
+            "heading": "Engagement with environmental authorities",
+            "body": "HRPF’s report says the Foundation raised the issue with the Secretary of Environment Punjab and the Director General of Environment. It records a direction from the Deputy Director of the I&S Department to the Assistant Director of Environment in Mandi Bahauddin to address the matter.\n\nAccording to the report, senior officials were informed, show-cause notices were issued to approximately 136 poultry farm owners across the district, and some cases were referred to the Punjab Environmental Tribunal. The number and actions are attributed to the 2024 source; they are not presented as newly verified figures.",
+            "bullets": [
+              "The concern was raised with senior Punjab environmental authorities.",
+              "The report records local official follow-up and show-cause notices.",
+              "Some cases were referred to the Punjab Environmental Tribunal, according to the source."
+            ]
+          },
+          {
+            "heading": "Further documentation and the Ombudsman complaint",
+            "body": "The report also describes videos concerning sewage and city waste being discharged into the canal. It says HRPF raised the matter again with senior authorities and filed a complaint with the Provincial Ombudsman Regional Office in Mandi Bahauddin.\n\nThe source describes that complaint as being pursued with detailed documentation at the time of the report. This article preserves that historical timing. It does not claim that the case remains open today, state a final decision or infer a current enforcement outcome."
+          },
+          {
+            "heading": "Reading the outcome with care",
+            "body": "Notices and referrals document a response to an issue. They do not, by themselves, establish that the canal became free of pollution. The supplied account does not provide a final water-quality assessment or a record showing that all sources of contamination were removed.\n\nFuture updates should identify their own source and date. This approach allows the article to explain HRPF’s advocacy while leaving room for verifiable follow-up, rather than filling gaps with assumptions."
+          }
+        ],
+        "conclusion": "This historical account records HRPF’s efforts to bring reported canal contamination to the attention of responsible institutions. The public-interest concern is clear, while the final environmental outcome is not established by the supplied 2024 passage.",
+        "authorName": "HRPF Pakistan",
+        "coverCaption": "Illustrative photograph from the supplied HRPF archive; not verified as a photograph of this particular case.",
+        "sources": [
+          {
+            "label": "HRPF Progress Report 2024 Revised",
+            "note": "Section on contamination of canal freshwater in Mandi Bahauddin. The account describes actions and an ongoing complaint at the time of reporting; it does not verify present water quality."
+          },
+          {
+            "label": "Prepared source brief",
+            "note": "An editorial summary prepared from the supplied report for this article; not the original report or an official institutional decision."
+          }
+        ]
+      },
+      "tags": [
+        "Water",
+        "Environment",
+        "Mandi Bahauddin"
+      ],
+      "coverAlt": "Illustrative HRPF archive photograph accompanying Calling for Action on Canal Water Pollution",
+      "gallery": [
+        {
+          "fileId": "gallery:homepage-1",
+          "alt": "Illustrative photograph from the HRPF archive",
+          "caption": "Illustrative photograph from the supplied HRPF archive; not verified as a photograph of this particular case."
+        },
+        {
+          "fileId": "gallery:homepage-5",
+          "alt": "Illustrative photograph from the HRPF archive",
+          "caption": "Illustrative photograph from the supplied HRPF archive; not verified as a photograph of this particular case."
+        }
+      ],
+      "documents": [
+        {
+          "fileId": "blog-brief:canal",
+          "label": "HRPF Progress Report 2024 Revised — prepared source brief"
+        }
+      ]
+    },
+    {
+      "key": "home-news:human-trafficking-awareness",
+      "details": {
+        "category": "Human dignity and awareness",
+        "intro": "HRPF’s 2025 progress report describes the human cost of dangerous migration attempts and the Foundation’s advocacy concerning human smuggling and trafficking from Mandi Bahauddin. This summary focuses on the issue, the reported advocacy and the need to treat affected people with dignity. It leaves out identifying information and unverified allegations against individuals.",
+        "takeaways": [
+          "The 2025 report discusses dangerous migration attempts and concerns affecting people and families in Mandi Bahauddin.",
+          "It describes HRPF’s investigative journalism and advocacy directed towards institutional accountability.",
+          "This article avoids victim identifiers, unverified individual accusations and unsupported claims of completed outcomes."
+        ],
+        "sections": [
+          {
+            "heading": "The concern described in the report",
+            "body": "The introductory passage in the supplied 2025 report describes fatalities during dangerous migration attempts and people detained abroad. It presents these concerns as part of the context for HRPF’s work on human smuggling and trafficking.\n\nThe passage contains broad statements about the scale of the problem, but the material available for this summary does not independently verify those figures. This article therefore does not repeat them as current statistics or claim to provide a full picture of migration-related harm today."
+          },
+          {
+            "heading": "HRPF’s reported advocacy",
+            "body": "The source describes investigative journalism, advocacy and efforts to press authorities for accountability. It presents HRPF’s work as an effort to draw attention to criminal exploitation and demand justice for affected people.\n\nThose descriptions are attributed to the Foundation’s historical report. The supplied introductory passage does not establish particular convictions, rescue totals or completed compensation outcomes. Such results would need their own supporting records before being published as article updates.",
+            "bullets": [
+              "Document and explain the concern using the supplied historical source.",
+              "Keep attention on accountability and the dignity of affected people.",
+              "Support later outcome claims with dated, verifiable records."
+            ]
+          },
+          {
+            "heading": "A story centred on people’s dignity",
+            "body": "An article about exploitation should not turn affected people into identifiable examples without a sound basis for doing so. This summary excludes victim names, family identifiers and private documents. It also leaves out accusations against named individuals that are not independently established by the material being used.\n\nThe archive photographs accompany the broader Foundation story. They are labelled as illustrative and should not be read as images of a particular victim, migration incident or trafficking case."
+          },
+          {
+            "heading": "What this summary can establish",
+            "body": "The available source supports a historical account of HRPF’s concern and reported advocacy. It does not establish that every case was resolved, that a particular person was rescued or that a criminal proceeding reached a final result.\n\nReaders can check the cited report section and the prepared source brief for the basis of this article. An editor can add further information as reliable supporting records become available, while retaining a clear distinction between reported activity and demonstrated outcome."
+          }
+        ],
+        "conclusion": "The central message of this historical account is the need to recognise human harm and sustain attention to accountability. HRPF’s reported advocacy is presented with its source and limits, while the privacy and dignity of affected people remain part of how the story is told.",
+        "authorName": "HRPF Pakistan",
+        "coverCaption": "Illustrative photograph from the supplied HRPF archive; not verified as a photograph of this particular case.",
+        "sources": [
+          {
+            "label": "HRPF 2025 Progress Report, pages 8–11",
+            "note": "Human trafficking and smuggling section. The prepared summary uses the introductory passage and omits private identifiers, unverified individual allegations and unverified outcome statistics."
+          },
+          {
+            "label": "Prepared source brief",
+            "note": "An editorial summary prepared from the supplied report for this article; not the original report or an official institutional decision."
+          }
+        ]
+      },
+      "tags": [
+        "Human dignity",
+        "Awareness",
+        "Safer migration"
+      ],
+      "coverAlt": "Illustrative HRPF archive photograph accompanying Protecting Communities from Human Trafficking",
+      "gallery": [
+        {
+          "fileId": "gallery:homepage-3",
+          "alt": "Illustrative photograph from the HRPF archive",
+          "caption": "Illustrative photograph from the supplied HRPF archive; not verified as a photograph of this particular case."
+        },
+        {
+          "fileId": "gallery:homepage-0",
+          "alt": "Illustrative photograph from the HRPF archive",
+          "caption": "Illustrative photograph from the supplied HRPF archive; not verified as a photograph of this particular case."
+        }
+      ],
+      "documents": [
+        {
+          "fileId": "blog-brief:trafficking",
+          "label": "HRPF 2025 Progress Report, pages 8–11 — prepared source brief"
+        }
+      ]
+    }
+  ]
+}
