@@ -5,6 +5,7 @@ import { credentials, newPassword } from '../security/auth.js';
 import { purpose } from '../services/forms.js';
 import { publicationInput } from '../http/publication.js';
 import { publicSettingSchemas } from '../http/public-content.js';
+import { projectDetailsInput } from '../http/project-details.js';
 import { projectInput, newsInput } from '../http/managed-content.js';
 import { roles } from '../domain/models.js';
 const jsonSchema = (value: z.ZodType) => { const { $schema: _schema, ...schema } = z.toJSONSchema(value, { io: 'input', unrepresentable: 'any' }); return schema; };
@@ -96,11 +97,11 @@ const kindParameter = { name: 'kind', in: 'path', required: true, schema: { type
 operation('/api/admin/publication/{kind}', 'get', 'Read bounded publication review records with versions; requires entity permission', z.array(z.record(z.string(), z.unknown())), { parameters: [kindParameter, { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 1000, default: 1 } }], security: [adminSecurity] });
 operation('/api/admin/publication/{kind}/{id}', 'post', 'Publish or withdraw a reviewed record atomically; version, CSRF, current role and audited release attestation required', z.object({ status: z.enum(['published', 'withdrawn']), version: z.number() }), { body: 'PublicationInput', parameters: [kindParameter, parameter('id')], security: [{ ...csrfSecurity, ...adminSecurity }] });
 const publicNews = z.object({title:z.string(),slug:z.string(),excerpt:z.string(),publishedAt:z.string(),image:z.string().nullable()});
-const publicProject = z.object({title:z.string(),slug:z.string(),summary:z.string(),focusArea:z.string(),location:z.string(),status:z.enum(['Ongoing','Completed','Proposed','Emergency Response']),startYear:z.number().optional(),image:z.string().nullable()});
+const publicProject = z.object({title:z.string(),slug:z.string(),summary:z.string(),focusArea:z.string(),location:z.string(),status:z.enum(['Ongoing','Completed','Proposed','Emergency Response']),startYear:z.number().optional(),imageAlt:z.string(),image:z.string().nullable()});
 for (const [kind, input, output] of [['projects',projectInput,publicProject],['news',newsInput,publicNews]] as const) {
  operation(`/api/${kind}`,'get','Read published managed homepage records',z.array(output),{parameters:publicParameters});
  (paths[`/api/${kind}`]!.get as any).responses['200']={description:'Paginated public records',content:{'application/json':{schema:jsonSchema(z.object({data:z.array(output),meta:z.object({page:z.number(),limit:z.number(),total:z.number(),pages:z.number()})}))}}};
- operation(`/api/${kind}/{slug}`,'get','Read a published record with structured text blocks',output.extend({blocks:publicContent.shape.blocks}),{parameters:[{name:'slug',in:'path',required:true,schema:{type:'string',maxLength:100}},...publicParameters]});
+ operation(`/api/${kind}/{slug}`,'get','Read a published record with structured text blocks',kind === 'projects' ? output.extend({blocks:publicContent.shape.blocks,details:projectDetailsInput.partial(),gallery:z.array(z.object({image:z.string(),alt:z.string(),caption:z.string()})),documents:z.array(z.object({file:z.string(),label:z.string()}))}) : output.extend({blocks:publicContent.shape.blocks}),{parameters:[{name:'slug',in:'path',required:true,schema:{type:'string',maxLength:100}},...publicParameters]});
  operation(`/api/admin/${kind}`,'get','Read bounded managed records and optimistic versions; content role',z.array(z.unknown()),{security:[adminSecurity]});
  operation(`/api/admin/${kind}`,'post','Create a draft; content role and CSRF',z.object({id:z.string(),version:z.number(),status:z.literal('draft')}),{security:[{...csrfSecurity,...adminSecurity}]});
  const create=paths[`/api/admin/${kind}`]!.post as any;
@@ -112,6 +113,7 @@ for (const [kind, input, output] of [['projects',projectInput,publicProject],['n
  const remove=paths[`/api/admin/${kind}/{id}`]!.delete as any;
  remove.requestBody={required:true,content:{'application/json':{schema:jsonSchema(z.object({version:z.number().int().nonnegative()}).strict())}}};
 }
+operation('/api/admin/projects/{id}', 'get', 'Read a project editor record including bound file IDs; excludes private provider metadata', z.unknown(), { parameters: [parameter('id')], security: [adminSecurity] });
 const document = { openapi: '3.1.0', info: { title: 'HRPF API', version: '0.4.0', description: 'Backend foundations, managed public content and atomic publication controls. Fixed NGO page copy is bundled in the frontend and needs no publication approval. Operational member/case review workflows remain later milestones. Public reads are no-store and withdrawals take effect immediately. Browser clients use the frontend same-origin /api rewrite and credentials. All mutating auth/admin requests require the exact configured Origin and X-CSRF-Token. Production cookies use Secure, HttpOnly, SameSite=Lax, Path=/, no Domain; development names omit __Host-.' }, paths, components: { schemas, securitySchemes: {
   accessCookie: { type: 'apiKey', in: 'cookie', name: '__Host-hrpf-access' }, refreshCookie: { type: 'apiKey', in: 'cookie', name: '__Host-hrpf-refresh' },
   csrfCookie: { type: 'apiKey', in: 'cookie', name: '__Host-hrpf-csrf' }, csrfHeader: { type: 'apiKey', in: 'header', name: 'X-CSRF-Token' },

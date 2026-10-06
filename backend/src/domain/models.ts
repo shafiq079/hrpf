@@ -86,11 +86,21 @@ export const BlogPost = mongoose.model('BlogPost', new Schema({
   status: { type: String, enum: ['draft', 'scheduled', 'published', 'archived'], default: 'draft' },
   publishedAt: Date, scheduledAt: Date, seo: localized, sourceReferences: [String], reviewStatus: review,
 }, options));
+const projectDetails = new Schema({
+  overview: text(10000), challenge: text(10000), approach: text(10000), period: text(150), targetCommunity: text(500),
+  objectives: [String], activities: [String], outcomes: [String], partners: [String],
+  milestones: [new Schema({ period: requiredText(150), title: requiredText(500), description: text(2000) }, { _id: false, strict: 'throw' })],
+  metrics: [new Schema({ value: requiredText(80), label: requiredText(150), source: text(500) }, { _id: false, strict: 'throw' })],
+  sections: [new Schema({ heading: requiredText(150), body: requiredText(10000) }, { _id: false, strict: 'throw' })],
+}, { _id: false, strict: 'throw' });
 export const Project = mongoose.model('Project', new Schema({
   title: { type: localized, required: true }, slug: { ...requiredText(100), unique: true }, locale: { type: String, enum: ['en', 'ur'], default: 'en' },
   summary: localized, blocks: [block], focusArea: requiredText(150), location: requiredText(150),
   projectStatus: { type: String, enum: ['Ongoing', 'Completed', 'Proposed', 'Emergency Response'], default: 'Proposed' },
-  startYear: { type: Number, min: 1900, max: 2200 }, cover: assetRefSchema, sourceReferences: [String],
+  startYear: { type: Number, min: 1900, max: 2200 }, cover: assetRefSchema, coverAlt: text(300), details: projectDetails,
+  gallery: [new Schema({ asset: { type: assetRefSchema, required: true }, alt: requiredText(300), caption: text(500) }, { _id: false, strict: 'throw' })],
+  documents: [new Schema({ asset: { type: assetRefSchema, required: true }, label: requiredText(150) }, { _id: false, strict: 'throw' })],
+  sourceReferences: [String],
   status: { type: String, enum: ['draft', 'published'], default: 'draft' }, reviewStatus: review, publishedAt: Date,
 }, options));
 Project.schema.index({ locale: 1, status: 1, publishedAt: -1 });

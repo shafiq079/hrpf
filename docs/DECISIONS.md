@@ -1,5 +1,17 @@
 # HRPF Decisions
 
+## 2026-10-06 — Project detail redesign
+
+- The owner authorizes redesign of project detail pages and corresponding admin
+  inputs, and will manually populate project facts.
+- Use optional structured sections, image galleries, timeline, evidence-labelled
+  impact figures, partners and PDFs; omit unfilled sections.
+- Build project administration first, using the existing accounts and secure
+  upload/publication services. Other administration modules stay out of scope.
+- Preserve seeded stories and programme URLs. Do not reset or reseed live data.
+- Retain draft-on-edit publication policy and bind all project files in the same
+  transaction, with public access checked against current record attachments.
+
 ## 2026-10-05
 - Approved the implementation plan; implementation proceeds one verified milestone at a time.
 - Preserve the prototype design because it is the owner's required baseline.

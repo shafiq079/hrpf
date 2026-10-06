@@ -30,6 +30,7 @@ export function createApp(env: Environment, readiness: Readiness, adapters?: Bus
     methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'X-CSRF-Token', 'X-Form-Ticket'],
   }));
+  app.use('/api/admin/projects', express.json({ limit: '256kb', strict: true }));
   app.use(express.json({ limit: '32kb', strict: true }));
   const emptyQuery = z.object({}).strict();
   app.use(['/api/health/live', '/api/health/ready'], (req, _res, next) => {

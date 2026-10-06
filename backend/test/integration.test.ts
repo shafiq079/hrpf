@@ -9,7 +9,7 @@ import express from 'express';
 import { unavailable } from '../src/http/errors.js';
 import { createApp } from '../src/app.js';
 import { parseEnv } from '../src/config/env.js';
-import { Asset, AuditLog, BlogPost, BoardMember, GalleryItem, Report, AuthSession, Complaint, ContactMessage, Counter, EmailOutbox, FormTicket, MembershipApplication, Setting, User, ensureIndexes, roles, type Role } from '../src/domain/models.js';
+import { Asset, AuditLog, Project, BlogPost, BoardMember, GalleryItem, Report, AuthSession, Complaint, ContactMessage, Counter, EmailOutbox, FormTicket, MembershipApplication, Setting, User, ensureIndexes, roles, type Role } from '../src/domain/models.js';
 import { createRedisServices } from '../src/infrastructure/redis-services.js';
 import { digest, hashPassword } from '../src/security/crypto.js';
 import { createOutbox, startOutboxWorker, type Mail } from '../src/services/outbox.js';
@@ -385,6 +385,70 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     await request(app).get(`/api/public-assets/${assetId}`).expect(404);
     await request(app).get('/api/news/pictured-update').expect(404);
     await editor.agent.post('/api/admin/news').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...input,slug:'bad-body',blocks:[{type:'paragraph'}]}).expect(400);
+  });
+
+  it('rich project drafts retain media privately, publish every reviewed file, and revoke removed media', async () => {
+    const editor = await login('editor');
+    const stage = async (bytes = png, filename = 'project.png') => {
+      const result = await editor.agent.post('/api/admin/assets?purpose=content').set('Origin', 'http://localhost:3000').set('X-CSRF-Token', editor.csrf).attach('file', bytes, filename).expect(201);
+      return result.body.data.assetId as string;
+    };
+    const cover = await stage(), first = await stage(), second = await stage(), document = await stage(pdf, 'brief.pdf');
+    const payload = { title: {en:'Project with a complete story'}, summary: {en:'A verified summary'}, slug:'rich-project', locale:'en', focusArea:'Health', location:'Test district', projectStatus:'Completed', blocks:[{type:'paragraph',text:'Existing source text'}], coverAssetId:cover, coverAlt:'Health outreach',
+      gallery:[{assetId:first,alt:'Community meeting',caption:'A reviewed photo'},{assetId:second,alt:'Project activities'}], documents:[{assetId:document,label:'Project brief'}],
+      details:{overview:'About the work',challenge:'A documented need',approach:'Working with communities',period:'2026',targetCommunity:'Local families',objectives:['Improve access'],activities:['Community outreach'],outcomes:['Improved services'],partners:['Confirmed partner'],milestones:[{period:'June 2026',title:'Outreach completed',description:'First stage'}],metrics:[{value:'12',label:'Sessions held',source:'Project report'}],sections:[{heading:'Lessons learned',body:'A longer reflection'}]},
+    };
+    const created = await editor.agent.post('/api/admin/projects').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(payload).expect(201);
+    const id = created.body.data.id;
+    assert.equal(await Asset.countDocuments({entityId:id,claimStatus:'claimed',visibility:'restricted'}),4);
+    await request(app).get('/api/projects/rich-project').expect(404);
+    await request(app).get(`/api/public-assets/${first}`).expect(404);
+    const privateRow = await editor.agent.get(`/api/admin/projects/${id}`).expect(200);
+    assert.equal(privateRow.body.data.coverAssetId,cover);
+    assert.equal(privateRow.body.data.gallery.length,2);
+    assert.ok(!JSON.stringify(privateRow.body).includes('publicId'));
+    const publish = (version:number) => editor.agent.post(`/api/admin/publication/project/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version,action:'publish',releaseReviewed:true});
+    await publish(0).expect(200);
+    const listing = await editor.agent.get('/api/admin/projects').expect(200);
+    const listed = listing.body.data.find((item: {id: string}) => item.id === id);
+    assert.equal(listed.version, 1, 'Project list must include the version required for withdrawal/deletion');
+    assert.ok(!JSON.stringify(listing.body).includes('publicId'));
+    const result = await request(app).get('/api/projects/rich-project').expect(200);
+    assert.equal(result.body.data.gallery.length,2); assert.equal(result.body.data.documents.length,1);
+    assert.equal(result.body.data.details.metrics[0].source,'Project report');
+    assert.equal(result.body.data.imageAlt,'Health outreach');
+    assert.ok(!JSON.stringify(result.body).includes('publicId'));
+    for (const file of [cover,first,second,document]) await request(app).get(`/api/public-assets/${file}`).expect(200);
+    const changed = {...payload,gallery:payload.gallery.slice(0,1),documents:[],version:1};
+    await editor.agent.patch(`/api/admin/projects/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(changed).expect(200);
+    for (const file of [cover,first,second,document]) await request(app).get(`/api/public-assets/${file}`).expect(404);
+    await publish(2).expect(200);
+    await request(app).get(`/api/public-assets/${first}`).expect(200);
+    await request(app).get(`/api/public-assets/${second}`).expect(404);
+    await request(app).get(`/api/public-assets/${document}`).expect(404);
+    const after = await request(app).get('/api/projects/rich-project').expect(200);
+    assert.equal(after.body.data.gallery.length,1); assert.deepEqual(after.body.data.documents,[]);
+    await editor.agent.delete(`/api/admin/projects/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:3}).expect(200);
+    await request(app).get(`/api/public-assets/${cover}`).expect(404);
+    await request(app).get('/api/projects/rich-project').expect(404);
+  });
+  it('project media validation rejects foreign, duplicate, expired, non-image and cross-project files atomically', async () => {
+    const editor = await login('editor'), other = await login('editor');
+    const stage = async (auth:typeof editor, bytes=png, filename='project.png') => (await auth.agent.post('/api/admin/assets?purpose=content').set('Origin','http://localhost:3000').set('X-CSRF-Token',auth.csrf).attach('file',bytes,filename).expect(201)).body.data.assetId as string;
+    const own=await stage(editor),foreign=await stage(other),doc=await stage(editor,pdf,'brief.pdf'),expired=await stage(editor);
+    await Asset.updateOne({_id:expired},{$set:{stagingExpiresAt:new Date(0)}});
+    const base={title:{en:'Draft'},summary:{en:'Summary'},slug:'validation-project',locale:'en',focusArea:'Rights',location:'Test location',projectStatus:'Proposed',blocks:[{type:'paragraph',text:'Body'}]};
+    for(const media of [{coverAssetId:foreign},{gallery:[{assetId:doc,alt:'Not a photo'}]},{coverAssetId:expired},{coverAssetId:own,gallery:[{assetId:own.toUpperCase(),alt:'Duplicate'}]},{documents:[{assetId:own,label:'Not a PDF'}]}]) {
+      await editor.agent.post('/api/admin/projects').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...base,...media}).expect(400);
+      assert.equal(await Project.countDocuments(),0);
+      assert.equal((await Asset.findById(own))!.claimStatus,'staged');
+    }
+    await editor.agent.post('/api/admin/projects').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...base,coverAssetId:own}).expect(201);
+    await editor.agent.post('/api/admin/projects').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...base,slug:'another-project',coverAssetId:own}).expect(400);
+    const row=await Project.findOne({slug:base.slug});
+    await editor.agent.patch(`/api/admin/projects/${row!.id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...base,version:7}).expect(409);
+    const manager=await login('case_manager');
+    await manager.agent.get(`/api/admin/projects/${row!.id}`).expect(403);
   });
 
 });

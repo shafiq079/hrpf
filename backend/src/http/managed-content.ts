@@ -12,6 +12,8 @@ import {
 import { createAuth, type Principal } from "../security/auth.js";
 import { permit, can } from "../security/permissions.js";
 import { ApiError, validate } from "./errors.js";
+import { projectDetailsInput, projectMediaInput } from "./project-details.js";
+import { bindProjectMedia } from "../services/project-media.js";
 const localized = z
   .object({
     en: z.string().trim().min(1).max(10000),
@@ -47,6 +49,8 @@ export const projectInput = z
   .object({
     ...common,
     summary: localized,
+    details: projectDetailsInput.optional(),
+    ...projectMediaInput,
     focusArea: z.string().trim().min(1).max(150),
     location: z.string().trim().min(1).max(150),
     projectStatus: z.enum([
@@ -81,7 +85,7 @@ export function managedContentRouter(auth: ReturnType<typeof createAuth>) {
         .sort({ _id: 1 })
         .skip((page - 1) * 20)
         .limit(20)
-        .select("-cover -sourceReferences")
+        .select(kind === "projects" ? "__v title slug summary projectStatus status focusArea location locale" : "-cover -sourceReferences")
         .lean();
       res.json({
         data: rows.map(({ _id, __v, ...r }: any) => ({
@@ -91,6 +95,16 @@ export function managedContentRouter(auth: ReturnType<typeof createAuth>) {
         })),
         meta: { page, limit: 20 },
       });
+    });
+    if (kind === "projects") router.get("/projects/:id", async (req, res) => {
+      const row = await Project.findById(validate(id, req.params.id)).lean();
+      if (!row) throw new ApiError(404, "NOT_FOUND", "Project not found.");
+      const { _id, __v, cover, gallery, documents, sourceReferences: _sources, ...fields } = row;
+      res.json({ data: { id: String(_id), version: __v, ...fields,
+        coverAssetId: cover?.assetId?.toString() ?? null,
+        gallery: (gallery ?? []).map(item => ({ assetId: String(item.asset.assetId), alt: item.alt, caption: item.caption ?? "" })),
+        documents: (documents ?? []).map(item => ({ assetId: String(item.asset.assetId), label: item.label })),
+      } });
     });
     for (const method of ["post", "patch", "delete"] as const)
       router[method](
@@ -126,7 +140,7 @@ export function managedContentRouter(auth: ReturnType<typeof createAuth>) {
                 "FORBIDDEN",
                 "You do not have permission for this action.",
               );
-            const { version, ...fields } = input;
+            const { version, coverAssetId, gallery, documents, ...fields } = input;
             let row =
               method === "post"
                 ? new model(fields)
@@ -145,11 +159,13 @@ export function managedContentRouter(auth: ReturnType<typeof createAuth>) {
             else {
               if (method === "patch") {
                 row.set(fields);
+                if (kind === "projects") { row.startYear = fields.startYear; row.details = fields.details; }
                 row.status = "draft";
                 row.reviewStatus = "pending";
                 row.publishedAt = undefined;
                 row.__v += 1;
               }
+              if (kind === "projects") await bindProjectMedia(row, { coverAssetId, gallery, documents }, principal.id, tx, "restricted");
               if (method === "post") await row.save({ session: tx });
               else {
                 await row.validate();

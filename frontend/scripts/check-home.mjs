@@ -5,7 +5,7 @@ import {once} from 'node:events';
 let revision=1,empty=false;const requests=[];
 const api=createServer((req,res)=>{
  requests.push({path:req.url,cookie:req.headers.cookie});res.setHeader('Content-Type','application/json');
- const project={title:`Managed project ${revision}`,slug:'real-project',summary:'Synthetic project summary',focusArea:'Rights',status:'Ongoing',location:'Pakistan',startYear:2026,image:null,blocks:[{type:'paragraph',text:'Managed project body'}]};
+ const project={title:`Managed project ${revision}`,slug:'real-project',summary:'Synthetic project summary',focusArea:'Rights',status:'Ongoing',location:'Pakistan',startYear:2026,image:null,blocks:[{type:'paragraph',text:'Managed project body'}],details:{overview:'Project overview text',challenge:'Documented challenge',approach:'Community approach',period:'March–September 2026',targetCommunity:'Local families',objectives:['Improved access'],activities:['Community sessions'],outcomes:['Documented result'],milestones:[{period:'June 2026',title:'First milestone'}],metrics:[{value:'12',label:'Sessions',source:'Project report'}],partners:['Verified partner'],sections:[{heading:'Lessons learned',body:'Project lessons'}]},gallery:[{image:'/api/public-assets/012345678901234567890123',alt:'Community session',caption:'Reviewed caption'},{image:'/api/public-assets/012345678901234567890124',alt:'Project activity'}],documents:[{file:'/api/public-assets/012345678901234567890125',label:'Project report PDF'}]};
  const news={title:`Managed news ${revision}`,slug:'real-news',excerpt:'Synthetic news summary',publishedAt:'2026-01-01T00:00:00.000Z',image:null,blocks:[{type:'paragraph',text:'Managed news body'}]};
  const path=new URL(req.url,'http://localhost').pathname;
  if(path==='/api/projects'||path==='/api/news')res.end(JSON.stringify({data:empty?[]:[path.endsWith('projects')?project:news]}));
@@ -24,8 +24,12 @@ try{
  revision=2;page=await read();assert.ok(page.html.includes('Managed project 2')&&page.html.includes('Managed news 2'),'Managed homepage feeds must refresh');
  assert.ok((await read('/programmes')).html.includes('Managed project 2'));
  assert.ok((await read('/programmes/real-project')).html.includes('Managed project body'));assert.ok((await read('/updates/real-news')).html.includes('Managed news body'));assert.equal((await read('/updates/unknown')).status,404);
+ page=await read('/projects/real-project');assert.equal(page.status,200);
+ for(const text of ['Project overview text','Documented challenge','Community approach','Improved access','Community sessions','Documented result','First milestone','Project report','Verified partner','Lessons learned','Project report PDF','Next photograph','Community session'])assert.ok(page.html.includes(text),`Rich project detail: ${text}`);
+ assert.ok((await read('/projects')).html.includes('Managed project 2'),'Project listing must use managed records');assert.equal((await read('/projects/unknown')).status,404);
+ assert.ok((await read('/admin/projects')).html.includes('Loading project management'),'Project admin route must render');
  empty=true;page=await read();assert.ok(page.html.includes('Featured Projects')&&page.html.includes('Latest News &amp; Updates'));assert.ok(!page.html.includes('Our Programmes &amp; Priorities')&&!page.html.includes('Progress Reports &amp; Updates'));assert.ok(!page.html.includes('Managed project'));
  await new Promise(r=>api.close(r));page=await read();assert.equal(page.status,200);assert.ok(page.html.includes('Human Rights Protection Foundation Pakistan')&&page.html.includes('Featured Projects')&&page.html.includes('Latest News &amp; Updates'),'Original headings remain visible without backend');
  assert.ok(requests.every(r=>r.cookie===undefined),'Public reads must not forward cookies');
- console.log('Homepage checks passed: sourced copy/photos, excluded placeholders, managed feeds/details, fresh updates, unchanged empty/offline headings and cookie isolation.');
+ console.log('Homepage/project checks passed: sourced home, managed listings, rich details, gallery controls, project admin route, fresh updates, empty/offline headings and cookie isolation.');
 }finally{if(api.listening)await new Promise(r=>api.close(r));if(child.exitCode===null){child.kill('SIGTERM');await once(child,'exit');}}

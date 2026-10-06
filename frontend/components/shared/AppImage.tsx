@@ -42,7 +42,7 @@ export default function AppImage({
     return (
       <Image
         src={src}
-        unoptimized={src.startsWith("/api/public-assets/")}
+        unoptimized={src.startsWith("/api/")}
         alt={alt}
         fill
         sizes={sizes}
@@ -55,7 +55,7 @@ export default function AppImage({
   return (
     <Image
       src={src}
-      unoptimized={src.startsWith("/api/public-assets/")}
+      unoptimized={src.startsWith("/api/")}
       alt={alt}
       width={width ?? 800}
       height={height ?? 600}

@@ -1,5 +1,14 @@
 # HRPF Progress
 
+## Project detail redesign and project console (2026-10-06)
+
+Implemented optional rich project details, cover plus 20 photos, 5 PDFs, safe
+transactional media binding/release, shared detail rendering and `/admin/projects`
+with preview and draft/publish workflows. Existing managed programme links and
+seeded content remain compatible. `/projects` now uses managed records. Full
+verification and the localhost browser limitation are recorded in
+PROJECT_DETAILS.md. Remaining administration modules are unchanged.
+
 ## Homepage content update (2026-10-06)
 
 Homepage-only replacement is implemented on development. All nine original

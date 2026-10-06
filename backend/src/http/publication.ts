@@ -6,6 +6,7 @@ import { type Principal, createAuth } from '../security/auth.js';
 import { can, type Permission } from '../security/permissions.js';
 import { ApiError, validate } from './errors.js';
 import { publicSettingSchemas } from './public-content.js';
+import { bindProjectMedia } from '../services/project-media.js';
 export const publicationInput = z.object({ version: z.number().int().nonnegative(), action: z.enum(['publish', 'withdraw']), releaseReviewed: z.literal(true), assetId: z.string().regex(/^[a-fA-F0-9]{24}$/).optional() }).strict();
 const kinds = {
   blog: { model: BlogPost, permission: 'content', entity: 'BlogPost', field: 'cover' },
@@ -56,7 +57,9 @@ export function publicationRouter(auth: ReturnType<typeof createAuth>) {
             if (['report', 'certificate'].includes(kind)) row.releaseReview = 'approved'; else row.reviewStatus = 'approved';
             row.publishedAt = new Date();
           }
-          if (spec.field) {
+          if (kind === 'project') {
+            await bindProjectMedia(row, { coverAssetId: input.assetId }, principal.id, tx, 'public');
+          } else if (spec.field) {
             const fileId = input.assetId ?? row[spec.field]?.assetId;
             if (!fileId && !['board', 'blog', 'project'].includes(kind)) throw new ApiError(400, 'REVIEW_REQUIRED', 'Upload and review a public release file first.');
             if (fileId) {

@@ -45,6 +45,7 @@ export type ProjectRecord = {
   location: string;
   startYear?: number;
   image?: string | null;
+  imageAlt?: string;
 };
 export type NewsRecord = {
   title: string;
@@ -65,7 +66,7 @@ export function projectCard(row: ProjectRecord): HomeProject {
     startedLabel: row.startYear ? undefined : "HRPF programme",
     image: row.image ?? "/images/hrpf/home-about.webp",
     imageAlt: row.image
-      ? row.title
+      ? (row.imageAlt || row.title)
       : "HRPF archive photograph illustrating the Foundation’s work",
     href: `/programmes/${row.slug}`,
     objectives: [],
@@ -91,7 +92,7 @@ export function newsCard(row: NewsRecord): HomeNews {
   } as HomeNews;
 }
 
-export async function readHomeDetail(path: "projects" | "news", slug: string) {
+export async function readHomeDetail(path: "projects" | "news", slug: string, locale: "en" | "ur" = "en") {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 100)
     return null;
   try {
@@ -105,7 +106,7 @@ export async function readHomeDetail(path: "projects" | "news", slug: string) {
       base.pathname !== "/"
     )
       return null;
-    const response = await fetch(`${base.origin}/api/${path}/${slug}`, {
+    const response = await fetch(`${base.origin}/api/${path}/${slug}?locale=${locale}`, {
       cache: "no-store",
       credentials: "omit",
       signal: AbortSignal.timeout(4000),

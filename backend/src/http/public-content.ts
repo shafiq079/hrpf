@@ -66,7 +66,7 @@ export function publicRouter(provider: UploadProvider) {
     if (!row) throw missing();
     res.json({ data: { title: row.title?.[locale] ?? '', slug: row.slug, excerpt: row.excerpt?.[locale] ?? '', blocks: publicBlocks(row.blocks), publishedAt: row.publishedAt, image: await releasedAsset(row.cover?.assetId, 'BlogPost', row._id) ? `/api/public-assets/${row.cover!.assetId}` : null } });
   });
-  const projectView = async (row: any, locale: 'en' | 'ur') => ({ title: row.title?.[locale] ?? '', slug: row.slug, summary: row.summary?.[locale] ?? '', focusArea: row.focusArea, location: row.location, status: row.projectStatus, startYear: row.startYear, image: await releasedAsset(row.cover?.assetId, 'Project', row._id) ? `/api/public-assets/${row.cover.assetId}` : null });
+  const projectView = async (row: any, locale: 'en' | 'ur') => ({ title: row.title?.[locale] ?? '', slug: row.slug, summary: row.summary?.[locale] ?? '', focusArea: row.focusArea, location: row.location, status: row.projectStatus, startYear: row.startYear, imageAlt: row.coverAlt || row.title?.[locale] || 'Project photograph', image: await releasedAsset(row.cover?.assetId, 'Project', row._id) ? `/api/public-assets/${row.cover.assetId}` : null });
   router.get('/projects', async (req, res) => {
     const {locale, page, limit} = validate(publicQuery, req.query);
     const filter = {locale, status: 'published' as const, reviewStatus: 'approved' as const, ...publicationFilter()};
@@ -77,7 +77,9 @@ export function publicRouter(provider: UploadProvider) {
     const {locale} = validate(publicQuery, req.query);
     const row = await Project.findOne({slug:validate(slug,req.params.slug),locale,status:'published',reviewStatus:'approved',...publicationFilter()}).lean();
     if (!row) throw missing();
-    res.json({data:{...await projectView(row,locale),blocks:publicBlocks(row.blocks)}});
+    const gallery = await Promise.all((row.gallery ?? []).map(async item => await releasedAsset(item.asset.assetId, 'Project', row._id) ? { image: `/api/public-assets/${item.asset.assetId}`, alt: item.alt, caption: item.caption ?? '' } : null));
+    const documents = await Promise.all((row.documents ?? []).map(async item => await releasedAsset(item.asset.assetId, 'Project', row._id) ? { file: `/api/public-assets/${item.asset.assetId}`, label: item.label } : null));
+    res.json({data:{...await projectView(row,locale),blocks:publicBlocks(row.blocks),details:row.details ?? {},gallery:gallery.filter(Boolean),documents:documents.filter(Boolean)}});
   });
   for (const kind of ['gallery', 'reports', 'certificates'] as const) {
     router.get(`/${kind}`, async (req, res) => {
@@ -113,7 +115,7 @@ export function publicRouter(provider: UploadProvider) {
     if (!asset?.entityId || asset.purpose !== (asset.entityType === 'Certificate' ? 'certificate' : 'content')) throw missing();
     let released = false;
     switch (asset.entityType) {
-      case 'Project': released = !!await Project.exists({_id:asset.entityId,status:'published',reviewStatus:'approved','cover.assetId':asset._id,...publicationFilter()}); break;
+      case 'Project': released = !!await Project.exists({_id:asset.entityId,status:'published',reviewStatus:'approved',$or:[{'cover.assetId':asset._id},{'gallery.asset.assetId':asset._id},{'documents.asset.assetId':asset._id}],...publicationFilter()}); break;
       case 'BlogPost': released = !!await BlogPost.exists({_id:asset.entityId,status:'published',reviewStatus:'approved','cover.assetId':asset._id,...publicationFilter()}); break;
       case 'BoardMember': released = !!await BoardMember.exists({ _id: asset.entityId, isActive: true, 'photo.assetId': asset._id }); break;
       case 'GalleryItem': released = !!await GalleryItem.exists({ _id: asset.entityId, reviewStatus: 'approved', duplicateOf: null, 'asset.assetId': asset._id, ...publicationFilter() }); break;

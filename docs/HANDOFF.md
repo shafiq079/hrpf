@@ -1,5 +1,16 @@
 # HRPF handoff
 
+## Project detail redesign and project console (2026-10-06)
+
+The owner's requested project redesign is implemented on development. See
+PROJECT_DETAILS.md for fields, limits, routes, security behavior and checks.
+`/admin/projects` now supports existing content accounts, photo/PDF uploads,
+rich sections, preview, draft/publish, edit, withdraw and delete. Reader routes
+`/projects/[slug]` and `/programmes/[slug]` share the new view; `/projects` uses
+managed records. This supersedes earlier statements that all admin UI is future
+work, for projects only. Existing seeded records need no migration or reseed.
+Other admin modules and live Codespaces visual acceptance remain outstanding.
+
 ## Homepage content update (2026-10-06)
 
 Homepage-only replacement is implemented on development. All nine original

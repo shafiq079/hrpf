@@ -3,6 +3,11 @@
 Human Rights Protection Foundation Pakistan. Work on `development`; keep `main`
 stable. This is a development prototype, not a production release.
 
+Project administration is available at `/admin/projects` using existing admin or
+editor accounts. Add galleries, structured descriptions, timelines, results and
+PDF reports, preview them, then save a draft or publish. Existing seeded projects
+can be edited without reseeding. See [project details](docs/PROJECT_DETAILS.md).
+
 ## Independent applications
 
 - `frontend/`: Next.js, its own package.json, lockfile, configuration and assets.
