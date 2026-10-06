@@ -73,7 +73,7 @@ const sections: PolicySection[] = [
         If you have a concern about the safety or conduct of anyone connected to
         our work, please raise it promptly. You can{" "}
         <Link href="/complaints">submit a complaint</Link> or{" "}
-        <Link href="/report-a-violation">report a violation</Link> using our
+        <Link href="/file-a-complaint">report a violation</Link> using our
         dedicated channels. You can also <Link href="/contact">contact us</Link>{" "}
         or email <a href="mailto:info@hrpf.org">info@hrpf.org</a> (placeholder
         address). Concerns should be reported even if you are unsure, so they can

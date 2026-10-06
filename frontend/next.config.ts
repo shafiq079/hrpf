@@ -10,6 +10,17 @@ const codespaceHost = process.env.CODESPACE_NAME
   : undefined;
 const nextConfig: NextConfig = {
   allowedDevOrigins: codespaceHost ? [codespaceHost] : [],
+  async redirects() {
+    return [
+      { source: "/news/:path*", destination: "/blogs/:path*", permanent: true },
+      { source: "/updates/:path*", destination: "/blogs/:path*", permanent: true },
+      { source: "/reports", destination: "/about/progress-reports", permanent: true },
+      { source: "/team", destination: "/about/board-of-directors", permanent: true },
+      { source: "/media", destination: "/gallery", permanent: true },
+      { source: "/governance", destination: "/about", permanent: true },
+      { source: "/report-a-violation", destination: "/file-a-complaint", permanent: true },
+    ];
+  },
   async rewrites() {
     return {
       beforeFiles: [{ source: "/api/:path*", destination: `${apiOrigin.origin}/api/:path*` }],

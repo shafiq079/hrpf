@@ -52,7 +52,7 @@ export default function HeroSection() {
               Explore Our Work
             </PrimaryButton>
             <PrimaryButton
-              href="/report-a-violation"
+              href="/file-a-complaint"
               variant="red"
               size="lg"
               icon={AlertTriangle}

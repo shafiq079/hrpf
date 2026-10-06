@@ -9,7 +9,7 @@ export type HomeNews = NewsArticle & { dateLabel?: string };
 type Result<T> =
   { status: "ok"; data: T[] } | { status: "unavailable"; data: [] };
 export async function readHomeFeed<T>(
-  path: "projects" | "news",
+  path: "projects" | "news" | "blogs",
   limit = 3,
 ): Promise<Result<T>> {
   try {
@@ -81,18 +81,18 @@ export function newsCard(row: NewsRecord): HomeNews {
     title: row.title,
     slug: row.slug,
     summary: row.excerpt,
-    category: "HRPF News",
+    category: "HRPF Blogs",
     date: row.publishedAt,
     readingTime: "Foundation update",
     image: row.image ?? "/images/hrpf/home-chairman.webp",
     imageAlt: row.image
       ? row.title
       : "HRPF archive photograph illustrating the Foundation’s work",
-    href: `/updates/${row.slug}`,
+    href: `/blogs/${row.slug}`,
   } as HomeNews;
 }
 
-export async function readHomeDetail(path: "projects" | "news", slug: string, locale: "en" | "ur" = "en") {
+export async function readHomeDetail(path: "projects" | "news" | "blogs", slug: string, locale: "en" | "ur" = "en") {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 100)
     return null;
   try {

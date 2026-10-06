@@ -55,7 +55,7 @@ export default function ComplaintsPage() {
             This page is for concerns about HRPF itself. To report a possible
             human-rights concern involving another person or organization, please
             use{" "}
-            <Link href="/report-a-violation" className="font-semibold text-teal-dark underline hover:text-navy">
+            <Link href="/file-a-complaint" className="font-semibold text-teal-dark underline hover:text-navy">
               Report a Violation
             </Link>
             .

@@ -20,7 +20,7 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const [projects, news] = await Promise.all([
     readHomeFeed<ProjectRecord>("projects"),
-    readHomeFeed<NewsRecord>("news"),
+    readHomeFeed<NewsRecord>("blogs"),
   ]);
 
   return (

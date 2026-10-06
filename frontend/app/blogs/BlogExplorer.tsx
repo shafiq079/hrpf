@@ -2,15 +2,17 @@
 
 import { useMemo, useState } from "react";
 import { Newspaper } from "lucide-react";
-import { newsArticles, newsCategories } from "@/data/news";
+import type { NewsArticle } from "@/data/news";
 import SearchInput from "@/components/shared/SearchInput";
 import FilterSelect from "@/components/shared/FilterSelect";
 import FilterBar from "@/components/shared/FilterBar";
 import NewsCard from "@/components/shared/NewsCard";
 import EmptyState from "@/components/shared/EmptyState";
 
-/** Client-side search and filtering for the newsroom listing. */
-export default function NewsExplorer() {
+/** Search and filter the current page of published blogs. */
+export default function BlogExplorer({ articles }: { articles: NewsArticle[] }) {
+  const newsArticles = articles;
+  const newsCategories = [...new Set(articles.map(article => article.category))];
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
   const [year, setYear] = useState("");
@@ -18,7 +20,7 @@ export default function NewsExplorer() {
   const years = useMemo(() => {
     const unique = new Set(newsArticles.map((article) => article.date.slice(0, 4)));
     return Array.from(unique).sort((a, b) => b.localeCompare(a));
-  }, []);
+  }, [newsArticles]);
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -32,7 +34,7 @@ export default function NewsExplorer() {
       const matchesYear = year === "" || article.date.slice(0, 4) === year;
       return matchesQuery && matchesCategory && matchesYear;
     });
-  }, [query, category, year]);
+  }, [query, category, year, newsArticles]);
 
   const hasFilters = query !== "" || category !== "" || year !== "";
 
@@ -62,13 +64,13 @@ export default function NewsExplorer() {
             <SearchInput
               value={query}
               onChange={setQuery}
-              label="Search articles"
-              placeholder="Search news..."
-              id="news-search"
+              label="Search blogs on this page"
+              placeholder="Search blogs on this page..."
+              id="blog-search"
             />
           </div>
           <FilterSelect
-            id="news-category"
+            id="blog-category"
             label="Category"
             value={category}
             onChange={setCategory}
@@ -76,7 +78,7 @@ export default function NewsExplorer() {
             allLabel="All categories"
           />
           <FilterSelect
-            id="news-year"
+            id="blog-year"
             label="Year"
             value={year}
             onChange={setYear}

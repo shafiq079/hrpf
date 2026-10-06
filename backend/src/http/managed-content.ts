@@ -66,8 +66,9 @@ export const newsInput = z.object({ ...common, excerpt: localized }).strict();
 const id = z.string().regex(/^[a-fA-F0-9]{24}$/);
 export function managedContentRouter(auth: ReturnType<typeof createAuth>) {
   const router = Router();
-  router.use(["/projects", "/news"], auth.authenticate, permit("content"));
-  for (const kind of ["projects", "news"] as const) {
+  router.use(["/projects", "/blogs", "/news"], auth.authenticate, permit("content"));
+  // Blogs is canonical; the legacy news API operates on the same BlogPost records.
+  for (const kind of ["projects", "blogs", "news"] as const) {
     const model = (
         kind === "projects" ? Project : BlogPost
       ) as mongoose.Model<any>,

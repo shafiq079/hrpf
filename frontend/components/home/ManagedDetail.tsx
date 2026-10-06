@@ -8,7 +8,7 @@ export default async function ManagedDetail({
   kind,
   slug,
 }: {
-  kind: "projects" | "news";
+  kind: "projects" | "news" | "blogs";
   slug: string;
 }) {
   const row = await readHomeDetail(kind, slug);
@@ -19,6 +19,7 @@ export default async function ManagedDetail({
         eyebrow="HRPF Pakistan"
         title={row.title}
         description={row.summary ?? row.excerpt}
+        breadcrumbs={[{ label: kind === "projects" ? "Projects" : "Blogs", href: kind === "projects" ? "/projects" : "/blogs" }, { label: row.title }]}
       />
       <Container className="py-16 sm:py-20 lg:py-24">
         <div className="mx-auto max-w-3xl">

@@ -2,14 +2,26 @@ import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
 import {spawn} from 'node:child_process';
 import {once} from 'node:events';
+import {checkNavigation, checkEmptyNavigation, checkOfflineNavigation} from './check-navigation.mjs';
 let revision=1,empty=false;const requests=[];
 const api=createServer((req,res)=>{
  requests.push({path:req.url,cookie:req.headers.cookie});res.setHeader('Content-Type','application/json');
  const project={title:`Managed project ${revision}`,slug:'real-project',summary:'Synthetic project summary',focusArea:'Rights',status:'Ongoing',location:'Pakistan',startYear:2026,image:null,blocks:[{type:'paragraph',text:'Managed project body'}],details:{overview:'Project overview text',challenge:'Documented challenge',approach:'Community approach',period:'March–September 2026',targetCommunity:'Local families',objectives:['Improved access'],activities:['Community sessions'],outcomes:['Documented result'],milestones:[{period:'June 2026',title:'First milestone'}],metrics:[{value:'12',label:'Sessions',source:'Project report'}],partners:['Verified partner'],sections:[{heading:'Lessons learned',body:'Project lessons'}]},gallery:[{image:'/api/public-assets/012345678901234567890123',alt:'Community session',caption:'Reviewed caption'},{image:'/api/public-assets/012345678901234567890124',alt:'Project activity'}],documents:[{file:'/api/public-assets/012345678901234567890125',label:'Project report PDF'}]};
  const news={title:`Managed news ${revision}`,slug:'real-news',excerpt:'Synthetic news summary',publishedAt:'2026-01-01T00:00:00.000Z',image:null,blocks:[{type:'paragraph',text:'Managed news body'}]};
  const path=new URL(req.url,'http://localhost').pathname;
- if(path==='/api/projects'||path==='/api/news')res.end(JSON.stringify({data:empty?[]:[path.endsWith('projects')?project:news]}));
- else if(path==='/api/projects/real-project'||path==='/api/news/real-news')res.end(JSON.stringify({data:path.includes('projects')?project:news}));
+ if(path==='/api/projects'||path==='/api/blogs'){
+  const page=Number(new URL(req.url,'http://localhost').searchParams.get('page')??1);
+  const row=path.endsWith('projects')?project:{...news,...(page===2?{title:'Second page blog',slug:'second-page-blog'}:{})};
+  res.end(JSON.stringify({data:empty?[]:[row],meta:{page,pages:empty?0:2}}));
+ }
+ else if(!empty&&(path==='/api/projects/real-project'||path==='/api/blogs/real-news'))res.end(JSON.stringify({data:path.includes('projects')?project:news}));
+ else if(path==='/api/reports')res.end(JSON.stringify({data:empty?[]:[{id:'012345678901234567890125',title:'Published progress report',summary:'Report summary',year:2025,slug:'progress-report',file:'/api/public-assets/012345678901234567890125',download:'/api/reports/012345678901234567890125/download'}],meta:{pages:empty?0:1}}));
+ else if(path==='/api/certificates')res.end(JSON.stringify({data:empty?[]:[{id:'012345678901234567890126',title:'Released registration certificate',issuer:'Test issuer',file:'/api/public-assets/012345678901234567890126'}]}));
+ else if(path==='/api/gallery'){
+  assert.equal(new URL(req.url,'http://localhost').searchParams.get('category'),'media-coverage');
+  res.end(JSON.stringify({data:empty?[]:[{id:'012345678901234567890127',title:'Published media coverage',file:'/api/public-assets/012345678901234567890127',alt:'Reviewed coverage image',caption:'Reviewed media caption',category:'media-coverage'}]}));
+ }
+ else if(path==='/api/board')res.end(JSON.stringify({data:empty?[]:[{name:'Active reviewed director',slug:'active-director',designation:'Board member',bio:'Reviewed biography',photo:null}]}));
  else{res.statusCode=404;res.end('{}');}
 });
 api.listen(0,'127.0.0.1');await once(api,'listening');
@@ -28,8 +40,12 @@ try{
  for(const text of ['Project overview text','Documented challenge','Community approach','Improved access','Community sessions','Documented result','First milestone','Project report','Verified partner','Lessons learned','Project report PDF','Next photograph','Community session'])assert.ok(page.html.includes(text),`Rich project detail: ${text}`);
  assert.ok((await read('/projects')).html.includes('Managed project 2'),'Project listing must use managed records');assert.equal((await read('/projects/unknown')).status,404);
  assert.ok((await read('/admin/projects')).html.includes('Loading project management'),'Project admin route must render');
+ await checkNavigation(read,port);
  empty=true;page=await read();assert.ok(page.html.includes('Featured Projects')&&page.html.includes('Latest News &amp; Updates'));assert.ok(!page.html.includes('Our Programmes &amp; Priorities')&&!page.html.includes('Progress Reports &amp; Updates'));assert.ok(!page.html.includes('Managed project'));
+ await checkEmptyNavigation(read);
  await new Promise(r=>api.close(r));page=await read();assert.equal(page.status,200);assert.ok(page.html.includes('Human Rights Protection Foundation Pakistan')&&page.html.includes('Featured Projects')&&page.html.includes('Latest News &amp; Updates'),'Original headings remain visible without backend');
+ await checkOfflineNavigation(read);
+ assert.ok(requests.some(r=>r.path.startsWith('/api/blogs'))&&!requests.some(r=>r.path.startsWith('/api/news')),'Frontend must use canonical Blogs API');
  assert.ok(requests.every(r=>r.cookie===undefined),'Public reads must not forward cookies');
  console.log('Homepage/project checks passed: sourced home, managed listings, rich details, gallery controls, project admin route, fresh updates, empty/offline headings and cookie isolation.');
 }finally{if(api.listening)await new Promise(r=>api.close(r));if(child.exitCode===null){child.kill('SIGTERM');await once(child,'exit');}}

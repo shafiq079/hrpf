@@ -107,3 +107,17 @@ ClamAV/Cloudinary upload and transactional publication. Reruns preserve admin
 edits, withdrawals and deletions. See backend/seed/HOMEPAGE.md. Live import must
 run against the user's privately configured development services; no credentials
 or actual live upload/database execution are claimed here.
+
+
+## Header and canonical route update — 2026-10-06
+Implemented the owner-uploaded changes-file header: Our Work, Projects, Blogs,
+Gallery (Media Coverage / TV Interviews), Get Involved and the eight-item About
+submenu. File a Complaint and Donate are header actions. Removed Impact,
+top-level Reports, Internships, Our People and Governance from navigation.
+Public News/Updates routes redirect to Blogs; Reports moves to About / Progress
+Reports. Existing BlogPost data remains intact; canonical admin Blogs APIs retain
+legacy News compatibility. About text comes from supplied organisation pages;
+board/documents/media remain reviewed public records. Membership uses the supplied
+Google Form. TV recordings, complaint-field/notification changes and translation
+remain subsequent work. See NAVIGATION_PLAN.md for the complete route mapping,
+source interpretations, tests and Codespaces restart instructions.

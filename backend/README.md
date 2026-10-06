@@ -180,10 +180,12 @@ editing are later milestones. See OpenAPI and docs/M4_VERIFICATION.md.
 
 ## Homepage projects and news
 
-Public: GET `/api/projects` and `/api/projects/:slug`; GET `/api/news` and
-`/api/news/:slug`. News and blogs share BlogPost records. List reads support
+Public: GET `/api/projects` and `/api/projects/:slug`; canonical GET `/api/blogs` and
+`/api/blogs/:slug`. `/api/news` and `/api/news/:slug` remain compatibility aliases;
+News and Blogs share BlogPost records. List reads support
 bounded page/limit/locale; only current approved published records are public.
-Admin content roles: GET/POST `/api/admin/projects` and `/api/admin/news`,
+Admin content roles: GET/POST `/api/admin/projects` and `/api/admin/blogs`
+(with `/api/admin/news` retained as a compatibility alias),
 PATCH/DELETE their `/:id` routes. PATCH accepts the complete text contract plus
 current `version`; DELETE accepts `version`. Mutations need the exact Origin and
 X-CSRF-Token. Create/edit produce drafts; edit/delete revoke files. Publish with
@@ -191,9 +193,10 @@ X-CSRF-Token. Create/edit produce drafts; edit/delete revoke files. Publish with
 releaseReviewed and optional clean owned cover assetId. Covers use content uploads
 and authenticated no-store streaming; no provider URLs are exposed.
 
-These are API controls; admin screens remain subsequent work. No live records
-are created automatically. The fixed homepage and its source programme/report
-cards are bundled and always available without admin approval.
+The project editor is available at `/admin/projects`; a Blogs admin screen remains
+subsequent work. No live records are created automatically. Fixed homepage copy
+is bundled; project and article cards use published public feeds and do not fall
+back to sample records when the feeds are empty or unavailable.
 
 ### Source-backed homepage setup
 

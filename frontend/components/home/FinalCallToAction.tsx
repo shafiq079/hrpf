@@ -18,7 +18,7 @@ export default function FinalCallToAction() {
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
             <PrimaryButton
-              href="/report-a-violation"
+              href="/file-a-complaint"
               variant="red"
               size="lg"
               icon={AlertTriangle}

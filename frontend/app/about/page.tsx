@@ -161,15 +161,15 @@ export default function AboutPage() {
         breadcrumbs={[{ label: "About Us" }]}
         actions={[
           {
-            label: "Meet Our People",
-            href: "#our-people",
+            label: "Board of Directors",
+            href: "/about/board-of-directors",
             variant: "navy",
             icon: Users,
             iconPosition: "left",
           },
           {
-            label: "View Full Team",
-            href: "/team",
+            label: "Our Team",
+            href: "/about/our-team",
             variant: "outlineDark",
           },
         ]}
@@ -422,8 +422,8 @@ export default function AboutPage() {
           </div>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <PrimaryButton href="/team" variant="navy" icon={ArrowRight}>
-              View Full Team Directory
+            <PrimaryButton href="/about/board-of-directors" variant="navy" icon={ArrowRight}>
+              View Board of Directors
             </PrimaryButton>
             <PrimaryButton href="/get-involved" variant="outline">
               Join Our Work
@@ -444,11 +444,11 @@ export default function AboutPage() {
               />
               <div className="mt-7">
                 <PrimaryButton
-                  href="/governance"
+                  href="/about/progress-reports"
                   variant="navy"
                   icon={ArrowRight}
                 >
-                  View Governance and Transparency
+                  View Progress Reports
                 </PrimaryButton>
               </div>
             </div>

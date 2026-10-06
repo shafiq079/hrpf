@@ -123,11 +123,11 @@ export default function DonatePage() {
                 You can review our governance safeguards and published reports.
               </p>
               <p className="mt-4 flex flex-wrap gap-4 text-sm font-semibold text-teal-dark">
-                <Link href="/governance" className="hover:underline">
-                  View governance
+                <Link href="/about" className="hover:underline">
+                  About HRPF
                 </Link>
-                <Link href="/reports" className="hover:underline">
-                  View reports
+                <Link href="/about/progress-reports" className="hover:underline">
+                  View Progress Reports
                 </Link>
               </p>
             </article>
@@ -246,7 +246,7 @@ export default function DonatePage() {
         title="Learn More About Our Work and Impact"
         description="Explore how HRPF works, and reach out with any questions about supporting our mission."
         actions={[
-          { label: "Read Our Annual Report", href: "/reports", variant: "navy" },
+          { label: "Read Progress Reports", href: "/about/progress-reports", variant: "navy" },
           { label: "Contact HRPF", href: "/contact", variant: "outlineDark" },
         ]}
       />

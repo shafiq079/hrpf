@@ -1,6 +1,6 @@
 /*
   News powers the homepage "Latest News" grid, the /news listing and the
-  /news/[slug] article template.
+  /blogs/[slug] article template.
 
   SAMPLE CONTENT NOTICE: articles below are illustrative "Development Content"
   for a demonstration website. They do not describe verified events and must be
@@ -44,9 +44,9 @@ export const newsArticles: NewsArticle[] = [
     authorRole: "HRPF Communications",
     date: "2026-06-18",
     readingTime: "6 min read",
-    image: "/images/news/digital-spaces.jpg",
+    image: "/images/blogs/digital-spaces.jpg",
     imageAlt: "A young person using a laptop in a safe learning environment.",
-    href: "/news/building-safer-digital-spaces",
+    href: "/blogs/building-safer-digital-spaces",
     featured: true,
     tags: ["Digital Rights", "Education", "Child Protection"],
     intro:
@@ -108,9 +108,9 @@ export const newsArticles: NewsArticle[] = [
     authorRole: "HRPF Programmes",
     date: "2026-05-30",
     readingTime: "5 min read",
-    image: "/images/news/legal-awareness.jpg",
+    image: "/images/blogs/legal-awareness.jpg",
     imageAlt: "Community members attending a legal-awareness session.",
-    href: "/news/why-community-legal-awareness-matters",
+    href: "/blogs/why-community-legal-awareness-matters",
     tags: ["Access to Justice", "Community"],
     intro:
       "Legal awareness is often the difference between confusion and confident action. This article explores why accessible legal information matters.",
@@ -133,9 +133,9 @@ export const newsArticles: NewsArticle[] = [
     authorRole: "HRPF Research",
     date: "2026-05-12",
     readingTime: "7 min read",
-    image: "/images/news/documentation.jpg",
+    image: "/images/blogs/documentation.jpg",
     imageAlt: "A researcher organising documents and notes.",
-    href: "/news/responsible-documentation-principles",
+    href: "/blogs/responsible-documentation-principles",
     tags: ["Research", "Documentation"],
     intro:
       "Documentation is powerful, but it must be handled responsibly to protect the people it aims to help.",
@@ -158,9 +158,9 @@ export const newsArticles: NewsArticle[] = [
     authorRole: "HRPF Communications",
     date: "2026-04-22",
     readingTime: "4 min read",
-    image: "/images/news/women-leading.jpg",
+    image: "/images/blogs/women-leading.jpg",
     imageAlt: "Women collaborating during a community meeting.",
-    href: "/news/women-leading-change",
+    href: "/blogs/women-leading-change",
     tags: ["Women's Rights", "Leadership"],
     intro:
       "This sample story highlights the value of supporting women's participation in community life.",
@@ -183,9 +183,9 @@ export const newsArticles: NewsArticle[] = [
     authorRole: "HRPF Programmes",
     date: "2026-03-28",
     readingTime: "5 min read",
-    image: "/images/news/education-foundation.jpg",
+    image: "/images/blogs/education-foundation.jpg",
     imageAlt: "Students engaged in a classroom learning activity.",
-    href: "/news/education-as-foundation",
+    href: "/blogs/education-as-foundation",
     tags: ["Education", "Awareness"],
     intro:
       "Education is a foundation for dignity, opportunity and the ability to claim one's rights.",
@@ -208,9 +208,9 @@ export const newsArticles: NewsArticle[] = [
     authorRole: "HRPF Leadership",
     date: "2026-03-05",
     readingTime: "3 min read",
-    image: "/images/news/partnership.jpg",
+    image: "/images/blogs/partnership.jpg",
     imageAlt: "Representatives meeting to discuss a potential partnership.",
-    href: "/news/new-partnership-consultation-programme",
+    href: "/blogs/new-partnership-consultation-programme",
     tags: ["Partnerships", "Announcement"],
     intro:
       "HRPF is introducing a consultation programme (sample announcement) to strengthen responsible institutional partnerships.",

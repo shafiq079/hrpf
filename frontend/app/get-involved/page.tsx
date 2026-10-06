@@ -15,12 +15,12 @@ import Accordion from "@/components/shared/Accordion";
 import CardGrid, { cardGridCellClass } from "@/components/shared/CardGrid";
 import { opportunities, exampleVacancies } from "@/data/opportunities";
 import { faqGroups } from "@/data/faqs";
-import VolunteerForm from "./VolunteerForm";
+import PrimaryButton from "@/components/shared/PrimaryButton";
 
 export const metadata = createMetadata({
   title: "Get Involved",
   description:
-    "There are many ways to contribute your time, experience and voice to the protection of human dignity. Volunteer, join a campaign or apply to support HRPF's work.",
+    "There are many ways to contribute your time, experience and voice to the protection of human dignity. Become a member, join a campaign or explore opportunities to support HRPF's work.",
   path: "/get-involved",
 });
 
@@ -44,7 +44,7 @@ const applicationSteps = [
   {
     title: "Apply",
     description:
-      "Submit the volunteer application form with your details and area of interest.",
+      "Use the membership application link or contact HRPF about a specific opportunity.",
     icon: FileText,
   },
   {
@@ -312,11 +312,11 @@ export default function GetInvolvedPage() {
           <div className="mx-auto max-w-2xl">
             <SectionHeading
               eyebrow="Apply"
-              title="Volunteer Application"
-              description="Complete the form below to submit a general volunteer application."
+              title="Become a Member"
+              description="Apply for HRPF membership through the Foundation’s existing Google Form."
             />
             <div className="mt-8 rounded-lg border border-border bg-white p-6 sm:p-8">
-              <VolunteerForm />
+              <PrimaryButton href="/become-a-member">Open Membership Application</PrimaryButton>
             </div>
           </div>
         </Container>

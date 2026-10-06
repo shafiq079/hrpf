@@ -6,10 +6,10 @@ import ReportViolationForm from "@/components/forms/ReportViolationForm";
 import { createMetadata } from "@/lib/seo";
 
 export const metadata = createMetadata({
-  title: "Report a Violation",
+  title: "File a Complaint",
   description:
     "Provide information about a possible human-rights concern. Reports are reviewed carefully and handled with care; submitting a report does not guarantee a specific outcome.",
-  path: "/report-a-violation",
+  path: "/file-a-complaint",
 });
 
 export default function ReportViolationPage() {
@@ -17,9 +17,9 @@ export default function ReportViolationPage() {
     <main id="main-content" className="flex-1">
       <PageHero
         eyebrow="Report a Concern"
-        title="Report a Human-Rights Concern"
+        title="File a Complaint"
         description="Use this form to provide information about a possible human-rights concern. Reports are reviewed carefully, but submitting a report does not guarantee investigation, representation or a specific outcome."
-        breadcrumbs={[{ label: "Report a Violation" }]}
+        breadcrumbs={[{ label: "File a Complaint" }]}
       />
 
       <section className="bg-off-white py-14 sm:py-16 lg:py-20">

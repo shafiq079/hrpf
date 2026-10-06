@@ -372,6 +372,30 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     }
     assert.equal(await AuditLog.countDocuments({action:{$in:['projects.post','projects.patch','projects.delete','news.post','news.patch','news.delete']}}),6);
   });
+  it('canonical blog CRUD retains news compatibility, access checks and shared publication state',async()=>{
+    const input={title:{en:'Canonical blog'},slug:'canonical-blog',locale:'en',excerpt:{en:'Blog excerpt'},blocks:[{type:'paragraph',text:'Blog body'}]};
+    await request(app).post('/api/admin/blogs').send(input).expect(401);
+    const manager=await login('case_manager');
+    await manager.agent.get('/api/admin/blogs').expect(403);
+    const editor=await login('editor');
+    await editor.agent.post('/api/admin/blogs').send(input).expect(403);
+    const created=await editor.agent.post('/api/admin/blogs').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(input).expect(201);
+    const {id}=created.body.data;
+    for(const kind of ['blogs','news']){
+      assert.equal((await editor.agent.get(`/api/admin/${kind}`).expect(200)).body.data[0].id,id);
+      await request(app).get(`/api/${kind}/canonical-blog`).expect(404);
+    }
+    await editor.agent.post(`/api/admin/publication/blog/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:0,action:'publish',releaseReviewed:true}).expect(200);
+    const canonical=(await request(app).get('/api/blogs/canonical-blog').expect(200)).body;
+    assert.deepEqual((await request(app).get('/api/news/canonical-blog').expect(200)).body,canonical);
+    await editor.agent.patch(`/api/admin/blogs/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...input,version:0}).expect(409);
+    await editor.agent.patch(`/api/admin/blogs/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...input,title:{en:'Edited blog'},version:1}).expect(200);
+    for(const kind of ['blogs','news'])await request(app).get(`/api/${kind}/canonical-blog`).expect(404);
+    await editor.agent.delete(`/api/admin/blogs/${id}`).send({version:2}).expect(403);
+    await editor.agent.delete(`/api/admin/blogs/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:2}).expect(200);
+    assert.equal((await editor.agent.get('/api/admin/news').expect(200)).body.data.length,0);
+    assert.equal(await AuditLog.countDocuments({action:{$in:['blogs.post','blogs.patch','blogs.delete']}}),3);
+  });
   it('homepage cover files are clean, owned, bound and revoked on update or deletion',async()=>{
     const editor=await login('editor');
     const input={title:{en:'Synthetic pictured update'},slug:'pictured-update',excerpt:{en:'Synthetic excerpt'},blocks:[{type:'paragraph',text:'Synthetic body'}]};
