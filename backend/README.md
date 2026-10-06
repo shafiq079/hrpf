@@ -194,3 +194,12 @@ and authenticated no-store streaming; no provider URLs are exposed.
 These are API controls; admin screens remain subsequent work. No live records
 are created automatically. The fixed homepage and its source programme/report
 cards are bundled and always available without admin approval.
+
+### Source-backed homepage setup
+
+`npm run seed:home` verifies the bundled three projects, three news summaries and
+six covers offline. `npm run seed:home -- --apply` imports and publishes them to
+configured development MongoDB/Cloudinary with working ClamAV and an existing
+`SEED_ACTOR_EMAIL`. See [seed/HOMEPAGE.md](seed/HOMEPAGE.md) for exact configuration,
+source provenance and preservation rules. This separate command does not publish
+legacy M3 content or alter fixed page copy.

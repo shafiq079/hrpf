@@ -56,3 +56,17 @@ https://github.com/advisories/GHSA-68fv-2mgg-jv7q.
 Final image selection uses nine distinct supplied photos across the main sections
 and six source cards. Captions identify archive illustrations and do not invent
 event dates, project results or the identities of pictured people.
+
+
+## Homepage heading and seed correction
+
+User requires the original Featured Projects and Latest News & Updates headings
+and backend-managed records, including during initial setup. Removed programme/
+report fallback cards and conditional headings; empty/offline feeds retain the
+sections and headings without resurrecting withdrawn records. Added the separate
+backend seed:home command with three documented intervention projects and three
+report-derived news summaries, six bundled source covers, offline checksum plan,
+ClamAV/Cloudinary upload and transactional publication. Reruns preserve admin
+edits, withdrawals and deletions. See backend/seed/HOMEPAGE.md. Live import must
+run against the user's privately configured development services; no credentials
+or actual live upload/database execution are claimed here.

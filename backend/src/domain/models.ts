@@ -90,7 +90,7 @@ export const Project = mongoose.model('Project', new Schema({
   title: { type: localized, required: true }, slug: { ...requiredText(100), unique: true }, locale: { type: String, enum: ['en', 'ur'], default: 'en' },
   summary: localized, blocks: [block], focusArea: requiredText(150), location: requiredText(150),
   projectStatus: { type: String, enum: ['Ongoing', 'Completed', 'Proposed', 'Emergency Response'], default: 'Proposed' },
-  startYear: { type: Number, min: 1900, max: 2200 }, cover: assetRefSchema,
+  startYear: { type: Number, min: 1900, max: 2200 }, cover: assetRefSchema, sourceReferences: [String],
   status: { type: String, enum: ['draft', 'published'], default: 'draft' }, reviewStatus: review, publishedAt: Date,
 }, options));
 Project.schema.index({ locale: 1, status: 1, publishedAt: -1 });

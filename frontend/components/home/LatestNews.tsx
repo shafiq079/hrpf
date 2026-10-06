@@ -7,19 +7,15 @@ import type { HomeNews } from "@/lib/home-feed";
 /** Latest news & updates grid of editorial article cards. */
 export default function LatestNews({
   newsArticles,
-  reports = false,
 }: {
   newsArticles: HomeNews[];
-  reports?: boolean;
 }) {
   return (
     <section className="bg-soft-gray py-16 sm:py-20 lg:py-24">
       <Container>
         <SectionHeading
           eyebrow="Newsroom"
-          title={
-            reports ? "Progress Reports & Updates" : "Latest News & Updates"
-          }
+          title="Latest News & Updates"
         />
 
         <ul className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

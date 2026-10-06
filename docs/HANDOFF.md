@@ -71,3 +71,17 @@ M4 PR: https://github.com/shafiq079/hrpf/pull/3. Initial implementation
 fa56aceb455e23a11685538650475e54dc7828b0 passed GitHub CI run 37385928032
 (both jobs). Final implementation 6b994a33468525286dbf50a6e335761f77f88d7e includes release
 hardening and card reuse; GitHub CI run 37386325272 passed both jobs. The fixed-copy correction supersedes the earlier fixed-page publication design. Main is unchanged by M4.
+
+
+## Homepage heading and seed correction
+
+User requires the original Featured Projects and Latest News & Updates headings
+and backend-managed records, including during initial setup. Removed programme/
+report fallback cards and conditional headings; empty/offline feeds retain the
+sections and headings without resurrecting withdrawn records. Added the separate
+backend seed:home command with three documented intervention projects and three
+report-derived news summaries, six bundled source covers, offline checksum plan,
+ClamAV/Cloudinary upload and transactional publication. Reruns preserve admin
+edits, withdrawals and deletions. See backend/seed/HOMEPAGE.md. Live import must
+run against the user's privately configured development services; no credentials
+or actual live upload/database execution are claimed here.

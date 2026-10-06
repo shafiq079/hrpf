@@ -8,10 +8,8 @@ import type { HomeProject } from "@/lib/home-feed";
 /** Featured projects grid with a header row and "view all" link. */
 export default function FeaturedProjects({
   projects,
-  programmes = false,
 }: {
   projects: HomeProject[];
-  programmes?: boolean;
 }) {
   return (
     <section className="bg-off-white py-16 sm:py-20 lg:py-24">
@@ -19,17 +17,17 @@ export default function FeaturedProjects({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="eyebrow">
-              {programmes ? "Foundation Priorities" : "Active Missions"}
+              Active Missions
             </p>
             <h2 className="mt-3 text-[28px] leading-tight sm:text-[34px] lg:text-[40px]">
-              {programmes ? "Our Programmes & Priorities" : "Featured Projects"}
+              Featured Projects
             </h2>
           </div>
           <Link
-            href={programmes ? "/about" : "/programmes"}
+            href="/programmes"
             className="group inline-flex items-center gap-1.5 text-sm font-semibold text-teal-dark transition-colors hover:text-navy"
           >
-            {programmes ? "Explore the Foundation" : "View all projects"}
+            View all projects
             <ArrowRight
               className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-0.5"
               aria-hidden="true"

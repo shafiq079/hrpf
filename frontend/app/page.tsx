@@ -1,4 +1,3 @@
-import home from "@/data/homepage.json";
 import {
   readHomeFeed,
   projectCard,
@@ -23,51 +22,17 @@ export default async function Home() {
     readHomeFeed<ProjectRecord>("projects"),
     readHomeFeed<NewsRecord>("news"),
   ]);
-  const programmeCards = home.programmeCards.map((p, i) => ({
-    ...projectCard({
-      ...p,
-      slug: `programme-${i}`,
-      status: "Proposed",
-      location: "Pakistan",
-    }),
-    imageAlt: p.imageAlt,
-    href: "/about",
-    statusLabel: "Programme area",
-    startedLabel: "From HRPF’s mission",
-  }));
-  const reportCards = home.reportCards.map((r) => ({
-    ...newsCard({
-      title: r.title,
-      excerpt: r.summary,
-      slug: `report-${r.year}`,
-      publishedAt: `${r.year}-01-01`,
-    }),
-    href: "/reports",
-    category: "Progress Report",
-    dateLabel: `${r.year} report`,
-    readingTime: "Report overview",
-    image: r.image,
-    imageAlt: r.imageAlt,
-  }));
 
   return (
     <main id="main-content" className="flex-1">
       <HeroSection />
       <AboutPreview />
       <FocusAreas />
-      <FeaturedProjects
-        projects={
-          projects.data.length ? projects.data.map(projectCard) : programmeCards
-        }
-        programmes={!projects.data.length}
-      />
+      <FeaturedProjects projects={projects.data.map(projectCard)} />
       <ImpactStatistics />
       <TestimonialSection />
       <PartnersSection />
-      <LatestNews
-        newsArticles={news.data.length ? news.data.map(newsCard) : reportCards}
-        reports={!news.data.length}
-      />
+      <LatestNews newsArticles={news.data.map(newsCard)} />
       <FinalCallToAction />
     </main>
   );

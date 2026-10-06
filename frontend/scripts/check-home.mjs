@@ -24,8 +24,8 @@ try{
  revision=2;page=await read();assert.ok(page.html.includes('Managed project 2')&&page.html.includes('Managed news 2'),'Managed homepage feeds must refresh');
  assert.ok((await read('/programmes')).html.includes('Managed project 2'));
  assert.ok((await read('/programmes/real-project')).html.includes('Managed project body'));assert.ok((await read('/updates/real-news')).html.includes('Managed news body'));assert.equal((await read('/updates/unknown')).status,404);
- empty=true;page=await read();assert.ok(page.html.includes('Our Programmes &amp; Priorities')&&page.html.includes('Progress Reports &amp; Updates'));assert.ok(!page.html.includes('Managed project'));
- await new Promise(r=>api.close(r));page=await read();assert.equal(page.status,200);assert.ok(page.html.includes('Human Rights Protection Foundation Pakistan')&&page.html.includes('Access to Information')&&page.html.includes('Progress Report 2025'),'Source content remains visible without backend');
+ empty=true;page=await read();assert.ok(page.html.includes('Featured Projects')&&page.html.includes('Latest News &amp; Updates'));assert.ok(!page.html.includes('Our Programmes &amp; Priorities')&&!page.html.includes('Progress Reports &amp; Updates'));assert.ok(!page.html.includes('Managed project'));
+ await new Promise(r=>api.close(r));page=await read();assert.equal(page.status,200);assert.ok(page.html.includes('Human Rights Protection Foundation Pakistan')&&page.html.includes('Featured Projects')&&page.html.includes('Latest News &amp; Updates'),'Original headings remain visible without backend');
  assert.ok(requests.every(r=>r.cookie===undefined),'Public reads must not forward cookies');
- console.log('Homepage checks passed: sourced copy/photos, excluded placeholders, managed feeds/details, fresh updates, empty/offline source cards and cookie isolation.');
+ console.log('Homepage checks passed: sourced copy/photos, excluded placeholders, managed feeds/details, fresh updates, unchanged empty/offline headings and cookie isolation.');
 }finally{if(api.listening)await new Promise(r=>api.close(r));if(child.exitCode===null){child.kill('SIGTERM');await once(child,'exit');}}

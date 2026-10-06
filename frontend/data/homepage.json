@@ -59,51 +59,5 @@
       "title": "Research and Advocacy",
       "description": "Using research, documentation and requests for information to encourage transparent, accountable institutions."
     }
-  ],
-  "programmeCards": [
-    {
-      "title": "Access to Information",
-      "focusArea": "Transparency and Accountability",
-      "summary": "HRPF promotes the right to information and lawful engagement with public institutions. This is an area of work described in the Foundation’s mission.",
-      "image": "/images/hrpf/home-programme-information.webp",
-      "imageAlt": "Office meeting from HRPF’s supplied photo archive."
-    },
-    {
-      "title": "Clean Water and Public Health",
-      "focusArea": "Essential Services",
-      "summary": "The Foundation’s mission addresses clean drinking water, pollution and maternal healthcare in underserved communities.",
-      "image": "/images/hrpf/home-programme-water.webp",
-      "imageAlt": "Water channel and surrounding farmland from HRPF’s supplied archive."
-    },
-    {
-      "title": "Human Rights and Legal Advocacy",
-      "focusArea": "Dignity and Justice",
-      "summary": "HRPF supports vulnerable communities and deserving cases through documentation, public awareness and lawful advocacy.",
-      "image": "/images/hrpf/home-programme-advocacy.webp",
-      "imageAlt": "Representatives in a meeting from HRPF’s supplied photo archive."
-    }
-  ],
-  "reportCards": [
-    {
-      "title": "Progress Report 2025",
-      "summary": "According to HRPF’s 2025 report, its work included health and environmental awareness, human trafficking and smuggling concerns, and press freedom.",
-      "year": 2025,
-      "image": "/images/hrpf/home-report-2025.webp",
-      "imageAlt": "HRPF archive photograph accompanying this report overview."
-    },
-    {
-      "title": "Progress Report 2024",
-      "summary": "According to HRPF’s 2024 report, its work included access to information, analysis of district crime statistics and overseas Pakistanis’ cases.",
-      "year": 2024,
-      "image": "/images/hrpf/home-report-2024.webp",
-      "imageAlt": "HRPF archive office meeting photograph accompanying this report overview."
-    },
-    {
-      "title": "Performance Report 2022-2023",
-      "summary": "According to HRPF’s 2022–2023 report, its work included access to information, water and sanitation, public health and environmental concerns.",
-      "year": 2023,
-      "image": "/images/hrpf/home-report-2023.webp",
-      "imageAlt": "Public-awareness event from HRPF’s supplied archive, accompanying this report overview."
-    }
   ]
 }

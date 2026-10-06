@@ -185,3 +185,17 @@ Fixed NGO copy uses the owner-supplied page text, profile and current public det
 Admin scope remains users, members, membership applications, complaints, board, blogs, gallery, reports, certificates, settings, contact inbox and audit logs. Fixed-page CMS/review is excluded. Blog/gallery/document/board data remain managed records. File protection and membership/complaint operational approvals remain separate from fixed text.
 
 Admin UI, real form wiring and operational workflows are next. See M4_VERIFICATION.md.
+
+
+## Homepage heading and seed correction
+
+User requires the original Featured Projects and Latest News & Updates headings
+and backend-managed records, including during initial setup. Removed programme/
+report fallback cards and conditional headings; empty/offline feeds retain the
+sections and headings without resurrecting withdrawn records. Added the separate
+backend seed:home command with three documented intervention projects and three
+report-derived news summaries, six bundled source covers, offline checksum plan,
+ClamAV/Cloudinary upload and transactional publication. Reruns preserve admin
+edits, withdrawals and deletions. See backend/seed/HOMEPAGE.md. Live import must
+run against the user's privately configured development services; no credentials
+or actual live upload/database execution are claimed here.
