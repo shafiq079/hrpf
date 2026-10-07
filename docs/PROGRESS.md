@@ -1,5 +1,16 @@
 # HRPF Progress
 
+## Simplified translation panel — 2026-10-08
+
+- Owner requested a narrower panel titled "Translate", no search box, no
+  automatic-translation footer/status and one native name per language.
+- Reduce width from 20rem to 14rem and keep the scrollable language list,
+  selection checkmark, English restore and keyboard dismissal/focus.
+- Frontend lint/type/build, four existing tests and public SSR passed. An
+  isolated-provider browser verified the 224px panel, "Translate" title, absence
+  of search/footer/duplicate labels, language changes, English restore, saved
+  navigation, keyboard/outside dismissal, mobile/landscape bounds and retry.
+
 ## Floating translation interface — 2026-10-08
 
 - Owner confirmed translation works and requested the bottom-left GTranslate

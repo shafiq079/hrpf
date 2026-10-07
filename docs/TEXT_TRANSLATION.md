@@ -18,8 +18,9 @@ not hardcoded to the existing projects or source images.
 - A compact white globe/language-code button is fixed at the bottom left on
   desktop and mobile, matching the owner's GTranslate Float screenshot. There
   is no translation strip above the header. The button opens an upward panel
-  with searchable native/English language names, English/Urdu/Arabic first,
-  a selected-language checkmark and an automatic-translation note inside.
+  titled "Translate", with a narrow 14rem list of native language names,
+  English/Urdu/Arabic first and a selected-language checkmark. The owner's
+  simplified interface has no search, duplicate English labels or status footer.
   Escape/Close return focus to the button; outside click or focus closes the
   panel. Safe-area spacing and constrained scrolling keep it inside small screens.
   The widget sits below the sticky header, mobile drawer and gallery viewer.
@@ -89,8 +90,8 @@ language entry point, lazy loading and private-route exclusion alongside existin
 homepage, public content, navigation, pagination and complaint checks.
 
 For live review, pull development and run the existing frontend/backend commands.
-Open the bottom-left language button and choose Urdu, then French. Search accepts
-native names, English names and language codes. Navigate projects/blogs and gallery
+Open the bottom-left language button and choose Urdu, then French from the
+scrollable native-name list. Navigate projects/blogs and gallery
 pages, change gallery photos, search/filter a collection, and review the complaint
 form with test values. Check that private values/files remain original and that
 English restores text. Review the browser console for React/hydration errors.

@@ -16,8 +16,10 @@ Local frontend checks passed. Live public Urdu/French translation and collection
 interactions passed; private complaint payload/English-restore and mobile checks
 used a network-isolated provider engine. No reseeding or API key is required.
 The owner rejected the above-header strip after functional review. It is replaced
-by a bottom-left white floating globe/language-code button and an upward searchable
-language panel, following the supplied GTranslate Float screenshot. Existing
+by a bottom-left white floating globe/language-code button and an upward narrow
+language panel titled "Translate", following the supplied GTranslate Float
+screenshot. Each language appears once in its native name, with no search box
+or automatic-translation footer, per the owner's follow-up. Existing
 translation behaviour uses the same hidden provider-owned native select.
 Next after functional translation review: the deferred global future-content
 performance/caching plan, then production configuration and acceptance testing.
