@@ -1,5 +1,16 @@
 # HRPF Progress
 
+## Current deployment decision — 2026-10-07
+
+The owner explicitly removed ClamAV to support a Render free deployment. New
+uploads and seeds require type/signature/size validation, not antivirus scanning;
+existing clean assets remain compatible. HTTPS email via Resend and an embedded
+Mongo outbox processor remove the need for SMTP ports or a paid worker. See
+[RENDER_FREE.md](RENDER_FREE.md) for configuration, sleep/quota limits and owner
+acceptance. Earlier scanner/standalone-worker requirements below are historical
+and are superseded by this decision. Development remains the working branch.
+
+
 ## Complete Gallery archive import (2026-10-07)
 
 Extended `seed:gallery` on development from four preview releases to the full
@@ -257,3 +268,16 @@ resumes while preserving admin/native/deleted content. The chairman's full twelv
 sections are retained; actual Joint Chairperson designation is preserved.
 No new staff biographies or private provider URLs are exposed. Further global
 caching and permanent ClamAV hosting remain deferred. Next: complaint workflow.
+
+
+## Complete complaint form and email workflow — 2026-10-07
+
+- Owner specified complete submitted form email copies for user and admin.
+- Replaced external-concern simulation with real three-step identity/complaint/files/review intake.
+- Added exact private file attachments, escaped full-field HTML/text, durable retry and no silent omission.
+- Added stable upload keys and saved-submission recovery after the upload window.
+- Added private admin case listing/detail, assignment, guarded status transitions, notes/history and delivery retry.
+- Updated complaint privacy disclosure, OpenAPI and private configuration examples.
+- Main has Documents/Board/Team through merged PR #5 (0b161e9); complaint milestone stays on development.
+- Live SMTP/provider/verification acceptance requires private setup; see COMPLAINTS.md.
+- Local validation passed: 43 API/email integration tests, 53 source seed tests, 3 browser-side retry/limit tests, backend check/OpenAPI, frontend lint/type/build and production SSR. Complete complaint mail is exercised through the real BullMQ worker with a capture sender.

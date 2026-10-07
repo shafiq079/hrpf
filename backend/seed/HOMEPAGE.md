@@ -41,17 +41,15 @@ Configure these privately in `backend/.env` (never paste their values into chat)
 - Existing MongoDB replica-set URI and database name.
 - Existing Cloudinary cloud name, API key and secret.
 - `NODE_ENV=development` and `CLOUDINARY_NAMESPACE=hrpf/dev`.
-- Working `CLAMAV_HOST` and optional `CLAMAV_PORT` (default 3310).
 - `SEED_ACTOR_EMAIL`: email of an existing active admin, super admin or editor.
 
 The account must already exist; use the documented `npm run admin:create` setup if
-needed. No seed password is required. Uploads use the same ClamAV scanner and
-Cloudinary provider as admin uploads. Missing scans fail closed. A ClamAV daemon
-must be reachable; Redis and the API process are not needed for this seed command.
+needed. No seed password is required. Uploads use the same file type/size checks and Cloudinary provider as admin
+uploads. Redis and the API process are not needed for this seed command.
 
 ```bash
 npm run seed:home -- --database   # read-only database plan
-npm run seed:home -- --apply      # import, scan, upload and publish the six records
+npm run seed:home -- --apply      # import, inspect, upload and publish the six records
 npm run dev
 ```
 
@@ -98,7 +96,7 @@ than assert exact dates. PDFs are prepared project source briefs, not copies of
 the complete original reports.
 
 The bundled manifest is `project-details-manifest.json`; its PDFs and source
-checksums are verified before uploads. Assets use ClamAV and authenticated
+checksums are verified before uploads. Assets use type checks and authenticated
 Cloudinary, with the same project media binding and release rules as admin edits.
 Each project's details, released files, version increment, checkpoint and actor
 audit commit together. Existing titles, summaries, stories, URLs, covers and

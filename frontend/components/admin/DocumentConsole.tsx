@@ -194,7 +194,7 @@ export default function DocumentConsole() {
           <Link href="/admin/documents" className="text-teal-dark">
             Documents
           </Link>
-          <Link href="/admin/board" className="text-teal-dark">Board and Team</Link>
+          <Link href="/admin/board" className="text-teal-dark">Board and Team</Link><Link href="/admin/complaints" className="text-teal-dark">Complaints</Link>
         </nav>
       )}
       {user && (

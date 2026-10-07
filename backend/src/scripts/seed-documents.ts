@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import { ConfigurationError, parseEnv } from "../config/env.js";
 import { User, ensureIndexes } from "../domain/models.js";
-import { cloudinaryProvider, clamScanner } from "../services/uploads.js";
+import { cloudinaryProvider } from "../services/uploads.js";
 import {
   applyDocumentSeed,
   documentAssetRoot,
@@ -53,14 +53,13 @@ async function main() {
     );
   if (
     args.includes("--apply") &&
-    (!env.CLAMAV_HOST ||
-      !env.CLOUDINARY_CLOUD_NAME ||
+    (!env.CLOUDINARY_CLOUD_NAME ||
       !env.CLOUDINARY_API_KEY ||
       !env.CLOUDINARY_API_SECRET ||
       !process.env.SEED_ACTOR_EMAIL)
   )
     throw new ConfigurationError(
-      "Configure Cloudinary, ClamAV and SEED_ACTOR_EMAIL privately in backend/.env.",
+      "Configure Cloudinary and SEED_ACTOR_EMAIL privately in backend/.env.",
     );
   phase = "database";
   await mongoose.connect(env.MONGODB_URI, {
@@ -100,7 +99,6 @@ async function main() {
       actorId: actor.id,
       namespace: env.CLOUDINARY_NAMESPACE,
       provider: cloudinaryProvider(env),
-      scanner: clamScanner(env),
       phase: (value) => {
         if (value === phase) return;
         phase = value;

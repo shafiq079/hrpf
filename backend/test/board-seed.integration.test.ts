@@ -47,7 +47,6 @@ const seed = (overrides: Partial<Parameters<typeof applyBoardSeed>[0]> = {}) =>
     actorId,
     namespace: "hrpf/dev",
     provider,
-    scanner: async () => "clean",
     ...overrides,
   });
 describe("Supplied board and team profiles", { timeout: 120000 }, () => {
@@ -97,20 +96,7 @@ describe("Supplied board and team profiles", { timeout: 120000 }, () => {
       (await planBoardSeed(manifest)).every((r) => r.status === "would-create"),
     );
     assert.equal(await SourceImport.countDocuments(), 0);
-    let scans = 0;
-    assert.ok(
-      (
-        await seed({
-          scanner: async () => {
-            scans++;
-            assert.equal(uploads, 0);
-            assert.equal(await BoardMember.countDocuments(), 0);
-            return "clean";
-          },
-        })
-      ).every((r) => r.status === "published"),
-    );
-    assert.equal(scans, 7);
+    assert.ok((await seed()).every((r) => r.status === "published"));
     assert.equal(uploads, 7);
     const app = express().use("/api", publicRouter(provider));
     const board = await request(app).get("/api/board").expect(200);
@@ -216,17 +202,10 @@ describe("Supplied board and team profiles", { timeout: 120000 }, () => {
       "Unversioned admin edit",
     );
   });
-  it("rejects tampered bytes, unavailable scanners and unauthorized actors before content or provider writes", async () => {
+  it("rejects tampered bytes and unauthorized actors before content or provider writes", async () => {
     const changed = new Map(files);
     changed.set(manifest.releases[0]!.file.id, Buffer.from("tampered"));
     await assert.rejects(seed({ files: changed }));
-    await assert.rejects(
-      seed({
-        scanner: async () => {
-          throw new Error("Scanner unavailable");
-        },
-      }),
-    );
     await User.updateOne({ _id: actorId }, { $set: { role: "editor" } });
     await assert.rejects(seed());
     assert.equal(uploads, 0);
@@ -252,18 +231,7 @@ describe("Supplied board and team profiles", { timeout: 120000 }, () => {
     assert.equal(await BoardMember.countDocuments({ isActive: true }), 7);
     assert.equal(uploads, 7);
   });
-  it("checks role changes after scans and reuses a staged photo after publication is interrupted by role loss", async () => {
-    await assert.rejects(
-      seed({
-        scanner: async () => {
-          await User.updateOne({ _id: actorId }, { $set: { role: "editor" } });
-          return "clean";
-        },
-      }),
-    );
-    assert.equal(await BoardMember.countDocuments(), 0);
-    assert.equal(uploads, 0);
-    await User.updateOne({ _id: actorId }, { $set: { role: "admin" } });
+  it("reuses a staged photo after publication is interrupted by role loss", async () => {
     let changeRole = true;
     const interrupted = {
       ...provider,

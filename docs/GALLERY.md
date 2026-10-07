@@ -33,7 +33,7 @@ withdraw and delete. Source-import provenance and duplicate markers remain intac
 | Interview | Title, individual video URL, introduction/topics, optional channel/date, display order, optional thumbnail with alt text |
 | Optional translated text | Urdu title, image alt/caption or interview introduction |
 
-JPG, PNG and WebP images are limited to 5 MB and scanned before staging. Videos
+JPG, PNG and WebP images are limited to 5 MB and inspected before staging. Videos
 use individual public YouTube or Vimeo links. Channel links, arbitrary hosts,
 embed HTML, credential-bearing URLs and private/unlisted Vimeo hash URLs are not
 supported. No raw video upload/storage pipeline is introduced.
@@ -79,7 +79,7 @@ real video links.
 Existing pristine source-import drafts are enriched without creating duplicates.
 Edits, withdrawals, deletions and unmanaged rows are preserved. Interrupted
 uploads can reuse their staged assets; each image release and checkpoint commit
-atomically. All 200 files are checked/scanned before any new content import or
+atomically. All 200 files are checked before any new content import or
 provider upload. Canonical entries import before duplicates, preserving every
 duplicate relationship even after an interruption. Scan progress and final result
 counts appear in the terminal.

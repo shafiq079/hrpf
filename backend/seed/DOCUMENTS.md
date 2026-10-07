@@ -16,13 +16,13 @@ reads a plan without writes. `--apply` publishes three report public editions an
 four distinct certificates using your existing private development services.
 
 Use `NODE_ENV=development`, `CLOUDINARY_NAMESPACE=hrpf/dev`, MongoDB, Cloudinary
-and the existing running ClamAV service. `SEED_ACTOR_EMAIL` must identify an
+and Cloudinary. `SEED_ACTOR_EMAIL` must identify an
 active administrator or super administrator; editors cannot import certificates.
 Keep actual values in `backend/.env` or Codespaces secrets.
 
-This command scans every public copy before content/provider writes. A failed
-scan stops the batch. Phase output identifies verification, configuration,
-database, scan, upload or publication; errors never print private service values.
+This command inspects every public copy before content/provider writes. A failed
+inspection stops the batch. Phase output identifies verification, configuration,
+database, validation, upload or publication; errors never print private service values.
 An interrupted apply is safe to rerun. Completed releases, deleted records,
 withdrawals, admin revisions and native records are preserved. Clean staged
 uploads from an interrupted publication are reused while unexpired. Source or
@@ -40,5 +40,4 @@ conversion. Do not describe them as complete originals. Sensitive source ZIPs
 are not uploaded. See [the document workflow](../../docs/DOCUMENTS.md).
 
 Future reports and certificates are uploaded normally in the admin portal; this
-seed is only for the supplied archive. Production seeding and permanent scanner
-hosting remain separate later deployment tasks.
+seed is only for the supplied archive. Production seeding and live production deployment remains a separate task.

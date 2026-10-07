@@ -15,7 +15,7 @@ const provider: UploadProvider = {
   store: async upload => ({ publicId: `hrpf/dev/content/test-${++uploads}`, resourceType: 'image', deliveryType: 'authenticated', format: 'webp', bytes: upload.bytes.length, version: 1 }),
   remove: async () => {}, read: async () => new Response(new Uint8Array([1, 2, 3])),
 };
-const seed = (scanner = async () => 'clean' as const) => applyHomepageSeed({ manifest, files, actorId, namespace: 'hrpf/dev', provider, scanner });
+const seed = () => applyHomepageSeed({ manifest, files, actorId, namespace: 'hrpf/dev', provider });
 describe('Homepage source seed publication and preservation', { timeout: 120000 }, () => {
   before(async () => {
     manifest = await loadHomepageManifest(); files = await homepageFiles(manifest, fileURLToPath(homepageAssetRoot));
@@ -27,10 +27,10 @@ describe('Homepage source seed publication and preservation', { timeout: 120000 
     for (const model of Object.values(mongoose.models)) await model.deleteMany({}); uploads = 0;
     const actor = await User.create({ email: 'seed@example.test', name: 'Test editor', passwordHash: 'not-a-real-password', role: 'editor', active: true }); actorId = actor.id;
   });
-  it('publishes three real projects and three sourced articles with clean owned covers visible in public feeds', async () => {
+  it('publishes three real projects and three sourced articles with type-checked owned covers visible in public feeds', async () => {
     const results = await seed(); assert.equal(results.filter(row => row.status === 'published').length, 6);
     assert.equal(await Project.countDocuments({ status: 'published' }), 3); assert.equal(await BlogPost.countDocuments({ status: 'published' }), 3);
-    assert.equal(await Asset.countDocuments({ claimStatus: 'claimed', visibility: 'public', scanStatus: 'clean' }), 6);
+    assert.equal(await Asset.countDocuments({ claimStatus: 'claimed', visibility: 'public', scanStatus: 'type_checked' }), 6);
     assert.equal(await AuditLog.countDocuments({ action: 'homepage.seed-published', actorId }), 6);
     const app = express().use('/api', publicRouter(provider));
     for (const path of ['/api/projects', '/api/news']) {
@@ -61,8 +61,7 @@ describe('Homepage source seed publication and preservation', { timeout: 120000 
     try { await assert.rejects(seed()); interrupted = false; await seed(); assert.equal(uploads, 6); assert.equal(await SourceImport.countDocuments(), 6); }
     finally { provider.store = realStore; }
   });
-  it('rejects failed scans and unauthorized actors before creating drafts or uploading', async () => {
-    await assert.rejects(seed(async () => { throw new Error('scanner unavailable'); }));
+  it('rejects unauthorized actors before creating drafts or uploading', async () => {
     assert.equal(await Project.countDocuments(), 0); assert.equal(await SourceImport.countDocuments(), 0); assert.equal(uploads, 0);
     await User.updateOne({ _id: actorId }, { $set: { role: 'case_manager' } }); await assert.rejects(seed()); assert.equal(uploads, 0);
   });

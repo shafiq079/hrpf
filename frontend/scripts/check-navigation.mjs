@@ -25,6 +25,11 @@ export async function checkNavigation(read, port) {
   const headerPaths = [...new Set([...header.matchAll(/href="([^"?#]+)"/g)].map(match => match[1]))].filter(path => path.startsWith('/'));
   for (const path of headerPaths) assert.equal((await read(path)).status, 200, `Menu destination: ${path}`);
   assert.ok(!headerPaths.some(path => migrations.some(([old]) => path === old)), 'Menus use canonical URLs directly');
+  page = await read('/file-a-complaint');
+  for(const text of ['Your details','CNIC number','Father','Province / region','District','Your form details and uploaded files will be emailed']) assert.ok(page.html.includes(text),'Live complaint form: '+text);
+  assert.ok(!page.html.includes('report anonymously') && !page.html.includes('demonstration only'));
+  assert.ok((await read('/admin/complaints')).html.includes('Loading complaint management'));
+  assert.ok((await read('/privacy-policy')).html.includes('Complaint Submissions'));
   page = await read('/blogs');
   assert.ok(page.html.includes('Managed news 2') && page.html.includes('/blogs/real-news'), 'Blogs use published records');
   assert.ok(!page.html.includes('Building Safer Digital Spaces'), 'No prototype blogs');

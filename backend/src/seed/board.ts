@@ -13,7 +13,6 @@ import { can } from "../security/permissions.js";
 import { digest } from "../security/crypto.js";
 import {
   inspectUpload,
-  type Scanner,
   type UploadProvider,
 } from "../services/uploads.js";
 import { bindBoardPhoto } from "../services/board-media.js";
@@ -218,16 +217,15 @@ export async function applyBoardSeed(options: {
   actorId: string;
   namespace: string;
   provider: UploadProvider;
-  scanner: Scanner;
   report?: (result: BoardSeedResult) => void;
   phase?: (phase: string) => void;
 }) {
-  const { manifest, files, actorId, namespace, provider, scanner } = options;
+  const { manifest, files, actorId, namespace, provider } = options;
   if (namespace !== "hrpf/dev")
     throw new Error("Board setup is limited to hrpf/dev.");
   await actorAllowed(actorId);
-  options.phase?.("scan");
-  // Inspect and scan every release before any external storage or content writes.
+  options.phase?.("validate");
+  // Inspect every release before any external storage or content writes.
   for (const release of manifest.releases) {
     const bytes = files.get(release.file.id);
     if (
@@ -243,8 +241,6 @@ export async function applyBoardSeed(options: {
         ? "application/pdf"
         : "image/jpeg",
     });
-    if ((await scanner(bytes)) !== "clean")
-      throw new Error("Public board scan failed.");
   }
   const results: BoardSeedResult[] = [];
   for (const record of manifest.source.records) {
@@ -267,7 +263,7 @@ export async function applyBoardSeed(options: {
           entityId: seedId(record.key),
           sha256: release.file.sha256,
           purpose,
-          scanStatus: "clean",
+          scanStatus: { $in: ['clean', 'type_checked'] },
           claimStatus: "staged",
           stagingExpiresAt: { $gt: new Date() },
         });
@@ -291,7 +287,7 @@ export async function applyBoardSeed(options: {
               ownerId: actorId,
               purpose,
               visibility: "restricted",
-              scanStatus: "clean",
+              scanStatus: 'type_checked',
               entityType: record.kind,
               entityId: seedId(record.key),
               stagingExpiresAt: new Date(Date.now() + 86400000),

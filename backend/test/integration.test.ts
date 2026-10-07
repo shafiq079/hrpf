@@ -6,30 +6,28 @@ import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { createClient } from 'redis';
 import request from 'supertest';
 import express from 'express';
-import { unavailable } from '../src/http/errors.js';
 import { createApp } from '../src/app.js';
 import { parseEnv } from '../src/config/env.js';
 import { Asset, AuditLog, Project, BlogPost, BoardMember, GalleryItem, VideoInterview, Report, Certificate, AuthSession, Complaint, ContactMessage, Counter, EmailOutbox, FormTicket, MembershipApplication, Setting, User, ensureIndexes, roles, type Role } from '../src/domain/models.js';
 import { createRedisServices } from '../src/infrastructure/redis-services.js';
 import { digest, hashPassword } from '../src/security/crypto.js';
-import { createOutbox, startOutboxWorker, type Mail } from '../src/services/outbox.js';
+import { createOutbox, mailSender, startEmbeddedOutbox, startOutboxWorker, type Mail } from '../src/services/outbox.js';
 import { createForms } from '../src/services/forms.js';
 import { createUploads, MB, type UploadProvider } from '../src/services/uploads.js';
 const env = parseEnv({ NODE_ENV: 'test', JWT_ACCESS_SECRET: 'a'.repeat(64), JWT_REFRESH_SECRET: 'b'.repeat(64), DATA_ENCRYPTION_KEY: 'ab'.repeat(32), CNIC_HASH_KEY: 'c'.repeat(64), REDIS_URL: process.env.TEST_REDIS_URL!, ADMIN_NOTIFY_EMAILS: 'admin@example.org', FRONTEND_URL: 'http://localhost:3000', SMTP_HOST: 'test.invalid', MAIL_FROM: 'no-reply@example.org' });
 const redis = createClient({ url: env.REDIS_URL }); redis.on('error', () => {});
 const services = createRedisServices(redis, 'hrpf-test');
 let mongo: MongoMemoryReplSet, passwordHash: string, app: ReturnType<typeof createApp>, providerReads = 0;
-let scan: 'clean' | 'infected' | 'unavailable' = 'clean';
 const pdf = Buffer.from('%PDF-1.4\n1 0 obj\n<<>>\nendobj\n%%EOF');
 // Valid tiny PNG. These fixture bytes are synthetic and are never sent to Cloudinary.
 const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aZ1sAAAAASUVORK5CYII=', 'base64');
+const storedBytes = new Map<string, Buffer>();
 const provider: UploadProvider = {
-  async store(upload, folder, format) { return { publicId: `${folder}/${randomUUID()}`, resourceType: upload.mime === 'application/pdf' ? 'raw' : 'image', deliveryType: 'authenticated', bytes: upload.bytes.length, format, version: 1 }; },
+  async store(upload, folder, format, preserveOriginal = false) { const publicId = `${folder}/${randomUUID()}`; storedBytes.set(publicId, upload.bytes); return { publicId, resourceType: preserveOriginal || upload.mime === 'application/pdf' ? 'raw' : 'image', deliveryType: 'authenticated', bytes: upload.bytes.length, format, version: 1 }; },
   async remove() {},
-  async read(asset) { providerReads++; return new Response(asset.resourceType === 'image' ? png : pdf); },
+  async read(asset) { providerReads++; return new Response(storedBytes.get(asset.publicId) ?? (asset.resourceType === 'image' ? png : pdf)); },
 };
 const bot = async (value: string) => value === 'verified-test-token';
-const scanner = async () => { if (scan === 'unavailable') throw unavailable(); return scan; };
 const personal = { name: 'Synthetic test', fatherName: 'Synthetic parent', email: 'applicant@example.org', phone: '03001234567', province: 'Test province', district: 'Test district', address: 'Test address' };
 const complaintBody = (ticket: string, cnic: string, document: string) => ({ ...personal, ticket, submissionKey: randomUUID(), consent: true, consentVersion: 'test-v1', cnic: '1234512345671', cnicImageId: cnic, complaintDocumentId: document, category: 'Test category', description: 'Synthetic integration test complaint', priorProceedings: false });
 async function login(role: Role = 'super_admin') {
@@ -58,12 +56,12 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     mongoose.set('bufferCommands', false); mongoose.set('sanitizeFilter', false);
     await mongoose.connect(mongo.getUri(), { dbName: `hrpf_test_${randomUUID().replaceAll('-', '')}`, autoIndex: false });
     await ensureIndexes(); await redis.connect(); passwordHash = await hashPassword('Test-password-long');
-    app = createApp(env, async () => ({ mongo: true, redis: true }), { redis: services, bot, scanner, provider });
+    app = createApp(env, async () => ({ mongo: true, redis: true }), { redis: services, bot, provider });
   });
   after(async () => { if (redis.isOpen) await redis.quit(); await mongoose.disconnect(); if (mongo) await mongo.stop(); });
   beforeEach(async () => {
     for (const model of Object.values(mongoose.models)) await model.deleteMany({});
-    await redis.flushDb(); scan = 'clean'; providerReads = 0;
+    await redis.flushDb(); providerReads = 0; storedBytes.clear();
   });
   it('login, rotation and refresh replay revoke the whole family immediately', async () => {
     const auth = await login();
@@ -104,17 +102,32 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     await FormTicket.updateOne({ tokenHash: digest(ticket) }, { $set: { expiresAt: new Date(0) } });
     await request(app).post('/api/contact-messages').send({ ticket, submissionKey: randomUUID(), consent: true, consentVersion: 'test-v1', name: 'Test', email: 'test@example.org', subject: 'Test', message: 'Test' }).expect(403);
   });
-  it('uploads reject spoofing, malware, unavailable scanning and enforce ticket quotas', async () => {
+  it('uploads work without ClamAV and still reject spoofing and enforce ticket quotas', async () => {
     const ticket = await form();
     await request(app).post('/api/form-uploads?purpose=complaint').set('X-Form-Ticket', ticket).attach('file', pdf, { filename: 'image.png', contentType: 'image/png' }).expect(400);
-    scan = 'infected';
-    await request(app).post('/api/form-uploads?purpose=complaint').set('X-Form-Ticket', ticket).attach('file', png, 'proof.png').expect(400);
-    scan = 'unavailable';
-    await request(app).post('/api/form-uploads?purpose=complaint').set('X-Form-Ticket', ticket).attach('file', png, 'proof.png').expect(503);
-    assert.equal(await Asset.countDocuments(), 0);
-    scan = 'clean';
+    const accepted = await upload(ticket);
+    assert.equal((await Asset.findById(accepted))!.scanStatus, 'type_checked');
     await FormTicket.updateOne({ tokenHash: digest(ticket) }, { $set: { uploadCount: 5 } });
     await request(app).post('/api/form-uploads?purpose=complaint').set('X-Form-Ticket', ticket).attach('file', png, 'proof.png').expect(400);
+  });
+  it('legacy clean files remain usable but quarantined or infected files cannot be claimed or downloaded', async () => {
+    const ticket = await form(), cnic = await upload(ticket), document = await upload(ticket, pdf, 'complaint', 'complaint.pdf');
+    const body = complaintBody(ticket, cnic, document), auth = await login('admin');
+    for (const status of ['quarantined', 'infected']) {
+      await Asset.updateOne({ _id: cnic }, { $set: { scanStatus: status } });
+      await request(app).post('/api/complaints').send(body).expect(400);
+      await auth.agent.get(`/api/admin/assets/${cnic}/content`).expect(404);
+      assert.equal(await Complaint.countDocuments(), 0); assert.equal(await EmailOutbox.countDocuments(), 0);
+    }
+    await Asset.updateOne({ _id: cnic }, { $set: { scanStatus: 'clean' } });
+    await request(app).post('/api/complaints').send(body).expect(201);
+    const copies: Mail[] = [];
+    const processor = startEmbeddedOutbox(env, async mail => { copies.push(mail); return 'captured-legacy'; }, async () => {}, () => true, provider);
+    try { await waitFor(async () => await EmailOutbox.countDocuments({ status: 'sent' }) === 2); }
+    finally { await processor.close(); }
+    assert.equal(copies.length, 2); assert.equal(copies[0]!.attachments!.length, 2);
+    assert.equal((await Asset.findById(cnic))!.scanStatus, 'clean');
+    assert.equal((await Asset.findById(document))!.scanStatus, 'type_checked');
   });
   it('complaints commit identity encryption, all asset claims, counter and two outbox entries atomically', async () => {
     const ticket = await form(), cnic = await upload(ticket), document = await upload(ticket, pdf, 'complaint', 'complaint.pdf');
@@ -209,6 +222,56 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     try { await waitFor(async () => (await EmailOutbox.findById(entry._id))!.status === 'sent'); assert.equal(sent.length, 1); }
     finally { await worker.close(); }
   });
+  it('embedded HTTPS delivery resumes stored failures after restart and sends complete private complaint files', async () => {
+    const ticket = await form(), cnic = await upload(ticket), document = await upload(ticket, pdf, 'complaint', 'complaint.pdf');
+    const body = complaintBody(ticket, cnic, document);
+    await request(app).post('/api/complaints').send(body).expect(201);
+    const httpEnv = { ...env, EMAIL_PROVIDER: 'resend' as const, EMAIL_DELIVERY_MODE: 'embedded' as const, RESEND_API_KEY: 'synthetic-private-key' };
+    const failed = startEmbeddedOutbox(httpEnv, mailSender(httpEnv, async () => new Response('private diagnostic', { status: 429 })), async () => {}, () => true, provider);
+    try { await waitFor(async () => await EmailOutbox.countDocuments({ status: 'failed', attempts: 1 }) === 2); }
+    finally { await failed.close(); }
+    assert.equal(await Complaint.countDocuments(), 1);
+    assert.equal(await Asset.countDocuments({ claimStatus: 'claimed' }), 2);
+    // Simulate retry time passing while Render's API process was stopped.
+    await EmailOutbox.updateMany({}, { $set: { nextAttemptAt: new Date(0) } });
+    const copies: Record<string, unknown>[] = [];
+    const resumed = startEmbeddedOutbox(httpEnv, mailSender(httpEnv, async (_url, options) => {
+      const copy = JSON.parse(String(options?.body)); copies.push(copy);
+      assert.match(copy.text, /Synthetic integration test complaint/); assert.match(copy.text, /1234512345671/);
+      assert.equal(copy.attachments.length, 2);
+      assert.deepEqual(Buffer.from(copy.attachments[0].content, 'base64'), png);
+      assert.deepEqual(Buffer.from(copy.attachments[1].content, 'base64'), pdf);
+      return Response.json({ id: 'captured-https-copy' });
+    }), async () => {}, () => true, provider);
+    try {
+      await waitFor(async () => await EmailOutbox.countDocuments({ status: 'sent' }) === 2);
+      await resumed.drain(); assert.equal(copies.length, 2);
+      assert.deepEqual(copies.map(copy => (copy.to as string[])[0]).sort(), ['admin@example.org', personal.email].sort());
+      assert.equal(await EmailOutbox.countDocuments({ attempts: 2 }), 2);
+    } finally { await resumed.close(); }
+  });
+  it('embedded processor waits for readiness, bounds concurrency, reclaims stale leases and closes cleanly', async () => {
+    const entry = await EmailOutbox.create({ dedupeKey: 'embedded-lease-test', template: 'acknowledgement',
+      entityType: 'Complaint', recipient: 'test@example.org', reference: 'TEST-ONLY', status: 'sending',
+      leaseUntil: new Date(0), attempts: 1 });
+    let ready = false, sends = 0, release: (() => void) | undefined;
+    const processor = startEmbeddedOutbox(env, async () => {
+      sends++; await new Promise<void>(resolve => { release = resolve; }); return 'captured-after-lease';
+    }, async () => {}, () => ready);
+    try {
+      await processor.drain(); assert.equal(sends, 0);
+      ready = true; const draining = processor.drain();
+      await waitFor(async () => sends === 1);
+      await processor.drain(); assert.equal(sends, 1);
+      let stopped = false;
+      const closing = processor.close().then(() => { stopped = true; });
+      await processor.drain(); assert.equal(stopped, false); assert.equal(sends, 1);
+      release!(); await draining; await closing;
+      assert.equal((await EmailOutbox.findById(entry.id))!.status, 'sent');
+      assert.equal((await EmailOutbox.findById(entry.id))!.attempts, 2);
+      await processor.drain(); assert.equal(sends, 1);
+    } finally { release?.(); await processor.close(); }
+  });
   it('password reset responses are indistinguishable; reset is single-use and revokes prior sessions', async () => {
     const auth = await login();
     const known = await auth.agent.post('/api/auth/forgot-password').set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send({ email: auth.user.email }).expect(200);
@@ -238,7 +301,7 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     const ticket = await form(), asset = await upload(ticket);
     await Asset.updateOne({ _id: asset }, { $set: { stagingExpiresAt: new Date(0) } });
     const claimed = await Asset.create({ publicId: 'test-claimed', resourceType: 'raw', deliveryType: 'authenticated', format: 'pdf', bytes: 20, sha256: 'a'.repeat(64), purpose: 'complaint', claimStatus: 'claimed', scanStatus: 'clean', stagingExpiresAt: new Date(0) });
-    const uploads = createUploads(env, createForms(services, bot), provider, scanner);
+    const uploads = createUploads(env, createForms(services, bot), provider);
     await uploads.prune(); assert.equal(await Asset.countDocuments(), 1); assert.ok(await Asset.findById(claimed.id));
   });
   it('M4 public settings strip private fields and managed blogs respect publication', async () => {
@@ -739,6 +802,110 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     await User.updateOne({_id:admin.user.id},{$set:{role:'editor'}}); await publish(saved.body.data.id,0).expect(403);
     assert.equal((await BoardMember.findById(saved.body.data.id))!.isActive,false);
     assert.equal((await Asset.findById(own))!.visibility,'restricted');
+  });
+
+  it('complaint emails contain the complete submitted form and exact private files for user and admin', async () => {
+    const ticket = await form(), cnic = await upload(ticket), document = await upload(ticket, pdf, 'complaint', 'complaint.pdf'), decision = await upload(ticket, pdf, 'complaint', 'decision.pdf'), evidence = await upload(ticket);
+    const body = { ...complaintBody(ticket, cnic, document), name: 'Synthetic <script>name</script>', description: 'Complete complaint with اردو text and <b>literal markup</b>', priorProceedings: true, priorProceedingsDetails: 'Synthetic institution, case 123, pending decision', decisionDocumentIds: [decision], attachmentIds: [evidence] };
+    const result = await request(app).post('/api/complaints').send(body).expect(201);
+    assert.equal(await Asset.countDocuments({ purpose: 'complaint', resourceType: 'raw', deliveryType: 'authenticated' }), 4);
+    const entries = await EmailOutbox.find().select('+recipient');
+    assert.deepEqual(entries.map(value => value.template).sort(), ['complaint-admin-copy', 'complaint-copy']);
+    assert.ok(!JSON.stringify(entries).includes(body.cnic)); assert.ok(!JSON.stringify(entries).includes(body.description));
+    const sent: Mail[] = [], capture = async (mail: Mail) => { sent.push(mail); return 'capture-only'; };
+    const worker = await startOutboxWorker(env, capture, async () => {}, provider);
+    try { await waitFor(async () => await EmailOutbox.countDocuments({ status: 'sent' }) === 2); }
+    finally { await worker.close(); }
+    const sender = createOutbox(env, capture, provider);
+    assert.deepEqual(sent.map(mail => mail.to).sort(), ['admin@example.org', 'applicant@example.org']);
+    for (const mail of sent) {
+      for (const value of [body.name, body.fatherName, body.cnic, body.email, body.phone, body.province, body.district, body.address, body.category, body.description, body.priorProceedingsDetails, result.body.data.reference, body.consentVersion]) assert.ok(mail.text.includes(value), `Complete copy contains ${value}`);
+      assert.ok(mail.html!.includes('&lt;script&gt;name&lt;/script&gt;')); assert.ok(!mail.html!.includes('<script>')); assert.ok(mail.html!.includes('اردو'));
+      assert.equal(mail.attachments!.length, 4);
+      assert.deepEqual(mail.attachments!.map(value => value.content), [png, pdf, pdf, png]);
+      assert.ok(mail.attachments!.every(value => value.contentDisposition === 'attachment'));
+      assert.ok(!mail.text.includes('publicId')); assert.ok(!mail.text.includes('hrpf/dev/complaints/attachments')); assert.ok(!mail.text.includes(ticket));
+    }
+    await sender.deliver(entries[0]!.id); assert.equal(sent.length, 2);
+    await request(app).post('/api/complaints').send(body).expect(201); assert.equal(await EmailOutbox.countDocuments(), 2);
+    // A saved, consumed ticket still confirms a lost response after the upload window.
+    await FormTicket.updateOne({ tokenHash: digest(ticket) }, { $set: { expiresAt: new Date(Date.now() - 60000) } });
+    await request(app).post('/api/complaints').send(body).expect(201); assert.equal(await Complaint.countDocuments(), 1);
+    await request(app).post('/api/complaints').send({ ...body, description: 'Changed contents' }).expect(409);
+  });
+  it('complaint mail failures retain the submission and cannot send mismatched or altered private assets', async () => {
+    const ticket = await form(), cnic = await upload(ticket), document = await upload(ticket, pdf, 'complaint', 'complaint.pdf');
+    await request(app).post('/api/complaints').send(complaintBody(ticket, cnic, document)).expect(201);
+    const entry = (await EmailOutbox.findOne({ template: 'complaint-copy' }))!;
+    const sent: Mail[] = [];
+    const failing = { ...provider, async read() { throw new Error('private provider credentials are omitted'); } };
+    await assert.rejects(createOutbox(env, async mail => { sent.push(mail); return 'not-called'; }, failing).deliver(entry.id));
+    assert.equal(sent.length, 0); assert.equal(await Complaint.countDocuments(), 1);
+    assert.equal((await EmailOutbox.findById(entry.id))!.errorCode, 'DELIVERY_UNAVAILABLE');
+    await EmailOutbox.updateOne({ _id: entry._id }, { $set: { nextAttemptAt: new Date(0) } });
+    await assert.rejects(createOutbox(env, async mail => { sent.push(mail); return 'not-called'; }, { ...provider, async read() { return new Response(Buffer.from('altered bytes')); } }).deliver(entry.id));
+    assert.equal(sent.length, 0);
+    const admin = await login();
+    await admin.agent.post(`/api/admin/outbox/${entry.id}/retry`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', admin.csrf).send({}).expect(200);
+    await createOutbox(env, async mail => { sent.push(mail); return 'capture-only'; }, provider).deliver(entry.id);
+    assert.equal(sent.length, 1); assert.equal(sent[0]!.attachments!.length, 2);
+    const other = (await EmailOutbox.findOne({ template: 'complaint-admin-copy' }))!;
+    await Asset.updateOne({ _id: cnic }, { $set: { entityId: new Types.ObjectId() } });
+    await assert.rejects(createOutbox(env, async mail => { sent.push(mail); return 'not-called'; }, provider).deliver(other.id)); assert.equal(sent.length, 1);
+  });
+  it('stable upload keys recover interrupted uploads without using another file quota slot', async () => {
+    const ticket = await form(), key = randomUUID();
+    const send = (bytes = png) => request(app).post('/api/form-uploads?purpose=complaint').set('X-Form-Ticket', ticket).set('X-Upload-Key', key).attach('file', bytes, { filename: 'proof.png', contentType: 'image/png' });
+    const first = await send().expect(201), retry = await send().expect(201);
+    assert.equal(first.body.data.assetId, retry.body.data.assetId); assert.equal(await Asset.countDocuments(), 1);
+    assert.equal((await FormTicket.findOne({ tokenHash: digest(ticket) }))!.uploadCount, 1);
+    const changed = Buffer.concat([png, Buffer.from('different bytes')]); await send(changed).expect(409);
+    assert.equal((await FormTicket.findOne({ tokenHash: digest(ticket) }))!.uploadCount, 1);
+    const other = await form();
+    await request(app).post('/api/form-uploads?purpose=complaint').set('X-Form-Ticket', other).set('X-Upload-Key', key).attach('file', png, { filename: 'proof.png', contentType: 'image/png' }).expect(201);
+    assert.equal(await Asset.countDocuments(), 2);
+  });
+  it('complaint review supports private access, assignment, notes, history and version conflicts without changing the submitted copy', async () => {
+    const ticket = await form(), body = complaintBody(ticket, await upload(ticket), await upload(ticket, pdf, 'complaint', 'complaint.pdf'));
+    await request(app).post('/api/complaints').send(body).expect(201);
+    const row = (await Complaint.findOne())!, manager = await login('case_manager'), editor = await login('editor');
+    await request(app).get('/api/admin/complaints').expect(401); await editor.agent.get('/api/admin/complaints').expect(403);
+    await manager.agent.get('/api/admin/complaints?page=0').expect(400); await manager.agent.get('/api/admin/complaints?q=%5B').expect(200);
+    const list = await manager.agent.get('/api/admin/complaints').expect(200);
+    assert.equal(list.body.data.total, 1); assert.ok(!JSON.stringify(list.body).includes(body.cnic)); assert.ok(!JSON.stringify(list.body).includes(body.description));
+    const view = await manager.agent.get(`/api/admin/complaints/${row.id}`).expect(200);
+    assert.equal(view.body.data.cnic, body.cnic); assert.equal(view.body.data.files.length, 2); assert.equal(view.headers['cache-control'], 'private, no-store');
+    for (const field of ['encryptedCNIC', 'cnicHash', 'payloadHash', 'submissionKey', 'publicId', 'recipient']) assert.ok(!JSON.stringify(view.body).includes(field));
+    assert.equal(await AuditLog.countDocuments({ action: 'complaints.read' }), 1);
+    const patch = (data: object, csrf = manager.csrf) => manager.agent.patch(`/api/admin/complaints/${row.id}`).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', csrf).send(data);
+    await patch({ version: 0, status: 'resolved', note: 'Invalid jump' }).expect(409);
+    await patch({ version: 0, status: 'triaged', note: 'Review started' }, 'bad').expect(403);
+    await patch({ version: 0, status: 'triaged', note: 'Review started' }).expect(200);
+    await patch({ version: 0, status: 'closed', note: 'Stale view' }).expect(409);
+    await patch({ version: 1, status: 'assigned', note: 'Assignment pending' }).expect(400);
+    await patch({ version: 1, status: 'assigned', assigneeId: editor.user.id, note: 'Wrong role' }).expect(400);
+    await patch({ version: 1, status: 'assigned', assigneeId: manager.user.id, note: 'Assigned' }).expect(200);
+    await patch({ version: 2, status: 'in_progress', note: 'Follow-up underway' }).expect(200);
+    await patch({ version: 3, status: 'resolved', note: 'Synthetic review completed' }).expect(200);
+    await patch({ version: 4, status: 'closed', note: 'Closed after review' }).expect(200);
+    await patch({ version: 5, status: 'triaged', note: 'Reopened for further review' }).expect(200);
+    const stored = (await Complaint.findById(row.id))!; assert.equal(stored.notes.length, 6); assert.equal(stored.history.length, 6); assert.equal(stored.description, body.description);
+    assert.equal(await EmailOutbox.countDocuments(), 2);
+    await User.updateOne({ _id: manager.user._id }, { $set: { role: 'editor' } });
+    await manager.agent.get(`/api/admin/complaints/${row.id}`).expect(403);
+  });
+  it('complaint submission requires admin recipients and rejects contradictory proceedings and oversized combined uploads', async () => {
+    const ticket = await form(), body = complaintBody(ticket, await upload(ticket), await upload(ticket, pdf, 'complaint', 'complaint.pdf'));
+    const unconfigured = createApp({ ...env, ADMIN_NOTIFY_EMAILS: [] }, async () => ({ mongo: true, redis: true }), { redis: services, bot, provider });
+    await request(unconfigured).post('/api/complaints').send(body).expect(503);
+    assert.equal(await Complaint.countDocuments(), 0);
+    await request(app).post('/api/complaints').send({ ...body, priorProceedings: true }).expect(400);
+    await request(app).post('/api/complaints').send({ ...body, priorProceedingsDetails: 'Details contradict No' }).expect(400);
+    await Asset.updateOne({ _id: body.cnicImageId }, { $set: { bytes: 8 * MB } });
+    await Asset.updateOne({ _id: body.complaintDocumentId }, { $set: { bytes: 8 * MB } });
+    await request(app).post('/api/complaints').send(body).expect(400);
+    assert.equal(await Complaint.countDocuments(), 0); assert.equal(await EmailOutbox.countDocuments(), 0);
+    assert.equal(await Asset.countDocuments({ claimStatus: 'claimed' }), 0);
   });
 
 });

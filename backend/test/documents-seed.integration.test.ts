@@ -52,7 +52,6 @@ const seed = (
     actorId,
     namespace: "hrpf/dev",
     provider,
-    scanner: async () => "clean",
     ...overrides,
   });
 describe("Reviewed document import", { timeout: 120000 }, () => {
@@ -193,16 +192,9 @@ describe("Reviewed document import", { timeout: 120000 }, () => {
       "Edited source report",
     );
   });
-  it("scans the complete verified batch before writes and refuses corrupted bytes, infection and non-admin actors", async () => {
-    let scanned = 0;
-    await assert.rejects(
-      seed({ scanner: async () => (++scanned === 7 ? "infected" : "clean") }),
-    );
-    assert.equal(scanned, 7);
-    assert.equal(uploads, 0);
-    assert.equal(await SourceImport.countDocuments(), 0);
+  it("inspects the complete batch before writes and refuses corrupted bytes and non-admin actors", async () => {
     const corrupted = new Map(files);
-    corrupted.set(manifest.releases[0]!.file.id, Buffer.from("corrupted"));
+    corrupted.set(manifest.releases.at(-1)!.file.id, Buffer.from("corrupted"));
     await assert.rejects(seed({ files: corrupted }));
     await User.updateOne({ _id: actorId }, { $set: { role: "editor" } });
     await assert.rejects(seed());
@@ -231,20 +223,7 @@ describe("Reviewed document import", { timeout: 120000 }, () => {
     assert.equal(results.filter((r) => r.status === "published").length, 5);
     assert.equal(uploads, 7);
   });
-  it("rechecks roles after scans and detects inconsistent publication checkpoints", async () => {
-    let scans = 0;
-    await assert.rejects(
-      seed({
-        scanner: async () => {
-          if (++scans === 7)
-            await User.updateOne({ _id: actorId }, { $set: { active: false } });
-          return "clean";
-        },
-      }),
-    );
-    assert.equal(await SourceImport.countDocuments(), 0);
-    assert.equal(uploads, 0);
-    await User.updateOne({ _id: actorId }, { $set: { active: true } });
+  it("detects inconsistent publication checkpoints", async () => {
     await seed();
     await SourceImport.updateOne(
       { key: "document-public:report:2025" },

@@ -28,7 +28,7 @@ export function createApp(env: Environment, readiness: Readiness, adapters?: Bus
       callback(new ApiError(403, 'ORIGIN_NOT_ALLOWED', 'Request origin is not allowed.'));
     },
     methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'X-CSRF-Token', 'X-Form-Ticket'],
+    allowedHeaders: ['Content-Type', 'X-CSRF-Token', 'X-Form-Ticket', 'X-Upload-Key'],
   }));
   app.use(['/api/admin/projects', '/api/admin/blogs', '/api/admin/news'], express.json({ limit: '256kb', strict: true }));
   app.use(['/api/admin/gallery', '/api/admin/interviews'], express.json({ limit: '64kb', strict: true }));

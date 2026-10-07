@@ -81,6 +81,28 @@ const sections: PolicySection[] = [
     ),
   },
   {
+    title: "Complaint Submissions",
+    body: (
+      <>
+        <p>
+          When you file a complaint, we collect your name, father’s name, CNIC
+          number and picture, contact details, address, complaint and any previous
+          proceedings or decision documents you submit. Authorised HRPF
+          administrators and case reviewers can access the complaint and its
+          private files. The CNIC number is encrypted in our complaint database.
+        </p>
+        <p>
+          With the consent you give on the form, a complete copy of your submitted
+          details and uploaded files is emailed to your entered email address and
+          HRPF’s designated administrators. These copies contain sensitive identity
+          information. Check your email address carefully before submitting.
+          Website storage, verification and email providers process
+          the information needed to operate this service.
+        </p>
+      </>
+    ),
+  },
+  {
     title: "Data Sharing",
     body: (
       <p>

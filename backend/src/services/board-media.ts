@@ -16,7 +16,7 @@ export async function bindBoardPhoto(
     const asset = await Asset.findOne({
       _id: value,
       purpose: "content",
-      scanStatus: "clean",
+      scanStatus: { $in: ['clean', 'type_checked'] },
       deliveryType: "authenticated",
       resourceType: "image",
       format: { $in: ["jpg", "jpeg", "png", "webp"] },

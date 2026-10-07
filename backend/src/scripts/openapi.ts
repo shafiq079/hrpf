@@ -11,12 +11,14 @@ import { reportInput, certificateInput } from '../http/document-content.js';
 import { galleryInput, interviewInput } from '../http/media-content.js';
 import { projectInput, newsInput } from '../http/managed-content.js';
 import { boardInput } from '../http/board-content.js';
+import { complaintUpdate, complaintStatuses } from '../http/complaint-content.js';
 import { roles } from '../domain/models.js';
 const jsonSchema = (value: z.ZodType) => { const { $schema: _schema, ...schema } = z.toJSONSchema(value, { io: 'input', unrepresentable: 'any' }); return schema; };
 const user = z.object({ id: z.string(), name: z.string(), email: z.email(), role: z.enum(roles) });
 const safeAdminUser = user.extend({ active: z.boolean(), version: z.number().int() });
 const schemas = {
   PublicationInput: jsonSchema(publicationInput),
+  ComplaintReviewInput: jsonSchema(complaintUpdate),
   ComplaintInput: jsonSchema(complaintInput), MembershipInput: jsonSchema(membershipInput), ContactInput: jsonSchema(contactInput),
   LoginInput: jsonSchema(credentials), FormSessionInput: jsonSchema(z.object({ purpose, botToken: z.string().min(1).max(2048) }).strict()),
   ForgotInput: jsonSchema(z.object({ email: z.email().max(254) }).strict()),
@@ -49,14 +51,14 @@ operation('/api/auth/forgot-password', 'post', 'Queue reset without disclosing a
 operation('/api/auth/reset-password', 'post', 'Consume reset token and revoke all user sessions', z.object({ status: z.literal('password_reset') }), { body: 'ResetInput', security: [csrfSecurity] });
 operation('/api/forms/session', 'post', 'Issue a 15-minute purpose-bound form ticket after Turnstile verification', z.object({ ticket: z.string(), purpose, expiresIn: z.literal(900) }), { body: 'FormSessionInput', status: '201' });
 for (const [path, body] of [['complaints', 'ComplaintInput'], ['membership-applications', 'MembershipInput'], ['contact-messages', 'ContactInput']] as const) {
-  operation(`/api/${path}`, 'post', 'Persist validated form and email outbox atomically', received, { body, status: '201', description: 'Use the original ticket and UUID submissionKey for retries within the ticket lifetime. Same key with different data returns 409. Received confirms storage, not email delivery or approval. Membership requires an enabled policy.' });
+  operation(`/api/${path}`, 'post', 'Persist validated form and email outbox atomically', received, { body, status: '201', description: 'Use the original ticket and UUID submissionKey for retries. Unsubmitted tickets expire after 15 minutes; saved submissions can be confirmed while the consumed ticket is retained (about 24 hours). Same key with different data returns 409. Received confirms storage, not email delivery or approval. Complaints queue complete user/admin form copies with all five-or-fewer private files (15 MB combined), and require ADMIN_NOTIFY_EMAILS. Membership requires an enabled policy.' });
 }
 operation('/api/admin/users', 'get', 'List up to 100 users; super_admin only', z.array(safeAdminUser), { security: [adminSecurity] });
 operation('/api/admin/users', 'post', 'Create administrator; super_admin only', safeAdminUser, { body: 'UserCreateInput', status: '201', security: [{ ...csrfSecurity, ...adminSecurity }] });
 operation('/api/admin/users/{id}', 'patch', 'Update current version; preserve last active super_admin', safeAdminUser, { body: 'UserUpdateInput', parameters: [parameter('id')], security: [{ ...csrfSecurity, ...adminSecurity }] });
-const uploadResult = z.object({ assetId: z.string(), format: z.string(), bytes: z.number(), scanStatus: z.literal('clean') });
+const uploadResult = z.object({ assetId: z.string(), format: z.string(), bytes: z.number(), scanStatus: z.enum(['clean', 'type_checked']) });
 for (const [path, admin] of [['/api/form-uploads', false], ['/api/admin/assets', true]] as const) {
-  operation(path, 'post', 'Scan and stage one restricted file; JPG/PNG/WebP 5 MB or PDF 10 MB', uploadResult, { status: '201', parameters: [parameter('purpose', admin ? ['content', 'certificate'] : ['complaint', 'membership'])], security: admin ? [{ ...csrfSecurity, ...adminSecurity }] : [{ formTicketHeader: [] }] });
+  operation(path, 'post', 'Inspect type and stage one restricted file; JPG/PNG/WebP 5 MB or PDF 10 MB', uploadResult, { status: '201', parameters: [parameter('purpose', admin ? ['content', 'certificate'] : ['complaint', 'membership']), ...(!admin ? [{name:'X-Upload-Key',in:'header',required:false,schema:{type:'string',format:'uuid'},description:'Stable per-file retry key. Reuses the staged file within this ticket; different bytes return 409. Complaint ticket quota is five files and 15 MB combined.'}] : [])], security: admin ? [{ ...csrfSecurity, ...adminSecurity }] : [{ formTicketHeader: [] }] });
   const value = paths[path]!.post as Record<string, unknown>;
   value.requestBody = { required: true, content: { 'multipart/form-data': { schema: { type: 'object', additionalProperties: false, required: ['file'], properties: { file: { type: 'string', format: 'binary' } } } } } };
 }
@@ -152,6 +154,11 @@ for (const [kind,input] of [['reports',reportInput],['certificates',certificateI
   (paths[path]![method] as any).requestBody={required:true,content:{'application/json':{schema:jsonSchema(method === 'post' ? input : method === 'patch' ? input.extend({version:z.number().int().nonnegative()}) : z.object({version:z.number().int().nonnegative()}).strict())}}};
  }
 }
+const complaintSummary = z.object({ id:z.string(),version:z.number(),reference:z.string(),name:z.string(),category:z.string(),province:z.string(),district:z.string(),status:z.enum(complaintStatuses),assigneeId:z.string().nullable(),createdAt:z.string() });
+operation('/api/admin/complaints','get','List 20 private complaint summaries; admin/super_admin/case_manager',z.object({rows:z.array(complaintSummary),page:z.number(),pages:z.number(),total:z.number()}),{security:[adminSecurity],parameters:[{name:'page',in:'query',schema:{type:'integer',minimum:1,maximum:1000,default:1}},{name:'status',in:'query',schema:{type:'string',enum:complaintStatuses}},{name:'q',in:'query',schema:{type:'string',maxLength:80},description:'Literal reference prefix'}]});
+operation('/api/admin/complaints/reviewers','get','Read up to 100 active eligible reviewers',z.array(z.object({id:z.string(),name:z.string()})),{security:[adminSecurity]});
+operation('/api/admin/complaints/{id}','get','Audit access to complete private form, decrypted CNIC, file IDs, notes, history and delivery status',complaintSummary.extend({fatherName:z.string(),email:z.string(),phone:z.string(),address:z.string(),cnic:z.string(),description:z.string(),priorProceedings:z.boolean(),priorProceedingsDetails:z.string(),consent:z.object({version:z.string(),acceptedAt:z.string()}),files:z.array(z.object({id:z.string(),label:z.string(),name:z.string(),format:z.string(),bytes:z.number()})),notes:z.array(z.object({body:z.string(),actorId:z.string().optional(),at:z.string()})),history:z.array(z.object({from:z.string(),to:z.string(),actorId:z.string().optional(),at:z.string()})),emailDeliveries:z.array(z.object({id:z.string(),audience:z.enum(['user','admin']),status:z.enum(['pending','sending','sent','failed']),attempts:z.number(),errorCode:z.string().optional(),sentAt:z.string().optional()}))}),{security:[adminSecurity],parameters:[parameter('id')]});
+operation('/api/admin/complaints/{id}','patch','Versioned review and assignment with required internal note; legal transitions and current active role rechecked transactionally',complaintSummary,{body:'ComplaintReviewInput',parameters:[parameter('id')],security:[{...csrfSecurity,...adminSecurity}]});
 const document = { openapi: '3.1.0', info: { title: 'HRPF API', version: '0.4.0', description: 'Backend foundations, managed public content and atomic publication controls. Fixed NGO page copy is bundled in the frontend and needs no publication approval. Operational member/case review workflows remain later milestones. Public reads are no-store and withdrawals take effect immediately. Browser clients use the frontend same-origin /api rewrite and credentials. All mutating auth/admin requests require the exact configured Origin and X-CSRF-Token. Production cookies use Secure, HttpOnly, SameSite=Lax, Path=/, no Domain; development names omit __Host-.' }, paths, components: { schemas, securitySchemes: {
   accessCookie: { type: 'apiKey', in: 'cookie', name: '__Host-hrpf-access' }, refreshCookie: { type: 'apiKey', in: 'cookie', name: '__Host-hrpf-refresh' },
   csrfCookie: { type: 'apiKey', in: 'cookie', name: '__Host-hrpf-csrf' }, csrfHeader: { type: 'apiKey', in: 'header', name: 'X-CSRF-Token' },

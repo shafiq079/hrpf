@@ -5,7 +5,7 @@ import { complaintInput, contactInput, membershipInput } from '../http/contracts
 import { ApiError, unavailable, validate } from '../http/errors.js';
 import { digest, encrypt, keyedHash } from '../security/crypto.js';
 import { requireMembershipPolicy, type FormsService, type FormPurpose } from './forms.js';
-import { MB } from './uploads.js';
+import { MB, COMPLAINT_MAX_BYTES } from './uploads.js';
 async function nextReference(kind: 'C' | 'A', tx: ClientSession) {
   const year = new Date().getUTCFullYear();
   const counter = await Counter.findOneAndUpdate({ key: `${kind}:${year}` }, { $inc: { sequence: 1 } }, { upsert: true, returnDocument: 'after', session: tx });
@@ -23,20 +23,21 @@ export function createSubmissions(env: Environment, forms: FormsService) {
   async function claimAssets(ids: string[], ticket: string, expected: 'complaint' | 'membership', entityId: Types.ObjectId, tx: ClientSession) {
     const values = [];
     for (const id of ids) {
-      const asset = await Asset.findOneAndUpdate({ _id: id, ticketHash: digest(ticket), purpose: expected, scanStatus: 'clean', deliveryType: 'authenticated', visibility: 'restricted', claimStatus: 'staged', stagingExpiresAt: { $gt: new Date() } }, { $set: { claimStatus: 'claimed', entityType: expected, entityId }, $unset: { stagingExpiresAt: 1 } }, { session: tx, returnDocument: 'after' });
+      const asset = await Asset.findOneAndUpdate({ _id: id, ticketHash: digest(ticket), purpose: expected, scanStatus: { $in: ['clean', 'type_checked'] }, deliveryType: 'authenticated', visibility: 'restricted', claimStatus: 'staged', stagingExpiresAt: { $gt: new Date() } }, { $set: { claimStatus: 'claimed', entityType: expected, entityId }, $unset: { stagingExpiresAt: 1 } }, { session: tx, returnDocument: 'after' });
       if (!asset) throw new ApiError(400, 'INVALID_ASSET', 'A required file is missing or belongs to another form session.');
       values.push({ assetId: asset._id, publicId: asset.publicId, resourceType: asset.resourceType, deliveryType: asset.deliveryType, format: asset.format, bytes: asset.bytes,
-        ...(asset.width ? { width: asset.width } : {}), ...(asset.height ? { height: asset.height } : {}), ...(asset.version ? { version: asset.version } : {}), sha256: asset.sha256 });
+        ...(asset.originalName ? { originalName: asset.originalName } : {}), ...(asset.width ? { width: asset.width } : {}), ...(asset.height ? { height: asset.height } : {}), ...(asset.version ? { version: asset.version } : {}), sha256: asset.sha256 });
     }
-    if (values.reduce((sum, v) => sum + v.bytes, 0) > 25 * MB) throw new ApiError(400, 'UPLOAD_LIMIT', 'The combined upload size is too large.');
+    if (values.reduce((sum, v) => sum + v.bytes, 0) > (expected === 'complaint' ? COMPLAINT_MAX_BYTES : 25 * MB)) throw new ApiError(400, 'UPLOAD_LIMIT', 'Complaint files must total at most 15 MB.');
     return values;
   }
   async function emails(entityType: string, entityId: string, recipient: string, reference: string, tx: ClientSession) {
-    await EmailOutbox.create([{ dedupeKey: `${entityType}:${entityId}:ack`, template: 'acknowledgement', entityType, entityId, recipient, reference }], { session: tx });
-    for (const address of env.ADMIN_NOTIFY_EMAILS) await EmailOutbox.create([{ dedupeKey: `${entityType}:${entityId}:admin:${digest(address)}`, template: 'admin-notification', entityType, entityId, recipient: address, reference }], { session: tx });
+    await EmailOutbox.create([{ dedupeKey: `${entityType}:${entityId}:ack`, template: entityType === 'Complaint' ? 'complaint-copy' : 'acknowledgement', entityType, entityId, recipient, reference }], { session: tx });
+    for (const address of new Set(env.ADMIN_NOTIFY_EMAILS)) await EmailOutbox.create([{ dedupeKey: `${entityType}:${entityId}:admin:${digest(address)}`, template: entityType === 'Complaint' ? 'complaint-admin-copy' : 'admin-notification', entityType, entityId, recipient: address, reference }], { session: tx });
   }
   async function checkRetry(value: string, expected: FormPurpose, key: string, hash: string, existing: { payloadHash: string } | null) {
-    const ticket = await forms.check(value, expected, true);
+    const ticket = existing ? await FormTicket.findOne({ tokenHash: digest(value), purpose: expected, consumedAt: { $exists: true }, submissionKey: key }) : await forms.check(value, expected, true);
+    if (!ticket) throw new ApiError(403, 'INVALID_FORM_TICKET', 'Use the original form session to retry this submission.');
     if (ticket.consumedAt && ticket.submissionKey !== key) throw new ApiError(403, 'INVALID_FORM_TICKET', 'The form session has already been used.');
     if (existing && (!ticket.consumedAt || ticket.submissionKey !== key)) throw new ApiError(403, 'INVALID_FORM_TICKET', 'Use the original form session to retry this submission.');
     if (existing && existing.payloadHash !== hash) throw new ApiError(409, 'IDEMPOTENCY_CONFLICT', 'This submission key was used for different form data.');
@@ -44,7 +45,7 @@ export function createSubmissions(env: Environment, forms: FormsService) {
   return {
     async complaint(body: unknown) {
       const input = validate(complaintInput, body), hash = payloadHash(input);
-      if (!env.DATA_ENCRYPTION_KEY || !env.CNIC_HASH_KEY) throw unavailable();
+      if (!env.DATA_ENCRYPTION_KEY || !env.CNIC_HASH_KEY || !env.ADMIN_NOTIFY_EMAILS.length) throw unavailable();
       const existing = await Complaint.findOne({ submissionKey: input.submissionKey });
       await checkRetry(input.ticket, 'complaint', input.submissionKey, hash, existing);
       if (existing) return { reference: existing.trackingId, status: 'received' };

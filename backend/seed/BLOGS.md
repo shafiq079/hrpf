@@ -28,10 +28,10 @@ npm run seed:blogs -- --apply
 
 The first command validates the bundled checksummed source text, images and PDFs
 offline. `--database` is a read-only plan. `--apply` requires privately configured
-MongoDB, authenticated Cloudinary delivery, ClamAV, an existing active content
+MongoDB, authenticated Cloudinary delivery, an existing active content
 administrator/editor identified by `SEED_ACTOR_EMAIL`, `NODE_ENV=development` and
 `CLOUDINARY_NAMESPACE=hrpf/dev`. Use the already working local configuration;
-never paste secret values into chat. ClamAV must still be running when uploading.
+never paste secret values into chat. No antivirus process is required.
 
 If the original homepage records have not been seeded, run the existing
 `npm run seed:home -- --apply` first. That command is create-only and preserves
@@ -58,7 +58,7 @@ Expected statuses: `would-enrich`, `enriched`, `already-enriched`,
 or `version-conflict`. Preservation is intentional; use the admin editor for
 records already revised. There is no force/reset option.
 
-All source bytes are verified and scanned before storage writes. An interrupted
+All source bytes are verified and inspected before storage writes. An interrupted
 run can reuse its own unexpired staged files. Each article commits details, media
 binding, checkpoint and audit atomically, preserving its original cover/date/text.
 Changes to the manifest after an earlier enrichment report source drift instead

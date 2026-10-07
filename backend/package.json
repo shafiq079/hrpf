@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
     "build": "tsc",
     "start": "node dist/server.js",
-    "test": "node --import tsx --test test/app.test.ts test/security.test.ts test/seed.test.ts",
+    "test": "node --import tsx --test test/app.test.ts test/security.test.ts test/seed.test.ts test/mail.test.ts",
     "check": "npm run typecheck && npm test && npm run seed:check && npm run seed:home && npm run seed:projects && npm run seed:blogs && npm run seed:gallery && npm run seed:documents && npm run seed:board && npm run build && npm run api:check",
     "setup": "node scripts/setup-env.mjs",
     "worker": "node dist/worker.js",

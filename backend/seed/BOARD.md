@@ -7,7 +7,7 @@ The private Word document itself is not bundled. Portrait mappings were checked
 against each drawing's position in the Word XML and visually inspected.
 
 Run `npm run seed:board` for offline verification, add `-- --database` for a
-read-only database plan, or `-- --apply` to scan, upload and publish the seven
+read-only database plan, or `-- --apply` to inspect, upload and publish the seven
 profiles using existing private development services. Existing source drafts can
 be enriched only while untouched, inactive and without a bound photograph.
 Completed imports and administrator content remain unchanged on reruns.

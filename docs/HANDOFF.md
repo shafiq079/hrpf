@@ -1,21 +1,34 @@
-# Current handoff: Board and Team on development
+# Current handoff: Complaint workflow on development
 
-Board of Directors and Our Team now have managed public listings, full person
-profiles at `/about/people/[slug]`, `/admin/board`, versioned draft CRUD and
-transactional scanned-photo publication/revocation. `npm run seed:board -- --apply`
-populates the seven supplied Word-document profiles and original embedded photos;
-completed imports and admin content are preserved on reruns. See
-`docs/BOARD_AND_TEAM.md` and `backend/seed/BOARD.md`.
+## Current deployment decision — 2026-10-07
 
-Progress Reports/Certificates remain implemented on development. The owner's
-read-only diagnostic found report PDF delivery 401 with a Cloudinary policy block
-and certificate image delivery 200. The account owner must check PDF delivery
-settings; no ClamAV restart or reseeding resolves that provider delivery policy.
+The owner explicitly removed ClamAV to support a Render free deployment. New
+uploads and seeds require type/signature/size validation, not antivirus scanning;
+existing clean assets remain compatible. HTTPS email via Resend and an embedded
+Mongo outbox processor remove the need for SMTP ports or a paid worker. See
+[RENDER_FREE.md](RENDER_FREE.md) for configuration, sleep/quota limits and owner
+acceptance. Earlier scanner/standalone-worker requirements below are historical
+and are superseded by this decision. Development remains the working branch.
 
-Main remains the merged Gallery release. Work stays on development until an
-explicit merge instruction. Next functional milestone: **complaint workflow**,
-then Urdu translation, then global future-content performance and production
-hardening. Permanent ClamAV hosting remains deferred.
+
+The user clarified that both the user and admin must receive a complete form copy
+by email. `/file-a-complaint` now submits real identity/contact/address, complaint,
+previous-proceedings and scanned private file data. Complete text/HTML copies with
+all uploaded files use the durable SMTP outbox. `/admin/complaints` provides private
+review, assignment, status/history, notes and per-copy delivery state/retry. See
+`COMPLAINTS.md` for exact fields, controls, private setup and Codespaces review.
+
+Progress Reports, Certificates, Board of Directors and Our Team were merged into
+main through PR #5 (`0b161e9`) with both CI jobs passing. Development began this
+milestone at the same merge. New complaint changes stay on development until an
+explicit new merge instruction. Next planned functional milestone: Urdu
+translation, then global future-content performance and production hardening.
+
+Actual email requires private SMTP and approved ADMIN_NOTIFY_EMAILS configuration,
+the separate worker and Turnstile frontend/backend configuration. No live external
+email or owner-provider write is claimed. The owner's existing Cloudinary PDF
+policy block remains unresolved at account level. Permanent ClamAV/worker hosting
+and global caching remain deferred.
 
 ---
 

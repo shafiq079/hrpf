@@ -191,6 +191,7 @@ export default function BoardConsole() {
           <Link href="/admin/board" className="text-teal-dark">
             Board and Team
           </Link>
+          <Link href="/admin/complaints" className="text-teal-dark">Complaints</Link>
         </nav>
       )}
       {user && (

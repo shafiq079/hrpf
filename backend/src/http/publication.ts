@@ -74,7 +74,7 @@ export function publicationRouter(auth: ReturnType<typeof createAuth>) {
             const fileId = input.assetId ?? row[spec.field]?.assetId;
             if (!fileId && !['board', 'blog', 'project', 'interview'].includes(kind)) throw new ApiError(400, 'REVIEW_REQUIRED', 'Upload and review a public release file first.');
             if (fileId) {
-              const asset = await Asset.findOne({ _id: fileId, deliveryType: 'authenticated', scanStatus: 'clean', purpose: 'content', $or: [{ claimStatus: 'staged', ownerId: principal.id, stagingExpiresAt: { $gt: new Date() } }, { claimStatus: 'claimed', entityType: spec.entity, entityId: row._id }] }).session(tx);
+              const asset = await Asset.findOne({ _id: fileId, deliveryType: 'authenticated', scanStatus: { $in: ['clean', 'type_checked'] }, purpose: 'content', $or: [{ claimStatus: 'staged', ownerId: principal.id, stagingExpiresAt: { $gt: new Date() } }, { claimStatus: 'claimed', entityType: spec.entity, entityId: row._id }] }).session(tx);
               if (!asset || (['board', 'gallery', 'blog', 'project', 'interview'].includes(kind) && !['jpg', 'jpeg', 'png', 'webp'].includes(asset.format))) throw new ApiError(400, 'INVALID_ASSET', 'Use your own clean staged file or the file already bound to this record.');
               await Asset.updateMany({ entityType: spec.entity, entityId: row._id, _id: { $ne: asset._id } }, { $set: { visibility: 'restricted' } }, { session: tx });
               asset.visibility = 'public'; asset.claimStatus = 'claimed'; asset.entityType = spec.entity; asset.entityId = row._id; asset.set('stagingExpiresAt', undefined);

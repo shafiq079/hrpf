@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import { Asset, AuditLog, Counter, GalleryItem, SourceImport, User } from '../domain/models.js';
 import { can } from '../security/permissions.js';
 import { digest } from '../security/crypto.js';
-import { inspectUpload, type Scanner, type UploadProvider } from '../services/uploads.js';
+import { inspectUpload, type UploadProvider } from '../services/uploads.js';
 import { bindContentMedia } from '../services/project-media.js';
 import { galleryInput } from '../http/media-content.js';
 import { verifySources } from './files.js';
@@ -152,24 +152,22 @@ export async function applyGallerySeed(options: {
   actorId: string;
   namespace: string;
   provider: UploadProvider;
-  scanner: Scanner;
   report?: (result: GallerySeedResult) => void;
   phase?: (phase: string) => void;
-  progress?: (progress: { phase: 'scan'; completed: number; total: number; key: string }) => void;
+  progress?: (progress: { phase: 'validate'; completed: number; total: number; key: string }) => void;
 }) {
   const {
     manifest,
     files,
     actorId,
     namespace,
-    provider,
-    scanner
+    provider
   } = options;
   if (namespace !== 'hrpf/dev') throw new Error('Gallery archive setup is limited to hrpf/dev.');
   await actorAllowed(actorId);
-  options.phase?.('scan');
-  // Verify and scan the complete batch before any DB or provider write.
-  let scanned = 0;
+  options.phase?.('validate');
+  // Verify and inspect the complete batch before any DB or provider write.
+  let inspected = 0;
   for (const record of manifest.records) {
     const source = manifest.files.find(file => record.files.includes(file.id) && file.id.endsWith(':webp'));
     const bytes = source && files.get(source.id);
@@ -180,13 +178,12 @@ export async function applyGallerySeed(options: {
       filename: source.path,
       mime: 'image/webp'
     });
-    if ((await scanner(bytes)) !== 'clean') throw new Error('Gallery scan failed.');
-    options.progress?.({ phase: 'scan', completed: ++scanned, total: manifest.records.length, key: record.key });
+    options.progress?.({ phase: 'validate', completed: ++inspected, total: manifest.records.length, key: record.key });
   }
   const results: GallerySeedResult[] = [];
   for (const record of orderedRecords(manifest)) {
     options.phase?.('database');
-    // A full-archive scan can take time; permission may have changed meanwhile.
+    // A full-archive validation can take time; permission may have changed meanwhile.
     await actorAllowed(actorId);
     const prior = await checkpointResult(manifest, record);
     let result: GallerySeedResult;
@@ -204,7 +201,7 @@ export async function applyGallerySeed(options: {
           entityId: seedId(record.key),
           sha256: source.sha256,
           purpose: 'content',
-          scanStatus: 'clean',
+          scanStatus: { $in: ['clean', 'type_checked'] },
           claimStatus: 'staged',
           stagingExpiresAt: {
             $gt: new Date()
@@ -224,7 +221,7 @@ export async function applyGallerySeed(options: {
               ownerId: actorId,
               purpose: 'content',
               visibility: 'restricted',
-              scanStatus: 'clean',
+              scanStatus: 'type_checked',
               entityType: 'GalleryItem',
               entityId: seedId(record.key),
               stagingExpiresAt: new Date(Date.now() + 86400000)

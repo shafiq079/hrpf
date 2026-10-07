@@ -15,6 +15,7 @@ export const complaintInput = z.object({
   decisionDocumentIds: z.array(id).max(3).default([]), attachmentIds: z.array(id).max(3).default([]),
 }).strict().superRefine((value, ctx) => {
   if (value.priorProceedings && !value.priorProceedingsDetails) ctx.addIssue({ code: 'custom', path: ['priorProceedingsDetails'], message: 'Previous proceedings details are required.' });
+  if (!value.priorProceedings && (value.priorProceedingsDetails || value.decisionDocumentIds.length)) ctx.addIssue({ code: 'custom', path: ['priorProceedings'], message: 'Previous proceedings must be selected when providing their details or decision documents.' });
   const ids = [value.cnicImageId, value.complaintDocumentId, ...value.decisionDocumentIds, ...value.attachmentIds];
   if (ids.length > 5 || new Set(ids).size !== ids.length) ctx.addIssue({ code: 'custom', path: ['attachmentIds'], message: 'At most five distinct files are allowed.' });
 });

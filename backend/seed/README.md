@@ -80,7 +80,7 @@ recipients or membership policy are seeded.
 
 ## Remaining release work
 
-Candidates are not uploaded or approved. Apply signature, size and malware checks
+Candidates are not uploaded or approved. Apply signature and size checks
 before provider storage, plus privacy/release review. Public workflows must require
 reviewed clean assets. Gallery document validation rejects publication without a
 reviewed asset or while a duplicate link remains; do not publish by direct updates.

@@ -279,7 +279,7 @@ export default function BlogEditor({
         setReviewed(false);
       }
       setNotice(
-        "Files uploaded and scanned. Save the blog to keep them in your draft.",
+        "Files uploaded and checked. Save the blog to keep them in your draft.",
       );
     } catch (failure) {
       setError(

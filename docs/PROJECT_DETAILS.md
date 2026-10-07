@@ -48,7 +48,7 @@ Saving edits to a published project returns it to draft, following the existing
 publication policy. Save and publish releases the reviewed version. A failed
 publication leaves the successfully saved draft available for retry.
 
-Uploads use the existing ClamAV scanner and authenticated Cloudinary storage.
+Uploads use type, signature and size inspection and authenticated Cloudinary storage.
 Owned staged files are bound transactionally when saving. All project files
 remain private in drafts. Publishing releases only clean bound files; removed
 files, withdrawals, draft edits and deletions revoke public access. Foreign,
