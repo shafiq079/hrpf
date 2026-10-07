@@ -25,15 +25,17 @@ function FieldShell({
 }: FieldShellProps) {
   const helperId = helper ? `${id}-helper` : undefined;
   const errorId = error ? `${id}-error` : undefined;
-  const describedBy = [helperId, errorId].filter(Boolean).join(" ") || undefined;
+  const describedBy =
+    [helperId, errorId].filter(Boolean).join(" ") || undefined;
 
   return (
     <div>
-      <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-text">
+      <label
+        htmlFor={id}
+        className="mb-1.5 block text-sm font-medium text-text"
+      >
         {label}
-        {required && (
-          <span className="text-red-dark"> *</span>
-        )}
+        {required && <span className="text-red-dark"> *</span>}
         {required && <span className="sr-only"> (required)</span>}
       </label>
       {children(describedBy, Boolean(error))}
@@ -68,6 +70,7 @@ interface TextFieldProps {
   error?: string;
   placeholder?: string;
   autoComplete?: string;
+  maxLength?: number;
 }
 
 export function TextField({
@@ -82,9 +85,16 @@ export function TextField({
   error,
   placeholder,
   autoComplete,
+  maxLength,
 }: TextFieldProps) {
   return (
-    <FieldShell id={id} label={label} required={required} helper={helper} error={error}>
+    <FieldShell
+      id={id}
+      label={label}
+      required={required}
+      helper={helper}
+      error={error}
+    >
       {(describedBy, invalid) => (
         <input
           id={id}
@@ -95,6 +105,7 @@ export function TextField({
           required={required}
           placeholder={placeholder}
           autoComplete={autoComplete}
+          maxLength={maxLength}
           aria-invalid={invalid}
           aria-describedby={describedBy}
           className={`${controlClasses} ${invalid ? borderErr : borderOk}`}
@@ -115,6 +126,7 @@ interface TextareaFieldProps {
   error?: string;
   placeholder?: string;
   rows?: number;
+  maxLength?: number;
 }
 
 export function TextareaField({
@@ -128,9 +140,16 @@ export function TextareaField({
   error,
   placeholder,
   rows = 5,
+  maxLength,
 }: TextareaFieldProps) {
   return (
-    <FieldShell id={id} label={label} required={required} helper={helper} error={error}>
+    <FieldShell
+      id={id}
+      label={label}
+      required={required}
+      helper={helper}
+      error={error}
+    >
       {(describedBy, invalid) => (
         <textarea
           id={id}
@@ -140,6 +159,7 @@ export function TextareaField({
           required={required}
           placeholder={placeholder}
           rows={rows}
+          maxLength={maxLength}
           aria-invalid={invalid}
           aria-describedby={describedBy}
           className={`${controlClasses} resize-y ${invalid ? borderErr : borderOk}`}
@@ -175,7 +195,13 @@ export function SelectField({
   placeholder = "Please select",
 }: SelectFieldProps) {
   return (
-    <FieldShell id={id} label={label} required={required} helper={helper} error={error}>
+    <FieldShell
+      id={id}
+      label={label}
+      required={required}
+      helper={helper}
+      error={error}
+    >
       {(describedBy, invalid) => (
         <select
           id={id}
@@ -267,7 +293,10 @@ export function FileUploadField({
   const helperId = helper ? `${id}-helper` : undefined;
   return (
     <div>
-      <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-text">
+      <label
+        htmlFor={id}
+        className="mb-1.5 block text-sm font-medium text-text"
+      >
         {label}
       </label>
       <input
@@ -275,9 +304,7 @@ export function FileUploadField({
         name={name ?? id}
         type="file"
         aria-describedby={helperId}
-        onChange={(event) =>
-          onChange?.(event.target.files?.[0]?.name ?? null)
-        }
+        onChange={(event) => onChange?.(event.target.files?.[0]?.name ?? null)}
         className="block w-full text-sm text-muted file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-navy file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-navy-dark"
       />
       {helper && (

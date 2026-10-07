@@ -124,3 +124,11 @@ Admin scope includes gallery image AND video management, alongside users,
 memberships, complaints, board, blogs, documents, settings and inboxes.
 Restoring the prototype also restores its original placeholder text/form behavior;
 this rollback is not a claim that those flows are connected or production-ready.
+
+
+## Complaint email and review — 2026-10-07
+
+- Owner explicitly chose email and complete filled-form copies to both user and admin. Include every uploaded file as a private email attachment; include full CNIC only within authorised email/detail rendering.
+- Reuse M2 transaction, encryption, scan/ticket and outbox foundations. Do not seed fictitious complaints into owner services.
+- Require explicit consent and approved admin recipients; cap aggregate input files at 15 MB for email encoding headroom.
+- Retain the distinct internal HRPF feedback prototype. Complaint review is versioned/audited with internal notes; automatic status emails and supplementary-information portal are separate future scope.

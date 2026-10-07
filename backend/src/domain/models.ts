@@ -13,7 +13,7 @@ export const assetRefSchema = new Schema({
   assetId: { ...oid('Asset'), required: true }, publicId: requiredText(300),
   resourceType: { type: String, enum: ['image', 'raw'], required: true },
   deliveryType: { type: String, enum: ['authenticated', 'upload'], required: true },
-  format: requiredText(20), bytes: { type: Number, required: true, min: 1 },
+  format: requiredText(20), bytes: { type: Number, required: true, min: 1 }, originalName: text(200),
   width: Number, height: Number, version: Number, sha256: requiredText(64),
 }, { _id: false, strict: 'throw' });
 const personal = {
@@ -177,14 +177,15 @@ export const AuditLog = mongoose.model('AuditLog', new Schema({
 export const Asset = mongoose.model('Asset', new Schema({
   publicId: { ...requiredText(300), unique: true }, resourceType: { type: String, enum: ['image', 'raw'], required: true },
   deliveryType: { type: String, enum: ['authenticated', 'upload'], required: true }, format: requiredText(20), bytes: { type: Number, min: 1, required: true },
-  width: Number, height: Number, version: Number, sha256: requiredText(64), ownerId: oid('User'), ticketHash: { type: String, select: false },
+  width: Number, height: Number, version: Number, sha256: requiredText(64), originalName: text(200), ownerId: oid('User'), ticketHash: { type: String, select: false },
   purpose: { type: String, enum: ['complaint', 'membership', 'content', 'certificate'], required: true },
   visibility: { type: String, enum: ['public', 'restricted'], default: 'restricted' },
   scanStatus: { type: String, enum: ['clean', 'quarantined', 'infected'], default: 'quarantined' },
   claimStatus: { type: String, enum: ['staged', 'claimed', 'deleting'], default: 'staged' }, entityType: text(100), entityId: oid(''),
-  stagingExpiresAt: Date,
+  stagingExpiresAt: Date, uploadKey: { type: String, maxlength: 64, select: false },
 }, options));
 Asset.schema.index({ claimStatus: 1, stagingExpiresAt: 1 });
+Asset.schema.index({ ticketHash: 1, uploadKey: 1 }, { unique: true, partialFilterExpression: { ticketHash: { $type: 'string' }, uploadKey: { $type: 'string' } } });
 export const FormTicket = mongoose.model('FormTicket', new Schema({
   tokenHash: { type: String, required: true, unique: true, select: false },
   purpose: { type: String, enum: ['complaint', 'membership', 'contact'], required: true },
@@ -200,7 +201,7 @@ export const SourceImport = mongoose.model('SourceImport', new Schema({
   reviewTasks: [String],
 }, { timestamps: { createdAt: true, updatedAt: false }, strict: 'throw' }));
 export const EmailOutbox = mongoose.model('EmailOutbox', new Schema({
-  dedupeKey: { ...requiredText(200), unique: true }, template: { type: String, enum: ['acknowledgement', 'admin-notification', 'password-reset'], required: true },
+  dedupeKey: { ...requiredText(200), unique: true }, template: { type: String, enum: ['acknowledgement', 'admin-notification', 'password-reset', 'complaint-copy', 'complaint-admin-copy'], required: true },
   entityType: requiredText(100), entityId: text(100), recipient: { ...requiredText(254), select: false },
   reference: text(100), encryptedToken: { type: String, select: false },
   status: { type: String, enum: ['pending', 'sending', 'sent', 'failed'], default: 'pending' },

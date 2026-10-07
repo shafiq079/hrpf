@@ -53,12 +53,12 @@ export default function ReportViolationPage() {
                   Before you begin
                 </h2>
                 <ul className="mt-3 space-y-2 text-sm leading-relaxed text-muted">
-                  <li>You may report anonymously if you prefer.</li>
+                  <li>Have your CNIC picture and written complaint ready.</li>
                   <li>
-                    Share only as much detail as you are comfortable providing.
+                    Include previous proceedings and decisions where applicable.
                   </li>
                   <li>
-                    HRPF may refer your concern to another qualified service.
+                    Your complete form and uploaded files will be emailed to you and HRPF’s administrator.
                   </li>
                   <li>
                     Submitting a report does not create a lawyer-client

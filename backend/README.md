@@ -249,3 +249,14 @@ Administrators manage profiles at `/admin/board`. See `docs/BOARD_AND_TEAM.md`.
 scans and publishes seven supplied profiles with existing private dev services.
 Reruns preserve completed releases and admin changes. Future profiles use the
 same generic editor and public endpoints.
+
+
+### Complaint intake and complete email copies
+
+`/file-a-complaint` now uses real complaint intake; `/admin/complaints` provides
+private review and email delivery state. Configure private Turnstile, SMTP and
+ADMIN_NOTIFY_EMAILS values, plus the matching public frontend widget site key,
+then run `npm run worker:dev` separately from the API/frontend. See
+[complaint workflow](../docs/COMPLAINTS.md) for all fields, limits, configuration
+and verification. Each complaint email contains the full form and all submitted
+private files. Receipt confirms storage/queued mail rather than inbox delivery.

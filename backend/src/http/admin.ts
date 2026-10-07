@@ -69,6 +69,9 @@ export function adminRouter(auth: ReturnType<typeof createAuth>, uploads: Upload
     const id = validate(objectId, req.params.id);
     validate(z.object({}).strict(), req.body);
     await mongoose.connection.transaction(async tx => {
+      await Counter.findOneAndUpdate({ key: 'security:user-governance' }, { $inc: { sequence: 1 } }, { session: tx, upsert: true });
+      const actor = await User.findOne({ _id: (res.locals.principal as Principal).id, active: true }).session(tx);
+      if (!actor || !can(actor.role, 'outbox')) throw new ApiError(403, 'FORBIDDEN', 'You do not have permission to retry email.');
       const entry = await EmailOutbox.findOneAndUpdate({ _id: id, status: 'failed' }, { $set: { status: 'pending', attempts: 0, nextAttemptAt: new Date() }, $unset: { errorCode: 1 } }, { session: tx });
       if (!entry) throw new ApiError(409, 'OUTBOX_NOT_RETRYABLE', 'Only failed email entries can be retried.');
       await AuditLog.create([{ actorId: (res.locals.principal as Principal).id, action: 'outbox.retry', entityType: 'EmailOutbox', entityId: entry.id, outcome: 'success', requestId: res.locals.requestId }], { session: tx });

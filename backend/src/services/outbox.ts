@@ -5,7 +5,9 @@ import type { Environment } from '../config/env.js';
 import { EmailOutbox, User } from '../domain/models.js';
 import { decrypt, digest, token } from '../security/crypto.js';
 import { unavailable } from '../http/errors.js';
-export type Mail = { to: string; subject: string; text: string; messageId: string };
+import { cloudinaryProvider, type UploadProvider } from './uploads.js';
+import { complaintMail, type ComplaintAttachment } from './complaint-mail.js';
+export type Mail = { to: string; subject: string; text: string; html?: string; attachments?: ComplaintAttachment[]; messageId: string };
 export type MailSender = (mail: Mail) => Promise<string>;
 export function smtpSender(env: Environment): MailSender {
   if (!env.SMTP_HOST || !env.MAIL_FROM) return async () => { throw unavailable(); };
@@ -17,14 +19,14 @@ export function smtpSender(env: Environment): MailSender {
   });
   return async mail => { const result = await transport.sendMail({ ...mail, from: env.MAIL_FROM }); return String(result.messageId); };
 }
-export function createOutbox(env: Environment, send: MailSender) {
+export function createOutbox(env: Environment, send: MailSender, provider: UploadProvider = cloudinaryProvider(env)) {
   return {
     async deliver(id: string) {
       const leaseToken = token(), now = new Date();
       const entry = await EmailOutbox.findOneAndUpdate({ _id: id,
         $or: [{ status: { $in: ['pending', 'failed'] }, nextAttemptAt: { $lte: now } }, { status: 'sending', leaseUntil: { $lte: now } }],
         attempts: { $lt: 8 },
-      }, { $set: { status: 'sending', leaseToken, leaseUntil: new Date(Date.now() + 60000) }, $inc: { attempts: 1 } }, { returnDocument: 'after' }).select('+recipient +encryptedToken');
+      }, { $set: { status: 'sending', leaseToken, leaseUntil: new Date(Date.now() + 180000) }, $inc: { attempts: 1 } }, { returnDocument: 'after' }).select('+recipient +encryptedToken');
       if (!entry) return;
       try {
         let subject = 'HRPF: submission received', text = `HRPF has received your submission. Reference: ${entry.reference}. This confirms receipt only; review is pending.`;
@@ -44,7 +46,8 @@ export function createOutbox(env: Environment, send: MailSender) {
           text = `Reset your HRPF administrator password within 30 minutes: ${env.FRONTEND_URL}/admin/reset-password#token=${encodeURIComponent(value)}\nIf you did not request this, ignore the message.`;
         }
         const host = env.FRONTEND_URL ? new URL(env.FRONTEND_URL).hostname : 'hrpf.local';
-        const providerId = await send({ to: entry.recipient, subject, text, messageId: `<hrpf-${entry.id}@${host}>` });
+        const complete = ['complaint-copy', 'complaint-admin-copy'].includes(entry.template) ? await complaintMail(env, provider, entry) : {};
+        const providerId = await send({ to: entry.recipient, subject, text, ...complete, messageId: `<hrpf-${entry.id}@${host}>` });
         await EmailOutbox.updateOne({ _id: id, leaseToken }, { $set: { status: 'sent', sentAt: new Date(), providerId }, $unset: { leaseUntil: 1, leaseToken: 1, errorCode: 1, encryptedToken: 1 } });
       } catch {
         await EmailOutbox.updateOne({ _id: id, leaseToken }, { $set: { status: 'failed', errorCode: 'DELIVERY_UNAVAILABLE', nextAttemptAt: new Date(Date.now() + Math.min(3600000, 1000 * 2 ** entry.attempts)) }, $unset: { leaseUntil: 1, leaseToken: 1 } });
@@ -53,7 +56,7 @@ export function createOutbox(env: Environment, send: MailSender) {
     },
   };
 }
-export async function startOutboxWorker(env: Environment, send: MailSender, prune: () => Promise<void>) {
+export async function startOutboxWorker(env: Environment, send: MailSender, prune: () => Promise<void>, provider: UploadProvider = cloudinaryProvider(env)) {
   const prefix = env.CLOUDINARY_NAMESPACE.replace('/', '-');
   // BullMQ 6's ESM entry requires constructed clients. Node-redis also keeps TLS,
   // credentials and URL parsing consistent with the API's Redis connection.
@@ -62,7 +65,7 @@ export async function startOutboxWorker(env: Environment, send: MailSender, prun
   queueRedis.on('error', () => {}); workerRedis.on('error', () => {});
   await Promise.all([queueRedis.connect(), workerRedis.connect()]);
   const queue = new Queue('email-outbox', { connection: queueRedis, prefix });
-  const service = createOutbox(env, send);
+  const service = createOutbox(env, send, provider);
   const worker = new Worker('email-outbox', async job => service.deliver(String(job.data.id)), { connection: workerRedis, prefix, concurrency: 2 });
   queue.on('error', () => {}); worker.on('error', () => {});
   let closing = false, running = false, lastPrune = 0;

@@ -1,466 +1,583 @@
 "use client";
-
-import { useState } from "react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import {
-  CheckboxField,
-  FileUploadField,
-  SelectField,
-  TextField,
-  TextareaField,
-} from "./fields";
+import { useCallback, useRef, useState, type FormEvent } from "react";
+import Link from "next/link";
+import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
+import { TextField, TextareaField, SelectField, CheckboxField } from "./fields";
 import FormMessage from "./FormMessage";
-import SubmitButton from "./SubmitButton";
-import { isValidEmail, sampleReference, simulateSubmit } from "@/lib/forms";
+import ComplaintVerification from "./ComplaintVerification";
+import {
+  newComplaintAttempt,
+  submitComplaint,
+  validateComplaintFiles,
+  type ComplaintData,
+  type ComplaintFiles,
+} from "@/lib/complaint-submission";
 
-/*
-  Multi-step "Report a Human-Rights Concern" form.
-
-  This is UI only. No files are uploaded and no data is transmitted or stored.
-  A production implementation MUST provide a secure, confidential backend with
-  strict access controls, encryption in transit and at rest, and a documented
-  handling process. Do NOT persist report data in localStorage.
-*/
-
-interface ReportData {
-  fullName: string;
-  anonymous: boolean;
-  email: string;
-  phone: string;
-  preferredContact: string;
-  country: string;
-  location: string;
-  incidentDate: string;
-  concernType: string;
-  urgency: string;
-  description: string;
-  affected: string;
-  responsible: string;
-  witness: string;
-  additionalContext: string;
-  evidenceFile: string | null;
-  evidenceDescription: string;
-  referenceNumber: string;
-  confirmAccurate: boolean;
-  understandNoRelationship: boolean;
-  understandReferral: boolean;
-  permissionToContact: boolean;
-}
-
-const initialData: ReportData = {
-  fullName: "",
-  anonymous: false,
+const initial: ComplaintData = {
+  name: "",
+  fatherName: "",
+  cnic: "",
   email: "",
   phone: "",
-  preferredContact: "",
-  country: "",
-  location: "",
-  incidentDate: "",
-  concernType: "",
-  urgency: "",
+  province: "",
+  district: "",
+  address: "",
+  category: "",
   description: "",
-  affected: "",
-  responsible: "",
-  witness: "",
-  additionalContext: "",
-  evidenceFile: null,
-  evidenceDescription: "",
-  referenceNumber: "",
-  confirmAccurate: false,
-  understandNoRelationship: false,
-  understandReferral: false,
-  permissionToContact: false,
+  priorProceedings: false,
+  priorProceedingsDetails: "",
+  consent: false,
 };
-
-const steps = [
-  "About You",
-  "Incident Details",
-  "People Involved",
-  "Supporting Evidence",
-  "Consent & Review",
+const initialFiles: ComplaintFiles = {
+  cnicImage: null,
+  complaintDocument: null,
+  decisions: [],
+  evidence: [],
+};
+const steps = ["Your details", "Complaint and documents", "Review and submit"];
+const provinces = [
+  "Punjab",
+  "Sindh",
+  "Khyber Pakhtunkhwa",
+  "Balochistan",
+  "Islamabad Capital Territory",
+  "Gilgit-Baltistan",
+  "Azad Jammu and Kashmir",
 ];
-
-const concernTypes = [
-  "Discrimination",
+const categories = [
   "Access to justice",
+  "Discrimination",
   "Child protection",
-  "Women's rights",
+  "Women’s rights",
   "Minority rights",
-  "Privacy or digital rights",
+  "Public services",
+  "Environmental concern",
   "Other",
 ];
-
-const urgencyLevels = ["Low", "Medium", "High"];
-const contactMethods = ["Email", "Phone", "No preference"];
-
-type Errors = Partial<Record<keyof ReportData, string>>;
-
+const labels: Record<keyof ComplaintData, string> = {
+  name: "Full name",
+  fatherName: "Father’s name",
+  cnic: "CNIC number",
+  email: "Email",
+  phone: "Phone",
+  province: "Province / region",
+  district: "District",
+  address: "Address",
+  category: "Complaint category",
+  description: "Complaint details",
+  priorProceedings: "Previously handled by another institution",
+  priorProceedingsDetails: "Previous proceedings details",
+  consent: "Consent to submit and receive email copies",
+};
+const button =
+  "inline-flex items-center gap-2 rounded-md border border-border px-4 py-2.5 text-sm font-semibold text-navy hover:bg-navy/5 disabled:opacity-50 disabled:cursor-not-allowed";
+function FileChoice({
+  id,
+  label,
+  required,
+  image,
+  multiple,
+  onChange,
+  names,
+}: {
+  id: string;
+  label: string;
+  required?: boolean;
+  image?: boolean;
+  multiple?: boolean;
+  onChange: (files: File[]) => void;
+  names: string[];
+}) {
+  return (
+    <div>
+      <label htmlFor={id} className="block text-sm font-medium text-text">
+        {label}
+        {required ? " *" : " (optional)"}
+      </label>
+      <input
+        id={id}
+        type="file"
+        required={required && names.length === 0}
+        multiple={multiple}
+        accept={image ? ".jpg,.jpeg,.png,.webp" : ".jpg,.jpeg,.png,.webp,.pdf"}
+        onChange={(e) => onChange(Array.from(e.target.files ?? []))}
+        className="mt-2 block w-full text-sm text-muted file:mr-3 file:rounded-md file:border-0 file:bg-navy file:px-4 file:py-2 file:font-semibold file:text-white"
+      />
+      <p className="mt-1 text-xs text-muted">
+        {image
+          ? "JPG, PNG or WebP. Maximum 5 MB."
+          : "JPG, PNG, WebP or PDF. Images up to 5 MB; PDFs up to 10 MB."}
+      </p>
+      {names.length > 0 && (
+        <ul className="mt-2 break-all text-xs text-muted">
+          {names.map((name, index) => (
+            <li key={index}>{name}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 export default function ReportViolationForm() {
-  const [step, setStep] = useState(0);
-  const [data, setData] = useState<ReportData>(initialData);
-  const [errors, setErrors] = useState<Errors>({});
-  const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [reference, setReference] = useState("");
-
-  const update = <K extends keyof ReportData>(key: K, value: ReportData[K]) => {
-    setData((prev) => ({ ...prev, [key]: value }));
+  const [data, setData] = useState<ComplaintData>(initial),
+    [files, setFiles] = useState<ComplaintFiles>(initialFiles);
+  const [step, setStep] = useState(0),
+    [error, setError] = useState(""),
+    [busy, setBusy] = useState(false),
+    [progress, setProgress] = useState(""),
+    [reference, setReference] = useState(""),
+    [locked, setLocked] = useState(false),
+    [requestStarted, setRequestStarted] = useState(false),
+    [botToken, setBotToken] = useState("");
+  const attempt = useRef(newComplaintAttempt()),
+    submitting = useRef(false),
+    heading = useRef<HTMLHeadingElement>(null);
+  const tokenChanged = useCallback((token: string) => setBotToken(token), []);
+  const verificationError = useCallback(
+    (message: string) => setError(message),
+    [],
+  );
+  const change = (key: keyof ComplaintData, value: string | boolean) => {
+    setData((previous) => ({ ...previous, [key]: value }));
+    setError("");
   };
-
-  const validateStep = (current: number): Errors => {
-    const next: Errors = {};
-    if (current === 0) {
-      if (!data.anonymous) {
-        if (!data.fullName.trim()) next.fullName = "Please enter your name or choose to report anonymously.";
-        if (!data.email.trim() && !data.phone.trim()) {
-          next.email = "Provide an email or phone number so we can respond.";
-        } else if (data.email.trim() && !isValidEmail(data.email)) {
-          next.email = "Please enter a valid email address.";
-        }
-      }
-    }
-    if (current === 1) {
-      if (!data.country.trim()) next.country = "Please enter a country.";
-      if (!data.concernType) next.concernType = "Please select a type of concern.";
-      if (!data.description.trim() || data.description.trim().length < 20) {
-        next.description = "Please provide a description (at least 20 characters).";
-      }
-    }
-    if (current === 4) {
-      if (!data.confirmAccurate) next.confirmAccurate = "Please confirm the information is accurate.";
-      if (!data.understandNoRelationship) next.understandNoRelationship = "Please acknowledge this statement.";
-      if (!data.understandReferral) next.understandReferral = "Please acknowledge this statement.";
-      if (!data.anonymous && !data.permissionToContact) {
-        next.permissionToContact = "Please give permission to contact you, or report anonymously.";
-      }
-    }
-    return next;
-  };
-
-  const goNext = () => {
-    const stepErrors = validateStep(step);
-    setErrors(stepErrors);
-    if (Object.keys(stepErrors).length === 0) {
-      setStep((s) => Math.min(s + 1, steps.length - 1));
-    }
-  };
-
-  const goBack = () => {
-    setErrors({});
-    setStep((s) => Math.max(s - 1, 0));
-  };
-
-  const handleSubmit = async (event: React.FormEvent) => {
+  function next(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const stepErrors = validateStep(4);
-    setErrors(stepErrors);
-    if (Object.keys(stepErrors).length > 0) return;
-    setLoading(true);
-    await simulateSubmit();
-    setLoading(false);
-    setReference(sampleReference("HRPF"));
-    setSubmitted(true);
-  };
-
-  if (submitted) {
+    setError("");
+    if (step === 0 && !/^(?:\d{13}|\d{5}-\d{7}-\d)$/.test(data.cnic.trim())) {
+      setError("Enter your 13-digit CNIC number, with or without hyphens.");
+      return;
+    }
+    if (step === 0 && !/^\+?[0-9 ()-]{7,30}$/.test(data.phone.trim())) {
+      setError("Enter a valid phone number.");
+      return;
+    }
+    if (step === 1) {
+      const issue = validateComplaintFiles(files);
+      if (issue) {
+        setError(issue);
+        return;
+      }
+    }
+    setStep((previous) => Math.min(2, previous + 1));
+    requestAnimationFrame(() => heading.current?.focus());
+  }
+  async function send(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (submitting.current) return;
+    if (!data.consent) {
+      setError("Please confirm your consent before submitting.");
+      return;
+    }
+    if (!attempt.current.ticket && !botToken) {
+      setError("Complete the security verification before submitting.");
+      return;
+    }
+    submitting.current = true;
+    setBusy(true);
+    setLocked(true);
+    setError("");
+    try {
+      const result = await submitComplaint(
+        data,
+        files,
+        attempt.current,
+        botToken,
+        setProgress,
+      );
+      setReference(result.reference);
+      setData(initial);
+      setFiles(initialFiles);
+      attempt.current = newComplaintAttempt();
+    } catch (failure) {
+      setRequestStarted(attempt.current.submissionStarted);
+      setError(
+        failure instanceof Error
+          ? failure.message
+          : "Submission could not be confirmed. Retry this same submission.",
+      );
+    } finally {
+      submitting.current = false;
+      setBusy(false);
+      setProgress("");
+    }
+  }
+  if (reference)
     return (
-      <FormMessage type="success" title="Thank you — your report has been received">
-        <p>
-          Your information has been recorded for this demonstration only. A sample
-          reference number is shown below.
-        </p>
-        <p className="mt-2 font-mono text-sm font-semibold text-navy">
-          Reference: {reference}
+      <FormMessage type="success" title="Your complaint has been received">
+        <p className="mt-2 font-mono font-semibold">Reference: {reference}</p>
+        <p className="mt-3">
+          A complete copy of your submitted form and files has been queued for
+          email to you and HRPF’s administrator. Email delivery may take a
+          little time.
         </p>
         <p className="mt-2">
-          Submitting a report does not guarantee investigation, representation or a
-          specific outcome. If someone is in immediate danger, contact your local
-          emergency service.
+          Keep this reference for follow-up. This confirms receipt; review is
+          pending.
         </p>
       </FormMessage>
     );
-  }
-
+  const fileNames = [
+    ...(files.cnicImage ? [["CNIC proof", files.cnicImage.name]] : []),
+    ...(files.complaintDocument
+      ? [["Complaint document", files.complaintDocument.name]]
+      : []),
+    ...files.decisions.map((file) => ["Previous decision", file.name]),
+    ...files.evidence.map((file) => ["Supporting evidence", file.name]),
+  ];
   return (
-    <form onSubmit={handleSubmit} noValidate>
-      {/* Progress indicator */}
-      <ol className="mb-8 flex flex-wrap gap-2" aria-label="Progress">
-        {steps.map((label, index) => {
-          const state =
-            index < step ? "done" : index === step ? "current" : "upcoming";
-          return (
-            <li key={label} className="flex-1 min-w-[100px]">
-              <div
-                className={`flex items-center gap-2 rounded-md border px-3 py-2 text-xs font-medium ${
-                  state === "current"
-                    ? "border-teal bg-teal/10 text-teal-dark"
-                    : state === "done"
-                      ? "border-border bg-white text-navy"
-                      : "border-border bg-white text-muted"
-                }`}
-                aria-current={state === "current" ? "step" : undefined}
-              >
-                <span
-                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] ${
-                    state === "upcoming"
-                      ? "bg-soft-gray text-muted"
-                      : "bg-teal text-white"
-                  }`}
-                >
-                  {index + 1}
-                </span>
-                <span className="truncate">{label}</span>
-              </div>
-            </li>
-          );
-        })}
+    <form onSubmit={step === 2 ? send : next}>
+      <ol
+        className="mb-8 grid gap-2 sm:grid-cols-3"
+        aria-label="Complaint form progress"
+      >
+        {steps.map((title, index) => (
+          <li
+            key={title}
+            aria-current={index === step ? "step" : undefined}
+            className={`flex items-center gap-2 rounded-md border px-3 py-3 text-sm ${step === index ? "border-teal bg-teal/10 font-semibold text-teal-dark" : "border-border text-muted"}`}
+          >
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-navy text-xs text-white">
+              {index < step ? <CheckCircle2 className="h-4 w-4" /> : index + 1}
+            </span>
+            {title}
+          </li>
+        ))}
       </ol>
-
-      <h2 className="font-serif text-xl font-semibold text-navy">
-        Step {step + 1}: {steps[step]}
+      <h2
+        ref={heading}
+        tabIndex={-1}
+        className="font-serif text-xl font-semibold text-navy"
+      >
+        {steps[step]}
       </h2>
-
-      <div className="mt-5 space-y-5">
+      <p className="mt-2 text-sm text-muted">
+        Required fields are marked *. Your form details and uploaded files will
+        be emailed to you and HRPF’s administrator.
+      </p>
+      {error && (
+        <div className="mt-5">
+          <FormMessage type="error" title="Please check your submission">
+            {error}
+          </FormMessage>
+        </div>
+      )}
+      <fieldset disabled={busy || locked} className="mt-6 space-y-5">
         {step === 0 && (
           <>
-            <TextField
-              id="fullName"
-              label="Full name"
-              value={data.fullName}
-              onChange={(v) => update("fullName", v)}
-              required={!data.anonymous}
-              error={errors.fullName}
-              autoComplete="name"
+            <div className="grid gap-5 sm:grid-cols-2">
+              {(["name", "fatherName", "cnic", "email", "phone"] as const).map(
+                (key) => (
+                  <TextField
+                    key={key}
+                    id={key}
+                    label={labels[key]}
+                    value={data[key]}
+                    onChange={(value) => change(key, value)}
+                    required
+                    type={
+                      key === "email"
+                        ? "email"
+                        : key === "phone"
+                          ? "tel"
+                          : "text"
+                    }
+                    maxLength={
+                      key === "email"
+                        ? 254
+                        : key === "cnic"
+                          ? 15
+                          : key === "phone"
+                            ? 30
+                            : 150
+                    }
+                    autoComplete={
+                      key === "name"
+                        ? "name"
+                        : key === "email"
+                          ? "email"
+                          : key === "phone"
+                            ? "tel"
+                            : "off"
+                    }
+                    helper={
+                      key === "cnic"
+                        ? "13 digits, for example 12345-1234567-1."
+                        : undefined
+                    }
+                  />
+                ),
+              )}
+              <SelectField
+                id="province"
+                label={labels.province}
+                value={data.province}
+                onChange={(value) => change("province", value)}
+                options={provinces}
+                required
+              />
+              <TextField
+                id="district"
+                label={labels.district}
+                maxLength={100}
+                value={data.district}
+                onChange={(value) => change("district", value)}
+                required
+              />
+            </div>
+            <TextareaField
+              id="address"
+              label={labels.address}
+              maxLength={1000}
+              value={data.address}
+              onChange={(value) => change("address", value)}
+              rows={3}
+              required
             />
-            <CheckboxField
-              id="anonymous"
-              label="I would like to report anonymously"
-              checked={data.anonymous}
-              onChange={(v) => update("anonymous", v)}
-            />
-            {!data.anonymous && (
-              <div className="grid gap-5 sm:grid-cols-2">
-                <TextField
-                  id="email"
-                  label="Email"
-                  type="email"
-                  value={data.email}
-                  onChange={(v) => update("email", v)}
-                  error={errors.email}
-                  autoComplete="email"
-                />
-                <TextField
-                  id="phone"
-                  label="Phone"
-                  type="tel"
-                  value={data.phone}
-                  onChange={(v) => update("phone", v)}
-                  autoComplete="tel"
-                />
-                <SelectField
-                  id="preferredContact"
-                  label="Preferred contact method"
-                  value={data.preferredContact}
-                  onChange={(v) => update("preferredContact", v)}
-                  options={contactMethods}
-                />
-              </div>
-            )}
           </>
         )}
-
         {step === 1 && (
           <>
-            <div className="grid gap-5 sm:grid-cols-2">
-              <TextField
-                id="country"
-                label="Country"
-                value={data.country}
-                onChange={(v) => update("country", v)}
-                required
-                error={errors.country}
-              />
-              <TextField
-                id="location"
-                label="City or location"
-                value={data.location}
-                onChange={(v) => update("location", v)}
-              />
-              <TextField
-                id="incidentDate"
-                label="Date of incident"
-                type="date"
-                value={data.incidentDate}
-                onChange={(v) => update("incidentDate", v)}
-              />
-              <SelectField
-                id="concernType"
-                label="Type of concern"
-                value={data.concernType}
-                onChange={(v) => update("concernType", v)}
-                options={concernTypes}
-                required
-                error={errors.concernType}
-              />
-              <SelectField
-                id="urgency"
-                label="Urgency level"
-                value={data.urgency}
-                onChange={(v) => update("urgency", v)}
-                options={urgencyLevels}
-              />
-            </div>
+            <SelectField
+              id="category"
+              label={labels.category}
+              value={data.category}
+              onChange={(value) => change("category", value)}
+              options={categories}
+              required
+            />
             <TextareaField
               id="description"
-              label="Detailed description"
+              label={labels.description}
+              maxLength={10000}
               value={data.description}
-              onChange={(v) => update("description", v)}
+              onChange={(value) => change("description", value)}
+              rows={7}
               required
-              error={errors.description}
-              helper="Please describe what happened. Avoid including more sensitive detail than necessary."
-              rows={6}
+              helper="Explain what happened, where it happened and what help you are seeking. Maximum 10,000 characters."
             />
+            <div>
+              <label
+                htmlFor="priorProceedings"
+                className="block text-sm font-medium text-text"
+              >
+                Has this issue previously been handled by another institution? *
+              </label>
+              <select
+                id="priorProceedings"
+                value={data.priorProceedings ? "yes" : "no"}
+                onChange={(event) => {
+                  change("priorProceedings", event.target.value === "yes");
+                  if (event.target.value === "no") {
+                    change("priorProceedingsDetails", "");
+                    setFiles((previous) => ({ ...previous, decisions: [] }));
+                  }
+                }}
+                className="mt-2 w-full rounded-md border border-border px-3 py-2.5"
+              >
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+              </select>
+            </div>
+            {data.priorProceedings && (
+              <TextareaField
+                id="priorProceedingsDetails"
+                label={labels.priorProceedingsDetails}
+                maxLength={5000}
+                value={data.priorProceedingsDetails}
+                onChange={(value) => change("priorProceedingsDetails", value)}
+                required
+                rows={5}
+                helper="Institution name, reference number, dates, current status and any decision. Maximum 5,000 characters."
+              />
+            )}
+            <div className="border-t border-border pt-5">
+              <h3 className="font-semibold text-navy">
+                Documents and evidence
+              </h3>
+              <p className="mb-5 mt-2 text-sm text-muted">
+                Five files maximum in total. Combined size must be no more than
+                15 MB. Files are scanned before your complaint is saved.
+              </p>
+              <div className="space-y-6">
+                <FileChoice
+                  id="cnic-image"
+                  label="CNIC picture"
+                  required
+                  image
+                  names={files.cnicImage ? [files.cnicImage.name] : []}
+                  onChange={(values) =>
+                    setFiles((previous) => ({
+                      ...previous,
+                      cnicImage: values[0] ?? null,
+                    }))
+                  }
+                />
+                <FileChoice
+                  id="complaint-document"
+                  label="Written complaint"
+                  required
+                  names={
+                    files.complaintDocument
+                      ? [files.complaintDocument.name]
+                      : []
+                  }
+                  onChange={(values) =>
+                    setFiles((previous) => ({
+                      ...previous,
+                      complaintDocument: values[0] ?? null,
+                    }))
+                  }
+                />
+                {data.priorProceedings && (
+                  <FileChoice
+                    id="decision-documents"
+                    label="Documents relating to previous decisions"
+                    multiple
+                    names={files.decisions.map((file) => file.name)}
+                    onChange={(values) =>
+                      setFiles((previous) => ({
+                        ...previous,
+                        decisions: values,
+                      }))
+                    }
+                  />
+                )}
+                <FileChoice
+                  id="supporting-evidence"
+                  label="Other supporting evidence"
+                  multiple
+                  names={files.evidence.map((file) => file.name)}
+                  onChange={(values) =>
+                    setFiles((previous) => ({ ...previous, evidence: values }))
+                  }
+                />
+              </div>
+            </div>
           </>
         )}
-
         {step === 2 && (
           <>
-            <TextField
-              id="affected"
-              label="Person or organization affected"
-              value={data.affected}
-              onChange={(v) => update("affected", v)}
-            />
-            <TextField
-              id="responsible"
-              label="Person or organization alleged to be responsible"
-              value={data.responsible}
-              onChange={(v) => update("responsible", v)}
-            />
-            <TextareaField
-              id="witness"
-              label="Witness information"
-              value={data.witness}
-              onChange={(v) => update("witness", v)}
-              rows={3}
-            />
-            <TextareaField
-              id="additionalContext"
-              label="Additional context"
-              value={data.additionalContext}
-              onChange={(v) => update("additionalContext", v)}
-              rows={3}
-            />
-          </>
-        )}
-
-        {step === 3 && (
-          <>
-            <FileUploadField
-              id="evidenceFile"
-              label="Supporting evidence (optional)"
-              helper="Files are not uploaded on this demonstration site."
-              onChange={(fileName) => update("evidenceFile", fileName)}
-            />
-            <TextareaField
-              id="evidenceDescription"
-              label="Evidence description"
-              value={data.evidenceDescription}
-              onChange={(v) => update("evidenceDescription", v)}
-              rows={3}
-            />
-            <TextField
-              id="referenceNumber"
-              label="Existing report or reference number (if any)"
-              value={data.referenceNumber}
-              onChange={(v) => update("referenceNumber", v)}
-            />
-          </>
-        )}
-
-        {step === 4 && (
-          <>
-            {/* Review summary */}
-            <div className="rounded-lg border border-border bg-soft-gray p-4 text-sm">
-              <p className="font-semibold text-navy">Review</p>
-              <dl className="mt-2 space-y-1 text-muted">
-                <div className="flex gap-2">
-                  <dt className="font-medium text-text">Reporting:</dt>
-                  <dd>{data.anonymous ? "Anonymously" : data.fullName || "—"}</dd>
-                </div>
-                <div className="flex gap-2">
-                  <dt className="font-medium text-text">Country:</dt>
-                  <dd>{data.country || "—"}</dd>
-                </div>
-                <div className="flex gap-2">
-                  <dt className="font-medium text-text">Concern:</dt>
-                  <dd>{data.concernType || "—"}</dd>
-                </div>
+            <div className="rounded-lg border border-border bg-off-white p-5">
+              <h3 className="font-semibold text-navy">
+                Your complete submission
+              </h3>
+              <dl className="mt-4 space-y-4">
+                {Object.entries(labels)
+                  .filter(([key]) => key !== "consent")
+                  .map(([key, label]) => (
+                    <div key={key}>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-muted">
+                        {label}
+                      </dt>
+                      <dd className="mt-1 whitespace-pre-wrap break-words text-sm text-text">
+                        {key === "priorProceedings"
+                          ? data.priorProceedings
+                            ? "Yes"
+                            : "No"
+                          : String(
+                              data[key as keyof ComplaintData] ||
+                                "Not applicable",
+                            )}
+                      </dd>
+                    </div>
+                  ))}
+                {fileNames.map(([label, name], index) => (
+                  <div key={index}>
+                    <dt className="text-xs font-semibold uppercase tracking-wide text-muted">
+                      {label}
+                    </dt>
+                    <dd className="mt-1 break-all text-sm">{name}</dd>
+                  </div>
+                ))}
               </dl>
             </div>
-
-            <fieldset className="space-y-3">
-              <legend className="sr-only">Consent</legend>
-              <CheckboxField
-                id="confirmAccurate"
-                label="I confirm the information is accurate to the best of my knowledge."
-                checked={data.confirmAccurate}
-                onChange={(v) => update("confirmAccurate", v)}
-                error={errors.confirmAccurate}
-              />
-              <CheckboxField
-                id="understandNoRelationship"
-                label="I understand that submission does not create a lawyer-client relationship."
-                checked={data.understandNoRelationship}
-                onChange={(v) => update("understandNoRelationship", v)}
-                error={errors.understandNoRelationship}
-              />
-              <CheckboxField
-                id="understandReferral"
-                label="I understand that HRPF may refer the matter to another qualified service."
-                checked={data.understandReferral}
-                onChange={(v) => update("understandReferral", v)}
-                error={errors.understandReferral}
-              />
-              {!data.anonymous && (
-                <CheckboxField
-                  id="permissionToContact"
-                  label="I give permission to contact me."
-                  checked={data.permissionToContact}
-                  onChange={(v) => update("permissionToContact", v)}
-                  error={errors.permissionToContact}
-                />
-              )}
-            </fieldset>
+            <CheckboxField
+              id="consent"
+              checked={data.consent}
+              onChange={(value) => change("consent", value)}
+              label={
+                <>
+                  I confirm these details are accurate. I agree to HRPF
+                  reviewing this complaint and emailing the full form, CNIC
+                  details and uploaded files to my entered email address and
+                  HRPF’s administrator. Submission does not guarantee
+                  representation or a particular outcome. See our{" "}
+                  <Link href="/privacy-policy" className="underline">
+                    privacy policy
+                  </Link>
+                  .
+                </>
+              }
+            />
           </>
         )}
-      </div>
-
-      {/* Navigation */}
+      </fieldset>
+      {step === 2 && !locked && (
+        <div className="mt-5">
+          <ComplaintVerification
+            onToken={tokenChanged}
+            onError={verificationError}
+          />
+        </div>
+      )}
+      {progress && (
+        <p role="status" className="mt-5 text-sm font-medium text-teal-dark">
+          {progress}
+        </p>
+      )}
+      {locked && !busy && (
+        <p className="mt-4 text-sm text-muted">
+          Retry uses the same files and reference request to prevent duplicate
+          complaints.
+        </p>
+      )}
       <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
         <button
           type="button"
-          onClick={goBack}
-          disabled={step === 0}
-          className="inline-flex items-center gap-1.5 rounded-md border border-border px-4 py-2.5 text-sm font-semibold text-navy transition-colors hover:bg-navy/5 disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={step === 0 || busy || locked}
+          onClick={() => {
+            setError("");
+            setStep((previous) => previous - 1);
+            requestAnimationFrame(() => heading.current?.focus());
+          }}
+          className={button}
         >
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          <ArrowLeft className="h-4 w-4" />
           Back
         </button>
-
-        {step < steps.length - 1 ? (
-          <button
-            type="button"
-            onClick={goNext}
-            className="inline-flex items-center gap-1.5 rounded-md bg-teal px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-teal-dark focus-visible:outline-2 focus-visible:outline-offset-2"
-          >
-            Save and Continue
-            <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </button>
-        ) : (
-          <SubmitButton loading={loading}>Submit Report</SubmitButton>
-        )}
+        <button
+          type="submit"
+          disabled={busy || (step === 2 && !locked && !botToken)}
+          aria-busy={busy}
+          className="inline-flex items-center gap-2 rounded-md bg-navy px-6 py-3 text-sm font-semibold text-white hover:bg-navy/90 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {busy
+            ? "Submitting…"
+            : step === 2
+              ? locked
+                ? "Retry same submission"
+                : "Submit complaint"
+              : "Continue"}
+          {step < 2 && <ArrowRight className="h-4 w-4" />}
+        </button>
       </div>
+      {locked && !busy && !requestStarted && (
+        <button
+          type="button"
+          className="mt-4 text-sm font-semibold text-navy underline"
+          onClick={() => {
+            attempt.current = newComplaintAttempt();
+            setRequestStarted(false);
+            setLocked(false);
+            setBotToken("");
+            setError("");
+            setStep(1);
+          }}
+        >
+          Return to documents and try again
+        </button>
+      )}
     </form>
   );
 }

@@ -603,7 +603,7 @@
     "/api/complaints": {
       "post": {
         "summary": "Persist validated form and email outbox atomically",
-        "description": "Use the original ticket and UUID submissionKey for retries within the ticket lifetime. Same key with different data returns 409. Received confirms storage, not email delivery or approval. Membership requires an enabled policy.",
+        "description": "Use the original ticket and UUID submissionKey for retries. Unsubmitted tickets expire after 15 minutes; saved submissions can be confirmed while the consumed ticket is retained (about 24 hours). Same key with different data returns 409. Received confirms storage, not email delivery or approval. Complaints queue complete user/admin form copies with all five-or-fewer private files (15 MB combined), and require ADMIN_NOTIFY_EMAILS. Membership requires an enabled policy.",
         "security": [],
         "requestBody": {
           "required": true,
@@ -662,7 +662,7 @@
     "/api/membership-applications": {
       "post": {
         "summary": "Persist validated form and email outbox atomically",
-        "description": "Use the original ticket and UUID submissionKey for retries within the ticket lifetime. Same key with different data returns 409. Received confirms storage, not email delivery or approval. Membership requires an enabled policy.",
+        "description": "Use the original ticket and UUID submissionKey for retries. Unsubmitted tickets expire after 15 minutes; saved submissions can be confirmed while the consumed ticket is retained (about 24 hours). Same key with different data returns 409. Received confirms storage, not email delivery or approval. Complaints queue complete user/admin form copies with all five-or-fewer private files (15 MB combined), and require ADMIN_NOTIFY_EMAILS. Membership requires an enabled policy.",
         "security": [],
         "requestBody": {
           "required": true,
@@ -721,7 +721,7 @@
     "/api/contact-messages": {
       "post": {
         "summary": "Persist validated form and email outbox atomically",
-        "description": "Use the original ticket and UUID submissionKey for retries within the ticket lifetime. Same key with different data returns 409. Received confirms storage, not email delivery or approval. Membership requires an enabled policy.",
+        "description": "Use the original ticket and UUID submissionKey for retries. Unsubmitted tickets expire after 15 minutes; saved submissions can be confirmed while the consumed ticket is retained (about 24 hours). Same key with different data returns 409. Received confirms storage, not email delivery or approval. Complaints queue complete user/admin form copies with all five-or-fewer private files (15 MB combined), and require ADMIN_NOTIFY_EMAILS. Membership requires an enabled policy.",
         "security": [],
         "requestBody": {
           "required": true,
@@ -1067,6 +1067,16 @@
                 "membership"
               ]
             }
+          },
+          {
+            "name": "X-Upload-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Stable per-file retry key. Reuses the staged file within this ticket; different bytes return 409. Complaint ticket quota is five files and 15 MB combined."
           }
         ],
         "responses": {
@@ -10531,6 +10541,611 @@
           }
         }
       }
+    },
+    "/api/admin/complaints": {
+      "get": {
+        "summary": "List 20 private complaint summaries; admin/super_admin/case_manager",
+        "security": [
+          {
+            "accessCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 1
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "new",
+                "triaged",
+                "assigned",
+                "in_progress",
+                "needs_info",
+                "resolved",
+                "closed"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "description": "Literal reference prefix"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "rows": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "version": {
+                                "type": "number"
+                              },
+                              "reference": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "category": {
+                                "type": "string"
+                              },
+                              "province": {
+                                "type": "string"
+                              },
+                              "district": {
+                                "type": "string"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": [
+                                  "new",
+                                  "triaged",
+                                  "assigned",
+                                  "in_progress",
+                                  "needs_info",
+                                  "resolved",
+                                  "closed"
+                                ]
+                              },
+                              "assigneeId": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "version",
+                              "reference",
+                              "name",
+                              "category",
+                              "province",
+                              "district",
+                              "status",
+                              "assigneeId",
+                              "createdAt"
+                            ]
+                          }
+                        },
+                        "page": {
+                          "type": "number"
+                        },
+                        "pages": {
+                          "type": "number"
+                        },
+                        "total": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "rows",
+                        "page",
+                        "pages",
+                        "total"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/complaints/reviewers": {
+      "get": {
+        "summary": "Read up to 100 active eligible reviewers",
+        "security": [
+          {
+            "accessCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/complaints/{id}": {
+      "get": {
+        "summary": "Audit access to complete private form, decrypted CNIC, file IDs, notes, history and delivery status",
+        "security": [
+          {
+            "accessCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{24}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "version": {
+                          "type": "number"
+                        },
+                        "reference": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "category": {
+                          "type": "string"
+                        },
+                        "province": {
+                          "type": "string"
+                        },
+                        "district": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "new",
+                            "triaged",
+                            "assigned",
+                            "in_progress",
+                            "needs_info",
+                            "resolved",
+                            "closed"
+                          ]
+                        },
+                        "assigneeId": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        },
+                        "fatherName": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "phone": {
+                          "type": "string"
+                        },
+                        "address": {
+                          "type": "string"
+                        },
+                        "cnic": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "priorProceedings": {
+                          "type": "boolean"
+                        },
+                        "priorProceedingsDetails": {
+                          "type": "string"
+                        },
+                        "consent": {
+                          "type": "object",
+                          "properties": {
+                            "version": {
+                              "type": "string"
+                            },
+                            "acceptedAt": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "version",
+                            "acceptedAt"
+                          ]
+                        },
+                        "files": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "format": {
+                                "type": "string"
+                              },
+                              "bytes": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "label",
+                              "name",
+                              "format",
+                              "bytes"
+                            ]
+                          }
+                        },
+                        "notes": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "body": {
+                                "type": "string"
+                              },
+                              "actorId": {
+                                "type": "string"
+                              },
+                              "at": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "body",
+                              "at"
+                            ]
+                          }
+                        },
+                        "history": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "from": {
+                                "type": "string"
+                              },
+                              "to": {
+                                "type": "string"
+                              },
+                              "actorId": {
+                                "type": "string"
+                              },
+                              "at": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "from",
+                              "to",
+                              "at"
+                            ]
+                          }
+                        },
+                        "emailDeliveries": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "audience": {
+                                "type": "string",
+                                "enum": [
+                                  "user",
+                                  "admin"
+                                ]
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": [
+                                  "pending",
+                                  "sending",
+                                  "sent",
+                                  "failed"
+                                ]
+                              },
+                              "attempts": {
+                                "type": "number"
+                              },
+                              "errorCode": {
+                                "type": "string"
+                              },
+                              "sentAt": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "audience",
+                              "status",
+                              "attempts"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "version",
+                        "reference",
+                        "name",
+                        "category",
+                        "province",
+                        "district",
+                        "status",
+                        "assigneeId",
+                        "createdAt",
+                        "fatherName",
+                        "email",
+                        "phone",
+                        "address",
+                        "cnic",
+                        "description",
+                        "priorProceedings",
+                        "priorProceedingsDetails",
+                        "consent",
+                        "files",
+                        "notes",
+                        "history",
+                        "emailDeliveries"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Versioned review and assignment with required internal note; legal transitions and current active role rechecked transactionally",
+        "security": [
+          {
+            "csrfHeader": [],
+            "csrfCookie": [],
+            "accessCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{24}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComplaintReviewInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "version": {
+                          "type": "number"
+                        },
+                        "reference": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "category": {
+                          "type": "string"
+                        },
+                        "province": {
+                          "type": "string"
+                        },
+                        "district": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "new",
+                            "triaged",
+                            "assigned",
+                            "in_progress",
+                            "needs_info",
+                            "resolved",
+                            "closed"
+                          ]
+                        },
+                        "assigneeId": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "version",
+                        "reference",
+                        "name",
+                        "category",
+                        "province",
+                        "district",
+                        "status",
+                        "assigneeId",
+                        "createdAt"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -10563,6 +11178,49 @@
           "version",
           "action",
           "releaseReviewed"
+        ],
+        "additionalProperties": false
+      },
+      "ComplaintReviewInput": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "new",
+              "triaged",
+              "assigned",
+              "in_progress",
+              "needs_info",
+              "resolved",
+              "closed"
+            ]
+          },
+          "assigneeId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{24}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 5000
+          }
+        },
+        "required": [
+          "version",
+          "note"
         ],
         "additionalProperties": false
       },

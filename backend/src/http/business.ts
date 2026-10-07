@@ -8,6 +8,7 @@ import { publicRouter } from './public-content.js';
 import { managedContentRouter } from './managed-content.js';
 import { documentContentRouter } from './document-content.js';
 import { boardContentRouter } from './board-content.js';
+import { complaintContentRouter } from './complaint-content.js';
 import { mediaContentRouter } from './media-content.js';
 import { adminRouter } from './admin.js';
 import { unavailable, validate } from './errors.js';
@@ -32,6 +33,7 @@ export function createBusiness(env: Environment, adapters: BusinessAdapters) {
   router.use('/admin', redis.limit('media-content', 120, 60000), mediaContentRouter(auth));
   router.use('/admin', redis.limit('document-content', 120, 60000), documentContentRouter(auth));
   router.use('/admin', redis.limit('board-content', 120, 60000), boardContentRouter(auth));
+  router.use('/admin', redis.limit('complaint-content', 120, 60000), complaintContentRouter(auth, env));
   router.use('/admin', redis.limit('admin', 180, 60000), adminRouter(auth, uploads));
   router.post('/forms/session', redis.limit('form-session', 10, 15 * 60000), async (req, res) => res.status(201).json({ data: await forms.issue(req.body) }));
   router.post('/form-uploads', redis.limit('form-upload', 30, 15 * 60000), async (req, res) => {
