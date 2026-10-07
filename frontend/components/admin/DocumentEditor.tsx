@@ -455,7 +455,7 @@ export default function DocumentEditor({
           </legend>
           <p className="mb-4 text-sm leading-relaxed text-muted">
             Upload the copy that visitors should see. Remove private information
-            before uploading. Files are scanned and remain private until
+            before uploading. Files are checked and remain private until
             publication.
           </p>
           <label className="block text-sm font-semibold">
@@ -478,7 +478,7 @@ export default function DocumentEditor({
           </label>
           {uploading && (
             <p role="status" className="mt-3 text-sm">
-              Uploading and scanning document…
+              Uploading and checking document…
             </p>
           )}
           {record.assetId && (

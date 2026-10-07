@@ -9,6 +9,39 @@ import { cloudinaryProvider, type UploadProvider } from './uploads.js';
 import { complaintMail, type ComplaintAttachment } from './complaint-mail.js';
 export type Mail = { to: string; subject: string; text: string; html?: string; attachments?: ComplaintAttachment[]; messageId: string };
 export type MailSender = (mail: Mail) => Promise<string>;
+export function assertMailConfiguration(env: Environment) {
+  if (!env.MAIL_FROM || (env.EMAIL_PROVIDER === 'resend' ? !env.RESEND_API_KEY : !env.SMTP_HOST)) {
+    throw new Error('Email delivery requires MAIL_FROM and credentials for the selected EMAIL_PROVIDER.');
+  }
+}
+export function mailSender(env: Environment, fetcher: typeof fetch = fetch): MailSender {
+  if (env.EMAIL_PROVIDER === 'smtp') return smtpSender(env);
+  return async mail => {
+    if (!env.RESEND_API_KEY || !env.MAIL_FROM) throw unavailable();
+    try {
+      const response = await fetcher('https://api.resend.com/emails', {
+        method: 'POST', redirect: 'error', signal: AbortSignal.timeout(20000),
+        headers: {
+          Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json',
+          // Stable across retry/restart. Resend retains keys for 24 hours.
+          'Idempotency-Key': `hrpf-${digest(mail.messageId)}`,
+        },
+        body: JSON.stringify({ from: env.MAIL_FROM, to: [mail.to], subject: mail.subject,
+          text: mail.text, ...(mail.html ? { html: mail.html } : {}),
+          headers: { 'Message-ID': mail.messageId },
+          ...(mail.attachments?.length ? { attachments: mail.attachments.map(file => ({
+            filename: file.filename, content: file.content.toString('base64'),
+          })) } : {}),
+        }),
+      });
+      if (!response.ok) { await response.body?.cancel(); throw unavailable(); }
+      const result: unknown = await response.json();
+      if (!result || typeof result !== 'object' || !('id' in result) || typeof result.id !== 'string' ||
+          !/^[a-zA-Z0-9-]{1,100}$/.test(result.id)) throw unavailable();
+      return result.id;
+    } catch { throw unavailable(); } // Never log provider bodies, credentials or submitted personal data.
+  };
+}
 export function smtpSender(env: Environment): MailSender {
   if (!env.SMTP_HOST || !env.MAIL_FROM) return async () => { throw unavailable(); };
   const transport = nodemailer.createTransport({
@@ -55,6 +88,37 @@ export function createOutbox(env: Environment, send: MailSender, provider: Uploa
       }
     },
   };
+}
+// A small deployment can consume the durable Mongo outbox inside the API process.
+// No Redis queue or separate always-on worker is needed for this delivery mode.
+// Render free can suspend it; pending records resume when the API wakes up.
+export function startEmbeddedOutbox(env: Environment, send: MailSender, prune: () => Promise<void>,
+  ready: () => boolean, provider: UploadProvider = cloudinaryProvider(env)) {
+  const service = createOutbox(env, send, provider);
+  let closing = false, active: Promise<void> | undefined, lastPrune = 0;
+  const drain = async () => {
+    if (active || closing || !ready()) return;
+    active = (async () => {
+      try {
+        const now = new Date();
+        const entries = await EmailOutbox.find({ attempts: { $lt: 8 }, $or: [
+          { status: { $in: ['pending', 'failed'] }, nextAttemptAt: { $lte: now } },
+          { status: 'sending', leaseUntil: { $lte: now } },
+        ] }).select('_id').sort({ createdAt: 1, _id: 1 }).limit(20);
+        // One attachment-bearing email at a time bounds memory on a 512 MB service.
+        for (const entry of entries) {
+          if (closing || !ready()) break;
+          try { await service.deliver(entry.id); } catch { /* stored failure/backoff is authoritative */ }
+        }
+        if (!closing && ready() && Date.now() - lastPrune > 60000) {
+          await prune(); lastPrune = Date.now();
+        }
+      } catch { /* next poll retries after dependencies recover */ }
+    })();
+    try { await active; } finally { active = undefined; }
+  };
+  const timer = setInterval(() => { void drain(); }, 5000); void drain();
+  return { drain, close: async () => { closing = true; clearInterval(timer); await active; } };
 }
 export async function startOutboxWorker(env: Environment, send: MailSender, prune: () => Promise<void>, provider: UploadProvider = cloudinaryProvider(env)) {
   const prefix = env.CLOUDINARY_NAMESPACE.replace('/', '-');

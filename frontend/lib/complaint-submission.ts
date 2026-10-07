@@ -139,7 +139,7 @@ export async function submitComplaint(
     for (let index = 0; index < all.length; index++) {
       const file = all[index]!;
       if (attempt.uploads.has(file)) continue;
-      progress(`Scanning and uploading file ${index + 1} of ${all.length}…`);
+      progress(`Checking and uploading file ${index + 1} of ${all.length}…`);
       const form = new FormData();
       form.set("file", file);
       if (!attempt.uploadKeys.has(file))

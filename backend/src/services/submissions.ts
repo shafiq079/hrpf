@@ -23,7 +23,7 @@ export function createSubmissions(env: Environment, forms: FormsService) {
   async function claimAssets(ids: string[], ticket: string, expected: 'complaint' | 'membership', entityId: Types.ObjectId, tx: ClientSession) {
     const values = [];
     for (const id of ids) {
-      const asset = await Asset.findOneAndUpdate({ _id: id, ticketHash: digest(ticket), purpose: expected, scanStatus: 'clean', deliveryType: 'authenticated', visibility: 'restricted', claimStatus: 'staged', stagingExpiresAt: { $gt: new Date() } }, { $set: { claimStatus: 'claimed', entityType: expected, entityId }, $unset: { stagingExpiresAt: 1 } }, { session: tx, returnDocument: 'after' });
+      const asset = await Asset.findOneAndUpdate({ _id: id, ticketHash: digest(ticket), purpose: expected, scanStatus: { $in: ['clean', 'type_checked'] }, deliveryType: 'authenticated', visibility: 'restricted', claimStatus: 'staged', stagingExpiresAt: { $gt: new Date() } }, { $set: { claimStatus: 'claimed', entityType: expected, entityId }, $unset: { stagingExpiresAt: 1 } }, { session: tx, returnDocument: 'after' });
       if (!asset) throw new ApiError(400, 'INVALID_ASSET', 'A required file is missing or belongs to another form session.');
       values.push({ assetId: asset._id, publicId: asset.publicId, resourceType: asset.resourceType, deliveryType: asset.deliveryType, format: asset.format, bytes: asset.bytes,
         ...(asset.originalName ? { originalName: asset.originalName } : {}), ...(asset.width ? { width: asset.width } : {}), ...(asset.height ? { height: asset.height } : {}), ...(asset.version ? { version: asset.version } : {}), sha256: asset.sha256 });

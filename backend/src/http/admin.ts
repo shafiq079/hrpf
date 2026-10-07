@@ -86,7 +86,7 @@ export function adminRouter(auth: ReturnType<typeof createAuth>, uploads: Upload
   router.get('/assets/:id/content', async (req, res) => {
     const { preview } = validate(z.object({ preview: z.literal('1').optional() }).strict(), req.query);
     const id = validate(objectId, req.params.id), principal = res.locals.principal as Principal;
-    const asset = await Asset.findOne({ _id: id, scanStatus: 'clean', claimStatus: { $ne: 'deleting' } });
+    const asset = await Asset.findOne({ _id: id, scanStatus: { $in: ['clean', 'type_checked'] }, claimStatus: { $ne: 'deleting' } });
     if (!asset) throw new ApiError(404, 'NOT_FOUND', 'File not found.');
     const permission = ['complaint', 'membership'].includes(asset.purpose) ? 'restrictedAssets' : asset.purpose === 'certificate' ? 'certificates' : 'content';
     if (!can(principal.role, permission)) throw new ApiError(403, 'FORBIDDEN', 'You do not have permission to view this file.');

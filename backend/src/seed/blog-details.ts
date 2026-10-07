@@ -16,7 +16,6 @@ import { digest } from "../security/crypto.js";
 import { bindContentMedia } from "../services/project-media.js";
 import {
   inspectUpload,
-  type Scanner,
   type UploadProvider,
   type Upload,
 } from "../services/uploads.js";
@@ -242,10 +241,9 @@ export async function applyBlogDetails(options: {
   actorId: string;
   namespace: string;
   provider: UploadProvider;
-  scanner: Scanner;
   report?: (result: BlogDetailsResult) => void;
 }) {
-  const { manifest, uploads, actorId, namespace, provider, scanner } = options;
+  const { manifest, uploads, actorId, namespace, provider } = options;
   if (namespace !== "hrpf/dev")
     throw new Error("Blog enrichment is limited to hrpf/dev.");
   await actorAllowed(actorId);
@@ -258,8 +256,7 @@ export async function applyBlogDetails(options: {
     )
       throw new Error("Blog enrichment bytes changed.");
     await inspectUpload(upload);
-    if ((await scanner(upload.bytes)) !== "clean")
-      throw new Error("A blog file failed the security scan.");
+
   }
   for (const entry of manifest.blogs)
     for (const item of [...entry.gallery, ...entry.documents])
@@ -285,7 +282,7 @@ export async function applyBlogDetails(options: {
         entityId: initial.row._id,
         sha256: source.sha256,
         purpose: "content",
-        scanStatus: "clean",
+        scanStatus: { $in: ['clean', 'type_checked'] },
         claimStatus: "staged",
         stagingExpiresAt: { $gt: new Date() },
       });
@@ -302,7 +299,7 @@ export async function applyBlogDetails(options: {
             sha256: source.sha256,
             ownerId: actorId,
             purpose: "content",
-            scanStatus: "clean",
+            scanStatus: 'type_checked',
             visibility: "restricted",
             entityType: "BlogPost",
             entityId: initial.row._id,

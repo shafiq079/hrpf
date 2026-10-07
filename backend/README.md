@@ -77,43 +77,37 @@ creates a member. Approval and additional-information workflows follow later.
 
 Uploads accept JPG, PNG or WebP up to 5 MB, or PDF up to 10 MB. Extension,
 declared MIME and detected signature must match. SVG and other types are rejected.
-Complaint tickets allow five files and 25 MB total; membership allows one proof.
-Quota reservation and file claiming are atomic. Configure a private ClamAV daemon
-using `CLAMAV_HOST`/`CLAMAV_PORT` and Cloudinary credentials. Unavailable scans
-block storage; infected files are rejected. All M2 uploads are staged as
-`authenticated` under `hrpf/dev` or `hrpf/prod`; publishing reviewed public copies
-is implemented with later content workflows. Admin staging supports content and
-certificate purposes with separate role checks.
+Complaint tickets allow five files and 15 MB total; membership allows one proof.
+Quota reservation and file claiming are atomic. Configure Cloudinary privately.
+New uploads are type-checked and staged as authenticated files; antivirus scanning
+was removed at the owner's request. Public copies require explicit review and
+publication. Existing clean files keep working; quarantined/infected files remain
+blocked. No CLAMAV variables or daemon are consumed.
 
 Restricted files are streamed through `/api/admin/assets/:id/content` after
 current authentication and role authorization, with attachment/no-store headers.
 Provider URLs are never returned or redirected. Public-release review must happen
-before later public delivery. Image/PDF format checks and malware scanning do
+before later public delivery. Image/PDF format checks do
 not themselves establish that content is safe for public release.
 
-Run the durable email worker in a separate backend terminal/process:
+Email delivery supports two providers and two execution modes. SMTP remains the
+default for existing private development settings. Configure SMTP_HOST, SMTP_PORT,
+SMTP_SECURE and MAIL_FROM; 587 requires STARTTLS and 465 uses secure TLS. In this
+mode run `npm run worker:dev`, or `npm run worker` after building, as a separate
+process with EMAIL_DELIVERY_MODE=worker.
 
-```bash
-npm run worker:dev
-# Production, after npm run build:
-npm run worker
-```
+For Render free, set EMAIL_PROVIDER=resend, EMAIL_DELIVERY_MODE=embedded,
+RESEND_API_KEY and MAIL_FROM at a verified owned domain. Start only the API; it
+drains the Mongo outbox while awake without a separate worker or SMTP ports.
+Full form and all attachments are emailed to user/admin. ADMIN_NOTIFY_EMAILS is
+required for complaints. The durable outbox uses leases, backoff/eight attempts,
+manual admin retry and private attachment integrity checks. The processor also
+prunes unused staged files. Delivery resumes on startup; free hosting can sleep,
+so retry timing is not guaranteed. No exactly-once or inbox-arrival claim is made.
+Password reset payloads stay encrypted and single-use. See [Render free setup](../docs/RENDER_FREE.md)
+and [complaint workflow](../docs/COMPLAINTS.md) for current configuration/limits.
 
-Configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `MAIL_FROM` and optional SMTP
-credentials privately. Port 587 uses required STARTTLS; port 465 uses secure TLS.
-`ADMIN_NOTIFY_EMAILS` is an explicit comma-separated recipient list; no address is
-invented. Without it, only the applicant acknowledgement is queued. Queue jobs
-contain only Mongo outbox IDs. The worker drains persisted pending records after
-Redis recovers, leases deliveries, retries with backoff up to eight attempts,
-and prunes expired unused assets. `/api/admin/outbox` exposes redacted statuses;
-admin/super_admin can retry failed entries. Successful entries are skipped.
-SMTP has an unavoidable ambiguous-send window if the provider accepts a message
-before a crash/database failure; stable Message-IDs help, but exactly-once email
-is not promised. Only reference numbers and sign-in instructions appear in admin
-notifications, never complaint narratives, CNICs or proof URLs. Password reset
-links use encrypted outbox payloads and single-use expiring tokens.
-
-`npm run check` runs typechecks, 22 security/health/source tests, manifest validation, build and OpenAPI drift
+`npm run check` runs typechecks, 26 security/health/source/email tests, manifest validation, build and OpenAPI drift
 validation. `npm run test:integration` runs isolated MongoDB 8.0.5 replica-set tests
 and real Redis. It downloads a test-only Mongo binary; install `redis-server` or
 set `TEST_REDIS_URL` to a **disposable test Redis** (the tests flush its database).
@@ -202,7 +196,7 @@ back to sample records when the feeds are empty or unavailable.
 
 `npm run seed:home` verifies the bundled three projects, three news summaries and
 six covers offline. `npm run seed:home -- --apply` imports and publishes them to
-configured development MongoDB/Cloudinary with working ClamAV and an existing
+configured development MongoDB/Cloudinary with an existing
 `SEED_ACTOR_EMAIL`. See [seed/HOMEPAGE.md](seed/HOMEPAGE.md) for exact configuration,
 source provenance and preservation rules. This separate command does not publish
 legacy M3 content or alter fixed page copy.

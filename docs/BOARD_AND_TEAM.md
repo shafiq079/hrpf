@@ -49,8 +49,7 @@ and releaseReviewed. OpenAPI describes implemented contracts.
 
 ## Populate the supplied profiles
 
-In Codespaces, with existing private MongoDB/Cloudinary configuration and ClamAV
-running:
+In Codespaces, with existing private MongoDB/Cloudinary configuration:
 
 ```bash
 cd /workspaces/hrpf
@@ -64,7 +63,7 @@ npm run seed:board -- --apply
 Offline `npm run seed:board` validates the seven bundled original photographs and
 profile manifest. `--database` is read-only. `--apply` requires development,
 `CLOUDINARY_NAMESPACE=hrpf/dev`, and SEED_ACTOR_EMAIL identifying an active
-administrator/super administrator. It scans every photograph before provider or
+administrator/super administrator. It inspects every photograph before provider or
 content writes. Upload/publish is resumable per person, retains completed releases,
 reuses staged uploads after interruption and preserves later edits, withdrawals,
 deletions and native collisions. It can enrich untouched original source drafts.
@@ -73,6 +72,5 @@ seven-person source manifest. Rerunning imports is not the mechanism for admin
 updates to already-reviewed profiles.
 
 The importer does not require PDF delivery and does not fix the separate Cloudinary
-PDF policy block reported during document viewing. Global caching and permanent
-ClamAV hosting remain deferred. Validation uses disposable replica-set MongoDB,
+PDF policy block reported during document viewing. Global caching remains deferred. Validation uses disposable replica-set MongoDB,
 Redis and synthetic providers; owner services are exercised by the Codespaces run.

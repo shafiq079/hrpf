@@ -180,7 +180,8 @@ export const Asset = mongoose.model('Asset', new Schema({
   width: Number, height: Number, version: Number, sha256: requiredText(64), originalName: text(200), ownerId: oid('User'), ticketHash: { type: String, select: false },
   purpose: { type: String, enum: ['complaint', 'membership', 'content', 'certificate'], required: true },
   visibility: { type: String, enum: ['public', 'restricted'], default: 'restricted' },
-  scanStatus: { type: String, enum: ['clean', 'quarantined', 'infected'], default: 'quarantined' },
+  // Historical field name retained for existing files. New uploads are type_checked, never malware-scanned.
+  scanStatus: { type: String, enum: ['clean', 'type_checked', 'quarantined', 'infected'], default: 'quarantined' },
   claimStatus: { type: String, enum: ['staged', 'claimed', 'deleting'], default: 'staged' }, entityType: text(100), entityId: oid(''),
   stagingExpiresAt: Date, uploadKey: { type: String, maxlength: 64, select: false },
 }, options));

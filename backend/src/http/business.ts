@@ -14,14 +14,14 @@ import { adminRouter } from './admin.js';
 import { unavailable, validate } from './errors.js';
 import { uploadQuery } from './contracts.js';
 import { createForms, turnstileVerifier, type BotVerifier } from '../services/forms.js';
-import { clamScanner, cloudinaryProvider, createUploads, type Scanner, type UploadProvider } from '../services/uploads.js';
+import { cloudinaryProvider, createUploads, type UploadProvider } from '../services/uploads.js';
 import { createSubmissions } from '../services/submissions.js';
-export type BusinessAdapters = { ready?: () => boolean; redis: RedisServices; bot?: BotVerifier; scanner?: Scanner; provider?: UploadProvider };
+export type BusinessAdapters = { ready?: () => boolean; redis: RedisServices; bot?: BotVerifier; provider?: UploadProvider };
 export function createBusiness(env: Environment, adapters: BusinessAdapters) {
   const router = Router(), { redis } = adapters;
   router.use((_req, _res, next) => { if (adapters.ready && !adapters.ready()) throw unavailable(); next(); });
   const auth = createAuth(env), forms = createForms(redis, adapters.bot ?? turnstileVerifier(env));
-  const uploads = createUploads(env, forms, adapters.provider ?? cloudinaryProvider(env), adapters.scanner ?? clamScanner(env));
+  const uploads = createUploads(env, forms, adapters.provider ?? cloudinaryProvider(env));
   const submissions = createSubmissions(env, forms);
   router.use(publicRouter(adapters.provider ?? cloudinaryProvider(env)));
   const account = (body: unknown) => body && typeof body === 'object' && 'email' in body && typeof body.email === 'string' ? body.email.trim().toLowerCase().slice(0, 254) : 'invalid';

@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import { ConfigurationError, parseEnv } from '../config/env.js';
 import { User, ensureIndexes } from '../domain/models.js';
-import { cloudinaryProvider, clamScanner } from '../services/uploads.js';
+import { cloudinaryProvider } from '../services/uploads.js';
 import { applyGallerySeed, galleryAssetRoot, galleryFiles, loadGalleryManifest, planGallerySeed } from '../seed/gallery.js';
 let phase = 'verification';
 async function main() {
@@ -35,7 +35,7 @@ async function main() {
   const env = parseEnv(process.env);
   if (!env.MONGODB_URI) throw new ConfigurationError('Configure MONGODB_URI privately in backend/.env.');
   if (args.includes('--apply') && (env.NODE_ENV !== 'development' || env.CLOUDINARY_NAMESPACE !== 'hrpf/dev')) throw new ConfigurationError('Gallery seed requires NODE_ENV=development and CLOUDINARY_NAMESPACE=hrpf/dev.');
-  if (args.includes('--apply') && (!env.CLAMAV_HOST || !env.CLOUDINARY_CLOUD_NAME || !env.CLOUDINARY_API_KEY || !env.CLOUDINARY_API_SECRET || !process.env.SEED_ACTOR_EMAIL)) throw new ConfigurationError('Configure Cloudinary, ClamAV and SEED_ACTOR_EMAIL privately in backend/.env.');
+  if (args.includes('--apply') && (!env.CLOUDINARY_CLOUD_NAME || !env.CLOUDINARY_API_KEY || !env.CLOUDINARY_API_SECRET || !process.env.SEED_ACTOR_EMAIL)) throw new ConfigurationError('Configure Cloudinary and SEED_ACTOR_EMAIL privately in backend/.env.');
   phase = 'database';
   await mongoose.connect(env.MONGODB_URI, {
     dbName: env.MONGODB_DB_NAME,
@@ -66,7 +66,6 @@ async function main() {
       actorId: actor.id,
       namespace: env.CLOUDINARY_NAMESPACE,
       provider: cloudinaryProvider(env),
-      scanner: clamScanner(env),
       phase: value => {
         if (value === phase) return;
         phase = value;

@@ -33,8 +33,7 @@ const seed = () => applyGallerySeed({
   files,
   actorId,
   namespace: 'hrpf/dev',
-  provider,
-  scanner: async () => 'clean'
+  provider
 });
 describe('Gallery archive import and preview compatibility', {
   timeout: 120000
@@ -172,17 +171,7 @@ describe('Gallery archive import and preview compatibility', {
     assert.equal(results.find(row => row.key === three!.key)!.status, 'unmanaged-preserved');
     assert.equal(uploads, 1);
   });
-  it('fails scans, changed bytes and invalid actors before any draft or provider write', async () => {
-    await assert.rejects(applyGallerySeed({
-      manifest,
-      files,
-      actorId,
-      namespace: 'hrpf/dev',
-      provider,
-      scanner: async () => 'infected'
-    }));
-    assert.equal(await GalleryItem.countDocuments(), 0);
-    assert.equal(uploads, 0);
+  it('rejects changed bytes and invalid actors before any draft or provider write', async () => {
     const key = files.keys().next().value!;
     const original = files.get(key)!;
     files.set(key, Buffer.from('changed'));
@@ -292,7 +281,7 @@ describe('Gallery archive import and preview compatibility', {
     assert.equal(uploads, 4);
     assert.equal(await GalleryItem.countDocuments(), 4);
     const scanned: number[] = [];
-    const options = { manifest: archive, files: archiveFiles, actorId, namespace: 'hrpf/dev', provider, scanner: async () => 'clean' as const };
+    const options = { manifest: archive, files: archiveFiles, actorId, namespace: 'hrpf/dev', provider };
     const results = await applyGallerySeed({ ...options, progress: value => scanned.push(value.completed) });
     assert.equal(scanned.length, 200);
     assert.equal(scanned.at(-1), 200);
@@ -325,35 +314,23 @@ describe('Gallery archive import and preview compatibility', {
     assert.equal(uploads, 176);
     assert.equal(await AuditLog.countDocuments(), audits);
   });
-  it('rejects a scan failure at the end of the full archive before uploading or importing anything', async () => {
+  it('rejects corrupted bytes at the end of the full archive before any provider or database write', async () => {
     const archive = await loadGalleryManifest();
     const archiveFiles = await galleryFiles(archive, fileURLToPath(galleryAssetRoot));
-    let scans = 0;
-    await assert.rejects(applyGallerySeed({
-      manifest: archive, files: archiveFiles, actorId, namespace: 'hrpf/dev', provider,
-      scanner: async () => ++scans === 200 ? 'infected' : 'clean'
-    }));
-    assert.equal(scans, 200);
+    const last = archive.records.at(-1)!;
+    const source = archive.files.find(file => last.files.includes(file.id) && file.id.endsWith(':webp'))!;
+    archiveFiles.set(source.id, Buffer.from('corrupted last archive image'));
+    await assert.rejects(applyGallerySeed({ manifest: archive, files: archiveFiles, actorId, namespace: 'hrpf/dev', provider }));
     assert.equal(uploads, 0);
     assert.equal(await GalleryItem.countDocuments(), 0);
     assert.equal(await SourceImport.countDocuments(), 0);
-    scans = 0;
-    await assert.rejects(applyGallerySeed({
-      manifest: archive, files: archiveFiles, actorId, namespace: 'hrpf/dev', provider,
-      scanner: async () => {
-        if (++scans === 200) await User.updateOne({ _id: actorId }, { $set: { active: false } });
-        return 'clean';
-      }
-    }));
-    assert.equal(await GalleryItem.countDocuments(), 0);
-    assert.equal(uploads, 0);
   });
   it('resumes a partially uploaded archive without re-uploading its completed releases', async () => {
     const archive = await loadGalleryManifest();
     const archiveFiles = await galleryFiles(archive, fileURLToPath(galleryAssetRoot));
     const store = provider.store;
     let attempts = 0;
-    const options = { manifest: archive, files: archiveFiles, actorId, namespace: 'hrpf/dev', provider, scanner: async () => 'clean' as const };
+    const options = { manifest: archive, files: archiveFiles, actorId, namespace: 'hrpf/dev', provider };
     provider.store = async (...args) => {
       if (++attempts === 7) throw new Error('Simulated provider interruption');
       return store(...args);

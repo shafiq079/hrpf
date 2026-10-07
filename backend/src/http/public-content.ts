@@ -28,7 +28,7 @@ export function publicBlocks(blocks: { type: string; text?: string | null; items
 }
 export async function releasedAsset(assetId: mongoose.Types.ObjectId | undefined, entityType: string, entityId: mongoose.Types.ObjectId) {
   if (!assetId) return null;
-  return Asset.findOne({ _id: assetId, entityType, entityId, purpose: entityType === 'Certificate' ? 'certificate' : 'content', deliveryType: 'authenticated', visibility: 'public', scanStatus: 'clean', claimStatus: 'claimed' }).select('format bytes width height').lean();
+  return Asset.findOne({ _id: assetId, entityType, entityId, purpose: entityType === 'Certificate' ? 'certificate' : 'content', deliveryType: 'authenticated', visibility: 'public', scanStatus: { $in: ['clean', 'type_checked'] }, claimStatus: 'claimed' }).select('format bytes width height').lean();
 }
 export function publicRouter(provider: UploadProvider) {
   const router = Router();
@@ -114,7 +114,7 @@ export function publicRouter(provider: UploadProvider) {
       if (kind !== 'gallery') Object.assign(filter, { $expr: { $ne: [`$${field}.assetId`, { $ifNull: [kind === 'reports' ? '$restrictedOriginal.assetId' : '$original.assetId', null] }] } });
       // Join before pagination/counting: a missing, restricted or mismatched file is never listed.
       const results = await model.aggregate([
-        { $match: filter }, { $lookup: { from: Asset.collection.name, let: { file: `$${field}.assetId`, entity: '$_id' }, pipeline: [{ $match: { $expr: { $and: [{ $eq: ['$_id', '$$file'] }, { $eq: ['$entityId', '$$entity'] }, { $eq: ['$entityType', entityType] }] }, purpose: kind === 'certificates' ? 'certificate' : 'content', deliveryType: 'authenticated', visibility: 'public', scanStatus: 'clean', claimStatus: 'claimed', ...(kind === 'reports' ? { format: 'pdf' } : kind === 'gallery' ? { format: { $in: ['jpg', 'jpeg', 'png', 'webp'] } } : {}) } }], as: 'released' } },
+        { $match: filter }, { $lookup: { from: Asset.collection.name, let: { file: `$${field}.assetId`, entity: '$_id' }, pipeline: [{ $match: { $expr: { $and: [{ $eq: ['$_id', '$$file'] }, { $eq: ['$entityId', '$$entity'] }, { $eq: ['$entityType', entityType] }] }, purpose: kind === 'certificates' ? 'certificate' : 'content', deliveryType: 'authenticated', visibility: 'public', scanStatus: { $in: ['clean', 'type_checked'] }, claimStatus: 'claimed', ...(kind === 'reports' ? { format: 'pdf' } : kind === 'gallery' ? { format: { $in: ['jpg', 'jpeg', 'png', 'webp'] } } : {}) } }], as: 'released' } },
         { $match: { 'released.0': { $exists: true } } }, { $sort: { sortOrder: 1, _id: 1 } },
         { $facet: { rows: [{ $skip: (page - 1) * limit }, { $limit: limit }], count: [{ $count: 'total' }] } },
       ]);
@@ -145,7 +145,7 @@ export function publicRouter(provider: UploadProvider) {
     const document = documentKind ? await ((documentKind === 'reports' ? Report : Certificate) as mongoose.Model<any>).findOne({ _id: value, releaseReview: 'approved', ...publicationFilter() }).lean() : null;
     const assetId = documentKind ? document?.[documentKind === 'reports' ? 'publicPdf' : 'publicFile']?.assetId : value;
     if (!assetId) throw missing();
-    const asset = await Asset.findOne({ _id: assetId, deliveryType: 'authenticated', visibility: 'public', scanStatus: 'clean', claimStatus: 'claimed', purpose: { $in: ['content', 'certificate'] } }).lean();
+    const asset = await Asset.findOne({ _id: assetId, deliveryType: 'authenticated', visibility: 'public', scanStatus: { $in: ['clean', 'type_checked'] }, claimStatus: 'claimed', purpose: { $in: ['content', 'certificate'] } }).lean();
     if (!asset?.entityId || asset.purpose !== (asset.entityType === 'Certificate' ? 'certificate' : 'content')) throw missing();
     let released = false;
     switch (asset.entityType) {

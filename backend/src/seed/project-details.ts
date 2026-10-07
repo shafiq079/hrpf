@@ -16,7 +16,6 @@ import { digest } from "../security/crypto.js";
 import { bindProjectMedia } from "../services/project-media.js";
 import {
   inspectUpload,
-  type Scanner,
   type UploadProvider,
   type Upload,
 } from "../services/uploads.js";
@@ -238,10 +237,9 @@ export async function applyProjectDetails(options: {
   actorId: string;
   namespace: string;
   provider: UploadProvider;
-  scanner: Scanner;
   report?: (result: ProjectDetailsResult) => void;
 }) {
-  const { manifest, uploads, actorId, namespace, provider, scanner } = options;
+  const { manifest, uploads, actorId, namespace, provider } = options;
   if (namespace !== "hrpf/dev")
     throw new Error("Project enrichment is limited to hrpf/dev.");
   await actorAllowed(actorId);
@@ -254,8 +252,7 @@ export async function applyProjectDetails(options: {
     )
       throw new Error("Project enrichment bytes changed.");
     await inspectUpload(upload);
-    if ((await scanner(upload.bytes)) !== "clean")
-      throw new Error("A project file failed the security scan.");
+
   }
   for (const entry of manifest.projects)
     for (const item of [...entry.gallery, ...entry.documents])
@@ -282,7 +279,7 @@ export async function applyProjectDetails(options: {
         entityId: initial.row._id,
         sha256: source.sha256,
         purpose: "content",
-        scanStatus: "clean",
+        scanStatus: { $in: ['clean', 'type_checked'] },
         claimStatus: "staged",
         stagingExpiresAt: { $gt: new Date() },
       });
@@ -299,7 +296,7 @@ export async function applyProjectDetails(options: {
             sha256: source.sha256,
             ownerId: actorId,
             purpose: "content",
-            scanStatus: "clean",
+            scanStatus: 'type_checked',
             visibility: "restricted",
             entityType: "Project",
             entityId: initial.row._id,

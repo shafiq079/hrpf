@@ -1,0 +1,64 @@
+# Free API + free Redis. MongoDB Atlas, Cloudinary, Turnstile and email credentials
+# are supplied privately. There is no scanner or separate worker service.
+# Deploy from development for testing; choose main after the reviewed changes merge.
+services:
+  - type: web
+    name: hrpf-api
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health/ready
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: CLOUDINARY_NAMESPACE
+        value: hrpf/prod
+      - key: MONGODB_DB_NAME
+        value: hrpf_prod
+      - key: EMAIL_PROVIDER
+        value: resend
+      - key: EMAIL_DELIVERY_MODE
+        value: embedded
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: hrpf-redis
+          property: connectionString
+      - key: FRONTEND_URL
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        sync: false
+      - key: JWT_REFRESH_SECRET
+        sync: false
+      - key: DATA_ENCRYPTION_KEY
+        sync: false
+      - key: CNIC_HASH_KEY
+        sync: false
+      - key: TURNSTILE_SECRET_KEY
+        sync: false
+      - key: TURNSTILE_HOSTNAMES
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      - key: ADMIN_NOTIFY_EMAILS
+        sync: false
+  - type: keyvalue
+    name: hrpf-redis
+    plan: free
+    maxmemoryPolicy: noeviction
+    ipAllowList: []

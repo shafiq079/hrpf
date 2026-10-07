@@ -292,7 +292,7 @@ export default function ProjectEditor({
         setReviewed(false);
       }
       setNotice(
-        "Files uploaded and scanned. Save the project to keep them in your draft.",
+        "Files uploaded and checked. Save the project to keep them in your draft.",
       );
     } catch (failure) {
       setError(

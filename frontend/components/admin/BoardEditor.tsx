@@ -507,7 +507,7 @@ export default function BoardEditor({
           <section className="rounded-lg border border-border bg-white p-6 sm:p-8">
             <h2 className="font-serif text-2xl text-navy">Photograph</h2>
             <p className="mt-3 text-sm text-muted">
-              JPG, PNG or WebP up to 5 MB. Photographs are scanned and remain
+              JPG, PNG or WebP up to 5 MB. Photographs are checked and remain
               private until publication.
             </p>
             <label className="mt-5 inline-flex cursor-pointer items-center gap-2 rounded border border-border px-4 py-3 text-sm font-semibold">

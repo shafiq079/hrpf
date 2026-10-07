@@ -37,7 +37,7 @@ The editor previews the same reader component using authenticated file URLs.
 Existing paragraph/heading/list blocks remain visible and editable. New articles
 can use just the introduction and structured sections. Blank articles cannot be
 published. Images are JPG/PNG/WebP up to 5 MB; PDFs up to 10 MB. Uploads retain
-existing type inspection and ClamAV scanning.
+existing type, signature and size inspection.
 
 Saving an existing article makes it a private draft. Publication requires an
 explicit release attestation. Owned unexpired staged files or files already bound

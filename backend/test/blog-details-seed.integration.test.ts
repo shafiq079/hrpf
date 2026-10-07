@@ -46,14 +46,13 @@ const provider: UploadProvider = {
   remove: async () => {},
   read: async () => new Response(new Uint8Array([1, 2, 3])),
 };
-const enrich = (scanner = async () => "clean" as const) =>
+const enrich = () =>
   applyBlogDetails({
     manifest,
     uploads,
     actorId,
     namespace: "hrpf/dev",
     provider,
-    scanner,
   });
 describe(
   "Published homepage blog detail enrichment",
@@ -110,7 +109,6 @@ describe(
         actorId,
         namespace: "hrpf/dev",
         provider,
-        scanner: async () => "clean",
       });
     });
     it("enriches the three original blogs atomically with public gallery and PDFs and leaves projects/identity intact", async () => {
@@ -228,7 +226,7 @@ describe(
       assert.equal((await BlogPost.findById(row!._id))!.gallery.length, 0);
       assert.equal(stores, 12);
     });
-    it("rejects corrupt bytes, malware and unauthorized actors before uploads or detail writes", async () => {
+    it("rejects corrupt bytes and unauthorized actors before uploads or detail writes", async () => {
       const id = manifest.blogs[0]!.gallery[0]!.fileId,
         original = uploads.get(id)!;
       uploads.set(id, { ...original, bytes: Buffer.from("corrupt") });
@@ -237,7 +235,6 @@ describe(
       } finally {
         uploads.set(id, original);
       }
-      await assert.rejects(enrich(async () => "infected" as never));
       await User.updateOne(
         { _id: actorId },
         { $set: { role: "case_manager" } },

@@ -24,7 +24,7 @@ available as browser fallbacks. Pagination continues to use public approved reco
    Certificates collect issuer, optional reference, issue date and validity dates.
 3. Upload a **reviewed public copy**: reports require PDF up to 10 MB;
    certificates accept PDF up to 10 MB or JPG/PNG/WebP up to 5 MB. Convert Word
-   documents to PDF first. Files undergo the existing MIME/signature and ClamAV checks.
+   documents to PDF first. Files undergo the existing MIME/signature and size checks.
 4. Inspect the attached file and public-card preview, save a private draft, then
    attest review and publish. A public edition requires notes explaining omissions.
 

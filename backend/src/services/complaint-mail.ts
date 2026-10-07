@@ -36,7 +36,7 @@ export async function complaintMail(env: Environment, provider: UploadProvider, 
   if (files.length > 5 || files.reduce((sum, { file }) => sum + file.bytes, 0) > COMPLAINT_MAX_BYTES) throw unavailable();
   const attachments: ComplaintAttachment[] = [];
   for (const { label, file } of files) {
-    const asset = await Asset.findOne({ _id: file.assetId, purpose: 'complaint', entityType: 'complaint', entityId: row._id, claimStatus: 'claimed', visibility: 'restricted', deliveryType: 'authenticated', scanStatus: 'clean' });
+    const asset = await Asset.findOne({ _id: file.assetId, purpose: 'complaint', entityType: 'complaint', entityId: row._id, claimStatus: 'claimed', visibility: 'restricted', deliveryType: 'authenticated', scanStatus: { $in: ['clean', 'type_checked'] } });
     if (!asset || asset.publicId !== file.publicId || asset.sha256 !== file.sha256 || asset.bytes !== file.bytes || asset.format !== file.format || asset.resourceType !== file.resourceType || !['jpg', 'jpeg', 'png', 'webp', 'pdf'].includes(asset.format)) throw unavailable();
     const response = await provider.read(asset);
     if (!response.ok || !response.body) throw unavailable();

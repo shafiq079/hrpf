@@ -1049,7 +1049,7 @@
     },
     "/api/form-uploads": {
       "post": {
-        "summary": "Scan and stage one restricted file; JPG/PNG/WebP 5 MB or PDF 10 MB",
+        "summary": "Inspect type and stage one restricted file; JPG/PNG/WebP 5 MB or PDF 10 MB",
         "security": [
           {
             "formTicketHeader": []
@@ -1101,7 +1101,10 @@
                         },
                         "scanStatus": {
                           "type": "string",
-                          "const": "clean"
+                          "enum": [
+                            "clean",
+                            "type_checked"
+                          ]
                         }
                       },
                       "required": [
@@ -1154,7 +1157,7 @@
     },
     "/api/admin/assets": {
       "post": {
-        "summary": "Scan and stage one restricted file; JPG/PNG/WebP 5 MB or PDF 10 MB",
+        "summary": "Inspect type and stage one restricted file; JPG/PNG/WebP 5 MB or PDF 10 MB",
         "security": [
           {
             "csrfHeader": [],
@@ -1198,7 +1201,10 @@
                         },
                         "scanStatus": {
                           "type": "string",
-                          "const": "clean"
+                          "enum": [
+                            "clean",
+                            "type_checked"
+                          ]
                         }
                       },
                       "required": [

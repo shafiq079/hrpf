@@ -35,7 +35,7 @@ export async function bindDocumentFile(
     const asset = await Asset.findOne({
       _id: value,
       purpose: entity === "Report" ? "content" : "certificate",
-      scanStatus: "clean",
+      scanStatus: { $in: ['clean', 'type_checked'] },
       deliveryType: "authenticated",
       $or: [
         {

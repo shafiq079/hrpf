@@ -96,7 +96,7 @@ const sections: PolicySection[] = [
           details and uploaded files is emailed to your entered email address and
           HRPF’s designated administrators. These copies contain sensitive identity
           information. Check your email address carefully before submitting.
-          Website storage, file scanning, verification and email providers process
+          Website storage, verification and email providers process
           the information needed to operate this service.
         </p>
       </>

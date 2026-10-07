@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import { Asset, AuditLog, Counter, SourceImport, User } from '../domain/models.js';
 import { can } from '../security/permissions.js';
 import { digest } from '../security/crypto.js';
-import { inspectUpload, type Scanner, type UploadProvider } from '../services/uploads.js';
+import { inspectUpload, type UploadProvider } from '../services/uploads.js';
 import { verifySources } from './files.js';
 import { importRecord, type SeedResult } from './importer.js';
 import { recordChecksum, seedId, validateManifest, type Manifest, type SeedRecord } from './manifest.js';
@@ -49,7 +49,7 @@ export async function publishHomepageRecord(manifest: Manifest, record: SeedReco
       if (!row) return { key: record.key, status: 'admin-preserved' } as const;
       const source = manifest.files.find(file => record.files.includes(file.id) && file.id.startsWith('gallery:'))!;
       const asset = await Asset.findOne({ _id: assetId, ownerId: actorId, entityType: record.kind, entityId: row._id, sha256: source.sha256, bytes: source.bytes,
-        scanStatus: 'clean', deliveryType: 'authenticated', resourceType: 'image', format: 'webp', purpose: 'content', claimStatus: 'staged', visibility: 'restricted', stagingExpiresAt: { $gt: new Date() } }).session(session);
+        scanStatus: { $in: ['clean', 'type_checked'] }, deliveryType: 'authenticated', resourceType: 'image', format: 'webp', purpose: 'content', claimStatus: 'staged', visibility: 'restricted', stagingExpiresAt: { $gt: new Date() } }).session(session);
       if (!asset) throw new Error('A clean owned homepage cover is required.');
       asset.claimStatus = 'claimed'; asset.visibility = 'public'; asset.set('stagingExpiresAt', undefined);
       await asset.save({ session });
@@ -63,18 +63,18 @@ export async function publishHomepageRecord(manifest: Manifest, record: SeedReco
     });
   } finally { await session.endSession(); }
 }
-export async function applyHomepageSeed(options: { manifest: Manifest; files: Map<string, Buffer>; actorId: string; namespace: string; provider: UploadProvider; scanner: Scanner; report?: (result: HomepageResult) => void }) {
-  const { manifest, files, actorId, namespace, provider, scanner } = options;
+export async function applyHomepageSeed(options: { manifest: Manifest; files: Map<string, Buffer>; actorId: string; namespace: string; provider: UploadProvider; report?: (result: HomepageResult) => void }) {
+  const { manifest, files, actorId, namespace, provider } = options;
   if (namespace !== 'hrpf/dev') throw new Error('Homepage setup is limited to hrpf/dev.');
   if (manifest.records.some(record => !['Project', 'BlogPost'].includes(record.kind))) throw new Error('Only homepage projects and news may be imported.');
   await actorAllowed(actorId);
-  // Verify and scan the complete batch before the first DB/provider write.
+  // Verify and inspect the complete batch before the first DB/provider write.
   for (const record of manifest.records) {
     const source = manifest.files.find(file => record.files.includes(file.id) && file.id.startsWith('gallery:'));
     const bytes = source && files.get(source.id);
     if (!source || !bytes || bytes.length !== source.bytes || digest(bytes) !== source.sha256) throw new Error('A verified cover is missing.');
     await inspectUpload({ bytes, filename: source.path, mime: 'image/webp' });
-    if (await scanner(bytes) !== 'clean') throw new Error('A homepage cover failed the security scan.');
+
   }
   const results: HomepageResult[] = [];
   for (const record of manifest.records) {
@@ -86,10 +86,10 @@ export async function applyHomepageSeed(options: { manifest: Manifest; files: Ma
     const bytes = files.get(source.id);
     if (!bytes || digest(bytes) !== source.sha256) throw new Error('A verified cover is missing.');
     // Recover a staged cover after an interruption, instead of uploading again.
-    let asset = await Asset.findOne({ ownerId: actorId, entityType: record.kind, entityId: seedId(record.key), sha256: source.sha256, scanStatus: 'clean', claimStatus: 'staged', stagingExpiresAt: { $gt: new Date() } });
+    let asset = await Asset.findOne({ ownerId: actorId, entityType: record.kind, entityId: seedId(record.key), sha256: source.sha256, scanStatus: { $in: ['clean', 'type_checked'] }, claimStatus: 'staged', stagingExpiresAt: { $gt: new Date() } });
     if (!asset) {
       const stored = await provider.store({ bytes, filename: source.path, mime: 'image/webp' }, `${namespace}/content`, 'webp');
-      try { asset = await Asset.create({ ...stored, sha256: source.sha256, ownerId: actorId, purpose: 'content', visibility: 'restricted', scanStatus: 'clean', entityType: record.kind, entityId: seedId(record.key), stagingExpiresAt: new Date(Date.now() + 86400000) }); }
+      try { asset = await Asset.create({ ...stored, sha256: source.sha256, ownerId: actorId, purpose: 'content', visibility: 'restricted', scanStatus: 'type_checked', entityType: record.kind, entityId: seedId(record.key), stagingExpiresAt: new Date(Date.now() + 86400000) }); }
       catch (error) { await provider.remove(stored).catch(() => {}); throw error; }
     }
     const result = await publishHomepageRecord(manifest, record, actorId, asset.id);

@@ -397,7 +397,7 @@ export default function ReportViolationForm() {
               </h3>
               <p className="mb-5 mt-2 text-sm text-muted">
                 Five files maximum in total. Combined size must be no more than
-                15 MB. Files are scanned before your complaint is saved.
+                15 MB. File types and sizes are checked before your complaint is saved.
               </p>
               <div className="space-y-6">
                 <FileChoice

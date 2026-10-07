@@ -1,5 +1,16 @@
 # HRPF Decisions
 
+## Current deployment decision — 2026-10-07
+
+The owner explicitly removed ClamAV to support a Render free deployment. New
+uploads and seeds require type/signature/size validation, not antivirus scanning;
+existing clean assets remain compatible. HTTPS email via Resend and an embedded
+Mongo outbox processor remove the need for SMTP ports or a paid worker. See
+[RENDER_FREE.md](RENDER_FREE.md) for configuration, sleep/quota limits and owner
+acceptance. Earlier scanner/standalone-worker requirements below are historical
+and are superseded by this decision. Development remains the working branch.
+
+
 ## 2026-10-06 — Populate the project redesign for review
 
 - Owner explicitly requests updating existing seeded project data rather than

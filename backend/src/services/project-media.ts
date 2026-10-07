@@ -54,7 +54,7 @@ export async function bindContentMedia(
       _id: request.assetId,
       purpose: "content",
       deliveryType: "authenticated",
-      scanStatus: "clean",
+      scanStatus: { $in: ['clean', 'type_checked'] },
       resourceType: request.kind === "pdf" ? "raw" : "image",
       format:
         request.kind === "pdf"
@@ -73,7 +73,7 @@ export async function bindContentMedia(
       throw new ApiError(
         400,
         "INVALID_ASSET",
-        "Use a clean bound file or your own unexpired uploaded file.",
+        "Use a validated bound file or your own unexpired uploaded file.",
       );
     asset.visibility = visibility;
     asset.claimStatus = "claimed";

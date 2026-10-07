@@ -14,7 +14,7 @@ npm run seed:gallery -- --apply
 
 The plain command verifies all 200 bundled WebP files, both original source CSVs,
 checksums and descriptions offline. `--database` reads a preservation plan without
-writes. `--apply` scans the complete collection before any new import or upload,
+writes. `--apply` inspects the complete collection before any new import or upload,
 then uploads and publishes canonical source images:
 
 | Collection | Source entries | Published once | Hidden duplicate entries |
@@ -49,9 +49,9 @@ The provided sources have no individual interview video
 links, so no interview is seeded; add real YouTube or Vimeo links in the TV
 Interviews admin tab.
 
-Use the existing private MongoDB, Cloudinary and ClamAV configuration and existing
+Use the existing private MongoDB and Cloudinary configuration and existing
 active content administrator/editor in `SEED_ACTOR_EMAIL`. Applying requires
-`NODE_ENV=development` and `CLOUDINARY_NAMESPACE=hrpf/dev`. ClamAV must be running.
+`NODE_ENV=development` and `CLOUDINARY_NAMESPACE=hrpf/dev`. No antivirus process is required.
 Actual credentials remain in private configuration.
 
 The import uses `gallery-archive-manifest.json` and `gallery-presentations.json`.
@@ -66,15 +66,13 @@ publications and later changes. A separate preview checkpoint prevents repeated
 publication; failed/interrupted runs recover clean unexpired staged images. Each
 image binding, release, checkpoint and audit entry commits atomically.
 
-Progress reports `scan`, `database`, `upload` and `publication` phases, including
-scan progress every ten images and a final count by result status. Failures
+Progress reports `validate`, `database`, `upload` and `publication` phases, including
+validation progress every ten images and a final count by result status. Failures
 identify the phase without echoing credentials/provider responses. Completed
-records are safe to rerun. Scanning and checksum failures stop the complete batch
+records are safe to rerun. Inspection and checksum failures stop the complete batch
 before any new content import or provider upload. If a service stops, restart it
 and run the same `--apply` command again. Completed publications are preserved;
 unfinished records recover clean unexpired staged assets. The import is sequential
-to keep provider and scanner load bounded.
+to keep provider load bounded.
 
-ClamAV must be listening at the privately configured host/port before `--apply`.
-This change does not alter service startup or the previously deferred production
-scanner setup. No private credentials belong in these files.
+No antivirus process is required. No private credentials belong in these files.

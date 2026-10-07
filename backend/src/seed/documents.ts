@@ -13,7 +13,6 @@ import { can } from "../security/permissions.js";
 import { digest } from "../security/crypto.js";
 import {
   inspectUpload,
-  type Scanner,
   type UploadProvider,
 } from "../services/uploads.js";
 import { bindDocumentFile } from "../services/document-media.js";
@@ -213,16 +212,15 @@ export async function applyDocumentSeed(options: {
   actorId: string;
   namespace: string;
   provider: UploadProvider;
-  scanner: Scanner;
   report?: (result: DocumentSeedResult) => void;
   phase?: (phase: string) => void;
 }) {
-  const { manifest, files, actorId, namespace, provider, scanner } = options;
+  const { manifest, files, actorId, namespace, provider } = options;
   if (namespace !== "hrpf/dev")
     throw new Error("Document setup is limited to hrpf/dev.");
   await actorAllowed(actorId);
-  options.phase?.("scan");
-  // Inspect and scan every release before any external storage or content writes.
+  options.phase?.("validate");
+  // Inspect every release before any external storage or content writes.
   for (const release of manifest.releases) {
     const bytes = files.get(release.file.id);
     if (
@@ -238,8 +236,6 @@ export async function applyDocumentSeed(options: {
         ? "application/pdf"
         : "image/jpeg",
     });
-    if ((await scanner(bytes)) !== "clean")
-      throw new Error("Public document scan failed.");
   }
   const results: DocumentSeedResult[] = [];
   for (const record of manifest.source.records) {
@@ -262,7 +258,7 @@ export async function applyDocumentSeed(options: {
           entityId: seedId(record.key),
           sha256: release.file.sha256,
           purpose,
-          scanStatus: "clean",
+          scanStatus: { $in: ['clean', 'type_checked'] },
           claimStatus: "staged",
           stagingExpiresAt: { $gt: new Date() },
         });
@@ -286,7 +282,7 @@ export async function applyDocumentSeed(options: {
               ownerId: actorId,
               purpose,
               visibility: "restricted",
-              scanStatus: "clean",
+              scanStatus: 'type_checked',
               entityType: record.kind,
               entityId: seedId(record.key),
               stagingExpiresAt: new Date(Date.now() + 86400000),

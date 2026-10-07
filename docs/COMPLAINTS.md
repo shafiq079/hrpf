@@ -21,7 +21,7 @@ Use JPG/PNG/WebP images up to 5 MB each and PDFs up to 10 MB each. Up to five fi
 are allowed overall, with at most three in either optional group and **15 MB
 combined**. The smaller combined budget leaves room for MIME/base64 expansion;
 SMTP providers may impose additional limits. CNIC proof must be an image.
-Every upload still passes signature/type checks and ClamAV before storage. New
+Every upload still passes signature/type checks before storage. New
 complaint evidence is stored as authenticated raw files, including images, so
 provider image transformations cannot alter the original submitted bytes.
 
@@ -41,7 +41,7 @@ No real complaint fixture is seeded into the owner's database.
 
 ## Complete email copies
 
-A complaint transaction claims its exact clean restricted assets, encrypts the
+A complaint transaction claims its exact validated restricted assets, encrypts the
 CNIC with entity-bound AES-256-GCM, allocates the reference and queues one user
 copy plus one separate copy per distinct configured ADMIN_NOTIFY_EMAILS address.
 An empty admin recipient configuration blocks intake rather than silently
@@ -51,17 +51,17 @@ separate. Legacy complaint acknowledgements are not silently upgraded.
 The worker renders plain text and escaped HTML with all submitted fields, consent
 version/time, reference, submission time and file names. It attaches **every
 submitted file** using exact original bytes. The worker verifies each asset's
-purpose, claim, entity binding, restricted authenticated delivery, clean scan,
+purpose, claim, entity binding, restricted authenticated delivery, accepted validation status,
 size and SHA-256 before sending. Reads are bounded with timeouts. There are no
 public attachment links, signed provider URLs, CNIC values, full form snapshots
 or attachment bytes in BullMQ job data; the job contains only an outbox ID.
 CNIC is decrypted only for an authorised detail read or complete email rendering.
 
-Missing SMTP, inaccessible files or a provider failure leave the complaint saved
+Missing email configuration, inaccessible files or a provider failure leave the complaint saved
 and the outbox failed/retryable. Eight automatic attempts are followed by manual
 admin retry. The lease allows bounded attachment reads plus SMTP transport time.
 The original complete form is immutable through review; internal notes, statuses
-and assignee changes are excluded from these submission copies. SMTP acceptance
+and assignee changes are excluded from these submission copies. Provider acceptance
 followed by a process crash can duplicate delivery; exactly-once email and inbox
 arrival are not promised. A stable Message-ID helps identify retries.
 
@@ -96,9 +96,21 @@ delivery state but cannot operate the outbox. `needs_info` records workflow stat
 a public supplementary-information portal or automated status emails are not
 part of this milestone.
 
+## Render free option and scanner removal
+
+ClamAV was removed at the owner's explicit request on 2026-10-07. Uploads still
+check signatures, MIME/extensions, quotas, ownership and SHA-256 integrity, but
+are not antivirus-scanned. New records are `type_checked`; historical `clean`
+files are accepted, while quarantined/infected files stay blocked. No reseed or
+migration is needed. Configure EMAIL_PROVIDER=resend and EMAIL_DELIVERY_MODE=embedded
+for full HTTPS email copies processed by the API without a separate worker.
+See [RENDER_FREE.md](RENDER_FREE.md) and root render.yaml for setup and free-tier
+sleep/quota limits. The following SMTP instructions remain an alternative for
+existing development configurations, not the Render free path.
+
 ## Private setup and Codespaces review
 
-Keep MongoDB, Redis, Cloudinary, ClamAV and existing security keys configured as
+Keep MongoDB, Redis, Cloudinary and existing security keys configured as
 before. Do not replace encryption keys for already-stored complaints.
 
 In `backend/.env` or Codespaces secrets, configure existing variables privately:
@@ -114,7 +126,7 @@ verification bypass in development. Missing widget configuration explains that
 online submission is unavailable rather than displaying a simulated success.
 
 After pulling development, start the existing backend and frontend in their
-separate terminals. Keep ClamAV running. In a **third terminal**, start email:
+separate terminals. In a **third terminal**, start email:
 
 ```bash
 cd /workspaces/hrpf/backend
@@ -130,8 +142,8 @@ mail delivery. No additional seed is needed.
 The owner's existing Cloudinary PDF delivery-policy rejection remains a separate
 account configuration issue. If private PDF delivery is also blocked, complete
 email copies with those files remain retryable until the provider is corrected;
-files are never omitted to claim success. Permanent scanner/worker hosting and
-Render production deployment remain later work.
+files are never omitted to claim success. See `RENDER_FREE.md` for Render free delivery; deployment still requires private
+provider configuration.
 
 ## Verification
 
@@ -142,4 +154,4 @@ wrongly bound files, roles, CSRF, versions, assignments and status histories.
 Browser-side submission tests cover lost upload/submission responses and size/type
 validation. Production SSR verifies the live complaint route, private admin route
 and updated privacy disclosure alongside existing navigation/content flows.
-Live owner SMTP/Cloudinary/Turnstile acceptance still depends on private setup.
+Live owner email/Cloudinary/Turnstile acceptance still depends on private setup.
