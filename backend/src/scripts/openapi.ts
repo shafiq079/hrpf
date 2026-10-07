@@ -7,6 +7,7 @@ import { publicationInput } from '../http/publication.js';
 import { publicSettingSchemas } from '../http/public-content.js';
 import { blogDetailsInput } from '../http/blog-details.js';
 import { projectDetailsInput } from '../http/project-details.js';
+import { reportInput, certificateInput } from '../http/document-content.js';
 import { galleryInput, interviewInput } from '../http/media-content.js';
 import { projectInput, newsInput } from '../http/managed-content.js';
 import { roles } from '../domain/models.js';
@@ -59,7 +60,7 @@ for (const [path, admin] of [['/api/form-uploads', false], ['/api/admin/assets',
   value.requestBody = { required: true, content: { 'multipart/form-data': { schema: { type: 'object', additionalProperties: false, required: ['file'], properties: { file: { type: 'string', format: 'binary' } } } } } };
 }
 operation('/api/admin/assets/{id}', 'delete', 'Queue deletion of your own unused staged asset', z.object({ status: z.literal('deletion_queued') }), { parameters: [parameter('id')], security: [{ ...csrfSecurity, ...adminSecurity }] });
-operation('/api/admin/assets/{id}/content', 'get', 'Authorize and stream restricted file; no provider URL', z.unknown(), { parameters: [parameter('id')], security: [adminSecurity] });
+operation('/api/admin/assets/{id}/content', 'get', 'Authorize and stream restricted file; optional inline preview; no provider URL', z.unknown(), { parameters: [parameter('id'), { name: 'preview', in: 'query', schema: { type: 'string', enum: ['1'] } }], security: [adminSecurity] });
 const assetGet = paths['/api/admin/assets/{id}/content']!.get as Record<string, unknown>;
 (assetGet.responses as Record<string, unknown>)['200'] = { description: 'Private no-store attachment, streamed after role authorization.', content: { 'application/octet-stream': { schema: { type: 'string', format: 'binary' } } } };
 operation('/api/admin/audit', 'get', 'Read up to 100 redacted append-only audit records; admin/super_admin', z.array(z.object({ _id: z.string(), action: z.string(), entityType: z.string(), entityId: z.string().optional(), outcome: z.enum(['success', 'denied']), changedFields: z.array(z.string()).optional(), createdAt: z.string() })), { security: [adminSecurity] });
@@ -81,8 +82,8 @@ const listSchemas = {
   blogs: z.object({ title: z.string(), slug: z.string(), excerpt: z.string(), publishedAt: z.string() }),
   gallery: z.object({ id: z.string(), title: z.string(), file: z.string(), category: z.enum(['in-action', 'media-coverage']), alt: z.string(), caption: z.string(), treatment: z.enum(['ORIGINAL', 'AI_RESTORATION']), mediaType: z.enum(['newspaper','photo','graphic']), sourceName: z.string(), sourceUrl: z.string(), eventDate: z.string().optional(), width: z.number().optional(), height: z.number().optional() }),
   interviews: z.object({ id: z.string(), title: z.string(), description: z.string(), provider: z.enum(['youtube','vimeo']), watchUrl: z.string(), embedUrl: z.string(), thumbnail: z.string().nullable(), thumbnailAlt: z.string(), sourceName: z.string(), eventDate: z.string().optional() }),
-  reports: z.object({ id: z.string(), title: z.string(), file: z.string(), slug: z.string(), year: z.number().optional(), summary: z.string(), pages: z.number().optional(), download: z.string() }),
-  certificates: z.object({ id: z.string(), title: z.string(), file: z.string(), issuer: z.string(), reference: z.string().optional(), issuedAt: z.string().optional(), validFrom: z.string().optional(), expiresAt: z.string().optional() }),
+  reports: z.object({ id: z.string(), title: z.string(), file: z.string(), slug: z.string(), year: z.number().optional(), summary: z.string(), pages: z.number().optional(), download: z.string(), view: z.string(), format: z.string(), bytes: z.number(), edition: z.enum(['complete','public-edition']), releaseNote: z.string(), coverageStart: z.string().optional(), coverageEnd: z.string().optional() }),
+  certificates: z.object({ id: z.string(), title: z.string(), file: z.string(), issuer: z.string(), reference: z.string().optional(), issuedAt: z.string().optional(), validFrom: z.string().optional(), expiresAt: z.string().optional(), summary: z.string(), releaseNote: z.string(), view: z.string(), download: z.string(), format: z.string(), bytes: z.number() }),
 };
 for (const [path, schema] of Object.entries(listSchemas)) {
   operation(`/api/${path}`, 'get', 'Read explicitly projected published records; no provider URLs or private source fields', z.array(schema), { parameters: publicParameters });
@@ -95,6 +96,11 @@ for (const path of ['/api/public-assets/{id}', '/api/reports/{id}/download']) {
   operation(path, 'get', 'Recheck released entity and clean bound file before streaming; never expose restricted originals', z.unknown(), { parameters: [parameter('id')] });
   const op = paths[path]!.get as { responses: Record<string, unknown> };
   op.responses['200'] = { description: 'No-store reviewed file; PDF attachment or inline raster image. Report downloads increment after successful GET, never HEAD.', content: { 'application/octet-stream': { schema: { type: 'string', format: 'binary' } } } };
+}
+for (const action of ['view', 'download']) {
+  const path = `/api/documents/{kind}/{id}/${action}`;
+  operation(path,'get',`Stream a currently reviewed report or certificate for ${action}`,z.unknown(),{parameters:[{name:'kind',in:'path',required:true,schema:{type:'string',enum:['reports','certificates']}},parameter('id')]});
+  (paths[path]!.get as any).responses['200']={description:action === 'view' ? 'Inline reviewed PDF or raster image, with immediate withdrawal checks' : 'Attachment; only report download GETs increment the counter',content:{'application/octet-stream':{schema:{type:'string',format:'binary'}}}};
 }
 const kindParameter = { name: 'kind', in: 'path', required: true, schema: { type: 'string', enum: ['blog', 'project', 'board', 'gallery', 'interview', 'report', 'certificate', 'setting'] } };
 operation('/api/admin/publication/{kind}', 'get', 'Read bounded publication review records with versions; requires entity permission', z.array(z.record(z.string(), z.unknown())), { parameters: [kindParameter, { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 1000, default: 1 } }], security: [adminSecurity] });
@@ -123,6 +129,16 @@ for (const [kind, input] of [['gallery',galleryInput],['interviews',interviewInp
  for (const method of ['post','patch','delete'] as const) {
   const path = method === 'post' ? `/api/admin/${kind}` : `/api/admin/${kind}/{id}`;
   operation(path,method,method === 'delete' ? 'Delete current version and revoke images atomically' : 'Save private media draft; existing publication is withdrawn',z.object({id:z.string(),version:z.number(),status:z.enum(['draft','deleted'])}),{security:[{...csrfSecurity,...adminSecurity}],...(method === 'post' ? {status:'201'} : {parameters:[parameter('id')]})});
+  (paths[path]![method] as any).requestBody={required:true,content:{'application/json':{schema:jsonSchema(method === 'post' ? input : method === 'patch' ? input.extend({version:z.number().int().nonnegative()}) : z.object({version:z.number().int().nonnegative()}).strict())}}};
+ }
+}
+for (const [kind,input] of [['reports',reportInput],['certificates',certificateInput]] as const) {
+ const permission=kind === 'reports' ? 'content administrators and editors' : 'administrators';
+ operation(`/api/admin/${kind}`,'get',`List 20 document editor records with versions; ${permission}`,z.array(z.unknown()),{security:[adminSecurity],parameters:[{name:'page',in:'query',schema:{type:'integer',minimum:1,maximum:1000,default:1}}]});
+ operation(`/api/admin/${kind}/{id}`,'get','Read safe document fields and public-copy asset ID; excludes original and provider metadata',z.unknown(),{parameters:[parameter('id')],security:[adminSecurity]});
+ for (const method of ['post','patch','delete'] as const) {
+  const path=method === 'post' ? `/api/admin/${kind}` : `/api/admin/${kind}/{id}`;
+  operation(path,method,method === 'delete' ? `Delete version and revoke files atomically; ${permission}` : `Save a private document draft and withdraw any previous release; ${permission}`,z.object({id:z.string(),version:z.number(),status:z.enum(['draft','deleted'])}),{security:[{...csrfSecurity,...adminSecurity}],...(method === 'post' ? {status:'201'} : {parameters:[parameter('id')]})});
   (paths[path]![method] as any).requestBody={required:true,content:{'application/json':{schema:jsonSchema(method === 'post' ? input : method === 'patch' ? input.extend({version:z.number().int().nonnegative()}) : z.object({version:z.number().int().nonnegative()}).strict())}}};
  }
 }

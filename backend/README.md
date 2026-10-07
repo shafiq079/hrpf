@@ -230,3 +230,13 @@ verifies source files offline; `--database` gives a read-only plan. Scans comple
 before any new content import or upload, progress/summary counts are printed, and
 completed releases survive an interrupted run. No real interview links were
 supplied, so interviews are not fabricated.
+
+## Progress Reports and Certificates
+
+Manage future documents at `/admin/documents`; public pages remain under About.
+Use `npm run seed:documents -- --apply` to import the seven reviewed public copies
+with an active administrator and existing development services. The plain command
+verifies files offline, and `--database` plans without writes. See
+[import instructions](seed/DOCUMENTS.md) and [workflow](../docs/DOCUMENTS.md).
+The three report editions explain their omissions; four distinct certificate
+scans retain stated dates without implying renewal. Admin changes survive reruns.

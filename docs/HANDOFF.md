@@ -1,3 +1,19 @@
+# Current handoff: documents on development
+
+Progress Reports and Registration / Certificates now have public view/download
+cards, `/admin/documents`, versioned draft CRUD, private scanned uploads and
+transactional publication/revocation. The supplied-document importer bundles three
+labelled report public editions and four distinct certificate scans. Original
+source ZIPs remain private. See `docs/DOCUMENTS.md` and
+`backend/seed/DOCUMENTS.md` for scope, source omissions and Codespaces commands.
+
+This feature is on **development**. Main remains the merged Gallery release.
+Next in the original functional plan: **Board of Directors / Our Team**, then
+complaint workflow and Urdu translation. Global future-content performance work
+and permanent ClamAV hosting remain deferred until functional work is complete.
+
+---
+
 # HRPF handoff
 
 ## Current state and next task — 2026-10-07

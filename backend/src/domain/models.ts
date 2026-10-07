@@ -146,14 +146,14 @@ VideoInterview.schema.index({ reviewStatus: 1, sortOrder: 1 });
 export const Report = mongoose.model('Report', new Schema({
   seedKey: { ...text(200), unique: true, sparse: true },
   title: { type: localized, required: true }, slug: { ...requiredText(200), unique: true }, year: { type: Number, min: 1900, max: 2200 },
-  coverageStart: Date, coverageEnd: Date, summary: localized, publicPdf: assetRefSchema, restrictedOriginal: assetRefSchema,
+  coverageStart: Date, coverageEnd: Date, summary: localized, releaseNote: localized, edition: { type: String, enum: ['complete', 'public-edition'], default: 'complete' }, publicPdf: assetRefSchema, restrictedOriginal: assetRefSchema,
   cover: assetRefSchema, pages: Number, publishedAt: Date, sortOrder: { type: Number, default: 0 },
   downloadCount: { type: Number, default: 0 }, releaseReview: review,
 }, options));
 export const Certificate = mongoose.model('Certificate', new Schema({
   seedKey: { ...text(200), unique: true, sparse: true },
   title: { type: localized, required: true }, issuer: requiredText(300), reference: text(300), issuedAt: Date, validFrom: Date, expiresAt: Date,
-  original: assetRefSchema, publicFile: assetRefSchema, sortOrder: { type: Number, default: 0 }, publishedAt: Date, releaseReview: review,
+  summary: localized, releaseNote: localized, original: assetRefSchema, publicFile: assetRefSchema, sortOrder: { type: Number, default: 0 }, publishedAt: Date, releaseReview: review,
 }, options));
 export const ContactMessage = mongoose.model('ContactMessage', new Schema({
   name: requiredText(150), email: { ...requiredText(254), lowercase: true }, phone: text(30), subject: requiredText(200), message: requiredText(5000),

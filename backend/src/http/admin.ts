@@ -81,6 +81,7 @@ export function adminRouter(auth: ReturnType<typeof createAuth>, uploads: Upload
     res.status(201).json({ data: await uploads.admin(req, principal.id, purpose) });
   });
   router.get('/assets/:id/content', async (req, res) => {
+    const { preview } = validate(z.object({ preview: z.literal('1').optional() }).strict(), req.query);
     const id = validate(objectId, req.params.id), principal = res.locals.principal as Principal;
     const asset = await Asset.findOne({ _id: id, scanStatus: 'clean', claimStatus: { $ne: 'deleting' } });
     if (!asset) throw new ApiError(404, 'NOT_FOUND', 'File not found.');
@@ -90,7 +91,7 @@ export function adminRouter(auth: ReturnType<typeof createAuth>, uploads: Upload
     const source = await uploads.provider.read(asset);
     if (!source.body) throw new ApiError(503, 'SERVICE_UNAVAILABLE', 'The file is temporarily unavailable.');
     res.setHeader('Content-Type', asset.format === 'pdf' ? 'application/pdf' : `image/${asset.format === 'jpg' ? 'jpeg' : asset.format}`);
-    res.setHeader('Content-Disposition', `attachment; filename="document.${asset.format}"`);
+    res.setHeader('Content-Disposition', `${preview ? 'inline' : 'attachment'}; filename="document.${asset.format}"`);
     res.setHeader('Content-Length', asset.bytes); res.setHeader('Cache-Control', 'private, no-store');
     await pipeline(Readable.fromWeb(source.body as never), res);
   });

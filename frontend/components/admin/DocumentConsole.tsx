@@ -5,16 +5,20 @@ import Link from "next/link";
 import { FolderOpen, Plus, LogOut, Pencil, ExternalLink } from "lucide-react";
 import Container from "@/components/shared/Container";
 import { adminRequest } from "@/lib/admin-api";
-import GalleryEditor, { newMedia, type MediaRecord, type MediaKind } from "./GalleryEditor";
+import DocumentEditor, {
+  newDocument,
+  type DocumentRecord,
+  type DocumentKind,
+} from "./DocumentEditor";
 
 type User = { name: string; email: string; role: string };
-type MediaRow = MediaRecord & { id: string };
-export default function GalleryConsole() {
-  const [kind, setKind] = useState<MediaKind>("gallery");
+type DocumentRow = DocumentRecord & { id: string };
+export default function DocumentConsole() {
+  const [kind, setKind] = useState<DocumentKind>("reports");
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [rows, setRows] = useState<MediaRow[]>([]);
-  const [editor, setEditor] = useState<MediaRecord | null>(null);
+  const [rows, setRows] = useState<DocumentRow[]>([]);
+  const [editor, setEditor] = useState<DocumentRecord | null>(null);
   const [page, setPage] = useState(1);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -35,14 +39,14 @@ export default function GalleryConsole() {
       active = false;
     };
   }, []);
-  const loadMedia = useCallback(async () => {
+  const loadDocuments = useCallback(async () => {
     try {
-      setRows(await adminRequest<MediaRow[]>(`/admin/${kind}?page=${page}`));
+      setRows(await adminRequest<DocumentRow[]>(`/admin/${kind}?page=${page}`));
     } catch (failure) {
       setError(
         failure instanceof Error
           ? failure.message
-          : "Gallery records could not be loaded.",
+          : "Documents could not be loaded.",
       );
     } finally {
       setBusy(false);
@@ -51,7 +55,7 @@ export default function GalleryConsole() {
   useEffect(() => {
     if (!allowed || editor) return;
     let active = true;
-    adminRequest<MediaRow[]>(`/admin/${kind}?page=${page}`)
+    adminRequest<DocumentRow[]>(`/admin/${kind}?page=${page}`)
       .then((result) => {
         if (active) setRows(result);
       })
@@ -60,7 +64,7 @@ export default function GalleryConsole() {
           setError(
             failure instanceof Error
               ? failure.message
-              : "Gallery records could not be loaded.",
+              : "Documents could not be loaded.",
           );
       })
       .finally(() => {
@@ -110,18 +114,18 @@ export default function GalleryConsole() {
     setError("");
     setNotice("");
     try {
-      setEditor(await adminRequest<MediaRecord>(`/admin/${kind}/${id}`));
+      setEditor(await adminRequest<DocumentRecord>(`/admin/${kind}/${id}`));
     } catch (failure) {
       setError(
         failure instanceof Error
           ? failure.message
-          : "Gallery record could not be opened.",
+          : "Document could not be opened.",
       );
     } finally {
       setBusy(false);
     }
   }
-  async function act(row: MediaRow, action: "withdraw" | "delete") {
+  async function act(row: DocumentRow, action: "withdraw" | "delete") {
     if (
       !window.confirm(
         action === "delete"
@@ -137,7 +141,7 @@ export default function GalleryConsole() {
       await adminRequest(
         action === "delete"
           ? `/admin/${kind}/${row.id}`
-          : `/admin/publication/${kind === "gallery" ? "gallery" : "interview"}/${row.id}`,
+          : `/admin/publication/${kind === "reports" ? "report" : "certificate"}/${row.id}`,
         {
           method: action === "delete" ? "DELETE" : "POST",
           body: JSON.stringify(
@@ -152,9 +156,9 @@ export default function GalleryConsole() {
         },
       );
       setNotice(
-        action === "delete" ? "Media deleted." : "Media withdrawn.",
+        action === "delete" ? "Document deleted." : "Document withdrawn.",
       );
-      await loadMedia();
+      await loadDocuments();
     } catch (failure) {
       setError(
         failure instanceof Error
@@ -168,12 +172,30 @@ export default function GalleryConsole() {
   if (loading)
     return (
       <Container className="py-16">
-        <p role="status">Loading Gallery management…</p>
+        <p role="status">Loading document management…</p>
       </Container>
     );
   return (
     <Container className="py-10 sm:py-14">
-      {allowed && <nav aria-label="Content administration" className="mb-6 flex flex-wrap gap-5 text-sm font-semibold"><Link href="/admin/projects" className="text-teal-dark">Projects</Link><Link href="/admin/blogs" className="text-teal-dark">Blogs</Link><Link href="/admin/gallery" className="text-teal-dark">Gallery</Link><Link href="/admin/documents" className="text-teal-dark">Documents</Link></nav>}
+      {allowed && (
+        <nav
+          aria-label="Content administration"
+          className="mb-6 flex flex-wrap gap-5 text-sm font-semibold"
+        >
+          <Link href="/admin/projects" className="text-teal-dark">
+            Projects
+          </Link>
+          <Link href="/admin/blogs" className="text-teal-dark">
+            Blogs
+          </Link>
+          <Link href="/admin/gallery" className="text-teal-dark">
+            Gallery
+          </Link>
+          <Link href="/admin/documents" className="text-teal-dark">
+            Documents
+          </Link>
+        </nav>
+      )}
       {user && (
         <div className="mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
           <p className="text-sm text-muted">
@@ -214,7 +236,8 @@ export default function GalleryConsole() {
           <p className="eyebrow">HRPF administration</p>
           <h1 className="mt-3 text-3xl">Sign in</h1>
           <p className="mt-3 text-sm text-muted">
-            Use your administrator or editor account to manage Gallery content.
+            Use your administrator or editor account to manage reports and
+            certificates.
           </p>
           <label className="mt-6 block text-sm font-semibold">
             Email
@@ -246,13 +269,14 @@ export default function GalleryConsole() {
         </form>
       ) : !allowed ? (
         <div className="border border-border bg-white p-8">
-          <h1 className="text-2xl">Gallery access required</h1>
+          <h1 className="text-2xl">Document access required</h1>
           <p className="mt-3">
-            Your account does not have permission to manage Gallery content.
+            Your account does not have permission to manage reports and
+            certificates.
           </p>
         </div>
       ) : editor ? (
-        <GalleryEditor
+        <DocumentEditor
           kind={kind}
           initial={editor}
           onCancel={() => setEditor(null)}
@@ -267,26 +291,49 @@ export default function GalleryConsole() {
           <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="eyebrow">Content management</p>
-              <h1 className="mt-2 text-3xl">Gallery</h1>
+              <h1 className="mt-2 text-3xl">Documents</h1>
               <p className="mt-3 text-sm text-muted">
-                Manage newspaper cuttings, HRPF photographs and television interviews.
+                Manage progress reports, registration records and certificates.
               </p>
             </div>
             <button
               type="button"
               disabled={busy}
               onClick={() => {
-                setEditor(newMedia());
+                setEditor(newDocument(kind));
                 setNotice("");
                 setError("");
               }}
               className="inline-flex items-center gap-2 bg-navy px-5 py-3 text-sm font-semibold text-white hover:bg-teal-dark disabled:opacity-50"
             >
               <Plus size={18} aria-hidden="true" />
-              Add media
+              Add document
             </button>
           </div>
-          <nav aria-label="Media management" className="mb-6 flex gap-3">{(["gallery", "interviews"] as MediaKind[]).map(value => <button type="button" key={value} disabled={busy} aria-pressed={kind === value} onClick={() => { setKind(value); setPage(1); setRows([]); setError(""); setNotice(""); }} className={`border border-border px-5 py-3 text-sm font-semibold ${kind === value ? "bg-navy text-white" : "bg-white text-navy"}`}>{value === "gallery" ? "Images and cuttings" : "TV interviews"}</button>)}</nav>
+          <nav aria-label="Document management" className="mb-6 flex gap-3">
+            {(["reports", "certificates"] as DocumentKind[]).map((value) => (
+              <button
+                type="button"
+                key={value}
+                disabled={
+                  busy || (value === "certificates" && user.role === "editor")
+                }
+                aria-pressed={kind === value}
+                onClick={() => {
+                  setKind(value);
+                  setPage(1);
+                  setRows([]);
+                  setError("");
+                  setNotice("");
+                }}
+                className={`border border-border px-5 py-3 text-sm font-semibold ${kind === value ? "bg-navy text-white" : "bg-white text-navy"}`}
+              >
+                {value === "reports"
+                  ? "Progress reports"
+                  : "Registration and certificates"}
+              </button>
+            ))}
+          </nav>
           <div className="space-y-4">
             {rows.map((row) => (
               <article
@@ -299,11 +346,9 @@ export default function GalleryConsole() {
                   >
                     {row.status === "published" ? "Published" : "Draft"}
                   </span>
-                  <h2 className="mt-3 break-words text-xl">
-                    {row.title.en}
-                  </h2>
+                  <h2 className="mt-3 break-words text-xl">{row.title.en}</h2>
                   <p className="mt-2 text-sm text-muted">
-                    {row.sourceName || (kind === "gallery" ? row.category : "TV interview")}
+                    {kind === "reports" ? row.year : row.issuer}
                   </p>
                 </div>
                 <div className="flex shrink-0 flex-wrap gap-x-5 gap-y-3">
@@ -319,7 +364,7 @@ export default function GalleryConsole() {
                   {row.status === "published" && (
                     <>
                       <Link
-                        href={kind === "gallery" ? `/gallery/media-coverage?category=${row.category}` : "/gallery/tv-interviews"}
+                        href={`${kind === "reports" ? "/about/progress-reports" : "/about/registration-and-certificates"}#document-${row.id}`}
                         target="_blank"
                         rel="noopener"
                         className="inline-flex items-center gap-2 text-sm font-semibold text-navy"
@@ -356,9 +401,9 @@ export default function GalleryConsole() {
                 size={32}
                 aria-hidden="true"
               />
-              <h2 className="text-xl">No media on this page</h2>
+              <h2 className="text-xl">No documents on this page</h2>
               <p className="mt-3 text-sm text-muted">
-                Add your first image or interview or return to the previous page.
+                Add your first document or return to the previous page.
               </p>
             </div>
           )}

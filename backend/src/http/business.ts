@@ -6,6 +6,7 @@ import { createAuth } from '../security/auth.js';
 import { publicationRouter } from './publication.js';
 import { publicRouter } from './public-content.js';
 import { managedContentRouter } from './managed-content.js';
+import { documentContentRouter } from './document-content.js';
 import { mediaContentRouter } from './media-content.js';
 import { adminRouter } from './admin.js';
 import { unavailable, validate } from './errors.js';
@@ -28,6 +29,7 @@ export function createBusiness(env: Environment, adapters: BusinessAdapters) {
   router.use('/admin/publication', redis.limit('publication', 60, 60000), publicationRouter(auth));
   router.use('/admin', redis.limit('managed-content', 120, 60000), managedContentRouter(auth));
   router.use('/admin', redis.limit('media-content', 120, 60000), mediaContentRouter(auth));
+  router.use('/admin', redis.limit('document-content', 120, 60000), documentContentRouter(auth));
   router.use('/admin', redis.limit('admin', 180, 60000), adminRouter(auth, uploads));
   router.post('/forms/session', redis.limit('form-session', 10, 15 * 60000), async (req, res) => res.status(201).json({ data: await forms.issue(req.body) }));
   router.post('/form-uploads', redis.limit('form-upload', 30, 15 * 60000), async (req, res) => {

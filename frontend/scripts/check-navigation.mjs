@@ -44,8 +44,12 @@ export async function checkNavigation(read, port) {
   assert.ok((await read('/about/board-of-directors')).html.includes('Active reviewed director'));
   page = await read('/about/progress-reports');
   assert.ok(page.html.includes('Published progress report') && page.html.includes('/api/reports/012345678901234567890125/download'));
+  for (const text of ['View document','Public edition','Reviewed public edition; case annexes omitted.','26 pages']) assert.ok(page.html.includes(text), `Report public card: ${text}`);
+  assert.ok(!page.html.includes('<iframe'), 'PDF viewer loads only after opening a document');
+  assert.ok((await read('/admin/documents')).html.includes('Loading document management'), 'Document administration route');
   page = await read('/about/registration-and-certificates');
   assert.ok(page.html.includes('Released registration certificate') && page.html.includes('/api/public-assets/012345678901234567890126'));
+  for (const text of ['Validity date passed','15 May 2023','16 May 2022','View document','Historical document; no renewal asserted.']) assert.ok(page.html.includes(text), `Certificate public card: ${text}`);
   page = await read('/gallery/media-coverage');
   assert.ok(page.html.includes('Published media coverage') && page.html.includes('Reviewed media caption'));
   assert.ok(page.html.includes('View full image: Published media coverage') && page.html.includes('<dialog'), 'Gallery viewer entry point and accessible dialog');

@@ -1,0 +1,175 @@
+{
+  "version": "document-public-v1",
+  "releases": [
+    {
+      "key": "report:2023",
+      "file": {
+        "id": "public-copy:report:2023",
+        "path": "progress reports/hrpf-report-2023-public.pdf",
+        "bytes": 598182,
+        "sha256": "2523b4e7619c99ee9fb871e98fe53b4d902688715f6eb3c3742369d90af55a64"
+      },
+      "fields": {
+        "title": {
+          "en": "Performance Report 2022-2023"
+        },
+        "slug": "progress-report-2023",
+        "year": 2023,
+        "summary": {
+          "en": "According to HRPF\u2019s 2022\u20132023 report, its work included access to information, water and sanitation, public health and environmental concerns."
+        },
+        "sortOrder": 2,
+        "pages": 15,
+        "edition": "public-edition",
+        "releaseNote": {
+          "en": "Private correspondence and reproduced press attachments have been withheld. General programme text and selected ceremonial photographs are retained. The original has 14 pages. This is not the complete original. Findings and figures are attributed to HRPF."
+        }
+      }
+    },
+    {
+      "key": "report:2024",
+      "file": {
+        "id": "public-copy:report:2024",
+        "path": "progress reports/hrpf-report-2024-public.pdf",
+        "bytes": 82257,
+        "sha256": "7f861205e7cb456c77714d105eafcc866217fc1f9e6d479e61888ab79be2c43a"
+      },
+      "fields": {
+        "title": {
+          "en": "Progress Report 2024"
+        },
+        "slug": "progress-report-2024",
+        "year": 2024,
+        "summary": {
+          "en": "According to HRPF\u2019s 2024 report, its work included access to information, analysis of district crime statistics and overseas Pakistanis\u2019 cases."
+        },
+        "sortOrder": 1,
+        "pages": 19,
+        "edition": "public-edition",
+        "releaseNote": {
+          "en": "Reflowed public text edition. Source images, correspondence, individual case narratives and victims\u2019 lists are withheld; pagination differs from the Word original. Programme material and reported aggregate figures are retained. This is not the complete original. Findings and figures are attributed to HRPF."
+        }
+      }
+    },
+    {
+      "key": "report:2025",
+      "file": {
+        "id": "public-copy:report:2025",
+        "path": "progress reports/hrpf-report-2025-public.pdf",
+        "bytes": 635935,
+        "sha256": "340bd95420fe8cae1f4690313fa981cb85452e522e612cf0fcde1b39796edc5c"
+      },
+      "fields": {
+        "title": {
+          "en": "Progress Report 2025"
+        },
+        "slug": "progress-report-2025",
+        "year": 2025,
+        "summary": {
+          "en": "According to HRPF\u2019s 2025 report, its work included health and environmental awareness, human trafficking and smuggling concerns, and press freedom."
+        },
+        "sortOrder": 0,
+        "pages": 26,
+        "edition": "public-edition",
+        "releaseNote": {
+          "en": "The original has 79 pages. This edition retains source pages 1, 3, 4, 5, 6, 7, 8, 10, 13, 14, 16, 17, 19, 21, 22, 23, 25, 28, 30, 32, 41, 61, 64, 77, 79. Individual case narratives, victims\u2019 lists and photographs, graphic incident material, case correspondence and annexes are withheld. Reproduced attachments and personal contact details are removed from retained pages. This is not the complete original. Findings and figures are attributed to HRPF."
+        }
+      }
+    },
+    {
+      "key": "certificate:pcp-npo-evaluation",
+      "file": {
+        "id": "public-copy:certificate:pcp-npo-evaluation",
+        "path": "certificates and registration/certificate-1.jpg",
+        "bytes": 37680,
+        "sha256": "737b55bf0c5c3f882e1b321968a35ab46c5cd6d105ae0792f2cb93c2a83c2a02"
+      },
+      "fields": {
+        "title": {
+          "en": "NPO evaluation certificate"
+        },
+        "issuer": "Pakistan Centre for Philanthropy",
+        "sortOrder": 1,
+        "summary": {
+          "en": "A supplied Pakistan Centre for Philanthropy NPO evaluation certificate."
+        },
+        "releaseNote": {
+          "en": "Number and dates cannot be read reliably from the supplied scan and are left unstated."
+        }
+      }
+    },
+    {
+      "key": "certificate:punjab-charity-2022",
+      "file": {
+        "id": "public-copy:certificate:punjab-charity-2022",
+        "path": "certificates and registration/certificate-2.jpg",
+        "bytes": 411403,
+        "sha256": "9c8b4e5bea0c5cfe0e8b8b6bc989d556fbe3099151961b429c52199477bc9149"
+      },
+      "fields": {
+        "title": {
+          "en": "Punjab Charity Commission provisional registration: 2022\u20132023"
+        },
+        "issuer": "Punjab Charity Commission",
+        "sortOrder": 2,
+        "validFrom": "2022-05-16",
+        "expiresAt": "2023-05-15",
+        "reference": "PB-9927416107711230",
+        "summary": {
+          "en": "A supplied provisional registration document for the 2022\u20132023 period."
+        },
+        "releaseNote": {
+          "en": "Historical document. The stated validity ended on 15 May 2023. No renewed status is asserted."
+        }
+      }
+    },
+    {
+      "key": "certificate:office-bearers-2026",
+      "file": {
+        "id": "public-copy:certificate:office-bearers-2026",
+        "path": "certificates and registration/certificate-3.jpg",
+        "bytes": 97508,
+        "sha256": "b3bb06b08cf983b63342e6eddffd82d7959197f8ca6c6964e3539a9a6ed88d75"
+      },
+      "fields": {
+        "title": {
+          "en": "Filing of office bearers for 2026"
+        },
+        "issuer": "Registrar Joint Stock Companies, Mandi Bahauddin",
+        "sortOrder": 3,
+        "issuedAt": "2026-04-16",
+        "summary": {
+          "en": "A supplied filing acknowledgement for the list of office bearers for 2026."
+        },
+        "releaseNote": {
+          "en": "This acknowledges filing of office bearers; it is not a certificate of renewed charity registration."
+        }
+      }
+    },
+    {
+      "key": "certificate:punjab-charity-2024",
+      "file": {
+        "id": "public-copy:certificate:punjab-charity-2024",
+        "path": "certificates and registration/certificate-4.jpg",
+        "bytes": 108722,
+        "sha256": "1f80231cbaeb1a33593b00d88a4680b4343c5920d9ad1e306865bbab67ea991d"
+      },
+      "fields": {
+        "title": {
+          "en": "Punjab Charity Commission provisional registration: 2024\u20132026"
+        },
+        "issuer": "Punjab Charity Commission",
+        "sortOrder": 4,
+        "validFrom": "2024-01-23",
+        "expiresAt": "2026-01-22",
+        "reference": "PB-9927416107711230",
+        "summary": {
+          "en": "A supplied provisional registration document for the 2024\u20132026 period."
+        },
+        "releaseNote": {
+          "en": "Historical document. The stated validity ended on 22 January 2026. The repeated identical scan is included once. No renewed status is asserted."
+        }
+      }
+    }
+  ]
+}
