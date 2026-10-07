@@ -1,29 +1,35 @@
-# Current handoff: Our Work redesign — Women's Rights
+# Current handoff: All six Our Work menu pages redesigned
 
-## Current milestone — 2026-10-07
+## Current milestone — 2026-10-08
 
-Translation was accepted and merged through PR #7 (`15b953a`); development began
-this milestone aligned to main. The owner prioritised correcting prototype Our
-Work pages before the deferred caching work, one category at a time.
+The owner accepted the general Women’s Rights page and asked for the remaining
+menu pages one by one. Implemented Children’s Rights, Access to Justice, Minority
+Rights, Education and Awareness, and Research and Advocacy in that sequence.
+All six use the approved institutional layout, supplied photographs, distinct
+priorities/approach/FAQs and **Projects in this field** from released managed records.
 
-Reviewed the supplied current page text, constitutional objects, organisation
-profile, current board biographies, progress reports and prepared archive imagery.
-See `OUR_WORK_REDESIGN.md` for the organisation analysis, source map and six-page
-sequence. Women's Rights now has a dedicated general view: real archive photo,
-three priorities, institutional approach, complaint/contact actions and FAQs.
-The owner's 2026-10-08 refinement removes the hardcoded Dar-ul-Aman case and
-visible report/source/photo notes. **Projects in this field** shows released managed
-projects using the Projects editor's Women's Rights focus area; project details
-belong in those records, not category copy. Apply this pattern to every subsequent
-category. No reseeding is required; the source-seeded project already has this label.
+`frontend/components/work/WorkAreaView.tsx` replaces the women-only view without
+changing its layout. `frontend/data/workAreas.ts` supplies all six source-based
+page configurations; women’s existing fixed content remains in `womensRights.ts`.
+No hardcoded cases, source notes, photo captions, fake metrics or prototype
+programme/testimonial sections appear in these category pages.
 
-Frontend checks and public SSR passed. Desktop/mobile/landscape browser review
-checked general copy, related project links, anchors, metadata/image, keyboard FAQ
-and isolated Urdu RTL/English restoration. Backend adds an optional public project
-focus-area filter before pagination with existing release/withdrawal controls.
-Next: Children's Rights using the same general-content/managed-project pattern.
-Performance/caching follows the page corrections. Work stays on development;
-no main merge is part of this milestone.
+Projects use each category title as the existing editor Focus area, including
+straight or curly apostrophes. The source-seeded children’s health project matches
+Children’s Rights; the women’s project matches Women’s Rights. No seed or live
+publication writes are required or performed here. If another field has no released
+projects, it shows the general page and a simple empty-project state.
+
+Frontend lint/type/build, four existing tests and expanded public SSR/navigation
+passed. Browser checks cover all five new pages’ desktop/mobile images, metadata,
+anchors, keyboard FAQs and project links, plus women’s regression and isolated
+Urdu RTL/English restoration. No backend changes in this continuation.
+
+Development remains the working branch; PR #8 contains the complete six-page
+redesign. Main is not merged. See `OUR_WORK_REDESIGN.md` for the source map,
+photo provenance and full scope. Next content review: Our Work overview and its two
+legacy non-menu categories, if requested. Caching remains deferred until the owner
+is satisfied with the page corrections.
 
 ## Prior translation milestone — 2026-10-08
 

@@ -1,5 +1,19 @@
 # HRPF Progress
 
+## Remaining five Our Work pages — 2026-10-08
+
+- Owner accepted general Women's Rights and requested the other menu pages in sequence.
+- Completed Children's Rights, Access to Justice, Minority Rights, Education and
+  Awareness, then Research and Advocacy, with distinct general copy and five
+  supplied archive photos.
+- All six share the approved view and managed Projects in this field sections;
+  no fixed cases, source/photo notes, fake statistics or programme/testimonial text.
+- Frontend lint/type/build, four tests and expanded public SSR pass, including all
+  six focus queries, managed links and empty/offline states. Browser checks cover
+  desktop/mobile, metadata/images, anchors, keyboard FAQ and women's RTL regression.
+- No backend or seed changes; homepage/overview/two legacy routes retained.
+  Development / draft PR #8 is the review target. Main merge remains separate.
+
 ## General category pages and managed field projects — 2026-10-08
 
 - Owner clarified that all categories should explain the general approach, with
