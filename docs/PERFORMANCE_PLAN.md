@@ -2,6 +2,8 @@
 
 Owner requirement recorded on 2026-10-07. This is planned work, not an
 implemented cache. Website speed is a product requirement alongside correctness.
+The owner subsequently deferred performance/caching until the end of the
+functional implementation. Continue the earlier page/module plan first.
 
 Caching and image delivery must be reusable features of the application. They
 must apply automatically to current and future managed content, including uploads
@@ -12,7 +14,7 @@ MongoDB remains the authoritative content store. Publishing a new item through
 the admin portal must make it available through the same cached public pipeline;
 normal future uploads must not require reseeding, code edits or a rebuild.
 
-## Next task on development
+## Deferred performance task on development
 
 Implement reusable public content caching and image delivery, using Gallery as
 the first complete verification flow, with shared components suitable for the

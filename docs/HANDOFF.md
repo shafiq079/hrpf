@@ -9,10 +9,14 @@ instructions below. Future implementation work continues on development.
 
 The owner requires reusable caching that automatically supports future admin
 uploads, not only the current source dataset. Website speed is an explicit
-requirement. Next: public content caching, browser image reuse, thumbnail delivery
-and smoother pagination, beginning with Gallery as the verification flow.
-See [PERFORMANCE_PLAN.md](PERFORMANCE_PLAN.md) for scope and acceptance checks.
-This performance work is planned; it has not been implemented yet.
+requirement, but the owner has deferred caching/performance until the end of
+functional implementation. See [PERFORMANCE_PLAN.md](PERFORMANCE_PLAN.md) for
+that deferred scope and acceptance checks; no performance cache is implemented.
+
+Return to the earlier post-Gallery order: Progress Reports and Registration /
+Certificates; then Board of Directors / Our Team; then the complaint workflow;
+then Urdu translation. Next: managed public document pages, their admin inputs
+and sourced import/preview, beginning with Progress Reports and Certificates.
 
 ## Current branch state and Gallery — 2026-10-07
 
