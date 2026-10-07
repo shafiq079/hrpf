@@ -1,6 +1,24 @@
-# Current handoff: All six Our Work menu pages redesigned
+# Current handoff: Website policy pages on development
 
-## Current milestone — 2026-10-08
+## Website policy milestone — 2026-10-08
+
+At the owner's request, PR #8 passed GitHub checks and merged the complete Our Work
+redesign into main at `877e0e3`. Development was aligned with that merge before the
+next task. All four policy routes are retained and rewritten using the actual
+complaint, email, translation, membership and storage behaviour. A shared PolicyView
+provides dated readable sections and keyboard-accessible contents navigation, with
+no dead PDF control or prototype publication notes.
+
+Accessibility states a WCAG 2.2 AA target and known limits without claiming full
+conformance. Safeguarding is a commitment and reporting guide without an invented
+independent contact, procedure or deadline. Both published organisation email
+addresses are supported by supplied documents. The simulated Contact, feedback and
+newsletter forms are explicitly disclosed; connecting them is separate work.
+Formal retention rules and independent safeguarding arrangements remain organisation
+decisions. See `WEBSITE_POLICIES.md` for sources, implementation and verification.
+This policy task stays on development; main contains the prior Our Work milestone.
+
+## Completed Our Work milestone — 2026-10-08
 
 The owner accepted the general Women’s Rights page and asked for the remaining
 menu pages one by one. Implemented Children’s Rights, Access to Justice, Minority
@@ -25,8 +43,7 @@ passed. Browser checks cover all five new pages’ desktop/mobile images, metada
 anchors, keyboard FAQs and project links, plus women’s regression and isolated
 Urdu RTL/English restoration. No backend changes in this continuation.
 
-Development remains the working branch; PR #8 contains the complete six-page
-redesign. Main is not merged. See `OUR_WORK_REDESIGN.md` for the source map,
+PR #8 contains the complete six-page redesign and is merged into main at `877e0e3`. See `OUR_WORK_REDESIGN.md` for the source map,
 photo provenance and full scope. Next content review: Our Work overview and its two
 legacy non-menu categories, if requested. Caching remains deferred until the owner
 is satisfied with the page corrections.

@@ -55,6 +55,16 @@ try{
   assert.ok(requests.some(r=>new URL(r.path,'http://localhost').searchParams.get('focusArea')===title),slug+' requests its focus label');
  }
  console.log('All six work pages passed: distinct general content/photos, managed field projects, canonical links and no prototype/source notes.');
+ for(const route of ['privacy-policy','terms-of-use','accessibility','safeguarding-policy']){
+  const policy=await read('/'+route);assert.equal(policy.status,200);
+  assert.equal((policy.html.match(/<h1[ >]/g)||[]).length,1,route+' has one H1');
+  for(const removed of ['placeholder — update before publication','(placeholder address)','Download PDF','File coming soon','review schedule should be confirmed'])assert.ok(!policy.html.includes(removed),route+' removed '+removed);
+  assert.ok(policy.html.includes('2026-10-08')&&policy.html.includes('mailto:hrpf786@gmail.com'),route+' dated and has source contact');
+ }
+ const privacy=await read('/privacy-policy');for(const text of ['every uploaded file','fixed automatic deletion period','Google Forms','GTranslate','do not transmit entries'])assert.ok(privacy.html.includes(text),'Privacy current feature: '+text);
+ const safeguarding=await read('/safeguarding-policy');assert.ok(safeguarding.html.includes('not an anonymous channel')&&safeguarding.html.includes('dedicated independent reporting contact'),'Safeguarding distinguishes actual reporting and its limits');
+ const access=await read('/accessibility');assert.ok(access.html.includes('WCAG 2.2 Level AA')&&access.html.includes('do not claim full conformance'),'Accessibility states target rather than unaudited compliance');
+ console.log('Policy checks passed: dated pages, sourced contact, actual complaint/email/translation/retention behaviour, honest safeguarding and accessibility limits, no prototype notes or dead PDF controls.');
  assert.equal((await read('/our-work/unknown-area')).status,404);
  console.log('Women rights checks passed: general content, managed field projects, one H1, archive photo, actions and removal of hardcoded case/source notes.');
  for(const text of ['Managed project 1','Managed news 1','Our Guiding Principles','Muhammad Yousaf Badar','home-hero.webp','home-about.webp','home-chairman.webp'])assert.ok(page.html.includes(text),text);

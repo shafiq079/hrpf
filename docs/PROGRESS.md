@@ -1,5 +1,21 @@
 # HRPF Progress
 
+## Website policies — 2026-10-08
+
+- PR #8 passed GitHub checks and merged Our Work into main at `877e0e3`;
+  development aligned before policy work, as requested.
+- Retained Privacy Policy, Terms of Use, Accessibility and Safeguarding routes;
+  replaced prototype content with actual complaint/email/translation/retention
+  behaviour, limitations and sourced email contacts.
+- Shared dated view provides contents navigation, stable anchors and readable
+  mobile layout; removed dead PDF downloads and publication placeholders.
+- Accessibility avoids unsupported conformance claims; safeguarding avoids
+  invented procedures and independent contacts. Disclosed unconnected forms.
+- Frontend lint/type/build, existing tests, public SSR/navigation and four-page
+  desktop/mobile/keyboard checks pass, with isolated Urdu RTL/English restore.
+- Policy changes stay on development. See `WEBSITE_POLICIES.md` for evidence and
+  organisation decisions; no backend or form-delivery changes in this task.
+
 ## Remaining five Our Work pages — 2026-10-08
 
 - Owner accepted general Women's Rights and requested the other menu pages in sequence.
@@ -12,7 +28,7 @@
   six focus queries, managed links and empty/offline states. Browser checks cover
   desktop/mobile, metadata/images, anchors, keyboard FAQ and women's RTL regression.
 - No backend or seed changes; homepage/overview/two legacy routes retained.
-  Development / draft PR #8 is the review target. Main merge remains separate.
+  PR #8 subsequently merged to main at `877e0e3` before the policy task.
 
 ## General category pages and managed field projects — 2026-10-08
 

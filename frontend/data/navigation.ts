@@ -87,7 +87,7 @@ export const footerSupportLinks: NavLink[] = [
 export const footerResourceLinks: NavLink[] = [
   { label: "Privacy Policy", href: "/privacy-policy" },
   { label: "Terms of Use", href: "/terms-of-use" },
-  { label: "Safeguarding Policy", href: "/safeguarding-policy" },
+  { label: "Safeguarding", href: "/safeguarding-policy" },
   { label: "Accessibility", href: "/accessibility" },
 ];
 
