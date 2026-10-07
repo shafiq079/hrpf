@@ -1,9 +1,12 @@
 # Website policies — 8 October 2026
 
-Keep the existing four footer destinations: Privacy Policy, Terms of Use,
+Keep the existing four policy routes: Privacy Policy, Terms of Use,
 Accessibility and Safeguarding. Replace prototype content with a clear description
 of the current website. These changes are on development; the completed Our Work
 redesign was merged to main through PR #8 at `877e0e3` first.
+
+Owner follow-up: temporarily hide Accessibility from both public navigation link
+lists. The `/accessibility` page and its content remain available by direct URL.
 
 ## Pages and presentation
 
