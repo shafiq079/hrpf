@@ -181,7 +181,7 @@ export default function BlogConsole() {
       {allowed && (
         <nav
           aria-label="Content administration"
-          className="mb-6 flex gap-5 text-sm font-semibold"
+          className="mb-6 flex flex-wrap gap-5 text-sm font-semibold"
         >
           <Link href="/admin/projects" className="text-teal-dark">
             Projects
@@ -189,7 +189,7 @@ export default function BlogConsole() {
           <Link href="/admin/blogs" className="text-teal-dark">
             Blogs
           </Link>
-          <Link href="/admin/gallery" className="text-teal-dark">Gallery</Link>
+          <Link href="/admin/gallery" className="text-teal-dark">Gallery</Link><Link href="/admin/documents" className="text-teal-dark">Documents</Link><Link href="/admin/board" className="text-teal-dark">Board and Team</Link>
         </nav>
       )}
       {user && (

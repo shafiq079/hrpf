@@ -173,7 +173,7 @@ export default function GalleryConsole() {
     );
   return (
     <Container className="py-10 sm:py-14">
-      {allowed && <nav aria-label="Content administration" className="mb-6 flex gap-5 text-sm font-semibold"><Link href="/admin/projects" className="text-teal-dark">Projects</Link><Link href="/admin/blogs" className="text-teal-dark">Blogs</Link><Link href="/admin/gallery" className="text-teal-dark">Gallery</Link></nav>}
+      {allowed && <nav aria-label="Content administration" className="mb-6 flex flex-wrap gap-5 text-sm font-semibold"><Link href="/admin/projects" className="text-teal-dark">Projects</Link><Link href="/admin/blogs" className="text-teal-dark">Blogs</Link><Link href="/admin/gallery" className="text-teal-dark">Gallery</Link><Link href="/admin/documents" className="text-teal-dark">Documents</Link><Link href="/admin/board" className="text-teal-dark">Board and Team</Link></nav>}
       {user && (
         <div className="mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
           <p className="text-sm text-muted">

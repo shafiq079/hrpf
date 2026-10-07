@@ -44,11 +44,24 @@ export function publicRouter(provider: UploadProvider) {
     }
     res.json({ data });
   });
-  router.get('/board', async (req, res) => {
+  const personView = async (row: any, locale: 'en' | 'ur', detailed = false) => ({
+    name: row.name, slug: row.slug, designation: row.designation, rank: row.rank,
+    bio: row.bio?.[locale] ?? '', photoAlt: row.photoAlt || row.name, photoZoom: row.photoZoom ?? 1,
+    showOnBoard: row.showOnBoard !== false, showOnTeam: row.showOnTeam === true,
+    photo: await releasedAsset(row.photo?.assetId, 'BoardMember', row._id) ? `/api/public-assets/${row.photo.assetId}` : null,
+    ...(detailed ? { sections: (row.sections ?? []).map((section: any) => ({ heading: section.heading?.[locale] ?? '', body: section.body?.[locale] ?? '' })).filter((section: any) => section.heading && section.body) } : {}),
+  });
+  for (const kind of ['board', 'team'] as const) router.get('/' + kind, async (req, res) => {
+    const { locale, page, limit } = validate(publicQuery, req.query);
+    const filter = { isActive: true, ...(kind === 'board' ? { showOnBoard: { $ne: false } } : { showOnTeam: true }) };
+    const [rows, total] = await Promise.all([BoardMember.find(filter).sort({ rank: 1, _id: 1 }).skip((page - 1) * limit).limit(limit).select('name slug designation rank bio photo photoAlt photoZoom showOnBoard showOnTeam').lean(), BoardMember.countDocuments(filter)]);
+    res.json({ data: await Promise.all(rows.map(row => personView(row, locale))), meta: { page, limit, total, pages: Math.ceil(total / limit) } });
+  });
+  router.get('/board/:slug', async (req, res) => {
     const { locale } = validate(publicQuery, req.query);
-    const rows = await BoardMember.find({ isActive: true }).sort({ rank: 1, _id: 1 }).select('name slug designation slotLabel rank bio photo').lean();
-    const data = await Promise.all(rows.map(async row => ({ name: row.name, slug: row.slug, designation: row.designation, slotLabel: row.slotLabel, rank: row.rank, bio: row.bio?.[locale] ?? '', photo: await releasedAsset(row.photo?.assetId, 'BoardMember', row._id) ? `/api/public-assets/${row.photo!.assetId}` : null })));
-    res.json({ data });
+    const row = await BoardMember.findOne({ slug: validate(slug, req.params.slug), isActive: true, $or: [{ showOnBoard: { $ne: false } }, { showOnTeam: true }] }).select('name slug designation rank bio photo photoAlt photoZoom showOnBoard showOnTeam sections').lean();
+    if (!row) throw missing();
+    res.json({ data: await personView(row, locale, true) });
   });
   router.get('/blog-categories', async (req, res) => {
     const { locale } = validate(publicQuery, req.query);
@@ -98,6 +111,7 @@ export function publicRouter(provider: UploadProvider) {
       const entityType = kind === 'gallery' ? 'GalleryItem' : kind === 'reports' ? 'Report' : 'Certificate';
       const field = kind === 'gallery' ? 'asset' : kind === 'reports' ? 'publicPdf' : 'publicFile';
       const filter = { ...publicationFilter(), ...(kind === 'gallery' ? { reviewStatus: 'approved', duplicateOf: null, ...(category ? { category } : {}), ...(q ? { [`title.${locale}`]: { $regex: q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' } } : {}) } : { releaseReview: 'approved' }) };
+      if (kind !== 'gallery') Object.assign(filter, { $expr: { $ne: [`$${field}.assetId`, { $ifNull: [kind === 'reports' ? '$restrictedOriginal.assetId' : '$original.assetId', null] }] } });
       // Join before pagination/counting: a missing, restricted or mismatched file is never listed.
       const results = await model.aggregate([
         { $match: filter }, { $lookup: { from: Asset.collection.name, let: { file: `$${field}.assetId`, entity: '$_id' }, pipeline: [{ $match: { $expr: { $and: [{ $eq: ['$_id', '$$file'] }, { $eq: ['$entityId', '$$entity'] }, { $eq: ['$entityType', entityType] }] }, purpose: kind === 'certificates' ? 'certificate' : 'content', deliveryType: 'authenticated', visibility: 'public', scanStatus: 'clean', claimStatus: 'claimed', ...(kind === 'reports' ? { format: 'pdf' } : kind === 'gallery' ? { format: { $in: ['jpg', 'jpeg', 'png', 'webp'] } } : {}) } }], as: 'released' } },
@@ -108,8 +122,9 @@ export function publicRouter(provider: UploadProvider) {
       const data = result.rows.map((r: Record<string, any>) => {
         const base = { id: String(r._id), title: r.title?.[locale] ?? '', file: `/api/public-assets/${r.released[0]._id}` };
         if (kind === 'gallery') return { ...base, category: r.category, alt: r.alt?.[locale] ?? '', caption: r.caption?.[locale] ?? '', treatment: r.treatment, mediaType: r.mediaType ?? r.sourceImageType ?? 'photo', sourceName: r.sourceName ?? '', sourceUrl: https.safeParse(r.sourceUrl).success ? r.sourceUrl : '', eventDate: r.eventDate?.toISOString().slice(0,10), width: r.released[0].width, height: r.released[0].height };
-        if (kind === 'reports') return { ...base, slug: r.slug, year: r.year, summary: r.summary?.[locale] ?? '', pages: r.pages, download: `/api/reports/${r._id}/download` };
-        return { ...base, issuer: r.issuer, reference: r.reference, issuedAt: r.issuedAt, validFrom: r.validFrom, expiresAt: r.expiresAt };
+        const document = { ...base, format: r.released[0].format, bytes: r.released[0].bytes, summary: r.summary?.[locale] ?? '', releaseNote: r.releaseNote?.[locale] ?? '', view: `/api/documents/${kind}/${r._id}/view`, download: kind === 'reports' ? `/api/reports/${r._id}/download` : `/api/documents/certificates/${r._id}/download` };
+        if (kind === 'reports') return { ...document, edition: r.edition ?? 'complete', coverageStart: r.coverageStart, coverageEnd: r.coverageEnd, slug: r.slug, year: r.year, summary: r.summary?.[locale] ?? '', pages: r.pages, download: `/api/reports/${r._id}/download` };
+        return { ...document, issuer: r.issuer, reference: r.reference, issuedAt: r.issuedAt, validFrom: r.validFrom, expiresAt: r.expiresAt };
       });
       res.json({ data, meta: { page, limit, total, pages: Math.ceil(total / limit) } });
     });
@@ -123,10 +138,12 @@ export function publicRouter(provider: UploadProvider) {
   });
   const stream: import('express').RequestHandler = async (req, res) => {
     validate(z.object({}).strict(), req.query);
-    const isDownload = req.path.startsWith('/reports/');
+    const documentKind = req.path.startsWith('/reports/') ? 'reports' : req.params.kind ? validate(z.enum(['reports', 'certificates']), req.params.kind) : null;
+    const documentAction = documentKind ? validate(z.enum(['view', 'download']), req.params.action ?? 'download') : null;
+    const isDownload = documentKind === 'reports' && documentAction === 'download';
     const value = validate(id, req.params.id);
-    const report = isDownload ? await Report.findOne({ _id: value, releaseReview: 'approved', ...publicationFilter() }).lean() : null;
-    const assetId = isDownload ? report?.publicPdf?.assetId : value;
+    const document = documentKind ? await ((documentKind === 'reports' ? Report : Certificate) as mongoose.Model<any>).findOne({ _id: value, releaseReview: 'approved', ...publicationFilter() }).lean() : null;
+    const assetId = documentKind ? document?.[documentKind === 'reports' ? 'publicPdf' : 'publicFile']?.assetId : value;
     if (!assetId) throw missing();
     const asset = await Asset.findOne({ _id: assetId, deliveryType: 'authenticated', visibility: 'public', scanStatus: 'clean', claimStatus: 'claimed', purpose: { $in: ['content', 'certificate'] } }).lean();
     if (!asset?.entityId || asset.purpose !== (asset.entityType === 'Certificate' ? 'certificate' : 'content')) throw missing();
@@ -134,24 +151,25 @@ export function publicRouter(provider: UploadProvider) {
     switch (asset.entityType) {
       case 'Project': released = !!await Project.exists({_id:asset.entityId,status:'published',reviewStatus:'approved',$or:[{'cover.assetId':asset._id},{'gallery.asset.assetId':asset._id},{'documents.asset.assetId':asset._id}],...publicationFilter()}); break;
       case 'BlogPost': released = !!await BlogPost.exists({_id:asset.entityId,status:'published',reviewStatus:'approved',$or:[{'cover.assetId':asset._id},{'gallery.asset.assetId':asset._id},{'documents.asset.assetId':asset._id}],...publicationFilter()}); break;
-      case 'BoardMember': released = !!await BoardMember.exists({ _id: asset.entityId, isActive: true, 'photo.assetId': asset._id }); break;
+      case 'BoardMember': released = !!await BoardMember.exists({ _id: asset.entityId, isActive: true, 'photo.assetId': asset._id, $or: [{ showOnBoard: { $ne: false } }, { showOnTeam: true }] }); break;
       case 'GalleryItem': released = !!await GalleryItem.exists({ _id: asset.entityId, reviewStatus: 'approved', duplicateOf: null, 'asset.assetId': asset._id, ...publicationFilter() }); break;
       case 'VideoInterview': released = !!await VideoInterview.exists({ _id: asset.entityId, reviewStatus: 'approved', videoUrl: canonicalVideoPattern, 'thumbnail.assetId': asset._id, ...publicationFilter() }); break;
-      case 'Report': released = !!await Report.exists({ _id: asset.entityId, releaseReview: 'approved', 'publicPdf.assetId': asset._id, ...publicationFilter() }); break;
-      case 'Certificate': released = !!await Certificate.exists({ _id: asset.entityId, releaseReview: 'approved', 'publicFile.assetId': asset._id, ...publicationFilter() }); break;
+      case 'Report': released = !!await Report.exists({ _id: asset.entityId, releaseReview: 'approved', 'publicPdf.assetId': asset._id, $expr: { $ne: [{ $ifNull: ['$restrictedOriginal.assetId', null] }, asset._id] }, ...publicationFilter() }); break;
+      case 'Certificate': released = !!await Certificate.exists({ _id: asset.entityId, releaseReview: 'approved', 'publicFile.assetId': asset._id, $expr: { $ne: [{ $ifNull: ['$original.assetId', null] }, asset._id] }, ...publicationFilter() }); break;
     }
-    if (!released || (isDownload && (asset.entityType !== 'Report' || String(asset.entityId) !== value || asset.format !== 'pdf'))) throw missing();
+    if (!released || (documentKind && (asset.entityType !== (documentKind === 'reports' ? 'Report' : 'Certificate') || String(asset.entityId) !== value || (documentKind === 'reports' && asset.format !== 'pdf')))) throw missing();
     const types: Record<string, string> = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', pdf: 'application/pdf' };
     if (!types[asset.format]) throw missing();
     const response = await provider.read(asset);
     if (!response.ok || !response.body) throw unavailable();
     res.setHeader('Content-Type', types[asset.format]!);
-    res.setHeader('Content-Disposition', `${asset.format === 'pdf' ? 'attachment' : 'inline'}; filename="hrpf-${value}.${asset.format}"`);
+    res.setHeader('Content-Disposition', `${documentAction === 'view' ? 'inline' : documentAction === 'download' || asset.format === 'pdf' ? 'attachment' : 'inline'}; filename="hrpf-${value}.${asset.format}"`);
     if (req.method === 'HEAD') { await response.body.cancel(); res.end(); return; }
     await pipeline(Readable.fromWeb(response.body as import('node:stream/web').ReadableStream), res);
     if (isDownload) await Report.updateOne({ _id: value }, { $inc: { downloadCount: 1 } });
   };
   router.get('/public-assets/:id', stream);
   router.get('/reports/:id/download', stream);
+  router.get('/documents/:kind/:id/:action', stream);
   return router;
 }

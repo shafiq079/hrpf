@@ -232,3 +232,28 @@ binding and optimistic versions. Added four real source image examples and a
 preservation/recovery seed, documented in GALLERY.md and backend/seed/GALLERY.md.
 Local API and seed integration suites pass; owner service execution and visual
 acceptance remain Codespaces steps.
+
+## 2026-10-07 — Progress Reports and Registration / Certificates
+
+Implemented generic document administration and improved public cards with a lazy
+viewer, downloads, summaries, dates, edition/release notes and historical validity
+labels. Added reviewed source import with hashes, all-files-first scans, transactional
+release checkpoints and preservation of admin work and deletions. Bundled three
+explicitly edited public report editions and four distinct original certificate
+scans; originals with private case material are not committed or uploaded.
+
+Validation includes both package checks, real Mongo/Redis API integration, full
+source seed integration, production frontend SSR and rendered PDF review. Main
+merge, global caching and permanent scanner hosting remain separate tasks.
+
+## Board of Directors and Our Team — 2026-10-07
+
+Implemented managed listings and full individual profiles using the supplied Word
+biographies and original seven embedded photos. Added `/admin/board` with current
+administrator permission checks, versioned audited draft CRUD, page placement,
+optional Urdu sections, private previews and reviewed portrait publication.
+`seed:board` verifies exact source photos, scans all before writes and safely
+resumes while preserving admin/native/deleted content. The chairman's full twelve
+sections are retained; actual Joint Chairperson designation is preserved.
+No new staff biographies or private provider URLs are exposed. Further global
+caching and permanent ClamAV hosting remain deferred. Next: complaint workflow.

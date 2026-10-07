@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-const publicPaths = ['/blogs', '/about/progress-reports', '/about/registration-and-certificates', '/about/board-of-directors', '/gallery/media-coverage', '/gallery/tv-interviews'];
+const publicPaths = ['/blogs', '/about/progress-reports', '/about/registration-and-certificates', '/about/board-of-directors', '/about/our-team', '/gallery/media-coverage', '/gallery/tv-interviews'];
 
 export async function checkNavigation(read, port) {
   const migrations = [
@@ -42,10 +42,23 @@ export async function checkNavigation(read, port) {
   assert.ok((await read('/about/who-we-are')).html.includes('public-interest organization'));
   assert.ok((await read('/about/message-of-ceo')).html.includes('Chairman’s Message'), 'Keep supplied author title');
   assert.ok((await read('/about/board-of-directors')).html.includes('Active reviewed director'));
+  page = await read('/about/our-team');
+  assert.ok(page.html.includes('Active reviewed director') && page.html.includes('Our office-bearers and team'));
+  assert.ok(page.html.includes('/about/people/active-director') && page.html.includes('Read full profile'));
+  page = await read('/about/people/active-director');
+  for(const text of ['Journalism and public service','Complete reviewed profile text.','Additional profile paragraph.','Profile contents','Reviewed director portrait']) assert.ok(page.html.includes(text), 'Full person profile: '+text);
+  assert.ok(/rel="canonical"[^>]*about\/people\/active-director/.test(page.html));
+  assert.equal((await read('/about/people/missing-person')).status,404);
+  assert.ok((await read('/admin/board')).html.includes('Loading profile management'));
+
   page = await read('/about/progress-reports');
   assert.ok(page.html.includes('Published progress report') && page.html.includes('/api/reports/012345678901234567890125/download'));
+  for (const text of ['View document','Public edition','Reviewed public edition; case annexes omitted.','26 pages']) assert.ok(page.html.includes(text), `Report public card: ${text}`);
+  assert.ok(!page.html.includes('<iframe'), 'PDF viewer loads only after opening a document');
+  assert.ok((await read('/admin/documents')).html.includes('Loading document management'), 'Document administration route');
   page = await read('/about/registration-and-certificates');
   assert.ok(page.html.includes('Released registration certificate') && page.html.includes('/api/public-assets/012345678901234567890126'));
+  for (const text of ['Validity date passed','15 May 2023','16 May 2022','View document','Historical document; no renewal asserted.']) assert.ok(page.html.includes(text), `Certificate public card: ${text}`);
   page = await read('/gallery/media-coverage');
   assert.ok(page.html.includes('Published media coverage') && page.html.includes('Reviewed media caption'));
   assert.ok(page.html.includes('View full image: Published media coverage') && page.html.includes('<dialog'), 'Gallery viewer entry point and accessible dialog');
@@ -68,6 +81,7 @@ export async function checkEmptyNavigation(read) {
   const page = await read('/blogs');
   assert.ok(!page.html.includes('Managed news') && !page.html.includes('/blogs/real-news'));
   assert.equal((await read('/blogs/real-news')).status, 404, 'Withdrawn blog must not resolve');
+  assert.equal((await read('/about/people/active-director')).status,404);
   for (const path of publicPaths.slice(1)) {
     const page = await read(path);
     assert.equal(page.status, 200);
@@ -76,6 +90,7 @@ export async function checkEmptyNavigation(read) {
 }
 
 export async function checkOfflineNavigation(read) {
+  assert.ok((await read('/about/people/active-director')).html.includes('Profile temporarily unavailable'));
   for (const path of publicPaths) {
     const page = await read(path);
     assert.equal(page.status, 200);

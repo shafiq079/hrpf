@@ -12,7 +12,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "node --import tsx --test test/app.test.ts test/security.test.ts test/seed.test.ts",
-    "check": "npm run typecheck && npm test && npm run seed:check && npm run seed:home && npm run seed:projects && npm run seed:blogs && npm run seed:gallery && npm run build && npm run api:check",
+    "check": "npm run typecheck && npm test && npm run seed:check && npm run seed:home && npm run seed:projects && npm run seed:blogs && npm run seed:gallery && npm run seed:documents && npm run seed:board && npm run build && npm run api:check",
     "setup": "node scripts/setup-env.mjs",
     "worker": "node dist/worker.js",
     "worker:dev": "node --watch --import tsx src/worker.ts",
@@ -26,11 +26,13 @@
     "seed:plan": "node --import tsx src/scripts/seed.ts plan",
     "seed:prepare": "node --import tsx src/scripts/seed.ts prepare",
     "seed:import": "node --import tsx src/scripts/seed.ts import",
-    "test:seed": "node --import tsx --test test/seed.integration.test.ts test/homepage-seed.integration.test.ts test/project-details-seed.integration.test.ts test/blog-details-seed.integration.test.ts test/gallery-seed.integration.test.ts",
+    "test:seed": "node --import tsx --test test/seed.integration.test.ts test/homepage-seed.integration.test.ts test/project-details-seed.integration.test.ts test/blog-details-seed.integration.test.ts test/gallery-seed.integration.test.ts test/documents-seed.integration.test.ts test/board-seed.integration.test.ts",
     "seed:home": "node --import tsx src/scripts/seed-homepage.ts",
     "seed:projects": "node --import tsx src/scripts/seed-project-details.ts",
     "seed:blogs": "node --import tsx src/scripts/seed-blog-details.ts",
-    "seed:gallery": "node --import tsx src/scripts/seed-gallery.ts"
+    "seed:gallery": "node --import tsx src/scripts/seed-gallery.ts",
+    "seed:documents": "node --import tsx src/scripts/seed-documents.ts",
+    "seed:board": "node --import tsx src/scripts/seed-board.ts"
   },
   "dependencies": {
     "bullmq": "6.3.11",

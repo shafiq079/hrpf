@@ -1,6 +1,6 @@
 import "server-only";
 
-export type CollectionKind = "blogs" | "projects" | "gallery" | "interviews" | "reports" | "certificates" | "board";
+export type CollectionKind = "blogs" | "projects" | "gallery" | "interviews" | "reports" | "certificates" | "board" | "team";
 export type PublicCollection<T> = { status: "ok" | "unavailable"; data: T[]; page: number; pages: number };
 export function collectionPage(value: string | string[] | undefined): number {
   const page = typeof value === "string" && /^\d+$/.test(value) ? Number(value) : 1;
@@ -24,8 +24,9 @@ export async function readPublicCollection<T>(kind: CollectionKind, page = 1, ca
     return { status: "ok", data: body.data, page, pages };
   } catch { return { status: "unavailable", data: [], page, pages: 0 }; }
 }
-export type PublicReport = { id: string; title: string; summary: string; year: number; slug: string; file: string; download: string; pages?: number };
-export type PublicCertificate = { id: string; title: string; issuer?: string; reference?: string; file: string; issuedAt?: string };
+export type PublicDocument = { id: string; title: string; summary: string; releaseNote?: string; file: string; view: string; download: string; format: string; bytes?: number };
+export type PublicReport = PublicDocument & { year?: number; slug: string; pages?: number; edition?: "complete" | "public-edition"; coverageStart?: string; coverageEnd?: string };
+export type PublicCertificate = PublicDocument & { issuer?: string; reference?: string; issuedAt?: string; validFrom?: string; expiresAt?: string };
 export type PublicGalleryImage = { id: string; title: string; file: string; alt: string; caption: string; category: "media-coverage" | "in-action"; treatment?: "ORIGINAL" | "AI_RESTORATION"; mediaType?: "newspaper" | "photo" | "graphic"; sourceName?: string; sourceUrl?: string; eventDate?: string; width?: number; height?: number };
 export type PublicInterview = { id: string; title: string; description: string; provider: "youtube" | "vimeo"; watchUrl: string; embedUrl: string; thumbnail: string | null; thumbnailAlt: string; sourceName?: string; eventDate?: string };
-export type PublicBoardMember = { name: string; slug: string; designation: string; bio: string; photo: string | null };
+export type PublicBoardMember = { name: string; slug: string; designation: string; rank?: number; bio: string; photo: string | null; photoAlt?: string; photoZoom?: number; showOnBoard?: boolean; showOnTeam?: boolean; sections?: { heading: string; body: string }[] };

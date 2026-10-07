@@ -6,7 +6,10 @@ import { type Principal, createAuth } from '../security/auth.js';
 import { can, type Permission } from '../security/permissions.js';
 import { ApiError, validate } from './errors.js';
 import { publicSettingSchemas } from './public-content.js';
+import { bindDocumentFile } from '../services/document-media.js';
 import { bindProjectMedia } from '../services/project-media.js';
+import { bindBoardPhoto } from '../services/board-media.js';
+import { reviewBoard } from './board-content.js';
 export const publicationInput = z.object({ version: z.number().int().nonnegative(), action: z.enum(['publish', 'withdraw']), releaseReviewed: z.literal(true), assetId: z.string().regex(/^[a-fA-F0-9]{24}$/).optional() }).strict();
 const kinds = {
   blog: { model: BlogPost, permission: 'content', entity: 'BlogPost', field: 'cover' },
@@ -50,23 +53,29 @@ export function publicationRouter(auth: ReturnType<typeof createAuth>) {
             const schema = publicSettingSchemas[row.key as keyof typeof publicSettingSchemas];
             if (!schema || !schema.safeParse(row.value).success) throw new ApiError(400, 'REVIEW_REQUIRED', 'Only valid approved public settings may be published.');
             row.visibility = 'public'; row.revision += 1;
-          } else if (kind === 'board') row.isActive = true;
+          } else if (kind === 'board') { reviewBoard(row); row.isActive = true; }
           else {
             if (kind === 'interview' && (row.thumbnail || input.assetId) && !row.thumbnailAlt?.trim()) throw new ApiError(400, 'REVIEW_REQUIRED', 'Describe the interview thumbnail before publication.');
             if (kind === 'gallery' && (row.duplicateOf || !row.alt?.en?.trim())) throw new ApiError(400, 'REVIEW_REQUIRED', 'Review the image description and duplicate status first.');
             if (['blog', 'project'].includes(kind) && ((!row.blocks?.length && !(kind === 'blog' && (row.details?.intro?.trim() || row.details?.sections?.length))) || row.blocks.some((b: {type: string}) => b.type === 'image'))) throw new ApiError(400, 'REVIEW_REQUIRED', 'Provide reviewed article text; use the gallery for images.');
             if (['blog', 'project'].includes(kind)) row.status = 'published';
             if (['report', 'certificate'].includes(kind)) row.releaseReview = 'approved'; else row.reviewStatus = 'approved';
+            if (kind === 'report' && row.edition === 'public-edition' && !row.releaseNote?.en?.trim()) throw new ApiError(400, 'REVIEW_REQUIRED', 'Describe the public edition before publication.');
             row.publishedAt = new Date();
           }
           if (kind === 'project' || kind === 'blog') {
             await bindProjectMedia(row, { coverAssetId: input.assetId }, principal.id, tx, 'public', kind === 'blog' ? 'BlogPost' : 'Project');
+          } else if (kind === 'report' || kind === 'certificate') {
+            await bindDocumentFile(row, input.assetId, principal.id, tx, 'public', kind === 'report' ? 'Report' : 'Certificate');
+          } else if (kind === 'board') {
+            await bindBoardPhoto(row, input.assetId, principal.id, tx, 'public');
+            reviewBoard(row);
           } else if (spec.field) {
             const fileId = input.assetId ?? row[spec.field]?.assetId;
             if (!fileId && !['board', 'blog', 'project', 'interview'].includes(kind)) throw new ApiError(400, 'REVIEW_REQUIRED', 'Upload and review a public release file first.');
             if (fileId) {
-              const asset = await Asset.findOne({ _id: fileId, deliveryType: 'authenticated', scanStatus: 'clean', purpose: kind === 'certificate' ? 'certificate' : 'content', $or: [{ claimStatus: 'staged', ownerId: principal.id, stagingExpiresAt: { $gt: new Date() } }, { claimStatus: 'claimed', entityType: spec.entity, entityId: row._id }] }).session(tx);
-              if (!asset || (kind === 'report' && asset.format !== 'pdf') || (['board', 'gallery', 'blog', 'project', 'interview'].includes(kind) && !['jpg', 'jpeg', 'png', 'webp'].includes(asset.format))) throw new ApiError(400, 'INVALID_ASSET', 'Use your own clean staged file or the file already bound to this record.');
+              const asset = await Asset.findOne({ _id: fileId, deliveryType: 'authenticated', scanStatus: 'clean', purpose: 'content', $or: [{ claimStatus: 'staged', ownerId: principal.id, stagingExpiresAt: { $gt: new Date() } }, { claimStatus: 'claimed', entityType: spec.entity, entityId: row._id }] }).session(tx);
+              if (!asset || (['board', 'gallery', 'blog', 'project', 'interview'].includes(kind) && !['jpg', 'jpeg', 'png', 'webp'].includes(asset.format))) throw new ApiError(400, 'INVALID_ASSET', 'Use your own clean staged file or the file already bound to this record.');
               await Asset.updateMany({ entityType: spec.entity, entityId: row._id, _id: { $ne: asset._id } }, { $set: { visibility: 'restricted' } }, { session: tx });
               asset.visibility = 'public'; asset.claimStatus = 'claimed'; asset.entityType = spec.entity; asset.entityId = row._id; asset.set('stagingExpiresAt', undefined);
               await asset.save({ session: tx });

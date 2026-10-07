@@ -1,5 +1,43 @@
+# Current handoff: Board and Team on development
+
+Board of Directors and Our Team now have managed public listings, full person
+profiles at `/about/people/[slug]`, `/admin/board`, versioned draft CRUD and
+transactional scanned-photo publication/revocation. `npm run seed:board -- --apply`
+populates the seven supplied Word-document profiles and original embedded photos;
+completed imports and admin content are preserved on reruns. See
+`docs/BOARD_AND_TEAM.md` and `backend/seed/BOARD.md`.
+
+Progress Reports/Certificates remain implemented on development. The owner's
+read-only diagnostic found report PDF delivery 401 with a Cloudinary policy block
+and certificate image delivery 200. The account owner must check PDF delivery
+settings; no ClamAV restart or reseeding resolves that provider delivery policy.
+
+Main remains the merged Gallery release. Work stays on development until an
+explicit merge instruction. Next functional milestone: **complaint workflow**,
+then Urdu translation, then global future-content performance and production
+hardening. Permanent ClamAV hosting remains deferred.
+
+---
+
 # HRPF handoff
 
+## Current state and next task — 2026-10-07
+
+The complete Gallery implementation and 200-entry archive importer were merged
+into main through PR #4 (`3c9b2a7`), after both CI jobs passed. Development was
+fast-forwarded to the same merge commit. This supersedes the older branch-state
+instructions below. Future implementation work continues on development.
+
+The owner requires reusable caching that automatically supports future admin
+uploads, not only the current source dataset. Website speed is an explicit
+requirement, but the owner has deferred caching/performance until the end of
+functional implementation. See [PERFORMANCE_PLAN.md](PERFORMANCE_PLAN.md) for
+that deferred scope and acceptance checks; no performance cache is implemented.
+
+Return to the earlier post-Gallery order: Progress Reports and Registration /
+Certificates; then Board of Directors / Our Team; then the complaint workflow;
+then Urdu translation. Next: managed public document pages, their admin inputs
+and sourced import/preview, beginning with Progress Reports and Certificates.
 
 ## Current branch state and Gallery — 2026-10-07
 

@@ -1,0 +1,331 @@
+{
+  "version": "board-public-v1",
+  "releases": [
+    {
+      "key": "board:muhammad-yousaf-badar",
+      "file": {
+        "id": "board-public-photo:muhammad-yousaf-badar",
+        "path": "information/muhammad-yousaf-badar.jpg",
+        "sha256": "ac43b219748da86b999272a8abfda7bd040b641e96030a0b56824d7a9c84ad32",
+        "bytes": 53433,
+        "width": 720,
+        "height": 1600
+      },
+      "fields": {
+        "name": "Muhammad Yousaf Badar",
+        "slug": "muhammad-yousaf-badar",
+        "designation": "Chairman",
+        "rank": 1,
+        "bio": {
+          "en": "Muhammad Yousaf Badar is a Pakistani journalist, author, social worker, Human Rights Activist, and Chairman of the Human Rights Protection Foundation Pakistan. He has devoted a significant part of his professional and social life to journalism, public-interest work, human rights, institutional transparency, accountability and the protection of vulnerable and marginalized communities."
+        },
+        "sections": [
+          {
+            "heading": {
+              "en": "Leadership at HRPF"
+            },
+            "body": {
+              "en": "As Chairman of the Human Rights Protection Foundation Pakistan, Muhammad Yousaf Badar provides leadership and strategic direction to an organization committed to the supremacy of human rights, transparency in institutions, accountability, public welfare, the rule of law and the protection of fundamental rights."
+            }
+          },
+          {
+            "heading": {
+              "en": "Journalism and Literary Work"
+            },
+            "body": {
+              "en": "Muhammad Yousaf Badar has a longstanding association with journalism and public-interest writing. His journalistic work has focused on political, social and human rights issues, particularly matters concerning disadvantaged communities, violations of fundamental rights, institutional shortcomings and the problems faced by ordinary citizens.\n\nHe worked with the Lahore-based weekly newspaper Taqazay, under the guidance of renowned journalist and writer Payam Shahjahanpuri. His writings addressed important political and social questions and highlighted issues concerning human rights, social injustice and the problems of oppressed sections of society.\n\nIn 2004, his collection of newspaper articles was published in book form under the title “Sada Ba Sehra.” The book brought together his writings on politics, human rights violations, the problems of oppressed communities and institutional indifference toward vulnerable people.\n\nHis continuing association with journalism and public-interest writing has played an important role in shaping his approach to human rights activism, particularly his commitment to bringing issues of public concern before society and giving a voice to people whose concerns may otherwise remain unheard."
+            }
+          },
+          {
+            "heading": {
+              "en": "Recognition for Journalistic and Social Services"
+            },
+            "body": {
+              "en": "An important milestone in Muhammad Yousaf Badar's professional and social journey was the recognition he received for his journalistic and social services from His Excellency Ahmed Abdulrahman Mohamed, Ambassador of Sudan to Pakistan.\n\nIn recognition of his contributions to journalism and social service, His Excellency Ahmed Abdulrahman Mohamed, Ambassador of Sudan to Pakistan, honored Muhammad Yousaf Badar with an Honorary Shield.\n\nThe honor was presented on the occasion of the National Day of Sudan, as an acknowledgment of Muhammad Yousaf Badar's journalistic and social contributions.\n\nThe Honorary Shield was presented to Muhammad Yousaf Badar by Mr. Jam Kamal Khan, former Chief Minister of Balochistan and Federal Minister, on behalf of the Ambassador of Sudan.\n\nThis recognition holds particular significance in his professional profile because it represents an acknowledgment of his services not only as a journalist but also for his broader contribution to social service and public-interest activities.\n\nHis association with the event also reflected his professional engagement with international diplomatic and social circles and his efforts to use journalism and public service to promote awareness, understanding and social responsibility."
+            }
+          },
+          {
+            "heading": {
+              "en": "Human Rights Activism"
+            },
+            "body": {
+              "en": "Muhammad Yousaf Badar is a Human Rights Activist committed to the protection of human dignity, equality, justice and fundamental freedoms.\n\nThrough the Human Rights Protection Foundation Pakistan, he has worked to highlight issues involving:\n\nHuman rights and fundamental freedoms\n\nInstitutional transparency and accountability\n\nRight to Information\n\nFreedom of expression and press freedom\n\nProtection of women and children\n\nRights of vulnerable and marginalized communities\n\nRights and welfare of prisoners\n\nHuman trafficking and human smuggling\n\nEnvironmental protection\n\nClean drinking water and sanitation\n\nPublic health and maternal healthcare\n\nEducation and poverty alleviation\n\nDisaster response and humanitarian assistance\n\nStrengthening public trust in institutions\n\nHis approach emphasizes lawful, peaceful and institutional mechanisms for addressing human rights concerns and seeking appropriate remedies for citizens."
+            }
+          },
+          {
+            "heading": {
+              "en": "Institutional Transparency and Right to Information"
+            },
+            "body": {
+              "en": "A major area of Muhammad Yousaf Badar's public-interest work is institutional transparency and the Right to Information (RTI).\n\nThrough HRPF, he has pursued access to public information and official records concerning matters of public interest. His work reflects the principle that transparent public institutions are essential for accountability and for strengthening citizens' confidence in governmental and public-service institutions.\n\nHe has engaged with relevant government departments, regulatory bodies and information institutions concerning public services, governance, administrative matters and citizens' rights to information."
+            }
+          },
+          {
+            "heading": {
+              "en": "Human Trafficking and Human Smuggling"
+            },
+            "body": {
+              "en": "Muhammad Yousaf Badar has also highlighted the serious human rights consequences of human trafficking and dangerous irregular migration.\n\nHis work in this area has focused on the suffering of families whose loved ones become victims of trafficking networks or undertake dangerous migration routes in search of employment and a better future.\n\nThrough the Human Rights Protection Foundation Pakistan, he has raised awareness about the dangers of human trafficking and advocated stronger prevention, investigation, accountability, victim protection and rehabilitation measures.\n\nHis efforts in this field reflect his broader belief that the protection of human life and dignity must remain at the center of policies concerning migration, trafficking and vulnerable communities."
+            }
+          },
+          {
+            "heading": {
+              "en": "Freedom of Expression and Responsible Journalism"
+            },
+            "body": {
+              "en": "As a journalist and Human Rights Activist, Muhammad Yousaf Badar considers freedom of expression, access to information and responsible journalism important components of a rights-based society.\n\nHis professional work has involved highlighting matters of public concern and bringing attention to issues affecting ordinary citizens. He supports responsible journalism that informs the public, raises legitimate questions and contributes to transparency and accountability.\n\nHis experience as a journalist has also strengthened his commitment to ensuring that marginalized communities have opportunities to bring their concerns into the public domain."
+            }
+          },
+          {
+            "heading": {
+              "en": "Social Welfare and Humanitarian Service"
+            },
+            "body": {
+              "en": "Muhammad Yousaf Badar's work extends beyond journalism and human rights awareness. Through HRPF, he has supported initiatives relating to social welfare, health, education, environmental protection, clean drinking water, vulnerable communities and humanitarian assistance.\n\nThe Foundation's areas of work include efforts for disadvantaged communities, protection of fundamental rights, public awareness, environmental issues, healthcare, education and humanitarian assistance during difficult circumstances.\n\nHis philosophy is that human rights are closely connected with the practical conditions in which people live. Access to healthcare, education, clean water, a safe environment, justice and dignity are therefore essential elements of a rights-based society."
+            }
+          },
+          {
+            "heading": {
+              "en": "Leadership of Human Rights Protection Foundation Pakistan"
+            },
+            "body": {
+              "en": "Muhammad Yousaf Badar serves as Chairman of the Human Rights Protection Foundation Pakistan, providing leadership and guidance to the Foundation and its governing structure.\n\nUnder his leadership, HRPF works through its office-bearers, directors, volunteers and associates to pursue its objectives relating to human rights, public welfare, transparency and institutional accountability.\n\nThe Foundation seeks to provide a constructive platform through which citizens can raise legitimate concerns and pursue lawful remedies through appropriate institutions."
+            }
+          },
+          {
+            "heading": {
+              "en": "Professional and Social Journey"
+            },
+            "body": {
+              "en": "Muhammad Yousaf Badar's professional journey brings together journalism, authorship, social service and human rights activism.\n\nHis experiences in journalism and public-interest reporting strengthened his commitment to highlighting issues affecting ordinary people. His subsequent social work and human rights activities expanded this commitment into organized civil-society efforts through the Human Rights Protection Foundation Pakistan.\n\nThroughout his career, he has remained engaged with matters involving human rights, public accountability, institutional transparency, vulnerable communities, human trafficking, environmental concerns and public welfare.\n\nThe recognition bestowed upon him by His Excellency Ahmed Abdulrahman Mohamed, Ambassador of Sudan to Pakistan, including the Honorary Shield presented on the occasion of Sudan's National Day by Mr. Jam Kamal Khan, remains a notable distinction in his professional and social journey."
+            }
+          },
+          {
+            "heading": {
+              "en": "Vision and Mission"
+            },
+            "body": {
+              "en": "Muhammad Yousaf Badar's vision for the Human Rights Protection Foundation Pakistan is to contribute to a society where:\n\nHuman dignity is respected.\n\nFundamental rights are protected.\n\nPublic institutions operate transparently.\n\nCitizens have meaningful access to information.\n\nVulnerable communities receive protection and support.\n\nLegitimate grievances are addressed through lawful institutions.\n\nFreedom of expression and responsible journalism are respected.\n\nThe rule of law and accountability are strengthened.\n\nHumanitarian assistance reaches people in need.\n\nHis continuing mission is to strengthen the role of civil society in promoting human rights, transparency, accountability and social justice, while encouraging constructive engagement between citizens and public institutions."
+            }
+          },
+          {
+            "heading": {
+              "en": "Commitment to Human Dignity"
+            },
+            "body": {
+              "en": "Muhammad Yousaf Badar believes that human rights should not remain confined to declarations, documents or formal commitments. They should be reflected in the everyday lives of ordinary people.\n\nHis work as a journalist, author, social worker and Human Rights Activist reflects a continuing commitment to highlighting issues affecting society, giving a voice to the oppressed, promoting transparency and encouraging lawful and peaceful efforts for justice and institutional accountability.\n\nAs Chairman of the Human Rights Protection Foundation Pakistan, he continues to work toward the Foundation's central objective of promoting and protecting human rights, strengthening institutional transparency, supporting vulnerable communities and contributing to a society based on human dignity, justice, equality, accountability and the rule of law."
+            }
+          }
+        ],
+        "showOnBoard": true,
+        "showOnTeam": true,
+        "photoAlt": "Muhammad Yousaf Badar, Chairman",
+        "photoZoom": 1.4
+      }
+    },
+    {
+      "key": "board:munawar-ahmad",
+      "file": {
+        "id": "board-public-photo:munawar-ahmad",
+        "path": "information/munawar-ahmad.jpg",
+        "sha256": "c82811a6980946a132255ddaf8bd26c9d75978cd2df58e5be8099234774719cc",
+        "bytes": 258270,
+        "width": 1008,
+        "height": 1024
+      },
+      "fields": {
+        "name": "Munawar Ahmad",
+        "slug": "munawar-ahmad",
+        "designation": "Senior Vice Chairman",
+        "rank": 2,
+        "bio": {
+          "en": "Munawar Ahmad is serving as the Senior Vice Chairman of Human Rights Protection Foundation Pakistan, where he contributes his professional expertise, administrative skills, and commitment to organizational development."
+        },
+        "sections": [
+          {
+            "heading": {
+              "en": "Work and contribution"
+            },
+            "body": {
+              "en": "A Software Engineer by profession, Munawar Ahmad is actively involved in the Foundation’s administrative and information technology affairs. He oversees and supports IT-related matters, digital systems, organizational coordination, and administrative responsibilities to help ensure the smooth and effective functioning of the institution.\n\nHis technical knowledge, organizational approach, and dedication to public service contribute significantly to strengthening the Foundation’s institutional capacity and advancing its mission of promoting human rights, transparency, accountability, and public welfare."
+            }
+          }
+        ],
+        "showOnBoard": true,
+        "showOnTeam": true,
+        "photoAlt": "Munawar Ahmad, Senior Vice Chairman",
+        "photoZoom": 1
+      }
+    },
+    {
+      "key": "board:dr-sidra-mubashir",
+      "file": {
+        "id": "board-public-photo:dr-sidra-mubashir",
+        "path": "information/dr-sidra-mubashir.jpg",
+        "sha256": "babe92240436ff3ad2ea10489184c9d663781b633b98126b68ce3f305118f00d",
+        "bytes": 80742,
+        "width": 1333,
+        "height": 1180
+      },
+      "fields": {
+        "name": "Dr. Sidra Mubashir",
+        "slug": "dr-sidra-mubashir",
+        "designation": "Joint Chairperson",
+        "rank": 3,
+        "bio": {
+          "en": "Dr. Sidra Mubashir is a dedicated member of the Human Rights Protection Foundation Pakistan, committed to the promotion of human rights, social welfare, dignity, equality, and justice."
+        },
+        "sections": [
+          {
+            "heading": {
+              "en": "Work and contribution"
+            },
+            "body": {
+              "en": "She actively supports the Foundation’s mission to protect the rights of vulnerable and underprivileged communities and to promote awareness of fundamental human rights. Her approach reflects a strong commitment to public service, transparency, accountability, and respect for the rule of law.\n\nThrough her association with the Human Rights Protection Foundation Pakistan, Dr. Sidra Mubashir contributes to initiatives aimed at strengthening human rights protection, addressing social concerns, and promoting a more just, transparent, and inclusive society.\n\nShe believes that meaningful social change begins with respect for human dignity, equal rights, and responsible civic engagement."
+            }
+          }
+        ],
+        "showOnBoard": true,
+        "showOnTeam": true,
+        "photoAlt": "Dr. Sidra Mubashir, Joint Chairperson",
+        "photoZoom": 1
+      }
+    },
+    {
+      "key": "board:dr-iqra-mubashar",
+      "file": {
+        "id": "board-public-photo:dr-iqra-mubashar",
+        "path": "information/dr-iqra-mubashar.jpg",
+        "sha256": "c0ed9ba4ee9b154f102aa34db9c0160aab6324e99307e007de2da7bb36dac3bb",
+        "bytes": 221085,
+        "width": 944,
+        "height": 1104
+      },
+      "fields": {
+        "name": "Dr. Iqra Mubashar",
+        "slug": "dr-iqra-mubashar",
+        "designation": "General Secretary",
+        "rank": 4,
+        "bio": {
+          "en": "Dr. Iqra Mubashar is serving as the General Secretary of the Human Rights Protection Foundation Pakistan, where she plays an important role in strengthening the Foundation’s organizational structure, administrative coordination, and human rights initiatives."
+        },
+        "sections": [
+          {
+            "heading": {
+              "en": "Work and contribution"
+            },
+            "body": {
+              "en": "With a strong commitment to social welfare and the protection of human dignity, Dr. Iqra Mubashar actively contributes to the Foundation’s efforts for the rights and welfare of vulnerable, marginalized, and oppressed communities. Her responsibilities include coordinating organizational affairs, supporting the implementation of HRPF programs and policies, maintaining effective communication among organizational departments, and facilitating coordination with relevant stakeholders.\n\nAs General Secretary, she works closely with the Chairman and other members of the Foundation to advance HRPF’s objectives, particularly in the areas of human rights protection, institutional transparency, accountability, public welfare, access to justice, and support for vulnerable citizens.\n\nDr. Iqra Mubashar believes that meaningful social change requires sincerity, compassion, transparency, and consistent engagement with communities. Through her dedicated services, she contributes to the Foundation’s vision of creating a society where human dignity is respected, fundamental rights are protected, and every individual has access to justice and equal opportunities.\n\nHer association with the Human Rights Protection Foundation Pakistan reflects a commitment to serving humanity and strengthening institutional efforts for the protection and promotion of human rights."
+            }
+          }
+        ],
+        "showOnBoard": true,
+        "showOnTeam": true,
+        "photoAlt": "Dr. Iqra Mubashar, General Secretary",
+        "photoZoom": 1
+      }
+    },
+    {
+      "key": "board:hamza-uzair-badr",
+      "file": {
+        "id": "board-public-photo:hamza-uzair-badr",
+        "path": "information/hamza-uzair-badr.jpg",
+        "sha256": "192045ee6392242c3d74a8ebfa33b24d38305b9f5f267ebc4420d5f23c269c0a",
+        "bytes": 186429,
+        "width": 976,
+        "height": 1056
+      },
+      "fields": {
+        "name": "Hamza Uzair Badr",
+        "slug": "hamza-uzair-badr",
+        "designation": "Joint Secretary",
+        "rank": 5,
+        "bio": {
+          "en": "Hamza Uzair Badr is serving as Joint Secretary of the Human Rights Protection Foundation Pakistan, where he contributes to the organization’s administrative, digital, and social initiatives."
+        },
+        "sections": [
+          {
+            "heading": {
+              "en": "Work and contribution"
+            },
+            "body": {
+              "en": "Professionally, Hamza Uzair Badr is a Software Engineer with expertise in information technology and digital platforms. Alongside his professional career, he has a strong commitment to social service and actively contributes to initiatives aimed at promoting human rights and public awareness.\n\nAt the Human Rights Protection Foundation Pakistan, he is particularly involved in managing and supporting the organization’s social media platforms, digital communication, and IT-related affairs. His technical expertise and dedication to social service contribute to strengthening the Foundation’s digital presence and enabling it to communicate its human rights initiatives more effectively.\n\nHis commitment, technological skills, and spirit of social responsibility make him a valuable member of the Human Rights Protection Foundation Pakistan."
+            }
+          }
+        ],
+        "showOnBoard": true,
+        "showOnTeam": true,
+        "photoAlt": "Hamza Uzair Badr, Joint Secretary",
+        "photoZoom": 1
+      }
+    },
+    {
+      "key": "board:nasar-iqbal-gondal",
+      "file": {
+        "id": "board-public-photo:nasar-iqbal-gondal",
+        "path": "information/nasar-iqbal-gondal.jpg",
+        "sha256": "68de7fa2e8ef2484b1344061f44041cb7fe8e1d221ef973a821883e41db00fd8",
+        "bytes": 58859,
+        "width": 851,
+        "height": 1280
+      },
+      "fields": {
+        "name": "Nasar Iqbal Gondal",
+        "slug": "nasar-iqbal-gondal",
+        "designation": "Secretary Finance",
+        "rank": 6,
+        "bio": {
+          "en": "Nasar Iqbal Gondal is serving as Secretary Finance at Human Rights Protection Foundation Pakistan, where he contributes to the organization’s financial administration, social initiatives, and institutional development."
+        },
+        "sections": [
+          {
+            "heading": {
+              "en": "Work and contribution"
+            },
+            "body": {
+              "en": "He is also the owner of a construction company and has extensive experience in the private sector. Alongside his professional responsibilities, he has remained actively engaged in various social and community welfare activities.\n\nNasar Iqbal Gondal has a particular interest in institutional transparency, accountability, and responsible governance. In addition to his official responsibilities, he provides dedicated support and coordination to the Chairman of Human Rights Protection Foundation Pakistan on matters relating to transparency, public interest, organizational affairs, and institutional engagement.\n\nThrough his professional experience, social commitment, and close coordination with the Foundation’s leadership, he contributes to the mission of promoting human rights, transparency, accountability, and public welfare in Pakistan."
+            }
+          }
+        ],
+        "showOnBoard": true,
+        "showOnTeam": true,
+        "photoAlt": "Nasar Iqbal Gondal, Secretary Finance",
+        "photoZoom": 1
+      }
+    },
+    {
+      "key": "board:imdad-ullah-bhutta",
+      "file": {
+        "id": "board-public-photo:imdad-ullah-bhutta",
+        "path": "information/imdad-ullah-bhutta.jpg",
+        "sha256": "3ac795201ec8a4bfe7ae37fe7d8262ff6677178885e44e6fb3277257d76faa45",
+        "bytes": 20218,
+        "width": 760,
+        "height": 733
+      },
+      "fields": {
+        "name": "Imdad Ullah Bhutta",
+        "slug": "imdad-ullah-bhutta",
+        "designation": "Secretary Information",
+        "rank": 7,
+        "bio": {
+          "en": "Imdad Ullah Bhutta is a dedicated social worker, educationist, and community-service professional who is serving as Secretary Information at the Human Rights Protection Foundation Pakistan. He has a strong commitment to social welfare, education, public service, and community development."
+        },
+        "sections": [
+          {
+            "heading": {
+              "en": "Work and contribution"
+            },
+            "body": {
+              "en": "Prior to joining the Human Rights Protection Foundation Pakistan, Mr. Bhutta rendered valuable social services through Sehar Welfare Foundation, Mianwal Ranjha, a well-known community welfare organization. His continued involvement in social initiatives reflects his commitment to supporting communities and contributing to public welfare.\n\nAn experienced educationist, Imdad Ullah Bhutta is also associated with the Chinar Schools System, where he contributes his knowledge and educational expertise. His work in education demonstrates his interest in developing young people through quality learning and positive social values.\n\nAs Secretary Information, he plays an important role in communicating the Foundation’s activities, public-interest initiatives, human rights advocacy, and social welfare efforts to the wider community. His experience in education and social service strengthens the Foundation’s commitment to human dignity, community welfare, and constructive social development."
+            }
+          }
+        ],
+        "showOnBoard": true,
+        "showOnTeam": true,
+        "photoAlt": "Imdad Ullah Bhutta, Secretary Information",
+        "photoZoom": 1
+      }
+    }
+  ]
+}
