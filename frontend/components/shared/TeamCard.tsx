@@ -1,3 +1,4 @@
+import TranslationText from "@/components/translation/TranslationText";
 import type { TeamMember } from "@/data/team";
 import AppImage from "./AppImage";
 
@@ -35,10 +36,10 @@ export default function TeamCard({
         />
       </div>
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="text-lg font-semibold">{name}</h3>
-        <p className="text-sm font-medium text-teal-dark">{position}</p>
+        <h3 className="text-lg font-semibold"><span className="notranslate" translate="no">{name}</span></h3>
+        <p className="text-sm font-medium text-teal-dark"><TranslationText>{position}</TranslationText></p>
         <p className="mt-2 text-sm leading-relaxed text-muted">
-          {showResponsibilities ? roleDescription : bio}
+          <TranslationText>{showResponsibilities ? roleDescription : bio}</TranslationText>
         </p>
         {showResponsibilities && responsibilities.length > 0 && (
           <ul className="mt-3 space-y-1.5 border-t border-border pt-3">
@@ -51,7 +52,7 @@ export default function TeamCard({
                   className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-teal"
                   aria-hidden="true"
                 />
-                {item}
+                <TranslationText>{item}</TranslationText>
               </li>
             ))}
           </ul>
@@ -62,7 +63,7 @@ export default function TeamCard({
               key={tag}
               className="rounded bg-soft-gray px-2 py-0.5 text-[11px] font-medium text-muted"
             >
-              {tag}
+              <TranslationText>{tag}</TranslationText>
             </span>
           ))}
         </div>

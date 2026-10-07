@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/translation/TranslationLink";
 import { ArrowUpRight } from "lucide-react";
 import type { PublicBoardMember } from "@/lib/public-collections";
 import PersonPortrait from "./PersonPortrait";

@@ -1,7 +1,8 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/translation/TranslationLink";
 import { AlertTriangle, ChevronDown, Menu } from "lucide-react";
 import { mainNavigation } from "@/data/navigation";
 import Container from "@/components/shared/Container";
@@ -76,7 +77,7 @@ export default function Header() {
                   >
                     <span className="flex items-center gap-0.5">
                       <Link href={item.href} className={linkClasses} onClick={() => setOpenIndex(null)}>
-                        {item.label}
+                        <TranslationText>{item.label}</TranslationText>
                       </Link>
                       <button
                         type="button"
@@ -102,7 +103,7 @@ export default function Header() {
                     <div
                       id={`nav-menu-${index}`}
                       hidden={openIndex !== index}
-                      className={`absolute top-full z-50 pt-2 ${index === mainNavigation.length - 1 ? "right-0" : "left-0"}`}
+                      className={`absolute top-full z-50 pt-2 ${index === mainNavigation.length - 1 ? "end-0" : "start-0"}`}
                     >
                       <ul className="w-72 rounded-md border border-border bg-white p-2 shadow-[0_12px_30px_-12px_rgba(8,47,67,0.35)]">
                         {item.children.map((child) => (
@@ -112,7 +113,7 @@ export default function Header() {
                               onClick={() => setOpenIndex(null)}
                               className="block rounded px-3 py-2 text-sm text-text transition-colors hover:bg-soft-gray hover:text-teal-dark"
                             >
-                              {child.label}
+                              <TranslationText>{child.label}</TranslationText>
                             </Link>
                           </li>
                         ))}
@@ -122,7 +123,7 @@ export default function Header() {
                 ) : (
                   <li key={item.label}>
                     <Link href={item.href} className={linkClasses} onClick={() => setOpenIndex(null)}>
-                      {item.label}
+                      <TranslationText>{item.label}</TranslationText>
                     </Link>
                   </li>
                 )
@@ -138,18 +139,18 @@ export default function Header() {
               icon={AlertTriangle}
               iconPosition="left"
             >
-              File a Complaint
-            </PrimaryButton>
+              <TranslationText>File a Complaint
+            </TranslationText></PrimaryButton>
             <PrimaryButton href="/donate" variant="gold">
-              Donate
-            </PrimaryButton>
+              <TranslationText>Donate
+            </TranslationText></PrimaryButton>
           </div>
 
           {/* Actions (mobile) */}
           <div className="flex items-center gap-2 lg:hidden">
             <PrimaryButton href="/donate" variant="gold" size="md">
-              Donate
-            </PrimaryButton>
+              <TranslationText>Donate
+            </TranslationText></PrimaryButton>
             <button
               type="button"
               onClick={() => setMenuOpen(true)}

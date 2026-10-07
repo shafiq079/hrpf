@@ -1,3 +1,4 @@
+import TranslationText from "@/components/translation/TranslationText";
 import { partners as defaultPartners, type Partner } from "@/data/partners";
 
 interface PartnerLogoGridProps {
@@ -20,7 +21,7 @@ export default function PartnerLogoGrid({
             title={partner.fullName}
             className="font-serif text-xl font-semibold text-muted/70 grayscale transition-colors duration-200 hover:text-navy sm:text-2xl"
           >
-            {partner.name}
+            <TranslationText>{partner.name}</TranslationText>
           </span>
         </li>
       ))}

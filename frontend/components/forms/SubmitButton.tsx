@@ -1,5 +1,6 @@
 import { Loader2 } from "lucide-react";
 import type { ReactNode } from "react";
+import TranslationText from "@/components/translation/TranslationText";
 
 interface SubmitButtonProps {
   children: ReactNode;
@@ -34,7 +35,7 @@ export default function SubmitButton({
       {loading && (
         <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
       )}
-      {children}
+      {typeof children === "string" ? <TranslationText>{children}</TranslationText> : children}
     </button>
   );
 }

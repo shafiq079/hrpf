@@ -1,4 +1,5 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 import { useState } from "react";
 import {
@@ -77,11 +78,11 @@ export default function CampaignVolunteerForm({
         title="Thank you for volunteering"
       >
         <p>
-          Your interest in the {campaignTitle} campaign has been recorded for
+          <TranslationText>Your interest in the </TranslationText><TranslationText>{campaignTitle}</TranslationText> <TranslationText>campaign has been recorded for
           this demonstration only. A sample reference number is shown below.
-        </p>
+        </TranslationText></p>
         <p className="mt-2 font-mono text-sm font-semibold text-navy">
-          Reference: {reference}
+          <TranslationText>Reference: </TranslationText><span className="notranslate" translate="no">{reference}</span>
         </p>
       </FormMessage>
     );
@@ -147,7 +148,7 @@ export default function CampaignVolunteerForm({
         error={errors.consent}
       />
 
-      <SubmitButton loading={loading}>Join Campaign</SubmitButton>
+      <SubmitButton loading={loading}><TranslationText>Join Campaign</TranslationText></SubmitButton>
     </form>
   );
 }

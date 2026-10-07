@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/translation/TranslationLink";
 import { ArrowRight } from "lucide-react";
 import Container from "@/components/shared/Container";
 import ProjectCard from "@/components/shared/ProjectCard";

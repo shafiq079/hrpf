@@ -1,3 +1,4 @@
+import TranslationText from "@/components/translation/TranslationText";
 import type { ComponentType, ReactNode } from "react";
 import type { LucideProps } from "lucide-react";
 import { Inbox } from "lucide-react";
@@ -22,10 +23,10 @@ export default function EmptyState({
       <span className="flex h-12 w-12 items-center justify-center rounded-full bg-soft-gray text-muted">
         <Icon className="h-6 w-6" aria-hidden="true" />
       </span>
-      <h3 className="mt-4 text-lg font-semibold">{title}</h3>
+      <h3 className="mt-4 text-lg font-semibold"><TranslationText>{title}</TranslationText></h3>
       {description && (
         <p className="mt-2 max-w-md text-[15px] leading-relaxed text-muted">
-          {description}
+          <TranslationText>{description}</TranslationText>
         </p>
       )}
       {action && <div className="mt-5">{action}</div>}

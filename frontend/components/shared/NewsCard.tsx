@@ -1,4 +1,5 @@
-import Link from "next/link";
+import TranslationText from "@/components/translation/TranslationText";
+import Link from "@/components/translation/TranslationLink";
 import { ArrowRight } from "lucide-react";
 import type { NewsArticle } from "@/data/news";
 import AppImage from "./AppImage";
@@ -26,34 +27,34 @@ export default function NewsCard({ article, dateLabel }: NewsCardProps) {
         />
       </div>
       <div className="flex flex-1 flex-col p-6">
-        <p className="eyebrow">{category}</p>
+        <p className="eyebrow"><TranslationText>{category}</TranslationText></p>
         <h3 className="mt-2 text-[19px] font-semibold leading-snug">
           <Link
             href={href}
             className="transition-colors hover:text-teal-dark focus-visible:text-teal-dark"
           >
-            {title}
+            <TranslationText>{title}</TranslationText>
           </Link>
         </h3>
         <p className="mt-2 flex-1 text-[15px] leading-relaxed text-muted">
-          {summary}
+          <TranslationText>{summary}</TranslationText>
         </p>
         <p className="mt-4 text-xs text-muted">
           {dateLabel ? (
-            <span>{dateLabel}</span>
+            <span><TranslationText>{dateLabel}</TranslationText></span>
           ) : (
-            <time dateTime={date}>{formatDate(date)}</time>
+            <time dateTime={date}><TranslationText>{formatDate(date)}</TranslationText></time>
           )}
-          <span aria-hidden="true"> · </span>
-          {readingTime}
+          <span aria-hidden="true"> <TranslationText>· </TranslationText></span>
+          <TranslationText>{readingTime}</TranslationText>
         </p>
         <Link
           href={href}
           className="group/link mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-teal-dark transition-colors hover:text-navy"
           aria-label={`Read the story: ${title}`}
         >
-          Read Story
-          <ArrowRight
+          <TranslationText>Read Story
+          </TranslationText><ArrowRight
             className="h-4 w-4 transition-transform duration-150 group-hover/link:translate-x-0.5"
             aria-hidden="true"
           />

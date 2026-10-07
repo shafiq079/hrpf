@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
+import Link from "@/components/translation/TranslationLink";
 import { Download } from "lucide-react";
 import { createMetadata } from "@/lib/seo";
 import Container from "@/components/shared/Container";

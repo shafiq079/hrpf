@@ -1,4 +1,5 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 import { useId, useState } from "react";
 import { SelectField, TextField } from "@/components/forms/fields";
@@ -67,8 +68,8 @@ export default function DonationForm() {
       {/* Frequency toggle */}
       <fieldset>
         <legend className="mb-1.5 block text-sm font-medium text-text">
-          Donation frequency
-        </legend>
+          <TranslationText>Donation frequency
+        </TranslationText></legend>
         <div
           role="radiogroup"
           aria-label="Donation frequency"
@@ -89,7 +90,7 @@ export default function DonationForm() {
                     : "bg-transparent text-muted hover:text-text"
                 }`}
               >
-                {option}
+                <TranslationText>{option}</TranslationText>
               </button>
             );
           })}
@@ -99,8 +100,8 @@ export default function DonationForm() {
       {/* Amount selection */}
       <fieldset>
         <legend className="mb-1.5 block text-sm font-medium text-text">
-          Select an amount
-        </legend>
+          <TranslationText>Select an amount
+        </TranslationText></legend>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {presetAmounts.map((preset) => {
             const active = !isCustom && amount === preset.value;
@@ -116,7 +117,7 @@ export default function DonationForm() {
                     : "border-border bg-white text-text hover:border-navy"
                 }`}
               >
-                ${preset.value}
+                <TranslationText>$</TranslationText><TranslationText>{preset.value}</TranslationText>
               </button>
             );
           })}
@@ -133,8 +134,8 @@ export default function DonationForm() {
                 : "border-border bg-white text-text hover:border-navy"
             }`}
           >
-            Custom amount
-          </button>
+            <TranslationText>Custom amount
+          </TranslationText></button>
           {isCustom && (
             <div className="mt-3">
               <TextField
@@ -153,9 +154,9 @@ export default function DonationForm() {
         {!isCustom && selectedPreset && (
           <p className="mt-3 text-sm leading-relaxed text-muted">
             <span className="font-medium text-text">
-              ${selectedPreset.value} {selectedPreset.impact}
+              <TranslationText>$</TranslationText><TranslationText>{selectedPreset.value}</TranslationText> <TranslationText>{selectedPreset.impact}</TranslationText>
             </span>{" "}
-            <span className="italic">(illustrative example)</span>
+            <span className="italic"><TranslationText>(illustrative example)</TranslationText></span>
           </p>
         )}
       </fieldset>
@@ -195,19 +196,19 @@ export default function DonationForm() {
           title="Online payments are not available yet"
         >
           <p>
-            Online payment processing has not been configured on this
+            <TranslationText>Online payment processing has not been configured on this
             demonstration website, so no donation can be completed and no
             financial information should be entered. Please check back once
             secure payment processing is available.
-          </p>
+          </TranslationText></p>
         </FormMessage>
       )}
 
-      <SubmitButton variant="gold">Donate</SubmitButton>
+      <SubmitButton variant="gold"><TranslationText>Donate</TranslationText></SubmitButton>
       <p className="text-xs leading-relaxed text-muted">
-        This button does not process a real payment. Online donations are
+        <TranslationText>This button does not process a real payment. Online donations are
         disabled until a secure payment provider is configured.
-      </p>
+      </TranslationText></p>
     </form>
   );
 }

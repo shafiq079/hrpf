@@ -1,4 +1,5 @@
-import Link from "next/link";
+import Link from "@/components/translation/TranslationLink";
+import TranslationText from "@/components/translation/TranslationText";
 import type { ComponentType, ReactNode } from "react";
 import type { LucideProps } from "lucide-react";
 
@@ -98,7 +99,7 @@ export default function PrimaryButton(props: PrimaryButtonProps) {
   const content = (
     <>
       {iconPosition === "left" && iconEl}
-      {children}
+      {typeof children === "string" ? <TranslationText>{children}</TranslationText> : children}
       {iconPosition === "right" && iconEl}
     </>
   );

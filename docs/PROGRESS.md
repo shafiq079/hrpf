@@ -1,5 +1,54 @@
 # HRPF Progress
 
+## Simplified translation panel — 2026-10-08
+
+- Owner requested a narrower panel titled "Translate", no search box, no
+  automatic-translation footer/status and one native name per language.
+- Reduce width from 20rem to 14rem and keep the scrollable language list,
+  selection checkmark, English restore and keyboard dismissal/focus.
+- Frontend lint/type/build, four existing tests and public SSR passed. An
+  isolated-provider browser verified the 224px panel, "Translate" title, absence
+  of search/footer/duplicate labels, language changes, English restore, saved
+  navigation, keyboard/outside dismissal, mobile/landscape bounds and retry.
+
+## Floating translation interface — 2026-10-08
+
+- Owner confirmed translation works and requested the bottom-left GTranslate
+  Float pattern from the supplied screenshot instead of an above-header strip.
+- Remove the strip; add a white globe/language-code button opening an upward
+  searchable language panel with native/English names, a current selection
+  checkmark and English restoration in the same list.
+- Preserve provider loading, supported languages, preferences, RTL and private
+  exclusions through the existing hidden provider-owned select. Keep keyboard
+  dismissal/focus, mobile safe areas and viewport scrolling in the interface.
+- Frontend lint/type/build, four existing browser-side tests and public SSR
+  passed. A network-isolated browser checked the floating UI, native/English
+  search, empty results, Escape/focus, outside click, Urdu RTL, English reset,
+  French saved navigation, mobile/landscape bounds, drawer layering, provider
+  retry and admin exclusion with no browser errors. Landscape panel height
+  reserves the sticky header so it cannot cover the Close control.
+
+## Automatic text translation — 2026-10-08
+
+- PR #6 merged complaint workflow and Render free/ClamAV removal into main;
+  development began this milestone aligned at `cf8ecbd`.
+- Owner narrowed multilingual scope to automatic visible text translation with
+  a language dropdown. No manually authored Urdu routes/admin fields required.
+- Add a lazy GTranslate nonprofit free widget offering all provider languages;
+  preserve English content, existing routes, images/documents and backend records.
+- Isolate provider-owned dropdown DOM, protect changing client text and use fresh
+  document navigation for translated pages. Exclude private form/review values,
+  filenames, references, Turnstile and administration from translation.
+- Details and owner review: `TEXT_TRANSLATION.md`. Global performance remains the
+  next deferred milestone after translation review.
+- Completed frontend lint/type/build, four retry/navigation tests, public SSR and
+  dependency audit. Live Urdu/French, project sliders, blog filters, gallery zoom,
+  pagination and Back passed. Isolated provider-engine tests excluded unique
+  synthetic complaint values/files and retained the review on English restore;
+  isolated mobile RTL/retry checks passed without browser errors. No live
+  complaint submission or email was performed.
+
+
 ## Current deployment decision — 2026-10-07
 
 The owner explicitly removed ClamAV to support a Render free deployment. New

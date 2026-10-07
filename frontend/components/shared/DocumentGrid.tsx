@@ -1,4 +1,5 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 import { useRef, useState } from "react";
 import {
@@ -61,32 +62,32 @@ export default function DocumentGrid({
                   <ShieldCheck size={32} strokeWidth={1.5} aria-hidden="true" />
                 )}
                 <span className="text-xs font-semibold uppercase tracking-widest">
-                  {report
+                  <TranslationText>{report
                     ? `${document.year ? `${document.year} · ` : ""}Progress report`
-                    : "Registration archive"}
+                    : "Registration archive"}</TranslationText>
                 </span>
               </div>
               <div className="flex flex-1 flex-col p-6 sm:p-7">
                 <p
                   className={`text-xs font-semibold ${!report && document.expiresAt && certificatePeriod(document, today) === "Validity date passed" ? "text-red-dark" : "text-teal-dark"}`}
                 >
-                  {report
+                  <TranslationText>{report
                     ? document.edition === "public-edition"
                       ? "Public edition"
                       : "Complete report"
-                    : certificatePeriod(document, today)}
+                    : certificatePeriod(document, today)}</TranslationText>
                 </p>
                 <h2 className="mt-3 font-serif text-xl leading-snug text-navy">
-                  {document.title}
+                  <TranslationText>{document.title}</TranslationText>
                 </h2>
                 {!report && document.issuer && (
                   <p className="mt-3 text-sm font-medium text-navy">
-                    {document.issuer}
+                    <TranslationText>{document.issuer}</TranslationText>
                   </p>
                 )}
                 {document.summary && (
                   <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-muted">
-                    {document.summary}
+                    <TranslationText>{document.summary}</TranslationText>
                   </p>
                 )}
                 <dl className="mt-5 space-y-2 text-xs leading-relaxed text-muted">
@@ -95,26 +96,26 @@ export default function DocumentGrid({
                       {(document.coverageStart || document.coverageEnd) && (
                         <div>
                           <dt className="inline font-semibold">
-                            Reporting period:{" "}
+                            <TranslationText>Reporting period:</TranslationText>{" "}
                           </dt>
                           <dd className="inline">
-                            {documentDate(document.coverageStart) ||
-                              "Not stated"}{" "}
-                            –{" "}
-                            {documentDate(document.coverageEnd) || "Not stated"}
+                            <TranslationText>{documentDate(document.coverageStart) ||
+                              "Not stated"}</TranslationText>{" "}
+                            <TranslationText>–</TranslationText>{" "}
+                            <TranslationText>{documentDate(document.coverageEnd) || "Not stated"}</TranslationText>
                           </dd>
                         </div>
                       )}
                       <div>
-                        <dt className="sr-only">File details</dt>
+                        <dt className="sr-only"><TranslationText>File details</TranslationText></dt>
                         <dd>
-                          {[
+                          <TranslationText>{[
                             "PDF",
                             document.pages ? `${document.pages} pages` : "",
                             documentSize(document.bytes),
                           ]
                             .filter(Boolean)
-                            .join(" · ")}
+                            .join(" · ")}</TranslationText>
                         </dd>
                       </div>
                     </>
@@ -122,47 +123,47 @@ export default function DocumentGrid({
                     <>
                       {document.reference && (
                         <div>
-                          <dt className="inline font-semibold">Reference: </dt>
+                          <dt className="inline font-semibold"><TranslationText>Reference: </TranslationText></dt>
                           <dd className="inline break-all">
-                            {document.reference}
+                            <TranslationText>{document.reference}</TranslationText>
                           </dd>
                         </div>
                       )}
                       {document.issuedAt && (
                         <div>
-                          <dt className="inline font-semibold">Issued: </dt>
+                          <dt className="inline font-semibold"><TranslationText>Issued: </TranslationText></dt>
                           <dd className="inline">
-                            {documentDate(document.issuedAt)}
+                            <TranslationText>{documentDate(document.issuedAt)}</TranslationText>
                           </dd>
                         </div>
                       )}
                       {document.validFrom && (
                         <div>
-                          <dt className="inline font-semibold">Valid from: </dt>
+                          <dt className="inline font-semibold"><TranslationText>Valid from: </TranslationText></dt>
                           <dd className="inline">
-                            {documentDate(document.validFrom)}
+                            <TranslationText>{documentDate(document.validFrom)}</TranslationText>
                           </dd>
                         </div>
                       )}
                       {document.expiresAt && (
                         <div>
                           <dt className="inline font-semibold">
-                            Valid until:{" "}
+                            <TranslationText>Valid until:</TranslationText>{" "}
                           </dt>
                           <dd className="inline">
-                            {documentDate(document.expiresAt)}
+                            <TranslationText>{documentDate(document.expiresAt)}</TranslationText>
                           </dd>
                         </div>
                       )}
                       <div>
-                        <dt className="sr-only">File details</dt>
+                        <dt className="sr-only"><TranslationText>File details</TranslationText></dt>
                         <dd>
-                          {[
+                          <TranslationText>{[
                             document.format?.toUpperCase(),
                             documentSize(document.bytes),
                           ]
                             .filter(Boolean)
-                            .join(" · ")}
+                            .join(" · ")}</TranslationText>
                         </dd>
                       </div>
                     </>
@@ -171,10 +172,10 @@ export default function DocumentGrid({
                 {document.releaseNote && (
                   <details className="mt-5 rounded-lg bg-off-white p-3 text-xs leading-relaxed text-muted">
                     <summary className="cursor-pointer font-semibold text-navy">
-                      About this public copy
-                    </summary>
+                      <TranslationText>About this public copy
+                    </TranslationText></summary>
                     <p className="mt-2 whitespace-pre-line">
-                      {document.releaseNote}
+                      <TranslationText>{document.releaseNote}</TranslationText>
                     </p>
                   </details>
                 )}
@@ -189,16 +190,16 @@ export default function DocumentGrid({
                     aria-label={`View ${document.title}`}
                   >
                     <Eye size={16} aria-hidden="true" />
-                    View document
-                  </button>
+                    <TranslationText>View document
+                  </TranslationText></button>
                   <a
                     href={document.download}
                     className="inline-flex items-center gap-2 text-sm font-semibold text-teal-dark"
                     aria-label={`Download ${document.title}`}
                   >
                     <ArrowDownToLine size={16} aria-hidden="true" />
-                    Download
-                  </a>
+                    <TranslationText>Download
+                  </TranslationText></a>
                 </div>
               </div>
             </li>
@@ -215,7 +216,7 @@ export default function DocumentGrid({
         {active && (
           <>
             <div className="flex items-start justify-between gap-4">
-              <h2 className="font-serif text-xl text-navy">{active.title}</h2>
+              <h2 className="font-serif text-xl text-navy"><TranslationText>{active.title}</TranslationText></h2>
               <button
                 type="button"
                 onClick={close}
@@ -227,7 +228,7 @@ export default function DocumentGrid({
             </div>
             {active.releaseNote && (
               <p className="mt-3 text-xs leading-relaxed text-muted">
-                {active.releaseNote}
+                <TranslationText>{active.releaseNote}</TranslationText>
               </p>
             )}
             <div className="my-4 flex flex-wrap gap-5 text-sm font-semibold text-teal-dark">
@@ -237,15 +238,15 @@ export default function DocumentGrid({
                 rel="noopener"
                 className="inline-flex items-center gap-2"
               >
-                Open in a new tab
-                <ExternalLink size={15} aria-hidden="true" />
+                <TranslationText>Open in a new tab
+                </TranslationText><ExternalLink size={15} aria-hidden="true" />
               </a>
-              <a href={active.download}>Download document</a>
+              <a href={active.download}><TranslationText>Download document</TranslationText></a>
             </div>
             <p className="mb-3 text-xs text-muted">
-              If your browser cannot display this file, open it in a new tab or
+              <TranslationText>If your browser cannot display this file, open it in a new tab or
               download it.
-            </p>
+            </TranslationText></p>
             {active.format === "pdf" || "slug" in active ? (
               <iframe
                 src={active.view || active.file}

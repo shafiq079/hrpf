@@ -1,8 +1,9 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import Link from "next/link";
+import Link from "@/components/translation/TranslationLink";
 import { AlertTriangle, ChevronDown, X } from "lucide-react";
 import { mainNavigation } from "@/data/navigation";
 import PrimaryButton from "@/components/shared/PrimaryButton";
@@ -79,7 +80,7 @@ export default function MobileNavigation({
         role="dialog"
         aria-modal="true"
         aria-label="Site menu"
-        className={`fixed right-0 top-0 z-50 flex h-full w-[min(84vw,340px)] flex-col bg-off-white shadow-xl transition-transform duration-300 ease-out ${
+        className={`fixed end-0 top-0 z-50 flex h-full w-[min(84vw,340px)] flex-col bg-off-white shadow-xl transition-transform duration-300 ease-out ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -107,7 +108,7 @@ export default function MobileNavigation({
                       onClick={onClose}
                       className="flex-1 py-3 text-base font-medium text-text transition-colors hover:text-teal-dark"
                     >
-                      {item.label}
+                      <TranslationText>{item.label}</TranslationText>
                     </Link>
                     <button
                       type="button"
@@ -136,7 +137,7 @@ export default function MobileNavigation({
                             onClick={onClose}
                             className="block py-2 text-sm text-muted transition-colors hover:text-teal-dark"
                           >
-                            {child.label}
+                            <TranslationText>{child.label}</TranslationText>
                           </Link>
                         </li>
                       ))}
@@ -150,7 +151,7 @@ export default function MobileNavigation({
                     onClick={onClose}
                     className="block border-b border-border/70 py-3 text-base font-medium text-text transition-colors hover:text-teal-dark"
                   >
-                    {item.label}
+                    <TranslationText>{item.label}</TranslationText>
                   </Link>
                 </li>
               )
@@ -166,11 +167,11 @@ export default function MobileNavigation({
             iconPosition="left"
             fullWidth
           >
-            File a Complaint
-          </PrimaryButton>
+            <TranslationText>File a Complaint
+          </TranslationText></PrimaryButton>
           <PrimaryButton href="/donate" variant="gold" fullWidth>
-            Donate
-          </PrimaryButton>
+            <TranslationText>Donate
+          </TranslationText></PrimaryButton>
         </div>
       </div>
     </div>,

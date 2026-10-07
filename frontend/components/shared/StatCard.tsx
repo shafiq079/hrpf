@@ -1,3 +1,4 @@
+import TranslationText from "@/components/translation/TranslationText";
 interface StatCardProps {
   value: string;
   label: string;
@@ -26,18 +27,18 @@ export default function StatCard({
           isLight ? "text-teal" : "text-teal-dark"
         }`}
       >
-        {value}
+        <TranslationText>{value}</TranslationText>
       </p>
       <p
         className={`mt-2 text-[11px] font-semibold uppercase tracking-[0.12em] ${
           isLight ? "text-white/70" : "text-muted"
         }`}
       >
-        {label}
+        <TranslationText>{label}</TranslationText>
       </p>
       {note && (
         <p className={`mt-1 text-xs ${isLight ? "text-white/50" : "text-muted"}`}>
-          {note}
+          <TranslationText>{note}</TranslationText>
         </p>
       )}
     </div>

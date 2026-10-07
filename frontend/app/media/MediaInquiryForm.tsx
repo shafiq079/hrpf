@@ -1,4 +1,5 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 import { useState } from "react";
 import { Clock } from "lucide-react";
@@ -69,12 +70,12 @@ export default function MediaInquiryForm() {
         title="Thank you — your media inquiry has been received"
       >
         <p>
-          Your inquiry has been recorded for this demonstration only. A member
+          <TranslationText>Your inquiry has been recorded for this demonstration only. A member
           of the communications team would normally respond using the details
           you provided.
-        </p>
+        </TranslationText></p>
         <p className="mt-2 font-mono text-sm font-semibold text-navy">
-          Reference: {reference}
+          <TranslationText>Reference: </TranslationText><span className="notranslate" translate="no">{reference}</span>
         </p>
       </FormMessage>
     );
@@ -156,12 +157,12 @@ export default function MediaInquiryForm() {
       <div className="flex items-start gap-2.5 text-sm text-muted">
         <Clock className="mt-0.5 h-4 w-4 shrink-0 text-teal-dark" aria-hidden="true" />
         <p>
-          We aim to acknowledge media inquiries within two working days. For
+          <TranslationText>We aim to acknowledge media inquiries within two working days. For
           urgent, deadline-driven requests, please note your deadline above.
-        </p>
+        </TranslationText></p>
       </div>
 
-      <SubmitButton loading={loading}>Send Media Inquiry</SubmitButton>
+      <SubmitButton loading={loading}><TranslationText>Send Media Inquiry</TranslationText></SubmitButton>
     </form>
   );
 }

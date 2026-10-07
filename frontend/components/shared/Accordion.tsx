@@ -1,4 +1,5 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 import { useId, useState } from "react";
 import { ChevronDown } from "lucide-react";
@@ -52,7 +53,7 @@ export default function Accordion({
                 onClick={() => toggle(index)}
                 className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-[15px] font-semibold text-navy transition-colors hover:bg-soft-gray focus-visible:outline-2 focus-visible:-outline-offset-2"
               >
-                {item.title}
+                <TranslationText>{item.title}</TranslationText>
                 <ChevronDown
                   className={`h-5 w-5 shrink-0 text-teal-dark transition-transform duration-200 ${
                     isOpen ? "rotate-180" : ""

@@ -9,7 +9,7 @@ import {
   Receipt,
   ShieldCheck,
 } from "lucide-react";
-import Link from "next/link";
+import Link from "@/components/translation/TranslationLink";
 import { createMetadata } from "@/lib/seo";
 import Container from "@/components/shared/Container";
 import PageHero from "@/components/shared/PageHero";

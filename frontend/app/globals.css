@@ -112,4 +112,47 @@
     text-transform: uppercase;
     color: var(--color-teal-dark);
   }
+
+  .hrpf-translation-float {
+    position: fixed;
+    left: max(1rem, env(safe-area-inset-left));
+    bottom: calc(1rem + env(safe-area-inset-bottom));
+    z-index: 45; /* Below the header, navigation drawer and image viewer. */
+    font-family: var(--font-sans);
+  }
+
+  .hrpf-language-panel {
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 0.5rem);
+    width: min(14rem, calc(100vw - 2rem - env(safe-area-inset-left) - env(safe-area-inset-right)));
+    /* Reserve the 72px sticky header even in a short landscape viewport. */
+    max-height: calc(100dvh - 10rem - env(safe-area-inset-bottom));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .hrpf-language-list {
+    max-height: min(18rem, 38dvh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  html[dir="rtl"] :is(h1, h2, h3, h4, .eyebrow) {
+    letter-spacing: normal;
+    line-height: 1.6;
+  }
+
+  html[dir="rtl"] .text-left { text-align: right; }
+  html[dir="rtl"] .text-right { text-align: left; }
+}
+
+/* Next/font variables are unlayered. These overrides must share that cascade
+   level so Tailwind's font-serif/font-sans utilities use the Arabic font too. */
+html[lang="ur"], html[lang="ar"], html[lang="fa"],
+html[lang="ps"], html[lang="sd"] {
+  --font-lora: var(--font-arabic);
+  --font-inter: var(--font-arabic);
+  --font-sans: var(--font-arabic), Tahoma, sans-serif;
+  --font-serif: var(--font-arabic), Tahoma, serif;
 }

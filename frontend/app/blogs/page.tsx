@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/translation/TranslationLink";
 import { ArrowRight } from "lucide-react";
 import { createMetadata } from "@/lib/seo";
 import { newsCard, type NewsRecord } from "@/lib/home-feed";

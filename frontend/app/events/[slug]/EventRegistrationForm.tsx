@@ -1,4 +1,5 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 import { useState } from "react";
 import {
@@ -67,11 +68,11 @@ export default function EventRegistrationForm({
     return (
       <FormMessage type="success" title="Registration received">
         <p>
-          Your registration for {eventTitle} has been recorded for this
+          <TranslationText>Your registration for </TranslationText><TranslationText>{eventTitle}</TranslationText> <TranslationText>has been recorded for this
           demonstration only. A sample reference number is shown below.
-        </p>
+        </TranslationText></p>
         <p className="mt-2 font-mono text-sm font-semibold text-navy">
-          Reference: {reference}
+          <TranslationText>Reference: </TranslationText><span className="notranslate" translate="no">{reference}</span>
         </p>
       </FormMessage>
     );
@@ -136,7 +137,7 @@ export default function EventRegistrationForm({
         error={errors.consent}
       />
 
-      <SubmitButton loading={loading}>Register for Event</SubmitButton>
+      <SubmitButton loading={loading}><TranslationText>Register for Event</TranslationText></SubmitButton>
     </form>
   );
 }

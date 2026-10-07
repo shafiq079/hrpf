@@ -1,7 +1,8 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/translation/TranslationLink";
 import { SearchX } from "lucide-react";
 import SearchInput from "@/components/shared/SearchInput";
 import FilterSelect from "@/components/shared/FilterSelect";
@@ -93,15 +94,15 @@ export default function SearchExplorer({ entries }: { entries: IndexEntry[] }) {
       </FilterBar>
 
       <p className="mt-3 text-xs text-muted">
-        Results match titles and descriptions from site pages and the latest published content, ordered by content type.
-      </p>
+        <TranslationText>Results match titles and descriptions from site pages and the latest published content, ordered by content type.
+      </TranslationText></p>
 
       {hasQuery && (
         <p className="mt-6 text-sm font-medium text-text" role="status">
-          {results.length}{" "}
-          {results.length === 1 ? "result" : "results"} for &ldquo;
-          {query.trim()}&rdquo;
-        </p>
+          <TranslationText>{results.length}</TranslationText>{" "}
+          <TranslationText>{results.length === 1 ? "result" : "results"}</TranslationText> <TranslationText>for &ldquo;
+          </TranslationText><span className="notranslate" translate="no">{query.trim()}</span><TranslationText>&rdquo;
+        </TranslationText></p>
       )}
 
       <div className="mt-6">
@@ -123,15 +124,15 @@ export default function SearchExplorer({ entries }: { entries: IndexEntry[] }) {
                 onClick={clear}
                 className="text-sm font-semibold text-teal-dark transition-colors hover:text-navy"
               >
-                Clear search
-              </button>
+                <TranslationText>Clear search
+              </TranslationText></button>
             }
           />
         )}
 
         {hasQuery && results.length === 0 && (
           <div className="mt-8">
-            <h2 className="text-sm font-semibold text-text">Popular pages</h2>
+            <h2 className="text-sm font-semibold text-text"><TranslationText>Popular pages</TranslationText></h2>
             <ul className="mt-3 flex flex-wrap gap-2">
               {popularPages.map((page) => (
                 <li key={page.href}>
@@ -139,7 +140,7 @@ export default function SearchExplorer({ entries }: { entries: IndexEntry[] }) {
                     href={page.href}
                     className="inline-flex rounded-md border border-border bg-white px-3 py-1.5 text-sm text-navy transition-colors hover:border-teal hover:text-teal-dark"
                   >
-                    {page.title}
+                    <TranslationText>{page.title}</TranslationText>
                   </Link>
                 </li>
               ))}
@@ -152,10 +153,10 @@ export default function SearchExplorer({ entries }: { entries: IndexEntry[] }) {
             {grouped.map((group) => (
               <div key={group.type}>
                 <h2 className="text-lg font-semibold">
-                  {group.type}
+                  <TranslationText>{group.type}</TranslationText>
                   <span className="ml-2 text-sm font-normal text-muted">
-                    ({group.items.length})
-                  </span>
+                    <TranslationText>(</TranslationText><TranslationText>{group.items.length}</TranslationText><TranslationText>)
+                  </TranslationText></span>
                 </h2>
                 <ul className="mt-4 grid gap-4 sm:grid-cols-2">
                   {group.items.map((entry) => (
@@ -169,15 +170,15 @@ export default function SearchExplorer({ entries }: { entries: IndexEntry[] }) {
                             href={entry.href}
                             className="transition-colors hover:text-teal-dark focus-visible:text-teal-dark"
                           >
-                            {entry.title}
+                            <TranslationText>{entry.title}</TranslationText>
                           </Link>
                         </h3>
                         <span className="shrink-0 rounded-full bg-soft-gray px-2.5 py-0.5 text-xs font-medium text-muted">
-                          {entry.type}
+                          <TranslationText>{entry.type}</TranslationText>
                         </span>
                       </div>
                       <p className="mt-2 text-sm leading-relaxed text-muted">
-                        {entry.description}
+                        <TranslationText>{entry.description}</TranslationText>
                       </p>
                     </li>
                   ))}

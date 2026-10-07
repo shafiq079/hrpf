@@ -1,4 +1,5 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 import { useState } from "react";
 import {
@@ -78,13 +79,13 @@ export default function HelpRequestForm() {
         title="Thank you — your request has been received"
       >
         <p>
-          Your request has been recorded for this demonstration only and has not
+          <TranslationText>Your request has been recorded for this demonstration only and has not
           been stored or sent anywhere. HRPF provides information and referral
           and cannot guarantee legal representation or a specific outcome. A
           sample reference number is shown below.
-        </p>
+        </TranslationText></p>
         <p className="mt-2 font-mono text-sm font-semibold text-navy">
-          Reference: {reference}
+          <TranslationText>Reference: </TranslationText><span className="notranslate" translate="no">{reference}</span>
         </p>
       </FormMessage>
     );
@@ -161,7 +162,7 @@ export default function HelpRequestForm() {
         error={errors.consent}
       />
 
-      <SubmitButton loading={loading}>Submit Request</SubmitButton>
+      <SubmitButton loading={loading}><TranslationText>Submit Request</TranslationText></SubmitButton>
     </form>
   );
 }

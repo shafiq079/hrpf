@@ -1,5 +1,16 @@
 # HRPF Decisions
 
+## Automatic multilingual text widget — 2026-10-08
+
+The owner clarified that the feature should translate only website text through
+a language dropdown and approved implementation. Use the GTranslate free widget
+for nonprofit public text, with English retained as the authored source. This
+supersedes the manually managed Urdu routes/editor translation milestone.
+No database migration or reseeding is needed. Keep private data outside text
+translation and preserve React ownership for changing text and page transitions.
+See `TEXT_TRANSLATION.md` for provider terms, exclusions and operation.
+
+
 ## Current deployment decision — 2026-10-07
 
 The owner explicitly removed ClamAV to support a Render free deployment. New

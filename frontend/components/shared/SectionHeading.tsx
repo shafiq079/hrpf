@@ -1,3 +1,4 @@
+import TranslationText from "@/components/translation/TranslationText";
 import type { ReactNode } from "react";
 
 interface SectionHeadingProps {
@@ -34,14 +35,14 @@ export default function SectionHeading({
       } ${className}`}
     >
       {eyebrow && (
-        <p className={`eyebrow ${isLight ? "text-teal" : ""}`}>{eyebrow}</p>
+        <p className={`eyebrow ${isLight ? "text-teal" : ""}`}><TranslationText>{eyebrow}</TranslationText></p>
       )}
       <Heading
         className={`mt-3 text-[28px] leading-tight sm:text-[34px] lg:text-[40px] ${
           isLight ? "text-white" : ""
         }`}
       >
-        {title}
+        {typeof title === "string" ? <TranslationText>{title}</TranslationText> : title}
       </Heading>
       {description && (
         <p
@@ -49,7 +50,7 @@ export default function SectionHeading({
             isLight ? "text-white/80" : "text-muted"
           } ${isCenter ? "mx-auto" : "max-w-2xl"}`}
         >
-          {description}
+          <TranslationText>{description}</TranslationText>
         </p>
       )}
     </div>

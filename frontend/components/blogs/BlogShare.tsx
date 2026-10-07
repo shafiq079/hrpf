@@ -1,4 +1,5 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 import { useState } from "react";
 import { Copy, Share2 } from "lucide-react";
 export default function BlogShare({ title }: { title: string }) {
@@ -26,8 +27,8 @@ export default function BlogShare({ title }: { title: string }) {
     <div className="border-y border-border py-5">
       <p className="flex items-center gap-2 text-sm font-semibold text-navy">
         <Share2 size={16} aria-hidden="true" />
-        Share this blog
-      </p>
+        <TranslationText>Share this blog
+      </TranslationText></p>
       <div className="mt-3 flex flex-wrap gap-3">
         <button
           onClick={() => void copy()}
@@ -35,8 +36,8 @@ export default function BlogShare({ title }: { title: string }) {
           className="inline-flex items-center gap-2 border border-border px-3 py-2 text-sm hover:border-teal"
         >
           <Copy size={15} aria-hidden="true" />
-          Copy link
-        </button>
+          <TranslationText>Copy link
+        </TranslationText></button>
         {(["facebook", "whatsapp", "x"] as const).map((service) => (
           <button
             key={service}
@@ -44,16 +45,16 @@ export default function BlogShare({ title }: { title: string }) {
             type="button"
             className="border border-border px-3 py-2 text-sm hover:border-teal"
           >
-            {service === "facebook"
+            <TranslationText>{service === "facebook"
               ? "Facebook"
               : service === "whatsapp"
                 ? "WhatsApp"
-                : "X"}
+                : "X"}</TranslationText>
           </button>
         ))}
       </div>
       <p role="status" className="mt-2 text-xs text-teal-dark">
-        {message}
+        <TranslationText>{message}</TranslationText>
       </p>
     </div>
   );

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import Link from "@/components/translation/TranslationLink";
 import { Users } from "lucide-react";
 import { createMetadata } from "@/lib/seo";
 import { readPublicPerson } from "@/lib/people";

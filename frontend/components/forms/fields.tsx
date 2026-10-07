@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import TranslationText from "@/components/translation/TranslationText";
 
 /*
   Presentational, controlled form field primitives. These are used inside
@@ -34,19 +35,19 @@ function FieldShell({
         htmlFor={id}
         className="mb-1.5 block text-sm font-medium text-text"
       >
-        {label}
+        <TranslationText>{label}</TranslationText>
         {required && <span className="text-red-dark"> *</span>}
         {required && <span className="sr-only"> (required)</span>}
       </label>
       {children(describedBy, Boolean(error))}
       {helper && !error && (
         <p id={helperId} className="mt-1.5 text-xs text-muted">
-          {helper}
+          <TranslationText>{helper}</TranslationText>
         </p>
       )}
       {error && (
         <p id={errorId} className="mt-1.5 text-xs font-medium text-red-dark">
-          {error}
+          <span className="notranslate" translate="no">{error}</span>
         </p>
       )}
     </div>
@@ -96,10 +97,11 @@ export function TextField({
       error={error}
     >
       {(describedBy, invalid) => (
-        <input
+        <input translate="no"
           id={id}
           name={name ?? id}
           type={type}
+          dir={type === "email" || type === "tel" || id === "cnic" ? "ltr" : "auto"}
           value={value}
           onChange={(event) => onChange(event.target.value)}
           required={required}
@@ -151,7 +153,8 @@ export function TextareaField({
       error={error}
     >
       {(describedBy, invalid) => (
-        <textarea
+        <textarea translate="no"
+          dir="auto"
           id={id}
           name={name ?? id}
           value={value}
@@ -248,7 +251,7 @@ export function CheckboxField({
   return (
     <div>
       <div className="flex items-start gap-2.5">
-        <input
+        <input translate="no"
           id={id}
           name={name ?? id}
           type="checkbox"
@@ -259,12 +262,12 @@ export function CheckboxField({
           className="mt-0.5 h-4 w-4 shrink-0 rounded border-border text-teal focus-visible:outline-2 focus-visible:outline-offset-2 accent-[var(--color-teal)]"
         />
         <label htmlFor={id} className="text-sm leading-relaxed text-text">
-          {label}
+          {typeof label === "string" ? <TranslationText>{label}</TranslationText> : label}
         </label>
       </div>
       {error && (
         <p id={errorId} className="mt-1.5 text-xs font-medium text-red-dark">
-          {error}
+          <span className="notranslate" translate="no">{error}</span>
         </p>
       )}
     </div>
@@ -297,9 +300,9 @@ export function FileUploadField({
         htmlFor={id}
         className="mb-1.5 block text-sm font-medium text-text"
       >
-        {label}
+        <TranslationText>{label}</TranslationText>
       </label>
-      <input
+      <input translate="no"
         id={id}
         name={name ?? id}
         type="file"
@@ -309,7 +312,7 @@ export function FileUploadField({
       />
       {helper && (
         <p id={helperId} className="mt-1.5 text-xs text-muted">
-          {helper}
+          <TranslationText>{helper}</TranslationText>
         </p>
       )}
     </div>

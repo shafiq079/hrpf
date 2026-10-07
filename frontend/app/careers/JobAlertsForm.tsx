@@ -1,4 +1,5 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 import { useState } from "react";
 import { CheckboxField, SelectField, TextField } from "@/components/forms/fields";
@@ -59,10 +60,10 @@ export default function JobAlertsForm() {
         title="You're subscribed to job alerts"
       >
         <p>
-          Thank you. On this demonstration site no data is stored, but in a
+          <TranslationText>Thank you. On this demonstration site no data is stored, but in a
           live version you would receive email alerts for new opportunities in
           your chosen area.
-        </p>
+        </TranslationText></p>
       </FormMessage>
     );
   }
@@ -99,7 +100,7 @@ export default function JobAlertsForm() {
         error={errors.consent}
       />
 
-      <SubmitButton loading={loading}>Subscribe to Job Alerts</SubmitButton>
+      <SubmitButton loading={loading}><TranslationText>Subscribe to Job Alerts</TranslationText></SubmitButton>
     </form>
   );
 }

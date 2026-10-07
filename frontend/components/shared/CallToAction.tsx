@@ -1,3 +1,4 @@
+import TranslationText from "@/components/translation/TranslationText";
 import type { ComponentType } from "react";
 import type { LucideProps } from "lucide-react";
 import Container from "./Container";
@@ -38,7 +39,7 @@ export default function CallToAction({
               isNavy ? "text-white" : ""
             }`}
           >
-            {title}
+            <TranslationText>{title}</TranslationText>
           </h2>
           {description && (
             <p
@@ -46,7 +47,7 @@ export default function CallToAction({
                 isNavy ? "text-white/80" : "text-muted"
               }`}
             >
-              {description}
+              <TranslationText>{description}</TranslationText>
             </p>
           )}
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
@@ -59,7 +60,7 @@ export default function CallToAction({
                 icon={action.icon}
                 iconPosition={action.iconPosition ?? "right"}
               >
-                {action.label}
+                <TranslationText>{action.label}</TranslationText>
               </PrimaryButton>
             ))}
           </div>

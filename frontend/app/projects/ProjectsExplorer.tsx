@@ -1,4 +1,5 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 import { useMemo, useState } from "react";
 import { SearchX } from "lucide-react";
@@ -89,8 +90,8 @@ export default function ProjectsExplorer({ projects }: { projects: (Project & { 
               variant="outline"
               size="md"
             >
-              Clear filters
-            </PrimaryButton>
+              <TranslationText>Clear filters
+            </TranslationText></PrimaryButton>
           ) : undefined
         }
       >
@@ -153,8 +154,8 @@ export default function ProjectsExplorer({ projects }: { projects: (Project & { 
       </FilterBar>
 
       <p className="mt-6 text-sm text-muted" aria-live="polite">
-        Showing {visibleProjects.length} of {filtered.length}{" "}
-        {filtered.length === 1 ? "project" : "projects"}
+        <TranslationText>Showing </TranslationText><TranslationText>{visibleProjects.length}</TranslationText> <TranslationText>of </TranslationText><TranslationText>{filtered.length}</TranslationText>{" "}
+        <TranslationText>{filtered.length === 1 ? "project" : "projects"}</TranslationText>
       </p>
 
       {filtered.length === 0 ? (
@@ -170,8 +171,8 @@ export default function ProjectsExplorer({ projects }: { projects: (Project & { 
                 variant="navy"
                 size="md"
               >
-                Clear filters
-              </PrimaryButton>
+                <TranslationText>Clear filters
+              </TranslationText></PrimaryButton>
             }
           />
         </div>
@@ -193,8 +194,8 @@ export default function ProjectsExplorer({ projects }: { projects: (Project & { 
                 variant="outline"
                 size="lg"
               >
-                Load More
-              </PrimaryButton>
+                <TranslationText>Load More
+              </TranslationText></PrimaryButton>
             </div>
           )}
         </>

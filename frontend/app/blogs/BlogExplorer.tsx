@@ -1,4 +1,5 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 import { useMemo, useState } from "react";
 import { Newspaper } from "lucide-react";
@@ -55,8 +56,8 @@ export default function BlogExplorer({ articles }: { articles: NewsArticle[] }) 
                 onClick={clearFilters}
                 className="text-sm font-semibold text-teal-dark transition-colors hover:text-navy"
               >
-                Clear filters
-              </button>
+                <TranslationText>Clear filters
+              </TranslationText></button>
             ) : undefined
           }
         >
@@ -89,8 +90,8 @@ export default function BlogExplorer({ articles }: { articles: NewsArticle[] }) 
 
         <div className="mt-6">
           <p className="text-sm text-muted">
-            Showing {filtered.length}{" "}
-            {filtered.length === 1 ? "article" : "articles"}
+            <TranslationText>Showing </TranslationText><TranslationText>{filtered.length}</TranslationText>{" "}
+            <TranslationText>{filtered.length === 1 ? "article" : "articles"}</TranslationText>
           </p>
         </div>
 
@@ -114,8 +115,8 @@ export default function BlogExplorer({ articles }: { articles: NewsArticle[] }) 
                   onClick={clearFilters}
                   className="text-sm font-semibold text-teal-dark transition-colors hover:text-navy"
                 >
-                  Clear filters
-                </button>
+                  <TranslationText>Clear filters
+                </TranslationText></button>
               }
             />
           </div>

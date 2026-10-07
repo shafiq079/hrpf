@@ -1,4 +1,5 @@
-import Link from "next/link";
+import TranslationText from "@/components/translation/TranslationText";
+import Link from "@/components/translation/TranslationLink";
 import { ChevronRight } from "lucide-react";
 
 export interface Crumb {
@@ -54,14 +55,14 @@ export default function Breadcrumbs({
                     isLight ? "hover:text-white" : "hover:text-teal-dark"
                   }`}
                 >
-                  {crumb.label}
+                  <TranslationText>{crumb.label}</TranslationText>
                 </Link>
               ) : (
                 <span
                   aria-current={isLast ? "page" : undefined}
                   className={isLight ? "text-white" : "text-text"}
                 >
-                  {crumb.label}
+                  <TranslationText>{crumb.label}</TranslationText>
                 </span>
               )}
               {!isLast && (

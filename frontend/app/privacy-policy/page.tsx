@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
+import Link from "@/components/translation/TranslationLink";
 import { Download } from "lucide-react";
 import { createMetadata } from "@/lib/seo";
 import Container from "@/components/shared/Container";
@@ -100,6 +100,21 @@ const sections: PolicySection[] = [
           the information needed to operate this service.
         </p>
       </>
+    ),
+  },
+  {
+    title: "Website Text Translation",
+    body: (
+      <p>
+        The optional Languages control uses GTranslate to translate public page
+        text in your browser. The service loads when you open the language control
+        or return with a previously selected translation. Public text is processed
+        by the translation provider and your language choice is stored in your
+        browser. Form inputs, complaint review values, uploaded filenames and
+        private administration are excluded from text translation. Selecting
+        English clears the translation preference. Images and downloadable files
+        are not translated.
+      </p>
     ),
   },
   {

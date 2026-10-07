@@ -1,3 +1,4 @@
+import TranslationText from "@/components/translation/TranslationText";
 import { ImageIcon } from "lucide-react";
 
 interface ImagePlaceholderProps {
@@ -37,10 +38,10 @@ export default function ImagePlaceholder({
           <ImageIcon className="h-5 w-5" aria-hidden="true" />
         </span>
         <span className="text-xs font-medium tracking-wide text-white/70">
-          Image placeholder
-        </span>
+          <TranslationText>Image placeholder
+        </TranslationText></span>
         <span className="max-w-[85%] break-all text-[11px] text-white/45">
-          {fileName}
+          <span className="notranslate" translate="no">{fileName}</span>
         </span>
       </div>
     </div>

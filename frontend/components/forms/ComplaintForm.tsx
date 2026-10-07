@@ -1,4 +1,5 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 import { useState } from "react";
 import {
@@ -73,11 +74,11 @@ export default function ComplaintForm() {
     return (
       <FormMessage type="success" title="Thank you — your complaint has been received">
         <p>
-          Your feedback has been recorded for this demonstration only. A sample
+          <TranslationText>Your feedback has been recorded for this demonstration only. A sample
           reference number is shown below.
-        </p>
+        </TranslationText></p>
         <p className="mt-2 font-mono text-sm font-semibold text-navy">
-          Reference: {reference}
+          <TranslationText>Reference: </TranslationText><span className="notranslate" translate="no">{reference}</span>
         </p>
       </FormMessage>
     );
@@ -147,7 +148,7 @@ export default function ComplaintForm() {
         error={errors.consent}
       />
 
-      <SubmitButton loading={loading}>Submit Complaint</SubmitButton>
+      <SubmitButton loading={loading}><TranslationText>Submit Complaint</TranslationText></SubmitButton>
     </form>
   );
 }
