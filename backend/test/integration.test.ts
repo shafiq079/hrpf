@@ -476,6 +476,32 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     await editor.agent.post('/api/admin/news').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...input,slug:'bad-body',blocks:[{type:'paragraph'}]}).expect(400);
   });
 
+  it('focus-area project lists filter before pagination and respect publication changes', async () => {
+    const create = (slug: string, focusArea: string, extra: Record<string, unknown> = {}) => Project.create({
+      title: {en:slug}, summary: {en:'Test summary'}, slug, focusArea, location:'Test district',
+      status:'published', reviewStatus:'approved', publishedAt:new Date(Date.now()-1000), ...extra,
+    });
+    const women = await create('women-one', 'Women’s Rights');
+    await create('women-two', "Women's Rights and Health");
+    await create('other-area', 'Education');
+    await create('women-draft', "Women's Rights", {status:'draft'});
+    await create('women-future', "Women's Rights", {publishedAt:new Date(Date.now()+60000)});
+    await create('women-unreviewed', "Women's Rights", {reviewStatus:'pending'});
+    await create('regex-literal', 'Rights (community)');
+    const list = () => request(app).get('/api/projects').query({focusArea:"women's rights",limit:1});
+    const first = await list().expect(200);
+    assert.equal(first.body.meta.total,2); assert.equal(first.body.meta.pages,2);
+    assert.equal(first.body.data.length,1);
+    const second = await request(app).get('/api/projects').query({focusArea:"women's rights",limit:1,page:2}).expect(200);
+    assert.notEqual(first.body.data[0].slug,second.body.data[0].slug);
+    assert.deepEqual(new Set([first.body.data[0].slug,second.body.data[0].slug]),new Set(['women-one','women-two']));
+    assert.equal((await request(app).get('/api/projects').query({focusArea:'Rights (community)'}).expect(200)).body.meta.total,1);
+    assert.equal((await request(app).get('/api/projects').query({focusArea:'.*'}).expect(200)).body.meta.total,0);
+    await Project.updateOne({_id:women._id},{$set:{status:'draft'}});
+    assert.equal((await list().expect(200)).body.meta.total,1);
+    await request(app).get('/api/projects').query({focusArea:''}).expect(400);
+  });
+
   it('rich project drafts retain media privately, publish every reviewed file, and revoke removed media', async () => {
     const editor = await login('editor');
     const stage = async (bytes = png, filename = 'project.png') => {

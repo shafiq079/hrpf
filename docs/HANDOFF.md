@@ -9,18 +9,21 @@ Work pages before the deferred caching work, one category at a time.
 Reviewed the supplied current page text, constitutional objects, organisation
 profile, current board biographies, progress reports and prepared archive imagery.
 See `OUR_WORK_REDESIGN.md` for the organisation analysis, source map and six-page
-sequence. Women's Rights now has a dedicated sourced view: real archive photo,
-three priorities, the Dar-ul-Aman intervention attributed to the 2025 report,
-institutional approach, complaint/contact actions and FAQs. Old sample programmes,
-statistics and testimonials are removed from this detail page. Other categories
-and the homepage remain for their own review.
+sequence. Women's Rights now has a dedicated general view: real archive photo,
+three priorities, institutional approach, complaint/contact actions and FAQs.
+The owner's 2026-10-08 refinement removes the hardcoded Dar-ul-Aman case and
+visible report/source/photo notes. **Projects in this field** shows released managed
+projects using the Projects editor's Women's Rights focus area; project details
+belong in those records, not category copy. Apply this pattern to every subsequent
+category. No reseeding is required; the source-seeded project already has this label.
 
 Frontend checks and public SSR passed. Desktop/mobile/landscape browser review
-checked source copy, links, anchors, metadata, image, keyboard FAQ and isolated
-Urdu RTL/English restoration. No seed or backend change is required.
-Next page: Children's Rights, verifying its specific report passages and imagery
-before writing copy. Performance/caching follows the page corrections. Work stays
-on development for owner review; no main merge is part of this milestone.
+checked general copy, related project links, anchors, metadata/image, keyboard FAQ
+and isolated Urdu RTL/English restoration. Backend adds an optional public project
+focus-area filter before pagination with existing release/withdrawal controls.
+Next: Children's Rights using the same general-content/managed-project pattern.
+Performance/caching follows the page corrections. Work stays on development;
+no main merge is part of this milestone.
 
 ## Prior translation milestone — 2026-10-08
 

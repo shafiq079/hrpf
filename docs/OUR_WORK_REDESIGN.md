@@ -13,6 +13,15 @@ data additionally contains Refugees and Migrants and Community Development.
 Those legacy pages and the Our Work overview need a later content review; this
 milestone does not remove or redesign them or alter the homepage's theme/grid.
 
+## Refined owner direction — 2026-10-08
+
+All category pages should explain HRPF's general priorities and how it handles
+concerns. Do not hardcode individual interventions, project outcomes, report
+citations, page numbers or archive/restoration captions in the category page.
+Use a **Projects in this field** section with public managed project cards instead.
+Specific work belongs in each project record and its full project detail page.
+The existing source analysis below remains an internal content reference.
+
 ## Organisation analysis and evidence
 
 - `information/given pages text.txt`: the current institutional description,
@@ -46,7 +55,8 @@ milestone does not remove or redesign them or alter the homepage's theme/grid.
 - Supplied original photographs, prepared photo/press archives and source CSVs:
   visual/context evidence only. Captions describe what is visible. A photograph
   does not establish a date, programme, participant role, consent to victim
-  identification or a reported outcome. Preserve AI restoration disclosure.
+  identification or a reported outcome. Keep provenance in this internal source map;
+  omit the visible category-page caption per the owner.
 - Navigation/membership/social files define existing destinations. This redesign
   uses the implemented complaint route and existing contact/membership routes;
   it does not promise live services through prototype forms.
@@ -58,7 +68,7 @@ material in the information ZIP is unrelated and was not read.
 
 ## Page sequence and content map
 
-| Page | Sourced direction | Evidence-led feature |
+| Page | General page direction | Internal evidence / project content |
 | --- | --- | --- |
 | Women's Rights | Dignity, safety, gender equality, maternal wellbeing and institutional accountability | Dar-ul-Aman, Mandi Bahauddin; 2025 report pp. 14–15 |
 | Children's Rights | Child protection, educational rights, healthcare access and prevention of exploitation | School/vaccination interventions; publish no identifiable child case details |
@@ -73,46 +83,52 @@ overview and two legacy categories follow the six requested menu pages.
 
 ## Women's Rights design
 
-1. Split navy hero: clear title, concise institutional position, a real HRPF
-   public-gathering photograph, complaint action and an anchor to documented work.
-2. A compact on-page navigation row, wrapping on mobile.
-3. Three priorities explaining dignity/safety, maternal wellbeing and accountability.
-4. A substantial Dar-ul-Aman case section: reported concerns → formal complaint
-   → reported improvements. Identify year, location and oversight institution,
-   and visibly attribute outcomes to the 2025 report.
-5. HRPF's approach: listen/document, raise concerns through institutions, follow up.
-6. A practical action panel linking to the implemented complaint form and contact;
-   explain that the website is not an emergency response service.
-7. Short FAQs about shelter ownership, complaints and legal outcomes, followed
-   by links to existing Progress Reports and Aims and Objectives.
+1. Split navy hero with the thematic introduction, supplied photograph without a
+   visible archive/source caption, complaint action and related-project anchor.
+2. Compact on-page navigation, wrapping on mobile.
+3. Three general priorities: dignity/safety, health/wellbeing, accountability.
+4. **Projects in this field**: up to three published managed projects assigned
+   to Women's Rights, linking to `/projects/[slug]`, plus View all projects.
+5. General approach: listen/document, raise concerns lawfully, follow up/report.
+6. Complaint/contact action panel and general FAQs about support and next steps.
 
-Remove this page's invented workshops, leadership programme, illustrative impact
-figures, anonymous testimonial, stock photograph and unrelated sample reports.
-Do not hardcode a link to an unpublished project or expose private report annexes.
-The fixed thematic copy needs no seed, new backend endpoint or admin workflow.
+No case-specific details, fixed impact figures, invented programmes or anonymous
+quotes appear in the category copy. Project titles, summaries and results remain
+managed in the existing Projects editor. The same general-page/managed-project
+pattern governs the next categories; their individual redesign is still sequential.
 
-## Image provenance
+## Related-project operation
+
+The page requests `/api/projects?focusArea=Women's%20Rights&limit=3`. The existing
+public listing now accepts an optional bounded `focusArea` label and filters before
+pagination/counting. Case and straight/curly apostrophe variants match; combined
+labels such as `Women's Rights and Health` can also match. Existing publication,
+review, release-date and immediate withdrawal controls still apply.
+
+In the Projects editor, use **Women's Rights** (or **Women’s Rights**) as the focus
+area and publish the project through the existing workflow. The source-seeded
+Dar-ul-Aman project already uses this field; this change does not create or reseed
+it. New and edited released records appear automatically. No prototype fallback
+is shown if the field is empty; backend failure leaves the general page usable
+with a brief projects-loading message. The overview remains `/projects`.
+
+## Image provenance (internal)
 
 `frontend/public/images/hrpf/womens-rights-archive.webp` is an exact copy of
-`other_images_final/website_webp/gallery-200.webp`, supplied in the prepared
-photo archive. The existing archive manifest labels it `AI_RESTORATION`.
-Use a neutral alt/caption describing the public gathering and disclose restoration.
-It is illustrative archive photography, not an image of Dar-ul-Aman residents.
+`other_images_final/website_webp/gallery-200.webp`. The archive manifest labels
+it `AI_RESTORATION`; the date is unestablished. Keep a descriptive image alt,
+without a visible provenance caption. It is illustrative public-gathering imagery,
+not a photograph of Dar-ul-Aman residents.
 
 ## Verification
 
-Check source-only copy, working links/anchors, one H1, heading order, image
-loading/alt/caption, mobile/desktop layout, keyboard FAQ operation and translated
-RTL interaction. Keep the remaining detail pages' content unchanged for their
-own review. Run the existing frontend checks and public SSR suite, and verify
-that the Women's Rights HTML excludes all old sample claims.
-
-Implementation validation: frontend lint, type generation/TypeScript and production
-build passed, as did the existing four tests and public SSR/navigation suite.
-Browser review covered 1440px desktop, 390px and 320px mobile, and 844px landscape;
-source attribution, one H1, image loading, metadata, four anchors, keyboard FAQ,
-complaint/contact/report destinations and the unchanged Children's Rights page.
-Urdu RTL and English restoration used the existing provider engine with isolated
-translation responses; this verifies interaction rather than translation accuracy.
-The local Next route cache initially served an older generated page. Moving that
-generated cache aside restored the new build; no application caching change was made.
+Frontend lint, type generation/TypeScript, production build, four existing tests
+and public SSR/navigation passed. SSR verifies managed project refresh and focus
+query, empty/offline behaviour, one H1, actions and absence of hardcoded case,
+source notes and prototype claims. Browser review covered desktop, 390px/320px
+mobile and landscape, image/metadata, anchors, keyboard FAQ, project link and
+isolated Urdu RTL/English restoration. This checks interaction rather than
+translation accuracy. The next category remains unchanged for its own redesign.
+Backend typecheck/OpenAPI checks pass; integration checks exercise filtering
+before pagination, label variants, literal regex text, unpublished/future/unreviewed
+exclusion and immediate withdrawal.

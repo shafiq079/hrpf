@@ -18,6 +18,7 @@ export const publicSettingSchemas = {
   donations: z.object({ accountTitle: short, bank: short, branch: short, accountNumber: short, iban: short, jazzCash: short }),
 };
 export const publicQuery = z.object({ locale: z.enum(['en', 'ur']).default('en'), page: z.coerce.number().int().min(1).max(1000).default(1), limit: z.coerce.number().int().min(1).max(48).default(12), category: z.enum(['media-coverage', 'in-action']).optional(), q: z.string().trim().max(80).default('') }).strict();
+const projectQuery = publicQuery.extend({ focusArea: z.string().trim().min(1).max(150).optional() });
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(100);
 const id = z.string().regex(/^[a-fA-F0-9]{24}$/);
 const missing = () => new ApiError(404, 'NOT_FOUND', 'This content is not available.');
@@ -91,8 +92,11 @@ export function publicRouter(provider: UploadProvider) {
   });
   const projectView = async (row: any, locale: 'en' | 'ur') => ({ title: row.title?.[locale] ?? '', slug: row.slug, summary: row.summary?.[locale] ?? '', focusArea: row.focusArea, location: row.location, status: row.projectStatus, startYear: row.startYear, imageAlt: row.coverAlt || row.title?.[locale] || 'Project photograph', image: await releasedAsset(row.cover?.assetId, 'Project', row._id) ? `/api/public-assets/${row.cover.assetId}` : null });
   router.get('/projects', async (req, res) => {
-    const {locale, page, limit} = validate(publicQuery, req.query);
-    const filter = {locale, status: 'published' as const, reviewStatus: 'approved' as const, ...publicationFilter()};
+    const {locale, page, limit, focusArea} = validate(projectQuery, req.query);
+    // Match the editor's focus label, including typographic apostrophes and combined areas.
+    const escaped = focusArea?.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/['’]/g, "['’]");
+    const filter = {locale, status: 'published' as const, reviewStatus: 'approved' as const, ...publicationFilter(),
+      ...(escaped ? { focusArea: { $regex: `(?:^|[\\s,/&])${escaped}(?=$|[\\s,/&])`, $options: 'i' } } : {})};
     const [rows, total] = await Promise.all([Project.find(filter).sort({publishedAt:-1,_id:1}).skip((page-1)*limit).limit(limit).lean(), Project.countDocuments(filter)]);
     res.json({data: await Promise.all(rows.map(r => projectView(r, locale))), meta:{page,limit,total,pages:Math.ceil(total/limit)}});
   });

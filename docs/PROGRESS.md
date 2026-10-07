@@ -1,5 +1,18 @@
 # HRPF Progress
 
+## General category pages and managed field projects — 2026-10-08
+
+- Owner clarified that all categories should explain the general approach, with
+  specific work shown through managed Projects in this field cards.
+- Removed the Women's Rights hardcoded case, source/page references and photo caption.
+- General priorities, approach and FAQs now accompany automatically linked released
+  Women's Rights projects; source-seeded projects need no duplicate import.
+- Added bounded public project focus-area filtering before pagination/counts,
+  preserving review/release-date/withdrawal controls and escaped literal matching.
+- Frontend lint/type/build, public SSR and desktop/mobile/RTL browser checks pass.
+  Backend typecheck and OpenAPI pass; integration covers filtering and publication.
+- Updated the six-category plan; remaining pages follow this pattern one by one.
+
 ## Our Work redesign: Women's Rights — 2026-10-07
 
 - Translation UI accepted and merged through PR #7; development aligned at `15b953a`.
