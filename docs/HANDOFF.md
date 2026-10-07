@@ -8,13 +8,17 @@ was fast-forwarded to that merge before this milestone.
 
 The owner chose automatic translation of visible website text across multiple
 languages, superseding the manually managed Urdu-only route/editor proposal.
-GTranslate's nonprofit free dropdown is integrated lazily on public pages, with
+GTranslate's nonprofit free translation engine is integrated lazily on public pages, with
 English source content, RTL direction, React-safe changing text and navigation,
 and private input/review/admin exclusions. See `TEXT_TRANSLATION.md` for scope,
 provider operation and review instructions. This new work stays on development.
 Local frontend checks passed. Live public Urdu/French translation and collection
 interactions passed; private complaint payload/English-restore and mobile checks
 used a network-isolated provider engine. No reseeding or API key is required.
+The owner rejected the above-header strip after functional review. It is replaced
+by a bottom-left white floating globe/language-code button and an upward searchable
+language panel, following the supplied GTranslate Float screenshot. Existing
+translation behaviour uses the same hidden provider-owned native select.
 Next after functional translation review: the deferred global future-content
 performance/caching plan, then production configuration and acceptance testing.
 

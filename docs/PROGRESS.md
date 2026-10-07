@@ -1,5 +1,22 @@
 # HRPF Progress
 
+## Floating translation interface — 2026-10-08
+
+- Owner confirmed translation works and requested the bottom-left GTranslate
+  Float pattern from the supplied screenshot instead of an above-header strip.
+- Remove the strip; add a white globe/language-code button opening an upward
+  searchable language panel with native/English names, a current selection
+  checkmark and English restoration in the same list.
+- Preserve provider loading, supported languages, preferences, RTL and private
+  exclusions through the existing hidden provider-owned select. Keep keyboard
+  dismissal/focus, mobile safe areas and viewport scrolling in the interface.
+- Frontend lint/type/build, four existing browser-side tests and public SSR
+  passed. A network-isolated browser checked the floating UI, native/English
+  search, empty results, Escape/focus, outside click, Urdu RTL, English reset,
+  French saved navigation, mobile/landscape bounds, drawer layering, provider
+  retry and admin exclusion with no browser errors. Landscape panel height
+  reserves the sticky header so it cannot cover the Close control.
+
 ## Automatic text translation — 2026-10-08
 
 - PR #6 merged complaint workflow and Render free/ClamAV removal into main;

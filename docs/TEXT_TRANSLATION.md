@@ -1,6 +1,6 @@
 # Automatic public text translation
 
-The owner selected a language dropdown that automatically translates readable
+The owner selected a floating language widget that automatically translates readable
 website text into multiple languages. This supersedes the proposed manually
 managed Urdu routes and admin translation fields. English remains the authored
 source. No database migration, reseeding, backend service, API key or translation
@@ -15,8 +15,14 @@ The dropdown offers the provider's supported language list and native names,
 including Urdu, Arabic, Hindi, Bengali, French, Spanish and Chinese. Languages are
 not hardcoded to the existing projects or source images.
 
-- The Languages control appears in a compact utility strip above the existing
-  header on desktop and mobile. The theme and homepage sections remain intact.
+- A compact white globe/language-code button is fixed at the bottom left on
+  desktop and mobile, matching the owner's GTranslate Float screenshot. There
+  is no translation strip above the header. The button opens an upward panel
+  with searchable native/English language names, English/Urdu/Arabic first,
+  a selected-language checkmark and an automatic-translation note inside.
+  Escape/Close return focus to the button; outside click or focus closes the
+  panel. Safe-area spacing and constrained scrolling keep it inside small screens.
+  The widget sits below the sticky header, mobile drawer and gallery viewer.
 - Provider scripts load after the visitor opens Languages, or returns with a
   previously selected translation. Ordinary English browsing loads no translation
   script. Browser-language auto-selection is disabled.
@@ -34,8 +40,11 @@ not hardcoded to the existing projects or source images.
 
 ## React and navigation
 
-The native dropdown lives in a persistent subtree owned by the provider, outside
-React's children. Do not render React children inside `#hrpf-language-widget`.
+The native dropdown lives in a hidden persistent subtree owned by the provider,
+outside React's children. Do not render React children inside
+`#hrpf-language-widget`. The visible floating picker reads its options and
+dispatches the same native change event. Keep the hidden select mounted so
+translation preferences, English restoration and safe navigation stay compatible.
 
 Translation engines replace text nodes with other elements. Public client display
 text uses `TranslationText`: when its value changes React replaces the entire
@@ -80,7 +89,8 @@ language entry point, lazy loading and private-route exclusion alongside existin
 homepage, public content, navigation, pagination and complaint checks.
 
 For live review, pull development and run the existing frontend/backend commands.
-Open Languages and choose Urdu, then French. Navigate projects/blogs and gallery
+Open the bottom-left language button and choose Urdu, then French. Search accepts
+native names, English names and language codes. Navigate projects/blogs and gallery
 pages, change gallery photos, search/filter a collection, and review the complaint
 form with test values. Check that private values/files remain original and that
 English restores text. Review the browser console for React/hydration errors.
@@ -101,6 +111,15 @@ RTL menu interaction and blocked-provider retry passed with provider requests
 fulfilled locally; these mobile checks did not contact the translation endpoint.
 
 Official provider references checked on 2026-10-08 (Asia/Karachi):
+
+The floating UI revision also passed frontend lint/type/build, all four existing
+browser-side tests and the public SSR suite. A network-isolated browser exercised
+lazy loading, upward positioning, native/English/code search, empty results,
+Escape/focus restoration, outside click, Urdu RTL, English reset, French saved
+navigation, 390px/320px mobile and 844x390 landscape bounds, mobile drawer,
+blocked-provider retry and admin exclusion without browser errors. The panel
+reserves space for the sticky header even in landscape. These revision checks
+fulfilled provider requests locally and did not call the translation endpoint.
 
 - https://gtranslate.io/website-translator-widget
 - https://gtranslate.io/blog/google-translate-website-widget-discontinued

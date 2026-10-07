@@ -113,14 +113,29 @@
     color: var(--color-teal-dark);
   }
 
-  .hrpf-language-widget select {
-    min-height: 2rem;
-    max-width: min(15rem, 65vw);
-    border: 1px solid var(--color-border);
-    background: var(--color-white);
-    color: var(--color-navy);
-    padding: 0.25rem 0.5rem;
-    font: inherit;
+  .hrpf-translation-float {
+    position: fixed;
+    left: max(1rem, env(safe-area-inset-left));
+    bottom: calc(1rem + env(safe-area-inset-bottom));
+    z-index: 45; /* Below the header, navigation drawer and image viewer. */
+    font-family: var(--font-sans);
+  }
+
+  .hrpf-language-panel {
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 0.5rem);
+    width: min(20rem, calc(100vw - 2rem - env(safe-area-inset-left) - env(safe-area-inset-right)));
+    /* Reserve the 72px sticky header even in a short landscape viewport. */
+    max-height: calc(100dvh - 10rem - env(safe-area-inset-bottom));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .hrpf-language-list {
+    max-height: min(18rem, 38dvh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   html[dir="rtl"] :is(h1, h2, h3, h4, .eyebrow) {

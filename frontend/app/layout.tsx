@@ -108,10 +108,10 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        <LanguageSwitcher />
         <Header />
         {children}
         <Footer />
+        <LanguageSwitcher />
         <script
           type="application/ld+json"
           // Structured data is static and safe to inline.
