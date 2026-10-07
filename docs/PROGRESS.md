@@ -1,5 +1,20 @@
 # HRPF Progress
 
+## Our Work redesign: Women's Rights — 2026-10-07
+
+- Translation UI accepted and merged through PR #7; development aligned at `15b953a`.
+- Owner prioritised organisation-based redesign of six Our Work pages before caching.
+- Recorded supplied-file analysis, claim boundaries, evidence and page sequence in
+  `OUR_WORK_REDESIGN.md`; started with Women's Rights only.
+- Replaced its prototype page with an archive-photo hero, real priorities,
+  source-attributed Dar-ul-Aman case, institutional approach and complaint/contact FAQs.
+- Removed invented programme/impact/testimonial content from this page; retained the
+  shared theme, header, footer, translation control and other pages for later review.
+- Frontend lint/type/build, four tests and public SSR/navigation passed. Browser
+  checks cover desktop/mobile/landscape, keyboard FAQ, anchors, image/metadata,
+  action destinations, isolated Urdu RTL/English restoration and unchanged next page.
+- No backend, database seed or main merge required. Next: Children's Rights.
+
 ## Simplified translation panel — 2026-10-08
 
 - Owner requested a narrower panel titled "Translate", no search box, no

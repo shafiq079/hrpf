@@ -39,6 +39,12 @@ try{
  const privatePage=await read('/admin/complaints');
  assert.ok(!privatePage.html.includes('id="hrpf-language-widget"'),'No language control on private administration');
  assert.ok(privatePage.html.includes('translate="no"'),'Private content excluded from automatic translation');
+ const women=await read('/our-work/womens-rights');assert.equal(women.status,200);
+ assert.equal((women.html.match(/<h1[ >]/g)||[]).length,1,'Women rights page has one primary heading');
+ for(const text of ['Dignity inside Dar-ul-Aman','Provincial Ombudsman Punjab','pages 14–15','womens-rights-archive.webp','AI restored','/file-a-complaint','/about/progress-reports'])assert.ok(women.html.includes(text),`Sourced women rights page: ${text}`);
+ for(const text of ['1,200+','40+','Leadership Participation','Rights Awareness Workshops','Community Member','Illustrative indicators','/images/work/womens-rights.jpg','womens-community-leadership'])assert.ok(!women.html.includes(text),`Removed women rights prototype claim: ${text}`);
+ assert.equal((await read('/our-work/unknown-area')).status,404);
+ console.log('Women rights checks passed: sourced case and attribution, one H1, archive photo/disclosure, valid actions and removal of prototype claims.');
  for(const text of ['Managed project 1','Managed news 1','Our Guiding Principles','Muhammad Yousaf Badar','home-hero.webp','home-about.webp','home-chairman.webp'])assert.ok(page.html.includes(text),text);
  for(const text of ['Ana Ortiz','UNHCR','ICRC','World Bank','5000+','500K','Safe Haven Initiative','since 2015'])assert.ok(!page.html.includes(text),`Unverified claim: ${text}`);
  revision=2;page=await read();assert.ok(page.html.includes('Managed project 2')&&page.html.includes('Managed news 2'),'Managed homepage feeds must refresh');

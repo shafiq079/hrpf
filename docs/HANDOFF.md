@@ -1,6 +1,28 @@
-# Current handoff: Automatic public text translation on development
+# Current handoff: Our Work redesign — Women's Rights
 
-## Current milestone — 2026-10-08
+## Current milestone — 2026-10-07
+
+Translation was accepted and merged through PR #7 (`15b953a`); development began
+this milestone aligned to main. The owner prioritised correcting prototype Our
+Work pages before the deferred caching work, one category at a time.
+
+Reviewed the supplied current page text, constitutional objects, organisation
+profile, current board biographies, progress reports and prepared archive imagery.
+See `OUR_WORK_REDESIGN.md` for the organisation analysis, source map and six-page
+sequence. Women's Rights now has a dedicated sourced view: real archive photo,
+three priorities, the Dar-ul-Aman intervention attributed to the 2025 report,
+institutional approach, complaint/contact actions and FAQs. Old sample programmes,
+statistics and testimonials are removed from this detail page. Other categories
+and the homepage remain for their own review.
+
+Frontend checks and public SSR passed. Desktop/mobile/landscape browser review
+checked source copy, links, anchors, metadata, image, keyboard FAQ and isolated
+Urdu RTL/English restoration. No seed or backend change is required.
+Next page: Children's Rights, verifying its specific report passages and imagery
+before writing copy. Performance/caching follows the page corrections. Work stays
+on development for owner review; no main merge is part of this milestone.
+
+## Prior translation milestone — 2026-10-08
 
 Complaint workflow, ClamAV removal and Render free email/deployment configuration
 were merged into main through PR #6 (`cf8ecbd`) with checks passing. Development
@@ -21,8 +43,7 @@ language panel titled "Translate", following the supplied GTranslate Float
 screenshot. Each language appears once in its native name, with no search box
 or automatic-translation footer, per the owner's follow-up. Existing
 translation behaviour uses the same hidden provider-owned native select.
-Next after functional translation review: the deferred global future-content
-performance/caching plan, then production configuration and acceptance testing.
+The newer Our Work direction above supersedes the earlier caching-first sequence.
 
 ## Current deployment decision — 2026-10-07
 
