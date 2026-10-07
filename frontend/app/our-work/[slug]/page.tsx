@@ -16,6 +16,8 @@ import { createMetadata } from "@/lib/seo";
 import { focusAreas, getFocusArea } from "@/data/focusAreas";
 import { getProject } from "@/data/projects";
 import { reports } from "@/data/reports";
+import WorkAreaView from "@/components/work/WorkAreaView";
+import { getWorkAreaContent } from "@/data/workAreas";
 
 export function generateStaticParams() {
   return focusAreas.map((area) => ({ slug: area.slug }));
@@ -31,7 +33,7 @@ export async function generateMetadata({
   if (!area) return {};
   return createMetadata({
     title: area.title,
-    description: area.description,
+    description: getWorkAreaContent(slug)?.description ?? area.description,
     path: `/our-work/${slug}`,
   });
 }
@@ -42,6 +44,8 @@ export default async function FocusAreaPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const content = getWorkAreaContent(slug);
+  if (content) return <WorkAreaView content={content} />;
   const area = getFocusArea(slug);
   if (!area) notFound();
 

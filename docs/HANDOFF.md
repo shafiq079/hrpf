@@ -1,6 +1,37 @@
-# Current handoff: Automatic public text translation on development
+# Current handoff: All six Our Work menu pages redesigned
 
 ## Current milestone — 2026-10-08
+
+The owner accepted the general Women’s Rights page and asked for the remaining
+menu pages one by one. Implemented Children’s Rights, Access to Justice, Minority
+Rights, Education and Awareness, and Research and Advocacy in that sequence.
+All six use the approved institutional layout, supplied photographs, distinct
+priorities/approach/FAQs and **Projects in this field** from released managed records.
+
+`frontend/components/work/WorkAreaView.tsx` replaces the women-only view without
+changing its layout. `frontend/data/workAreas.ts` supplies all six source-based
+page configurations; women’s existing fixed content remains in `womensRights.ts`.
+No hardcoded cases, source notes, photo captions, fake metrics or prototype
+programme/testimonial sections appear in these category pages.
+
+Projects use each category title as the existing editor Focus area, including
+straight or curly apostrophes. The source-seeded children’s health project matches
+Children’s Rights; the women’s project matches Women’s Rights. No seed or live
+publication writes are required or performed here. If another field has no released
+projects, it shows the general page and a simple empty-project state.
+
+Frontend lint/type/build, four existing tests and expanded public SSR/navigation
+passed. Browser checks cover all five new pages’ desktop/mobile images, metadata,
+anchors, keyboard FAQs and project links, plus women’s regression and isolated
+Urdu RTL/English restoration. No backend changes in this continuation.
+
+Development remains the working branch; PR #8 contains the complete six-page
+redesign. Main is not merged. See `OUR_WORK_REDESIGN.md` for the source map,
+photo provenance and full scope. Next content review: Our Work overview and its two
+legacy non-menu categories, if requested. Caching remains deferred until the owner
+is satisfied with the page corrections.
+
+## Prior translation milestone — 2026-10-08
 
 Complaint workflow, ClamAV removal and Render free email/deployment configuration
 were merged into main through PR #6 (`cf8ecbd`) with checks passing. Development
@@ -21,8 +52,7 @@ language panel titled "Translate", following the supplied GTranslate Float
 screenshot. Each language appears once in its native name, with no search box
 or automatic-translation footer, per the owner's follow-up. Existing
 translation behaviour uses the same hidden provider-owned native select.
-Next after functional translation review: the deferred global future-content
-performance/caching plan, then production configuration and acceptance testing.
+The newer Our Work direction above supersedes the earlier caching-first sequence.
 
 ## Current deployment decision — 2026-10-07
 

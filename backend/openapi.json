@@ -4599,6 +4599,16 @@
                 "in-action"
               ]
             }
+          },
+          {
+            "name": "focusArea",
+            "in": "query",
+            "description": "Filter by the editor focus-area label; case and apostrophe variants are matched.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 150
+            }
           }
         ],
         "responses": {

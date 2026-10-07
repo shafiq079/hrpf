@@ -1,5 +1,47 @@
 # HRPF Progress
 
+## Remaining five Our Work pages — 2026-10-08
+
+- Owner accepted general Women's Rights and requested the other menu pages in sequence.
+- Completed Children's Rights, Access to Justice, Minority Rights, Education and
+  Awareness, then Research and Advocacy, with distinct general copy and five
+  supplied archive photos.
+- All six share the approved view and managed Projects in this field sections;
+  no fixed cases, source/photo notes, fake statistics or programme/testimonial text.
+- Frontend lint/type/build, four tests and expanded public SSR pass, including all
+  six focus queries, managed links and empty/offline states. Browser checks cover
+  desktop/mobile, metadata/images, anchors, keyboard FAQ and women's RTL regression.
+- No backend or seed changes; homepage/overview/two legacy routes retained.
+  Development / draft PR #8 is the review target. Main merge remains separate.
+
+## General category pages and managed field projects — 2026-10-08
+
+- Owner clarified that all categories should explain the general approach, with
+  specific work shown through managed Projects in this field cards.
+- Removed the Women's Rights hardcoded case, source/page references and photo caption.
+- General priorities, approach and FAQs now accompany automatically linked released
+  Women's Rights projects; source-seeded projects need no duplicate import.
+- Added bounded public project focus-area filtering before pagination/counts,
+  preserving review/release-date/withdrawal controls and escaped literal matching.
+- Frontend lint/type/build, public SSR and desktop/mobile/RTL browser checks pass.
+  Backend typecheck and OpenAPI pass; integration covers filtering and publication.
+- Updated the six-category plan; remaining pages follow this pattern one by one.
+
+## Our Work redesign: Women's Rights — 2026-10-07
+
+- Translation UI accepted and merged through PR #7; development aligned at `15b953a`.
+- Owner prioritised organisation-based redesign of six Our Work pages before caching.
+- Recorded supplied-file analysis, claim boundaries, evidence and page sequence in
+  `OUR_WORK_REDESIGN.md`; started with Women's Rights only.
+- Replaced its prototype page with an archive-photo hero, real priorities,
+  source-attributed Dar-ul-Aman case, institutional approach and complaint/contact FAQs.
+- Removed invented programme/impact/testimonial content from this page; retained the
+  shared theme, header, footer, translation control and other pages for later review.
+- Frontend lint/type/build, four tests and public SSR/navigation passed. Browser
+  checks cover desktop/mobile/landscape, keyboard FAQ, anchors, image/metadata,
+  action destinations, isolated Urdu RTL/English restoration and unchanged next page.
+- No backend, database seed or main merge required. Next: Children's Rights.
+
 ## Simplified translation panel — 2026-10-08
 
 - Owner requested a narrower panel titled "Translate", no search box, no

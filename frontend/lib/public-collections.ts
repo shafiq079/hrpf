@@ -7,7 +7,7 @@ export function collectionPage(value: string | string[] | undefined): number {
   return Number.isInteger(page) && page >= 1 && page <= 1000 ? page : 1;
 }
 /** Only public endpoints; never forward session cookies. */
-export async function readPublicCollection<T>(kind: CollectionKind, page = 1, category?: "media-coverage" | "in-action", limit = 12, locale: "en" | "ur" = "en", q = ""): Promise<PublicCollection<T>> {
+export async function readPublicCollection<T>(kind: CollectionKind, page = 1, category?: "media-coverage" | "in-action", limit = 12, locale: "en" | "ur" = "en", q = "", focusArea?: string): Promise<PublicCollection<T>> {
   try {
     const base = new URL(process.env.INTERNAL_API_URL ?? "http://127.0.0.1:5000");
     if (!["http:", "https:"].includes(base.protocol) || base.username || base.password || base.pathname !== "/" || base.search || base.hash) throw new Error("Invalid API origin");
@@ -16,6 +16,7 @@ export async function readPublicCollection<T>(kind: CollectionKind, page = 1, ca
     url.searchParams.set("locale", locale);
     if (q) url.searchParams.set("q", q.slice(0,80));
     if (category) url.searchParams.set("category", category);
+    if (kind === "projects" && focusArea) url.searchParams.set("focusArea", focusArea);
     const response = await fetch(url, { cache: "no-store", credentials: "omit", signal: AbortSignal.timeout(4000) });
     if (!response.ok) throw new Error("Unavailable");
     const body = await response.json();
