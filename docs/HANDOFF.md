@@ -1,5 +1,18 @@
 # HRPF handoff
 
+## Current state and next task — 2026-10-07
+
+The complete Gallery implementation and 200-entry archive importer were merged
+into main through PR #4 (`3c9b2a7`), after both CI jobs passed. Development was
+fast-forwarded to the same merge commit. This supersedes the older branch-state
+instructions below. Future implementation work continues on development.
+
+The owner requires reusable caching that automatically supports future admin
+uploads, not only the current source dataset. Website speed is an explicit
+requirement. Next: public content caching, browser image reuse, thumbnail delivery
+and smoother pagination, beginning with Gallery as the verification flow.
+See [PERFORMANCE_PLAN.md](PERFORMANCE_PLAN.md) for scope and acceptance checks.
+This performance work is planned; it has not been implemented yet.
 
 ## Current branch state and Gallery — 2026-10-07
 
