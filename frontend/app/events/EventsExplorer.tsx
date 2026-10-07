@@ -1,4 +1,5 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 import { useMemo, useState } from "react";
 import { CalendarX } from "lucide-react";
@@ -61,8 +62,8 @@ export default function EventsExplorer() {
 
       <section className="mt-10">
         <h2 className="text-[22px] font-semibold sm:text-[26px]">
-          Upcoming events
-        </h2>
+          <TranslationText>Upcoming events
+        </TranslationText></h2>
         <div className="mt-6">
           {upcoming.length > 0 ? (
             renderList(upcoming)
@@ -77,7 +78,7 @@ export default function EventsExplorer() {
       </section>
 
       <section className="mt-12">
-        <h2 className="text-[22px] font-semibold sm:text-[26px]">Past events</h2>
+        <h2 className="text-[22px] font-semibold sm:text-[26px]"><TranslationText>Past events</TranslationText></h2>
         <div className="mt-6">
           {past.length > 0 ? (
             renderList(past)

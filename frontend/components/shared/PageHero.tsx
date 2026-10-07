@@ -1,3 +1,4 @@
+import TranslationText from "@/components/translation/TranslationText";
 import type { ComponentType } from "react";
 import type { LucideProps } from "lucide-react";
 import Container from "./Container";
@@ -77,10 +78,10 @@ export default function PageHero({
             />
           )}
           {eyebrow && (
-            <p className="eyebrow mt-4 text-teal">{eyebrow}</p>
+            <p className="eyebrow mt-4 text-teal"><TranslationText>{eyebrow}</TranslationText></p>
           )}
           <h1 className="mt-3 font-serif text-[30px] font-semibold leading-tight text-white sm:text-[38px] lg:text-[44px]">
-            {title}
+            <TranslationText>{title}</TranslationText>
           </h1>
           {description && (
             <p
@@ -88,7 +89,7 @@ export default function PageHero({
                 isCenter ? "mx-auto max-w-2xl" : "max-w-2xl"
               }`}
             >
-              {description}
+              <TranslationText>{description}</TranslationText>
             </p>
           )}
           {actions && actions.length > 0 && (
@@ -106,7 +107,7 @@ export default function PageHero({
                   icon={action.icon}
                   iconPosition={action.iconPosition ?? "right"}
                 >
-                  {action.label}
+                  <TranslationText>{action.label}</TranslationText>
                 </PrimaryButton>
               ))}
             </div>

@@ -1,4 +1,5 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 import Script from "next/script";
 import { useCallback, useEffect, useRef } from "react";
 type Turnstile = {
@@ -51,9 +52,9 @@ export default function ComplaintVerification({
   if (!sitekey)
     return (
       <p role="status" className="text-sm text-muted">
-        Online complaint submission is temporarily unavailable. Please use the
+        <TranslationText>Online complaint submission is temporarily unavailable. Please use the
         contact details on our Contact page.
-      </p>
+      </TranslationText></p>
     );
   return (
     <>
@@ -64,7 +65,7 @@ export default function ComplaintVerification({
           onError("Security verification could not load. Try again later.")
         }
       />
-      <div ref={element} aria-label="Security verification" />
+      <div ref={element} translate="no" className="notranslate" aria-label="Security verification" />
     </>
   );
 }

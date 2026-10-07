@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/translation/TranslationLink";
 import { notFound } from "next/navigation";
 import { createMetadata } from "@/lib/seo";
 import { collectionPage } from "@/lib/public-collections";

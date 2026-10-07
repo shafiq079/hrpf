@@ -1,4 +1,5 @@
-import Link from "next/link";
+import TranslationText from "@/components/translation/TranslationText";
+import Link from "@/components/translation/TranslationLink";
 import { ArrowRight } from "lucide-react";
 import type { Campaign } from "@/data/campaigns";
 import AppImage from "./AppImage";
@@ -31,7 +32,7 @@ export default function CampaignCard({ campaign }: CampaignCardProps) {
         <span
           className={`absolute left-3 top-3 z-10 rounded px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${statusStyles[status]}`}
         >
-          {status}
+          <TranslationText>{status}</TranslationText>
         </span>
       </div>
       <div className="flex flex-1 flex-col p-6">
@@ -40,12 +41,12 @@ export default function CampaignCard({ campaign }: CampaignCardProps) {
             href={href}
             className="transition-colors hover:text-teal-dark focus-visible:text-teal-dark"
           >
-            {title}
+            <TranslationText>{title}</TranslationText>
           </Link>
         </h3>
-        <p className="mt-1 text-sm font-medium text-teal-dark">{goal}</p>
+        <p className="mt-1 text-sm font-medium text-teal-dark"><TranslationText>{goal}</TranslationText></p>
         <p className="mt-2 flex-1 text-[15px] leading-relaxed text-muted">
-          {description}
+          <TranslationText>{description}</TranslationText>
         </p>
 
         {/* Progress */}
@@ -64,16 +65,16 @@ export default function CampaignCard({ campaign }: CampaignCardProps) {
             />
           </div>
           <p className="mt-1.5 text-xs text-muted">
-            {progress}% of awareness goal
-          </p>
+            <TranslationText>{progress}</TranslationText><TranslationText>% of awareness goal
+          </TranslationText></p>
         </div>
 
         <Link
           href={href}
           className="group/link mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-teal-dark transition-colors hover:text-navy"
         >
-          Join Campaign
-          <ArrowRight
+          <TranslationText>Join Campaign
+          </TranslationText><ArrowRight
             className="h-4 w-4 transition-transform duration-150 group-hover/link:translate-x-0.5"
             aria-hidden="true"
           />

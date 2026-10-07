@@ -1,4 +1,5 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -61,7 +62,7 @@ export default function ProjectGallery({ photos, label = "Project photographs" }
               aria-live="polite"
               aria-atomic="true"
             >
-              {index + 1} / {photos.length}
+              <TranslationText>{index + 1}</TranslationText> <TranslationText>/ </TranslationText><TranslationText>{photos.length}</TranslationText>
             </span>
             <button
               type="button"
@@ -76,7 +77,7 @@ export default function ProjectGallery({ photos, label = "Project photographs" }
       </div>
       {current.caption && (
         <p className="border-x border-b border-border bg-white px-5 py-3 text-sm leading-relaxed text-muted">
-          {current.caption}
+          <TranslationText>{current.caption}</TranslationText>
         </p>
       )}
       {photos.length > 1 && (

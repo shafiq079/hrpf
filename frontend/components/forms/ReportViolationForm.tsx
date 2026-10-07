@@ -1,6 +1,7 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 import { useCallback, useRef, useState, type FormEvent } from "react";
-import Link from "next/link";
+import Link from "@/components/translation/TranslationLink";
 import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 import { TextField, TextareaField, SelectField, CheckboxField } from "./fields";
 import FormMessage from "./FormMessage";
@@ -91,10 +92,10 @@ function FileChoice({
   return (
     <div>
       <label htmlFor={id} className="block text-sm font-medium text-text">
-        {label}
-        {required ? " *" : " (optional)"}
+        <TranslationText>{label}</TranslationText>
+        <TranslationText>{required ? " *" : " (optional)"}</TranslationText>
       </label>
-      <input
+      <input translate="no"
         id={id}
         type="file"
         required={required && names.length === 0}
@@ -104,14 +105,14 @@ function FileChoice({
         className="mt-2 block w-full text-sm text-muted file:mr-3 file:rounded-md file:border-0 file:bg-navy file:px-4 file:py-2 file:font-semibold file:text-white"
       />
       <p className="mt-1 text-xs text-muted">
-        {image
+        <TranslationText>{image
           ? "JPG, PNG or WebP. Maximum 5 MB."
-          : "JPG, PNG, WebP or PDF. Images up to 5 MB; PDFs up to 10 MB."}
+          : "JPG, PNG, WebP or PDF. Images up to 5 MB; PDFs up to 10 MB."}</TranslationText>
       </p>
       {names.length > 0 && (
         <ul className="mt-2 break-all text-xs text-muted">
           {names.map((name, index) => (
-            <li key={index}>{name}</li>
+            <li key={index}><span className="notranslate" translate="no">{name}</span></li>
           ))}
         </ul>
       )}
@@ -205,16 +206,16 @@ export default function ReportViolationForm() {
   if (reference)
     return (
       <FormMessage type="success" title="Your complaint has been received">
-        <p className="mt-2 font-mono font-semibold">Reference: {reference}</p>
+        <p className="mt-2 font-mono font-semibold"><TranslationText>Reference: </TranslationText><span className="notranslate" translate="no">{reference}</span></p>
         <p className="mt-3">
-          A complete copy of your submitted form and files has been queued for
+          <TranslationText>A complete copy of your submitted form and files has been queued for
           email to you and HRPF’s administrator. Email delivery may take a
           little time.
-        </p>
+        </TranslationText></p>
         <p className="mt-2">
-          Keep this reference for follow-up. This confirms receipt; review is
+          <TranslationText>Keep this reference for follow-up. This confirms receipt; review is
           pending.
-        </p>
+        </TranslationText></p>
       </FormMessage>
     );
   const fileNames = [
@@ -240,7 +241,7 @@ export default function ReportViolationForm() {
             <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-navy text-xs text-white">
               {index < step ? <CheckCircle2 className="h-4 w-4" /> : index + 1}
             </span>
-            {title}
+            <TranslationText>{title}</TranslationText>
           </li>
         ))}
       </ol>
@@ -249,16 +250,16 @@ export default function ReportViolationForm() {
         tabIndex={-1}
         className="font-serif text-xl font-semibold text-navy"
       >
-        {steps[step]}
+        <TranslationText>{steps[step]}</TranslationText>
       </h2>
       <p className="mt-2 text-sm text-muted">
-        Required fields are marked *. Your form details and uploaded files will
+        <TranslationText>Required fields are marked *. Your form details and uploaded files will
         be emailed to you and HRPF’s administrator.
-      </p>
+      </TranslationText></p>
       {error && (
         <div className="mt-5">
           <FormMessage type="error" title="Please check your submission">
-            {error}
+            <span className="notranslate" translate="no">{error}</span>
           </FormMessage>
         </div>
       )}
@@ -361,8 +362,8 @@ export default function ReportViolationForm() {
                 htmlFor="priorProceedings"
                 className="block text-sm font-medium text-text"
               >
-                Has this issue previously been handled by another institution? *
-              </label>
+                <TranslationText>Has this issue previously been handled by another institution? *
+              </TranslationText></label>
               <select
                 id="priorProceedings"
                 value={data.priorProceedings ? "yes" : "no"}
@@ -393,12 +394,12 @@ export default function ReportViolationForm() {
             )}
             <div className="border-t border-border pt-5">
               <h3 className="font-semibold text-navy">
-                Documents and evidence
-              </h3>
+                <TranslationText>Documents and evidence
+              </TranslationText></h3>
               <p className="mb-5 mt-2 text-sm text-muted">
-                Five files maximum in total. Combined size must be no more than
+                <TranslationText>Five files maximum in total. Combined size must be no more than
                 15 MB. File types and sizes are checked before your complaint is saved.
-              </p>
+              </TranslationText></p>
               <div className="space-y-6">
                 <FileChoice
                   id="cnic-image"
@@ -460,17 +461,17 @@ export default function ReportViolationForm() {
           <>
             <div className="rounded-lg border border-border bg-off-white p-5">
               <h3 className="font-semibold text-navy">
-                Your complete submission
-              </h3>
+                <TranslationText>Your complete submission
+              </TranslationText></h3>
               <dl className="mt-4 space-y-4">
                 {Object.entries(labels)
                   .filter(([key]) => key !== "consent")
                   .map(([key, label]) => (
                     <div key={key}>
                       <dt className="text-xs font-semibold uppercase tracking-wide text-muted">
-                        {label}
+                        <TranslationText>{label}</TranslationText>
                       </dt>
-                      <dd className="mt-1 whitespace-pre-wrap break-words text-sm text-text">
+                      <dd translate="no" className="notranslate mt-1 whitespace-pre-wrap break-words text-sm text-text">
                         {key === "priorProceedings"
                           ? data.priorProceedings
                             ? "Yes"
@@ -485,9 +486,9 @@ export default function ReportViolationForm() {
                 {fileNames.map(([label, name], index) => (
                   <div key={index}>
                     <dt className="text-xs font-semibold uppercase tracking-wide text-muted">
-                      {label}
+                      <TranslationText>{label}</TranslationText>
                     </dt>
-                    <dd className="mt-1 break-all text-sm">{name}</dd>
+                    <dd translate="no" className="notranslate mt-1 break-all text-sm">{name}</dd>
                   </div>
                 ))}
               </dl>
@@ -498,16 +499,16 @@ export default function ReportViolationForm() {
               onChange={(value) => change("consent", value)}
               label={
                 <>
-                  I confirm these details are accurate. I agree to HRPF
+                  <TranslationText>I confirm these details are accurate. I agree to HRPF
                   reviewing this complaint and emailing the full form, CNIC
                   details and uploaded files to my entered email address and
                   HRPF’s administrator. Submission does not guarantee
-                  representation or a particular outcome. See our{" "}
+                  representation or a particular outcome. See our</TranslationText>{" "}
                   <Link href="/privacy-policy" className="underline">
-                    privacy policy
-                  </Link>
-                  .
-                </>
+                    <TranslationText>privacy policy
+                  </TranslationText></Link>
+                  <TranslationText>.
+                </TranslationText></>
               }
             />
           </>
@@ -523,14 +524,14 @@ export default function ReportViolationForm() {
       )}
       {progress && (
         <p role="status" className="mt-5 text-sm font-medium text-teal-dark">
-          {progress}
+          <TranslationText>{progress}</TranslationText>
         </p>
       )}
       {locked && !busy && (
         <p className="mt-4 text-sm text-muted">
-          Retry uses the same files and reference request to prevent duplicate
+          <TranslationText>Retry uses the same files and reference request to prevent duplicate
           complaints.
-        </p>
+        </TranslationText></p>
       )}
       <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
         <button
@@ -544,21 +545,21 @@ export default function ReportViolationForm() {
           className={button}
         >
           <ArrowLeft className="h-4 w-4" />
-          Back
-        </button>
+          <TranslationText>Back
+        </TranslationText></button>
         <button
           type="submit"
           disabled={busy || (step === 2 && !locked && !botToken)}
           aria-busy={busy}
           className="inline-flex items-center gap-2 rounded-md bg-navy px-6 py-3 text-sm font-semibold text-white hover:bg-navy/90 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {busy
+          <TranslationText>{busy
             ? "Submitting…"
             : step === 2
               ? locked
                 ? "Retry same submission"
                 : "Submit complaint"
-              : "Continue"}
+              : "Continue"}</TranslationText>
           {step < 2 && <ArrowRight className="h-4 w-4" />}
         </button>
       </div>
@@ -575,8 +576,8 @@ export default function ReportViolationForm() {
             setStep(1);
           }}
         >
-          Return to documents and try again
-        </button>
+          <TranslationText>Return to documents and try again
+        </TranslationText></button>
       )}
     </form>
   );

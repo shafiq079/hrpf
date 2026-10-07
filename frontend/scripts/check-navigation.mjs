@@ -36,7 +36,7 @@ export async function checkNavigation(read, port) {
   assert.ok(page.html.includes('/blogs?page=2'), 'Blog pagination');
   page = await read('/blogs?page=2');
   assert.ok(page.html.includes('Second page blog'));
-  assert.ok(page.html.replace(/<!--[\s\S]*?-->/g, '').includes('Page 2 of 2'));
+  assert.ok(page.html.replace(/<!--[\s\S]*?-->/g, '').replace(/<[^>]+>/g, '').includes('Page 2 of 2'));
   assert.ok((await read('/blogs?page=invalid')).html.includes('Managed news 2'));
   page = await read('/blogs/real-news');
   assert.equal(page.status, 200);

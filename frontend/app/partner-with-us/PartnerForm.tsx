@@ -1,4 +1,5 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 import { useState } from "react";
 import {
@@ -94,11 +95,11 @@ export default function PartnerForm() {
         title="Thank you — your partnership inquiry has been received"
       >
         <p>
-          Your inquiry has been recorded for this demonstration only and has not
+          <TranslationText>Your inquiry has been recorded for this demonstration only and has not
           been stored or sent anywhere. A sample reference number is shown below.
-        </p>
+        </TranslationText></p>
         <p className="mt-2 font-mono text-sm font-semibold text-navy">
-          Reference: {reference}
+          <TranslationText>Reference: </TranslationText><span className="notranslate" translate="no">{reference}</span>
         </p>
       </FormMessage>
     );
@@ -212,7 +213,7 @@ export default function PartnerForm() {
         error={errors.consent}
       />
 
-      <SubmitButton loading={loading}>Submit Partnership Inquiry</SubmitButton>
+      <SubmitButton loading={loading}><TranslationText>Submit Partnership Inquiry</TranslationText></SubmitButton>
     </form>
   );
 }

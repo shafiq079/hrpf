@@ -1,5 +1,26 @@
 # HRPF Progress
 
+## Automatic text translation — 2026-10-08
+
+- PR #6 merged complaint workflow and Render free/ClamAV removal into main;
+  development began this milestone aligned at `cf8ecbd`.
+- Owner narrowed multilingual scope to automatic visible text translation with
+  a language dropdown. No manually authored Urdu routes/admin fields required.
+- Add a lazy GTranslate nonprofit free widget offering all provider languages;
+  preserve English content, existing routes, images/documents and backend records.
+- Isolate provider-owned dropdown DOM, protect changing client text and use fresh
+  document navigation for translated pages. Exclude private form/review values,
+  filenames, references, Turnstile and administration from translation.
+- Details and owner review: `TEXT_TRANSLATION.md`. Global performance remains the
+  next deferred milestone after translation review.
+- Completed frontend lint/type/build, four retry/navigation tests, public SSR and
+  dependency audit. Live Urdu/French, project sliders, blog filters, gallery zoom,
+  pagination and Back passed. Isolated provider-engine tests excluded unique
+  synthetic complaint values/files and retained the review on English restore;
+  isolated mobile RTL/retry checks passed without browser errors. No live
+  complaint submission or email was performed.
+
+
 ## Current deployment decision — 2026-10-07
 
 The owner explicitly removed ClamAV to support a Render free deployment. New

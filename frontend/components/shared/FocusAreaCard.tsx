@@ -1,3 +1,4 @@
+import TranslationText from "@/components/translation/TranslationText";
 import type { FocusArea } from "@/data/focusAreas";
 
 interface FocusAreaCardProps {
@@ -13,9 +14,9 @@ export default function FocusAreaCard({ area }: FocusAreaCardProps) {
       <span className="flex h-11 w-11 items-center justify-center bg-teal/10 text-teal">
         <Icon className="h-[22px] w-[22px]" aria-hidden="true" />
       </span>
-      <h3 className="mt-5 text-lg font-semibold">{title}</h3>
+      <h3 className="mt-5 text-lg font-semibold"><TranslationText>{title}</TranslationText></h3>
       <p className="mt-2 text-[15px] leading-relaxed text-muted">
-        {description}
+        <TranslationText>{description}</TranslationText>
       </p>
     </article>
   );

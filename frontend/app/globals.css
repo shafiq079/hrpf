@@ -112,4 +112,32 @@
     text-transform: uppercase;
     color: var(--color-teal-dark);
   }
+
+  .hrpf-language-widget select {
+    min-height: 2rem;
+    max-width: min(15rem, 65vw);
+    border: 1px solid var(--color-border);
+    background: var(--color-white);
+    color: var(--color-navy);
+    padding: 0.25rem 0.5rem;
+    font: inherit;
+  }
+
+  html[dir="rtl"] :is(h1, h2, h3, h4, .eyebrow) {
+    letter-spacing: normal;
+    line-height: 1.6;
+  }
+
+  html[dir="rtl"] .text-left { text-align: right; }
+  html[dir="rtl"] .text-right { text-align: left; }
+}
+
+/* Next/font variables are unlayered. These overrides must share that cascade
+   level so Tailwind's font-serif/font-sans utilities use the Arabic font too. */
+html[lang="ur"], html[lang="ar"], html[lang="fa"],
+html[lang="ps"], html[lang="sd"] {
+  --font-lora: var(--font-arabic);
+  --font-inter: var(--font-arabic);
+  --font-sans: var(--font-arabic), Tahoma, sans-serif;
+  --font-serif: var(--font-arabic), Tahoma, serif;
 }

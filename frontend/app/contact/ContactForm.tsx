@@ -1,4 +1,5 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 import { useState } from "react";
 import {
@@ -74,12 +75,12 @@ export default function ContactForm() {
     return (
       <FormMessage type="success" title="Thank you — your message has been received">
         <p>
-          Your inquiry has been recorded for this demonstration only. We aim to
+          <TranslationText>Your inquiry has been recorded for this demonstration only. We aim to
           respond within 3–5 working days. A sample reference number is shown
           below.
-        </p>
+        </TranslationText></p>
         <p className="mt-2 font-mono text-sm font-semibold text-navy">
-          Reference: {reference}
+          <TranslationText>Reference: </TranslationText><span className="notranslate" translate="no">{reference}</span>
         </p>
       </FormMessage>
     );
@@ -162,7 +163,7 @@ export default function ContactForm() {
         error={errors.consent}
       />
 
-      <SubmitButton loading={loading}>Send Message</SubmitButton>
+      <SubmitButton loading={loading}><TranslationText>Send Message</TranslationText></SubmitButton>
     </form>
   );
 }

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/translation/TranslationLink";
 import type { PublicBoardMember } from "@/lib/public-collections";
 import PersonPortrait from "./PersonPortrait";
 export default function PersonProfile({

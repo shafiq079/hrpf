@@ -1,5 +1,6 @@
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import type { ReactNode } from "react";
+import TranslationText from "@/components/translation/TranslationText";
 
 interface FormMessageProps {
   type: "success" | "error";
@@ -29,8 +30,8 @@ export default function FormMessage({ type, title, children }: FormMessageProps)
         aria-hidden="true"
       />
       <div className="text-sm leading-relaxed">
-        <p className="font-semibold text-text">{title}</p>
-        {children && <div className="mt-1 text-muted">{children}</div>}
+        <p className="font-semibold text-text"><TranslationText>{title}</TranslationText></p>
+        {children && <div translate={isSuccess ? undefined : "no"} className={`mt-1 text-muted ${isSuccess ? "" : "notranslate"}`}>{children}</div>}
       </div>
     </div>
   );

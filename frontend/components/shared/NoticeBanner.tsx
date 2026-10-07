@@ -1,3 +1,4 @@
+import TranslationText from "@/components/translation/TranslationText";
 import type { ComponentType, ReactNode } from "react";
 import type { LucideProps } from "lucide-react";
 import { AlertTriangle, Info, ShieldCheck } from "lucide-react";
@@ -50,7 +51,7 @@ export default function NoticeBanner({
     <div className={`flex gap-3 rounded-lg border p-4 ${styles.wrap}`}>
       <Icon className={`mt-0.5 h-5 w-5 shrink-0 ${styles.icon}`} aria-hidden="true" />
       <div className="text-sm leading-relaxed">
-        {title && <p className="font-semibold">{title}</p>}
+        {title && <p className="font-semibold"><TranslationText>{title}</TranslationText></p>}
         <div className={title ? "mt-1 text-muted" : "text-muted"}>{children}</div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/translation/TranslationLink";
 import { Users } from "lucide-react";
 import {
   readPublicCollection,

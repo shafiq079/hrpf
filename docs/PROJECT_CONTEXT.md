@@ -111,7 +111,9 @@ Updated: 2026-10-05
 ## Planned public routes and endpoints
 - Navigation: Home, About, What We Do, Gallery, Blogs, Get Involved, Contact.
 - Progress Reports is under About. Gallery categories: media-coverage and in-action.
-- English default; Urdu public routes under /ur/ after translation review.
+- English is the authored source. The owner selected automatic multilingual public
+  text translation through a browser language dropdown; no `/ur/` routes are added.
+  See TEXT_TRANSLATION.md for the current approved scope.
 - Main reads: /api/settings/public, /api/content/:key, /api/board, /api/blogs, /api/gallery, /api/reports, /api/certificates.
 - Report download: GET /api/reports/:id/download.
 - Main submissions: POST /api/complaints, /api/membership-applications and /api/contact-messages.

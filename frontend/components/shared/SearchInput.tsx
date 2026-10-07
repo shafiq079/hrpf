@@ -1,4 +1,5 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 import { Search, X } from "lucide-react";
 
@@ -27,14 +28,14 @@ export default function SearchInput({
         htmlFor={id}
         className={hideLabel ? "sr-only" : "mb-1.5 block text-sm font-medium text-text"}
       >
-        {label}
+        <TranslationText>{label}</TranslationText>
       </label>
       <div className="relative">
         <Search
           className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
           aria-hidden="true"
         />
-        <input
+        <input translate="no"
           id={id}
           type="search"
           value={value}

@@ -1,4 +1,5 @@
 "use client";
+import TranslationText from "@/components/translation/TranslationText";
 
 interface FilterSelectProps {
   label: string;
@@ -22,7 +23,7 @@ export default function FilterSelect({
   return (
     <div className="flex flex-col gap-1">
       <label htmlFor={id} className="text-xs font-medium text-muted">
-        {label}
+        <TranslationText>{label}</TranslationText>
       </label>
       <select
         id={id}

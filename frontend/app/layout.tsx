@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, Lora } from "next/font/google";
+import { Inter, Lora, Noto_Naskh_Arabic } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import LanguageSwitcher from "@/components/translation/LanguageSwitcher";
 
 // Editorial serif for headings; clean sans for body copy.
 const lora = Lora({
@@ -15,6 +16,14 @@ const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-inter",
+});
+
+// Self-host the Arabic-script subset; only translated RTL text uses it.
+const arabic = Noto_Naskh_Arabic({
+  subsets: ["arabic"],
+  display: "swap",
+  preload: false,
+  variable: "--font-arabic",
 });
 
 // TODO: replace with the production domain before launch.
@@ -88,7 +97,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${lora.variable} ${inter.variable}`}
+      className={`${lora.variable} ${inter.variable} ${arabic.variable}`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
@@ -99,6 +108,7 @@ export default function RootLayout({
         >
           Skip to content
         </a>
+        <LanguageSwitcher />
         <Header />
         {children}
         <Footer />
