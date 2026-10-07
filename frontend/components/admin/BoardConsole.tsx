@@ -5,29 +5,20 @@ import Link from "next/link";
 import { FolderOpen, Plus, LogOut, Pencil, ExternalLink } from "lucide-react";
 import Container from "@/components/shared/Container";
 import { adminRequest } from "@/lib/admin-api";
-import BlogEditor, { newBlog, type EditorRecord } from "./BlogEditor";
+import BoardEditor, { newProfile, type BoardRecord } from "./BoardEditor";
 
 type User = { name: string; email: string; role: string };
-type BlogRow = {
-  id: string;
-  version: number;
-  title: { en: string; ur?: string };
-  slug: string;
-  locale: "en" | "ur";
-  status: string;
-  details?: { category?: string };
-};
-export default function BlogConsole() {
+type MediaRow = BoardRecord & { id: string };
+export default function BoardConsole() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [rows, setRows] = useState<BlogRow[]>([]);
-  const [editor, setEditor] = useState<EditorRecord | null>(null);
+  const [rows, setRows] = useState<MediaRow[]>([]);
+  const [editor, setEditor] = useState<BoardRecord | null>(null);
   const [page, setPage] = useState(1);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-  const allowed =
-    !!user && ["super_admin", "admin", "editor"].includes(user.role);
+  const allowed = !!user && ["super_admin", "admin"].includes(user.role);
   useEffect(() => {
     let active = true;
     adminRequest<{ user: User }>("/auth/me")
@@ -42,14 +33,14 @@ export default function BlogConsole() {
       active = false;
     };
   }, []);
-  const loadBlogs = useCallback(async () => {
+  const loadMedia = useCallback(async () => {
     try {
-      setRows(await adminRequest<BlogRow[]>(`/admin/blogs?page=${page}`));
+      setRows(await adminRequest<MediaRow[]>(`/admin/board?page=${page}`));
     } catch (failure) {
       setError(
         failure instanceof Error
           ? failure.message
-          : "Blogs could not be loaded.",
+          : "Profiles records could not be loaded.",
       );
     } finally {
       setBusy(false);
@@ -58,7 +49,7 @@ export default function BlogConsole() {
   useEffect(() => {
     if (!allowed || editor) return;
     let active = true;
-    adminRequest<BlogRow[]>(`/admin/blogs?page=${page}`)
+    adminRequest<MediaRow[]>(`/admin/board?page=${page}`)
       .then((result) => {
         if (active) setRows(result);
       })
@@ -67,7 +58,7 @@ export default function BlogConsole() {
           setError(
             failure instanceof Error
               ? failure.message
-              : "Blogs could not be loaded.",
+              : "Profiles records could not be loaded.",
           );
       })
       .finally(() => {
@@ -117,23 +108,23 @@ export default function BlogConsole() {
     setError("");
     setNotice("");
     try {
-      setEditor(await adminRequest<EditorRecord>(`/admin/blogs/${id}`));
+      setEditor(await adminRequest<BoardRecord>(`/admin/board/${id}`));
     } catch (failure) {
       setError(
         failure instanceof Error
           ? failure.message
-          : "Blog could not be opened.",
+          : "Profiles record could not be opened.",
       );
     } finally {
       setBusy(false);
     }
   }
-  async function act(row: BlogRow, action: "withdraw" | "delete") {
+  async function act(row: MediaRow, action: "withdraw" | "delete") {
     if (
       !window.confirm(
         action === "delete"
-          ? `Delete “${row.title[row.locale] || row.title.en}”? This removes the blog from the website.`
-          : "Withdraw this blog from the website? You can edit and publish it again later.",
+          ? `Delete “${row.name}”? This removes the record from the website.`
+          : "Withdraw this record from the website? You can edit and publish it again later.",
       )
     )
       return;
@@ -143,8 +134,8 @@ export default function BlogConsole() {
     try {
       await adminRequest(
         action === "delete"
-          ? `/admin/blogs/${row.id}`
-          : `/admin/publication/blog/${row.id}`,
+          ? `/admin/board/${row.id}`
+          : `/admin/publication/board/${row.id}`,
         {
           method: action === "delete" ? "DELETE" : "POST",
           body: JSON.stringify(
@@ -158,8 +149,10 @@ export default function BlogConsole() {
           ),
         },
       );
-      setNotice(action === "delete" ? "Blog deleted." : "Blog withdrawn.");
-      await loadBlogs();
+      setNotice(
+        action === "delete" ? "Profile deleted." : "Profile withdrawn.",
+      );
+      await loadMedia();
     } catch (failure) {
       setError(
         failure instanceof Error
@@ -173,7 +166,7 @@ export default function BlogConsole() {
   if (loading)
     return (
       <Container className="py-16">
-        <p role="status">Loading blog management…</p>
+        <p role="status">Loading profile management…</p>
       </Container>
     );
   return (
@@ -189,7 +182,15 @@ export default function BlogConsole() {
           <Link href="/admin/blogs" className="text-teal-dark">
             Blogs
           </Link>
-          <Link href="/admin/gallery" className="text-teal-dark">Gallery</Link><Link href="/admin/documents" className="text-teal-dark">Documents</Link><Link href="/admin/board" className="text-teal-dark">Board and Team</Link>
+          <Link href="/admin/gallery" className="text-teal-dark">
+            Gallery
+          </Link>
+          <Link href="/admin/documents" className="text-teal-dark">
+            Documents
+          </Link>
+          <Link href="/admin/board" className="text-teal-dark">
+            Board and Team
+          </Link>
         </nav>
       )}
       {user && (
@@ -232,7 +233,7 @@ export default function BlogConsole() {
           <p className="eyebrow">HRPF administration</p>
           <h1 className="mt-3 text-3xl">Sign in</h1>
           <p className="mt-3 text-sm text-muted">
-            Use your administrator or editor account to manage blogs.
+            Use your administrator account to manage Board and Team profiles.
           </p>
           <label className="mt-6 block text-sm font-semibold">
             Email
@@ -264,16 +265,16 @@ export default function BlogConsole() {
         </form>
       ) : !allowed ? (
         <div className="border border-border bg-white p-8">
-          <h1 className="text-2xl">Blog access required</h1>
+          <h1 className="text-2xl">Profiles access required</h1>
           <p className="mt-3">
-            Your account does not have permission to manage blogs.
+            Your account does not have permission to manage Profiles content.
           </p>
         </div>
       ) : editor ? (
-        <BlogEditor
+        <BoardEditor
           initial={editor}
           onCancel={() => setEditor(null)}
-          onSaved={(_record, message) => {
+          onSaved={(message) => {
             setEditor(null);
             setNotice(message);
             setError("");
@@ -284,24 +285,24 @@ export default function BlogConsole() {
           <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="eyebrow">Content management</p>
-              <h1 className="mt-2 text-3xl">Blogs</h1>
+              <h1 className="mt-2 text-3xl">Board and Team</h1>
               <p className="mt-3 text-sm text-muted">
-                Write a complete article with photographs and sources. Save
-                privately or publish it to the website.
+                Manage Board of Directors and Our Team profiles, photographs and
+                full biographies.
               </p>
             </div>
             <button
               type="button"
               disabled={busy}
               onClick={() => {
-                setEditor(newBlog());
+                setEditor(newProfile());
                 setNotice("");
                 setError("");
               }}
               className="inline-flex items-center gap-2 bg-navy px-5 py-3 text-sm font-semibold text-white hover:bg-teal-dark disabled:opacity-50"
             >
               <Plus size={18} aria-hidden="true" />
-              Add blog
+              Add profile
             </button>
           </div>
           <div className="space-y-4">
@@ -316,12 +317,8 @@ export default function BlogConsole() {
                   >
                     {row.status === "published" ? "Published" : "Draft"}
                   </span>
-                  <h2 className="mt-3 break-words text-xl">
-                    {row.title[row.locale] || row.title.en}
-                  </h2>
-                  <p className="mt-2 text-sm text-muted">
-                    {row.details?.category || "HRPF Blogs"}
-                  </p>
+                  <h2 className="mt-3 break-words text-xl">{row.name}</h2>
+                  <p className="mt-2 text-sm text-muted">{row.designation}</p>
                 </div>
                 <div className="flex shrink-0 flex-wrap gap-x-5 gap-y-3">
                   <button
@@ -336,7 +333,7 @@ export default function BlogConsole() {
                   {row.status === "published" && (
                     <>
                       <Link
-                        href={`/blogs/${row.slug}${row.locale === "ur" ? "?locale=ur" : ""}`}
+                        href={"/about/people/" + row.slug}
                         target="_blank"
                         rel="noopener"
                         className="inline-flex items-center gap-2 text-sm font-semibold text-navy"
@@ -373,9 +370,9 @@ export default function BlogConsole() {
                 size={32}
                 aria-hidden="true"
               />
-              <h2 className="text-xl">No blogs on this page</h2>
+              <h2 className="text-xl">No profiles on this page</h2>
               <p className="mt-3 text-sm text-muted">
-                Add your first blog or return to the previous page.
+                Add a profile or return to the previous page.
               </p>
             </div>
           )}

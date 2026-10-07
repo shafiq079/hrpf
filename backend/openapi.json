@@ -2166,7 +2166,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "Paginated published profiles",
             "content": {
               "application/json": {
                 "schema": {
@@ -2186,9 +2186,6 @@
                           "designation": {
                             "type": "string"
                           },
-                          "slotLabel": {
-                            "type": "string"
-                          },
                           "rank": {
                             "type": "number"
                           },
@@ -2200,6 +2197,18 @@
                               "string",
                               "null"
                             ]
+                          },
+                          "photoAlt": {
+                            "type": "string"
+                          },
+                          "photoZoom": {
+                            "type": "number"
+                          },
+                          "showOnBoard": {
+                            "type": "boolean"
+                          },
+                          "showOnTeam": {
+                            "type": "boolean"
                           }
                         },
                         "required": [
@@ -2208,13 +2217,41 @@
                           "designation",
                           "rank",
                           "bio",
-                          "photo"
+                          "photo",
+                          "photoAlt",
+                          "photoZoom",
+                          "showOnBoard",
+                          "showOnTeam"
                         ]
                       }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "limit": {
+                          "type": "number"
+                        },
+                        "total": {
+                          "type": "number"
+                        },
+                        "pages": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "page",
+                        "limit",
+                        "total",
+                        "pages"
+                      ]
                     }
                   },
                   "required": [
-                    "data"
+                    "data",
+                    "meta"
                   ]
                 }
               }
@@ -3365,6 +3402,941 @@
                 "schema": {
                   "type": "string",
                   "format": "binary"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/team": {
+      "get": {
+        "summary": "Read published profiles selected for Our Team",
+        "security": [],
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "en",
+                "ur"
+              ],
+              "default": "en"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 48,
+              "default": 12
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "media-coverage",
+                "in-action"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated published profiles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "slug": {
+                            "type": "string"
+                          },
+                          "designation": {
+                            "type": "string"
+                          },
+                          "rank": {
+                            "type": "number"
+                          },
+                          "bio": {
+                            "type": "string"
+                          },
+                          "photo": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "photoAlt": {
+                            "type": "string"
+                          },
+                          "photoZoom": {
+                            "type": "number"
+                          },
+                          "showOnBoard": {
+                            "type": "boolean"
+                          },
+                          "showOnTeam": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "slug",
+                          "designation",
+                          "rank",
+                          "bio",
+                          "photo",
+                          "photoAlt",
+                          "photoZoom",
+                          "showOnBoard",
+                          "showOnTeam"
+                        ]
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "limit": {
+                          "type": "number"
+                        },
+                        "total": {
+                          "type": "number"
+                        },
+                        "pages": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "page",
+                        "limit",
+                        "total",
+                        "pages"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/board/{slug}": {
+      "get": {
+        "summary": "Read the full published person profile; drafts return 404",
+        "security": [],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "en",
+                "ur"
+              ],
+              "default": "en"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 48,
+              "default": 12
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "media-coverage",
+                "in-action"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "slug": {
+                          "type": "string"
+                        },
+                        "designation": {
+                          "type": "string"
+                        },
+                        "rank": {
+                          "type": "number"
+                        },
+                        "bio": {
+                          "type": "string"
+                        },
+                        "photo": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "photoAlt": {
+                          "type": "string"
+                        },
+                        "photoZoom": {
+                          "type": "number"
+                        },
+                        "showOnBoard": {
+                          "type": "boolean"
+                        },
+                        "showOnTeam": {
+                          "type": "boolean"
+                        },
+                        "sections": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "heading": {
+                                "type": "string"
+                              },
+                              "body": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "heading",
+                              "body"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "slug",
+                        "designation",
+                        "rank",
+                        "bio",
+                        "photo",
+                        "photoAlt",
+                        "photoZoom",
+                        "showOnBoard",
+                        "showOnTeam",
+                        "sections"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/board": {
+      "get": {
+        "summary": "Manage Board and Team profiles; administrator role required",
+        "security": [
+          {
+            "accessCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {}
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Manage Board and Team profiles; administrator role required",
+        "security": [
+          {
+            "csrfHeader": [],
+            "csrfCookie": [],
+            "accessCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "version": {
+                          "type": "number"
+                        },
+                        "status": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "version",
+                        "status"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 150
+                  },
+                  "slug": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                  },
+                  "designation": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "rank": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100000
+                  },
+                  "bio": {
+                    "default": {
+                      "en": ""
+                    },
+                    "type": "object",
+                    "properties": {
+                      "en": {
+                        "default": "",
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "ur": {
+                        "type": "string",
+                        "maxLength": 10000
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "sections": {
+                    "default": [],
+                    "maxItems": 16,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "heading": {
+                          "type": "object",
+                          "properties": {
+                            "en": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 150
+                            },
+                            "ur": {
+                              "type": "string",
+                              "maxLength": 150
+                            }
+                          },
+                          "required": [
+                            "en"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "body": {
+                          "type": "object",
+                          "properties": {
+                            "en": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 10000
+                            },
+                            "ur": {
+                              "type": "string",
+                              "maxLength": 10000
+                            }
+                          },
+                          "required": [
+                            "en"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "heading",
+                        "body"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "showOnBoard": {
+                    "default": true,
+                    "type": "boolean"
+                  },
+                  "showOnTeam": {
+                    "default": false,
+                    "type": "boolean"
+                  },
+                  "photoAlt": {
+                    "default": "",
+                    "type": "string",
+                    "maxLength": 300
+                  },
+                  "photoZoom": {
+                    "default": 1,
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 2
+                  },
+                  "assetId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^[a-fA-F0-9]{24}$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "name",
+                  "slug",
+                  "designation",
+                  "rank"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/board/{id}": {
+      "patch": {
+        "summary": "Manage Board and Team profiles; administrator role required",
+        "security": [
+          {
+            "csrfHeader": [],
+            "csrfCookie": [],
+            "accessCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{24}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "version": {
+                          "type": "number"
+                        },
+                        "status": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "version",
+                        "status"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 150
+                  },
+                  "slug": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                  },
+                  "designation": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "rank": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100000
+                  },
+                  "bio": {
+                    "default": {
+                      "en": ""
+                    },
+                    "type": "object",
+                    "properties": {
+                      "en": {
+                        "default": "",
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      "ur": {
+                        "type": "string",
+                        "maxLength": 10000
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "sections": {
+                    "default": [],
+                    "maxItems": 16,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "heading": {
+                          "type": "object",
+                          "properties": {
+                            "en": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 150
+                            },
+                            "ur": {
+                              "type": "string",
+                              "maxLength": 150
+                            }
+                          },
+                          "required": [
+                            "en"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "body": {
+                          "type": "object",
+                          "properties": {
+                            "en": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 10000
+                            },
+                            "ur": {
+                              "type": "string",
+                              "maxLength": 10000
+                            }
+                          },
+                          "required": [
+                            "en"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "heading",
+                        "body"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "showOnBoard": {
+                    "default": true,
+                    "type": "boolean"
+                  },
+                  "showOnTeam": {
+                    "default": false,
+                    "type": "boolean"
+                  },
+                  "photoAlt": {
+                    "default": "",
+                    "type": "string",
+                    "maxLength": 300
+                  },
+                  "photoZoom": {
+                    "default": 1,
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 2
+                  },
+                  "assetId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^[a-fA-F0-9]{24}$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "name",
+                  "slug",
+                  "designation",
+                  "rank",
+                  "version"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Manage Board and Team profiles; administrator role required",
+        "security": [
+          {
+            "csrfHeader": [],
+            "csrfCookie": [],
+            "accessCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{24}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "version": {
+                          "type": "number"
+                        },
+                        "status": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "version",
+                        "status"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "version"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Read the private profile editor record without provider metadata",
+        "security": [
+          {
+            "accessCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{24}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {}
+                  },
+                  "required": [
+                    "data"
+                  ]
                 }
               }
             }

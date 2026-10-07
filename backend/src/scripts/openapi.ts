@@ -10,6 +10,7 @@ import { projectDetailsInput } from '../http/project-details.js';
 import { reportInput, certificateInput } from '../http/document-content.js';
 import { galleryInput, interviewInput } from '../http/media-content.js';
 import { projectInput, newsInput } from '../http/managed-content.js';
+import { boardInput } from '../http/board-content.js';
 import { roles } from '../domain/models.js';
 const jsonSchema = (value: z.ZodType) => { const { $schema: _schema, ...schema } = z.toJSONSchema(value, { io: 'input', unrepresentable: 'any' }); return schema; };
 const user = z.object({ id: z.string(), name: z.string(), email: z.email(), role: z.enum(roles) });
@@ -77,7 +78,7 @@ const publicContent = z.object({ title: z.string(), blocks: z.array(z.object({ t
 operation('/api/settings/public', 'get', 'Read whitelisted public settings with field-level secret exclusion', z.object(Object.fromEntries(Object.entries(publicSettingSchemas).map(([key, schema]) => [key, schema.optional()]))));
 operation('/api/blogs/{slug}', 'get', 'Read a reviewed published article; drafts and future releases return 404', publicContent.extend({ slug: z.string(), excerpt: z.string(), publishedAt: z.string() }), { parameters: [{ name: 'slug', in: 'path', required: true, schema: { type: 'string', pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$', maxLength: 100 } }, ...publicParameters] });
 const listSchemas = {
-  board: z.object({ name: z.string(), slug: z.string(), designation: z.string(), slotLabel: z.string().optional(), rank: z.number(), bio: z.string(), photo: z.string().nullable() }),
+  board: z.object({ name: z.string(), slug: z.string(), designation: z.string(), rank: z.number(), bio: z.string(), photo: z.string().nullable(), photoAlt: z.string(), photoZoom: z.number(), showOnBoard: z.boolean(), showOnTeam: z.boolean() }),
   'blog-categories': z.object({ slug: z.string(), name: z.string() }),
   blogs: z.object({ title: z.string(), slug: z.string(), excerpt: z.string(), publishedAt: z.string() }),
   gallery: z.object({ id: z.string(), title: z.string(), file: z.string(), category: z.enum(['in-action', 'media-coverage']), alt: z.string(), caption: z.string(), treatment: z.enum(['ORIGINAL', 'AI_RESTORATION']), mediaType: z.enum(['newspaper','photo','graphic']), sourceName: z.string(), sourceUrl: z.string(), eventDate: z.string().optional(), width: z.number().optional(), height: z.number().optional() }),
@@ -102,6 +103,15 @@ for (const action of ['view', 'download']) {
   operation(path,'get',`Stream a currently reviewed report or certificate for ${action}`,z.unknown(),{parameters:[{name:'kind',in:'path',required:true,schema:{type:'string',enum:['reports','certificates']}},parameter('id')]});
   (paths[path]!.get as any).responses['200']={description:action === 'view' ? 'Inline reviewed PDF or raster image, with immediate withdrawal checks' : 'Attachment; only report download GETs increment the counter',content:{'application/octet-stream':{schema:{type:'string',format:'binary'}}}};
 }
+operation('/api/team','get','Read published profiles selected for Our Team',z.array(listSchemas.board),{parameters:publicParameters});
+operation('/api/board/{slug}','get','Read the full published person profile; drafts return 404',listSchemas.board.extend({sections:z.array(z.object({heading:z.string(),body:z.string()}))}),{parameters:[{name:'slug',in:'path',required:true,schema:{type:'string',pattern:'^[a-z0-9]+(?:-[a-z0-9]+)*$',maxLength:100}},...publicParameters]});
+for (const method of ['get','post','patch','delete'] as const) {
+ const path='/api/admin/board'+(method==='patch'||method==='delete'? '/{id}':'');
+ operation(path,method,'Manage Board and Team profiles; administrator role required',method==='get'? z.array(z.unknown()):z.object({id:z.string(),version:z.number(),status:z.string()}),{status:method==='post'?'201':'200',parameters:method==='patch'||method==='delete'?[parameter('id')]:[{name:'page',in:'query',schema:{type:'integer',minimum:1,maximum:1000,default:1}}],security:method==='get'?[adminSecurity]:[{...csrfSecurity,...adminSecurity}]});
+ if(method!=='get') (paths[path]![method] as any).requestBody={required:true,content:{'application/json':{schema:jsonSchema(method==='delete'?z.object({version:z.number().int().nonnegative()}).strict():method==='patch'?boardInput.extend({version:z.number().int().nonnegative()}):boardInput)}}};
+}
+operation('/api/admin/board/{id}','get','Read the private profile editor record without provider metadata',z.unknown(),{parameters:[parameter('id')],security:[adminSecurity]});
+for(const kind of ['board','team']) (paths['/api/'+kind]!.get as any).responses['200']={description:'Paginated published profiles',content:{'application/json':{schema:jsonSchema(z.object({data:z.array(listSchemas.board),meta:z.object({page:z.number(),limit:z.number(),total:z.number(),pages:z.number()})}))}}};
 const kindParameter = { name: 'kind', in: 'path', required: true, schema: { type: 'string', enum: ['blog', 'project', 'board', 'gallery', 'interview', 'report', 'certificate', 'setting'] } };
 operation('/api/admin/publication/{kind}', 'get', 'Read bounded publication review records with versions; requires entity permission', z.array(z.record(z.string(), z.unknown())), { parameters: [kindParameter, { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 1000, default: 1 } }], security: [adminSecurity] });
 operation('/api/admin/publication/{kind}/{id}', 'post', 'Publish or withdraw a reviewed record atomically; version, CSRF, current role and audited release attestation required', z.object({ status: z.enum(['published', 'withdrawn']), version: z.number() }), { body: 'PublicationInput', parameters: [kindParameter, parameter('id')], security: [{ ...csrfSecurity, ...adminSecurity }] });

@@ -245,3 +245,15 @@ scans; originals with private case material are not committed or uploaded.
 Validation includes both package checks, real Mongo/Redis API integration, full
 source seed integration, production frontend SSR and rendered PDF review. Main
 merge, global caching and permanent scanner hosting remain separate tasks.
+
+## Board of Directors and Our Team — 2026-10-07
+
+Implemented managed listings and full individual profiles using the supplied Word
+biographies and original seven embedded photos. Added `/admin/board` with current
+administrator permission checks, versioned audited draft CRUD, page placement,
+optional Urdu sections, private previews and reviewed portrait publication.
+`seed:board` verifies exact source photos, scans all before writes and safely
+resumes while preserving admin/native/deleted content. The chairman's full twelve
+sections are retained; actual Joint Chairperson designation is preserved.
+No new staff biographies or private provider URLs are exposed. Further global
+caching and permanent ClamAV hosting remain deferred. Next: complaint workflow.

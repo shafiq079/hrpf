@@ -44,11 +44,24 @@ export function publicRouter(provider: UploadProvider) {
     }
     res.json({ data });
   });
-  router.get('/board', async (req, res) => {
+  const personView = async (row: any, locale: 'en' | 'ur', detailed = false) => ({
+    name: row.name, slug: row.slug, designation: row.designation, rank: row.rank,
+    bio: row.bio?.[locale] ?? '', photoAlt: row.photoAlt || row.name, photoZoom: row.photoZoom ?? 1,
+    showOnBoard: row.showOnBoard !== false, showOnTeam: row.showOnTeam === true,
+    photo: await releasedAsset(row.photo?.assetId, 'BoardMember', row._id) ? `/api/public-assets/${row.photo.assetId}` : null,
+    ...(detailed ? { sections: (row.sections ?? []).map((section: any) => ({ heading: section.heading?.[locale] ?? '', body: section.body?.[locale] ?? '' })).filter((section: any) => section.heading && section.body) } : {}),
+  });
+  for (const kind of ['board', 'team'] as const) router.get('/' + kind, async (req, res) => {
+    const { locale, page, limit } = validate(publicQuery, req.query);
+    const filter = { isActive: true, ...(kind === 'board' ? { showOnBoard: { $ne: false } } : { showOnTeam: true }) };
+    const [rows, total] = await Promise.all([BoardMember.find(filter).sort({ rank: 1, _id: 1 }).skip((page - 1) * limit).limit(limit).select('name slug designation rank bio photo photoAlt photoZoom showOnBoard showOnTeam').lean(), BoardMember.countDocuments(filter)]);
+    res.json({ data: await Promise.all(rows.map(row => personView(row, locale))), meta: { page, limit, total, pages: Math.ceil(total / limit) } });
+  });
+  router.get('/board/:slug', async (req, res) => {
     const { locale } = validate(publicQuery, req.query);
-    const rows = await BoardMember.find({ isActive: true }).sort({ rank: 1, _id: 1 }).select('name slug designation slotLabel rank bio photo').lean();
-    const data = await Promise.all(rows.map(async row => ({ name: row.name, slug: row.slug, designation: row.designation, slotLabel: row.slotLabel, rank: row.rank, bio: row.bio?.[locale] ?? '', photo: await releasedAsset(row.photo?.assetId, 'BoardMember', row._id) ? `/api/public-assets/${row.photo!.assetId}` : null })));
-    res.json({ data });
+    const row = await BoardMember.findOne({ slug: validate(slug, req.params.slug), isActive: true, $or: [{ showOnBoard: { $ne: false } }, { showOnTeam: true }] }).select('name slug designation rank bio photo photoAlt photoZoom showOnBoard showOnTeam sections').lean();
+    if (!row) throw missing();
+    res.json({ data: await personView(row, locale, true) });
   });
   router.get('/blog-categories', async (req, res) => {
     const { locale } = validate(publicQuery, req.query);
@@ -138,7 +151,7 @@ export function publicRouter(provider: UploadProvider) {
     switch (asset.entityType) {
       case 'Project': released = !!await Project.exists({_id:asset.entityId,status:'published',reviewStatus:'approved',$or:[{'cover.assetId':asset._id},{'gallery.asset.assetId':asset._id},{'documents.asset.assetId':asset._id}],...publicationFilter()}); break;
       case 'BlogPost': released = !!await BlogPost.exists({_id:asset.entityId,status:'published',reviewStatus:'approved',$or:[{'cover.assetId':asset._id},{'gallery.asset.assetId':asset._id},{'documents.asset.assetId':asset._id}],...publicationFilter()}); break;
-      case 'BoardMember': released = !!await BoardMember.exists({ _id: asset.entityId, isActive: true, 'photo.assetId': asset._id }); break;
+      case 'BoardMember': released = !!await BoardMember.exists({ _id: asset.entityId, isActive: true, 'photo.assetId': asset._id, $or: [{ showOnBoard: { $ne: false } }, { showOnTeam: true }] }); break;
       case 'GalleryItem': released = !!await GalleryItem.exists({ _id: asset.entityId, reviewStatus: 'approved', duplicateOf: null, 'asset.assetId': asset._id, ...publicationFilter() }); break;
       case 'VideoInterview': released = !!await VideoInterview.exists({ _id: asset.entityId, reviewStatus: 'approved', videoUrl: canonicalVideoPattern, 'thumbnail.assetId': asset._id, ...publicationFilter() }); break;
       case 'Report': released = !!await Report.exists({ _id: asset.entityId, releaseReview: 'approved', 'publicPdf.assetId': asset._id, $expr: { $ne: [{ $ifNull: ['$restrictedOriginal.assetId', null] }, asset._id] }, ...publicationFilter() }); break;

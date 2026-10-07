@@ -8,6 +8,8 @@ import { ApiError, validate } from './errors.js';
 import { publicSettingSchemas } from './public-content.js';
 import { bindDocumentFile } from '../services/document-media.js';
 import { bindProjectMedia } from '../services/project-media.js';
+import { bindBoardPhoto } from '../services/board-media.js';
+import { reviewBoard } from './board-content.js';
 export const publicationInput = z.object({ version: z.number().int().nonnegative(), action: z.enum(['publish', 'withdraw']), releaseReviewed: z.literal(true), assetId: z.string().regex(/^[a-fA-F0-9]{24}$/).optional() }).strict();
 const kinds = {
   blog: { model: BlogPost, permission: 'content', entity: 'BlogPost', field: 'cover' },
@@ -51,7 +53,7 @@ export function publicationRouter(auth: ReturnType<typeof createAuth>) {
             const schema = publicSettingSchemas[row.key as keyof typeof publicSettingSchemas];
             if (!schema || !schema.safeParse(row.value).success) throw new ApiError(400, 'REVIEW_REQUIRED', 'Only valid approved public settings may be published.');
             row.visibility = 'public'; row.revision += 1;
-          } else if (kind === 'board') row.isActive = true;
+          } else if (kind === 'board') { reviewBoard(row); row.isActive = true; }
           else {
             if (kind === 'interview' && (row.thumbnail || input.assetId) && !row.thumbnailAlt?.trim()) throw new ApiError(400, 'REVIEW_REQUIRED', 'Describe the interview thumbnail before publication.');
             if (kind === 'gallery' && (row.duplicateOf || !row.alt?.en?.trim())) throw new ApiError(400, 'REVIEW_REQUIRED', 'Review the image description and duplicate status first.');
@@ -65,6 +67,9 @@ export function publicationRouter(auth: ReturnType<typeof createAuth>) {
             await bindProjectMedia(row, { coverAssetId: input.assetId }, principal.id, tx, 'public', kind === 'blog' ? 'BlogPost' : 'Project');
           } else if (kind === 'report' || kind === 'certificate') {
             await bindDocumentFile(row, input.assetId, principal.id, tx, 'public', kind === 'report' ? 'Report' : 'Certificate');
+          } else if (kind === 'board') {
+            await bindBoardPhoto(row, input.assetId, principal.id, tx, 'public');
+            reviewBoard(row);
           } else if (spec.field) {
             const fileId = input.assetId ?? row[spec.field]?.assetId;
             if (!fileId && !['board', 'blog', 'project', 'interview'].includes(kind)) throw new ApiError(400, 'REVIEW_REQUIRED', 'Upload and review a public release file first.');

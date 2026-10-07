@@ -240,3 +240,12 @@ verifies files offline, and `--database` plans without writes. See
 [import instructions](seed/DOCUMENTS.md) and [workflow](../docs/DOCUMENTS.md).
 The three report editions explain their omissions; four distinct certificate
 scans retain stated dates without implying renewal. Admin changes survive reruns.
+
+### Board and Team
+
+Administrators manage profiles at `/admin/board`. See `docs/BOARD_AND_TEAM.md`.
+`npm run seed:board` verifies the supplied profiles and original photos offline;
+`npm run seed:board -- --database` plans read-only; `npm run seed:board -- --apply`
+scans and publishes seven supplied profiles with existing private dev services.
+Reruns preserve completed releases and admin changes. Future profiles use the
+same generic editor and public endpoints.

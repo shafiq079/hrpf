@@ -1,6 +1,6 @@
 import "server-only";
 
-export type CollectionKind = "blogs" | "projects" | "gallery" | "interviews" | "reports" | "certificates" | "board";
+export type CollectionKind = "blogs" | "projects" | "gallery" | "interviews" | "reports" | "certificates" | "board" | "team";
 export type PublicCollection<T> = { status: "ok" | "unavailable"; data: T[]; page: number; pages: number };
 export function collectionPage(value: string | string[] | undefined): number {
   const page = typeof value === "string" && /^\d+$/.test(value) ? Number(value) : 1;
@@ -29,4 +29,4 @@ export type PublicReport = PublicDocument & { year?: number; slug: string; pages
 export type PublicCertificate = PublicDocument & { issuer?: string; reference?: string; issuedAt?: string; validFrom?: string; expiresAt?: string };
 export type PublicGalleryImage = { id: string; title: string; file: string; alt: string; caption: string; category: "media-coverage" | "in-action"; treatment?: "ORIGINAL" | "AI_RESTORATION"; mediaType?: "newspaper" | "photo" | "graphic"; sourceName?: string; sourceUrl?: string; eventDate?: string; width?: number; height?: number };
 export type PublicInterview = { id: string; title: string; description: string; provider: "youtube" | "vimeo"; watchUrl: string; embedUrl: string; thumbnail: string | null; thumbnailAlt: string; sourceName?: string; eventDate?: string };
-export type PublicBoardMember = { name: string; slug: string; designation: string; bio: string; photo: string | null };
+export type PublicBoardMember = { name: string; slug: string; designation: string; rank?: number; bio: string; photo: string | null; photoAlt?: string; photoZoom?: number; showOnBoard?: boolean; showOnTeam?: boolean; sections?: { heading: string; body: string }[] };

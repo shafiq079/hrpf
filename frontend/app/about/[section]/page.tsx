@@ -9,7 +9,6 @@ import PageHero from "@/components/shared/PageHero";
 import ContentBlocks from "@/components/shared/ContentBlocks";
 import PublicDocuments from "@/components/shared/PublicDocuments";
 import PublicBoard from "@/components/shared/PublicBoard";
-import PrimaryButton from "@/components/shared/PrimaryButton";
 
 export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ section: string }>; searchParams: Promise<{ page?: string | string[] }> };
@@ -32,16 +31,7 @@ export default async function AboutSectionPage({ params, searchParams }: Props) 
         <Container>
           {section === "progress-reports" ? <PublicDocuments kind="reports" page={page} /> :
            section === "registration-and-certificates" ? <PublicDocuments kind="certificates" page={page} /> :
-           section === "board-of-directors" ? <PublicBoard /> : section === "our-team" ? (
-            <div className="mx-auto max-w-3xl">
-              <ContentBlocks blocks={source.pages["our-approach"].blocks} />
-              <div className="mt-8 rounded-lg border border-border bg-white p-6">
-                <h2 className="font-serif text-2xl font-semibold text-navy">Connect with Our Team</h2>
-                <p className="mt-3 leading-relaxed text-muted">For enquiries about HRPF’s work, membership or opportunities to contribute, contact the Foundation. Our Board of Directors is listed separately.</p>
-                <div className="mt-6 flex flex-wrap gap-3"><PrimaryButton href="/contact">Contact HRPF</PrimaryButton><PrimaryButton href="/become-a-member" variant="outline">Become a Member</PrimaryButton></div>
-              </div>
-            </div>
-           ) : (
+           section === "board-of-directors" ? <PublicBoard page={page} /> : section === "our-team" ? <PublicBoard kind="team" page={page} /> : (
             <div className="mx-auto max-w-3xl">
               {section === "mission-and-vision" ? <>
                 <h2 className="font-serif text-2xl font-semibold text-navy">Our Mission</h2>

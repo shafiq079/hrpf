@@ -1,16 +1,21 @@
-# Current handoff: documents on development
+# Current handoff: Board and Team on development
 
-Progress Reports and Registration / Certificates now have public view/download
-cards, `/admin/documents`, versioned draft CRUD, private scanned uploads and
-transactional publication/revocation. The supplied-document importer bundles three
-labelled report public editions and four distinct certificate scans. Original
-source ZIPs remain private. See `docs/DOCUMENTS.md` and
-`backend/seed/DOCUMENTS.md` for scope, source omissions and Codespaces commands.
+Board of Directors and Our Team now have managed public listings, full person
+profiles at `/about/people/[slug]`, `/admin/board`, versioned draft CRUD and
+transactional scanned-photo publication/revocation. `npm run seed:board -- --apply`
+populates the seven supplied Word-document profiles and original embedded photos;
+completed imports and admin content are preserved on reruns. See
+`docs/BOARD_AND_TEAM.md` and `backend/seed/BOARD.md`.
 
-This feature is on **development**. Main remains the merged Gallery release.
-Next in the original functional plan: **Board of Directors / Our Team**, then
-complaint workflow and Urdu translation. Global future-content performance work
-and permanent ClamAV hosting remain deferred until functional work is complete.
+Progress Reports/Certificates remain implemented on development. The owner's
+read-only diagnostic found report PDF delivery 401 with a Cloudinary policy block
+and certificate image delivery 200. The account owner must check PDF delivery
+settings; no ClamAV restart or reseeding resolves that provider delivery policy.
+
+Main remains the merged Gallery release. Work stays on development until an
+explicit merge instruction. Next functional milestone: **complaint workflow**,
+then Urdu translation, then global future-content performance and production
+hardening. Permanent ClamAV hosting remains deferred.
 
 ---
 
