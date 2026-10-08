@@ -11,6 +11,7 @@ import {
   Upload,
   X,
 } from "lucide-react";
+import { AdminField as Field, ManualUrduNote } from "@/components/admin/AdminField";
 import { adminRequest } from "@/lib/admin-api";
 import type { BlogDetail, BlogDetails, BlogSection } from "@/lib/blog-details";
 import type { TextBlock } from "@/lib/project-details";
@@ -45,30 +46,9 @@ export const newBlog = (): EditorRecord => ({
   documents: [],
 });
 const inputClass =
-  "mt-2 w-full border border-border bg-white px-3 py-2.5 text-sm text-text disabled:bg-soft-gray";
+  "mt-2 w-full border border-border bg-white px-3 py-2.5 text-base font-normal text-text disabled:bg-soft-gray";
 const buttonClass =
   "inline-flex items-center justify-center gap-2 border border-border bg-white px-4 py-2.5 text-sm font-semibold text-navy hover:border-teal disabled:opacity-50";
-function Field({
-  label,
-  children,
-  hint,
-}: {
-  label: string;
-  children: ReactNode;
-  hint?: string;
-}) {
-  return (
-    <label className="block min-w-0 text-sm font-semibold text-navy">
-      {label}
-      {children}
-      {hint && (
-        <span className="mt-1.5 block text-xs font-normal leading-relaxed text-muted">
-          {hint}
-        </span>
-      )}
-    </label>
-  );
-}
 function Section({
   title,
   description,
@@ -443,7 +423,7 @@ export default function BlogEditor({
             title="Article essentials"
             description="The title and excerpt also appear on blog cards. Leave the public author blank to use HRPF Pakistan."
           >
-            <div className="grid gap-5 sm:grid-cols-2">
+            <div>
               <Field label="English title">
                 <input
                   className={inputClass}
@@ -455,33 +435,7 @@ export default function BlogEditor({
                   }
                 />
               </Field>
-              <Field label="Article language">
-                <select
-                  className={inputClass}
-                  value={form.locale}
-                  onChange={(event) =>
-                    patch({ locale: event.target.value as "en" | "ur" })
-                  }
-                >
-                  <option value="en">English</option>
-                  <option value="ur">Urdu</option>
-                </select>
-              </Field>
             </div>
-            {form.locale === "ur" && (
-              <Field label="Urdu title">
-                <input
-                  className={inputClass}
-                  required
-                  maxLength={200}
-                  dir="rtl"
-                  value={form.title.ur ?? ""}
-                  onChange={(event) =>
-                    patch({ title: { ...form.title, ur: event.target.value } })
-                  }
-                />
-              </Field>
-            )}
             <Field
               label="Page URL"
               hint="Use lowercase words separated by hyphens, e.g. safer-communities."
@@ -509,23 +463,52 @@ export default function BlogEditor({
                 }
               />
             </Field>
-            {form.locale === "ur" && (
-              <Field label="Urdu excerpt">
-                <textarea
-                  className={inputClass}
-                  required
-                  rows={3}
-                  maxLength={1000}
-                  dir="rtl"
-                  value={form.excerpt.ur ?? ""}
-                  onChange={(event) =>
-                    patch({
-                      excerpt: { ...form.excerpt, ur: event.target.value },
-                    })
-                  }
-                />
-              </Field>
-            )}
+            <details open={form.locale === "ur" || undefined} className="border-t border-border pt-4">
+              <summary className="cursor-pointer text-sm font-semibold text-navy">Manual Urdu content (optional)</summary>
+              <ManualUrduNote />
+              <div className="mt-4 space-y-5">
+                <Field label="Original content language" hint="Keep English for automatic website translation. Choose Urdu only if you are writing the complete article in Urdu.">
+                  <select
+                    className={inputClass}
+                    value={form.locale}
+                    onChange={(event) =>
+                      patch({ locale: event.target.value as "en" | "ur" })
+                    }
+                  >
+                    <option value="en">English</option>
+                    <option value="ur">Urdu</option>
+                  </select>
+                </Field>
+                <Field label="Urdu title">
+                  <input
+                    className={inputClass}
+                    required={form.locale === "ur"}
+                    maxLength={200}
+                    dir="rtl" lang="ur"
+                    value={form.title.ur ?? ""}
+                    onChange={(event) =>
+                      patch({ title: { ...form.title, ur: event.target.value } })
+                    }
+                  />
+                </Field>
+                <Field label="Urdu excerpt">
+                  <textarea
+                    className={inputClass}
+                    required={form.locale === "ur"}
+                    rows={3}
+                    maxLength={1000}
+                    dir="rtl" lang="ur"
+                    value={form.excerpt.ur ?? ""}
+                    onChange={(event) =>
+                      patch({
+                        excerpt: { ...form.excerpt, ur: event.target.value },
+                      })
+                    }
+                  />
+                </Field>
+              </div>
+              <p className="mt-3 text-sm text-muted">This setting changes the article’s original publication language. Selecting Urdu requires an Urdu title, excerpt and article body. Urdu originals use a separate Urdu URL and do not appear in the main English listing.</p>
+            </details>
             <div className="grid gap-5 sm:grid-cols-3">
               <Field label="Category">
                 <input
@@ -1141,6 +1124,7 @@ export default function BlogEditor({
         </div>
       </form>
       <dialog
+        data-public-preview
         ref={dialog}
         onCancel={() => setPreview(false)}
         onClose={() => setPreview(false)}

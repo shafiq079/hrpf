@@ -12,6 +12,7 @@ import {
   Upload,
   X,
 } from "lucide-react";
+import { AdminField as Field, ManualUrduNote } from "@/components/admin/AdminField";
 import { adminRequest } from "@/lib/admin-api";
 import type {
   ProjectDetail,
@@ -56,30 +57,9 @@ export const newProject = (): EditorRecord => ({
   documents: [],
 });
 const inputClass =
-  "mt-2 w-full border border-border bg-white px-3 py-2.5 text-sm text-text disabled:bg-soft-gray";
+  "mt-2 w-full border border-border bg-white px-3 py-2.5 text-base font-normal text-text disabled:bg-soft-gray";
 const buttonClass =
   "inline-flex items-center justify-center gap-2 border border-border bg-white px-4 py-2.5 text-sm font-semibold text-navy hover:border-teal disabled:opacity-50";
-function Field({
-  label,
-  children,
-  hint,
-}: {
-  label: string;
-  children: ReactNode;
-  hint?: string;
-}) {
-  return (
-    <label className="block min-w-0 text-sm font-semibold text-navy">
-      {label}
-      {children}
-      {hint && (
-        <span className="mt-1.5 block text-xs font-normal leading-relaxed text-muted">
-          {hint}
-        </span>
-      )}
-    </label>
-  );
-}
 function Section({
   title,
   description,
@@ -577,12 +557,13 @@ export default function ProjectEditor({
                 }
               />
             </Field>
-            <details className="border-t border-border pt-4">
+            <details open={form.locale === "ur" || undefined} className="border-t border-border pt-4">
               <summary className="cursor-pointer text-sm font-semibold text-navy">
-                Language options
+                Manual Urdu content (optional)
               </summary>
+              <ManualUrduNote />
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                <Field label="Page language">
+                <Field label="Original content language" hint="Keep English for automatic website translation. Choose Urdu only if you are writing the complete project in Urdu.">
                   <select
                     className={inputClass}
                     value={form.locale}
@@ -596,7 +577,7 @@ export default function ProjectEditor({
                 </Field>
                 <Field label="Project title (Urdu)">
                   <input
-                    dir="rtl"
+                    dir="rtl" lang="ur"
                     required={form.locale === "ur"}
                     maxLength={200}
                     className={inputClass}
@@ -610,7 +591,7 @@ export default function ProjectEditor({
                 </Field>
                 <Field label="Short summary (Urdu)">
                   <textarea
-                    dir="rtl"
+                    dir="rtl" lang="ur"
                     required={form.locale === "ur"}
                     maxLength={1000}
                     rows={3}
@@ -625,8 +606,8 @@ export default function ProjectEditor({
                 </Field>
               </div>
               <p className="mt-3 text-xs text-muted">
-                Write the story and other sections in the selected page
-                language.
+                This setting changes the project’s original publication language.
+                Selecting Urdu requires an Urdu title, summary and story. Urdu originals use a separate Urdu URL and do not appear in the main English listing.
               </p>
             </details>
           </Section>
@@ -1345,6 +1326,7 @@ export default function ProjectEditor({
         </div>
       </form>
       <dialog
+        data-public-preview
         ref={dialog}
         onCancel={() => setPreview(false)}
         onClose={() => setPreview(false)}

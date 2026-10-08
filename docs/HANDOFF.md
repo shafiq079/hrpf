@@ -1,4 +1,16 @@
-# Current handoff: Contact page and real enquiries on development
+# Current handoff: Admin form readability on development
+
+## Admin form readability milestone — 2026-10-08
+
+Reviewed the owner's screenshot and traced manual Urdu versus public GTranslate.
+Urdu controls remain a separate original-content capability and are not required
+for English publishing. Clarified the distinction across five editors; moved Blog
+language controls to an optional section and kept existing Urdu data intact.
+Fixed inherited bold Project/Blog answers with shared explicit labels and hint
+associations. Scoped larger regular-weight answers, stronger borders/focus and
+consistent heading typography to private administration, excluding public previews.
+Frontend checks and synthetic editor render verification cover the update.
+See `ADMIN_FORMS.md`. This continuation stays on development / PR #9.
 
 ## Contact milestone — 2026-10-08
 

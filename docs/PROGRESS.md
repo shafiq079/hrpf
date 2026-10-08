@@ -1,5 +1,17 @@
 # HRPF Progress
 
+## 2026-10-08 — Admin form readability and language clarity
+
+Reviewed the supplied screenshot, GOV.UK/W3C guidance and actual translation/locale
+behaviour. Fixed bold inherited Project/Blog values, added shared explicit labels
+and associated hints, and scoped readable controls/headings/focus to administration
+while preserving public preview typography. Clarified optional manual Urdu in all
+five editors; Blog source language no longer interrupts ordinary English essentials.
+Existing Urdu values and publishing contracts are preserved. Frontend build/public
+checks and synthetic five-editor render validation cover this development update.
+See `ADMIN_FORMS.md`.
+
+
 ## Contact page and real enquiries — 2026-10-08
 
 - Owner supplied the office map and requested sourced Contact details and a working

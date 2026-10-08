@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useRef, useState, type FormEvent } from "react";
+import { AdminField as Field, ManualUrduNote } from "@/components/admin/AdminField";
 import { adminRequest } from "@/lib/admin-api";
 import { videoLink } from "@/lib/video-links";
 import MediaGrid from "@/components/gallery/MediaGrid";
@@ -222,10 +223,10 @@ export default function GalleryEditor({
             void upload(e.target.files?.[0]);
             e.target.value = "";
           }} /></label>{uploading && <p role="status" className="mt-3 text-sm">Uploading and checking image…</p>}{record.assetId && <p className="mt-4 text-sm text-teal-dark">An image is attached. Open Preview to inspect it. <button type="button" onClick={() => update("assetId", null)} className="ml-3 underline">Remove image</button></p>}<div className="mt-5"><Field label={isImage ? "Image description (alt text)" : "Thumbnail description (alt text)"}><input className={inputClass} required={isImage || !!record.assetId} maxLength={300} value={isImage ? record.alt.en : record.thumbnailAlt} onChange={e => isImage ? text("alt", e.target.value) : update("thumbnailAlt", e.target.value)} /></Field></div></fieldset>
-      <details className="rounded-lg border border-border bg-white p-5 sm:p-7"><summary className="cursor-pointer text-sm font-semibold">Optional Urdu text</summary><fieldset disabled={busy || uploading} className="mt-5 grid gap-5"><Field label="Urdu title"><input className={inputClass} dir="rtl" maxLength={200} value={record.title.ur ?? ""} onChange={e => text("title", e.target.value, "ur")} /></Field>{isImage && <Field label="Urdu image description"><input className={inputClass} dir="rtl" maxLength={300} value={record.alt.ur ?? ""} onChange={e => text("alt", e.target.value, "ur")} /></Field>}<Field label={isImage ? "Urdu caption" : "Urdu introduction"}><textarea className={inputClass} dir="rtl" rows={5} maxLength={isImage ? 2000 : 6000} value={(isImage ? record.caption : record.description).ur ?? ""} onChange={e => text(isImage ? "caption" : "description", e.target.value, "ur")} /></Field></fieldset></details>
+      <details className="rounded-lg border border-border bg-white p-5 sm:p-7"><summary className="cursor-pointer text-sm font-semibold">Manual Urdu content (optional)</summary><ManualUrduNote /><fieldset disabled={busy || uploading} className="mt-5 grid gap-5"><Field label="Urdu title"><input className={inputClass} dir="rtl" lang="ur" maxLength={200} value={record.title.ur ?? ""} onChange={e => text("title", e.target.value, "ur")} /></Field>{isImage && <Field label="Urdu image description"><input className={inputClass} dir="rtl" lang="ur" maxLength={300} value={record.alt.ur ?? ""} onChange={e => text("alt", e.target.value, "ur")} /></Field>}<Field label={isImage ? "Urdu caption" : "Urdu introduction"}><textarea className={inputClass} dir="rtl" lang="ur" rows={5} maxLength={isImage ? 2000 : 6000} value={(isImage ? record.caption : record.description).ur ?? ""} onChange={e => text(isImage ? "caption" : "description", e.target.value, "ur")} /></Field></fieldset></details>
       <div className="rounded-lg border border-border bg-white p-5 sm:p-7"><label className="flex items-start gap-3 text-sm leading-relaxed"><input type="checkbox" checked={reviewed} disabled={busy || uploading} onChange={e => setReviewed(e.target.checked)} className="mt-1" />I have reviewed the text and media and approve this record for public display.</label><div className="mt-6 flex flex-wrap gap-3"><button type="button" disabled={busy || uploading} onClick={() => preview.current?.showModal()} className="border border-border px-5 py-3 text-sm font-semibold">Preview</button><button disabled={busy || uploading} className="bg-navy px-5 py-3 text-sm font-semibold text-white disabled:opacity-40">{busy ? "Saving…" : "Save draft"}</button><button type="button" disabled={busy || uploading || !reviewed || !!record.duplicate} onClick={() => void save(true)} className="bg-teal-dark px-5 py-3 text-sm font-semibold text-white disabled:opacity-40">Save and publish</button></div></div>
     </form>
-    <dialog ref={preview} className="m-auto max-h-[90dvh] w-[95vw] max-w-4xl overflow-auto rounded-lg bg-off-white p-5 backdrop:bg-navy/80 sm:p-8" aria-label="Gallery preview"><div className="mb-6 flex items-center justify-between gap-3"><h2 className="text-2xl">Gallery preview</h2><button type="button" onClick={() => preview.current?.close()} className="border border-border bg-white px-4 py-2 text-sm">Close preview</button></div>{isImage ? file ? <MediaGrid items={[{
+    <dialog data-public-preview ref={preview} className="m-auto max-h-[90dvh] w-[95vw] max-w-4xl overflow-auto rounded-lg bg-off-white p-5 backdrop:bg-navy/80 sm:p-8" aria-label="Gallery preview"><div className="mb-6 flex items-center justify-between gap-3"><h2 className="text-2xl">Gallery preview</h2><button type="button" onClick={() => preview.current?.close()} className="border border-border bg-white px-4 py-2 text-sm">Close preview</button></div>{isImage ? file ? <MediaGrid items={[{
         ...record,
         id: record.id ?? "preview",
         title: record.title.en || "Untitled image",
@@ -243,13 +244,4 @@ export default function GalleryEditor({
         eventDate: record.eventDate
       }]} /> : <p>Enter a valid individual video link to preview the interview.</p>}</dialog>
   </>;
-}
-function Field({
-  label,
-  children
-}: {
-  label: string;
-  children: ReactNode;
-}) {
-  return <label className="block text-sm font-semibold text-navy">{label}{children}</label>;
 }
