@@ -10,7 +10,8 @@ can be edited without reseeding. See [project details](docs/PROJECT_DETAILS.md).
 
 Use **Display on Our Work pages** in the project editor to choose page placement;
 every published project also appears in All Projects. The corrected development
-catalog uses eight verified project photos and leaves unmatched covers empty.
+catalog uses eight verified project photos and a shared labelled placeholder for
+unmatched covers. Uploading a project cover replaces the placeholder automatically.
 See [photo review and repair instructions](docs/PROJECT_IMAGE_REVIEW.md) to update
 an existing seeded database without resetting records or overwriting admin uploads.
 

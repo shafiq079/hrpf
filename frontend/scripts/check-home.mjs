@@ -15,7 +15,7 @@ const api=createServer((req,res)=>{
   const field=new URL(req.url,'http://localhost').searchParams.get('workArea');
   const area=workPages.find(([slug])=>slug===field);
   const row=path.endsWith('projects')?(area?{...project,title:`Field project: ${area[0]} ${revision}`,focusArea:area[1],workAreas:[area[0]]}:project):{...news,...(page===2?{title:'Second page blog',slug:'second-page-blog'}:{})};
-  const extraProjects = path.endsWith('projects') && !field && new URL(req.url,'http://localhost').searchParams.get('limit')==='48' ? [{...project,title:'Cross-field child education project',slug:'cross-field',focusArea:"Child education",workAreas:["childrens-rights","education-and-awareness"],summary:'Multi-field project summary'}] : [];
+  const extraProjects = path.endsWith('projects') && !field && new URL(req.url,'http://localhost').searchParams.get('limit')==='48' ? [{...project,title:'Cross-field child education project',slug:'cross-field',focusArea:"Child education",workAreas:["childrens-rights","education-and-awareness"],summary:'Multi-field project summary',image:'/images/hrpf/home-programme-water.webp',imageAlt:'Verified project cover fixture'}] : [];
   res.end(JSON.stringify({data:empty?[]:[row,...extraProjects,...(path.endsWith('blogs')&&page===1?[{...news,title:'Related published blog',slug:'related-blog'}]:[])],meta:{page,pages:empty?0:2}}));
  }
  else if(!empty&&(path==='/api/projects/real-project'||path==='/api/blogs/real-news'))res.end(JSON.stringify({data:path.includes('projects')?project:news}));
@@ -53,7 +53,9 @@ try{
  }
  assert.ok(/<header\b/.test(page.html)&&/<footer\b/.test(page.html),'Public homepage keeps its header and footer');
  const women=await read('/our-work/womens-rights');assert.equal(women.status,200);
- assert.ok(!women.html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g,'').split('id="related-projects"')[1].split('id="our-approach"')[0].includes('<img'),'No fallback image for project without a verified cover');
+ const womenProjects=women.html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g,'').split('id="related-projects"')[1].split('id="our-approach"')[0];
+ assert.ok(womenProjects.includes('project-placeholder.webp')&&womenProjects.includes('Project photo to be added'),'Missing project photo uses the labelled neutral placeholder');
+ assert.ok(!womenProjects.includes('home-about.webp'),'No unrelated archive photo replaces a missing project photo');
  assert.equal((women.html.match(/<h1[ >]/g)||[]).length,1,'Women rights page has one primary heading');
  for(const text of ['Projects in this field','Managed project 1','/projects/real-project','womens-rights-archive.webp','/file-a-complaint'])assert.ok(women.html.includes(text),`General women rights page: ${text}`);
  for(const text of ['Dar-ul-Aman','Provincial Ombudsman','pages 14–15','AI restored','event date not recorded','1,200+','40+','Leadership Participation','Rights Awareness Workshops','Community Member','Illustrative indicators','/images/work/womens-rights.jpg','womens-community-leadership'])assert.ok(!women.html.includes(text),`Removed women rights case/prototype text: ${text}`);
@@ -69,6 +71,12 @@ try{
  const filteredBody=filteredProjects.html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g,'');
  assert.ok(filteredBody.includes('Cross-field child education project')&&!filteredBody.includes('Managed project 1'),'Field link selects a related field rather than a combined label');
  assert.ok(filteredBody.includes('Education and Awareness'),'Explorer offers individual related fields');
+ const allProjects=(await read('/projects')).html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g,'');
+ const projectCards=allProjects.match(/<article\b[\s\S]*?<\/article>/g)??[];
+ assert.equal(projectCards.length,2,'Mixed list includes both missing and supplied covers');
+ assert.ok(projectCards.every(card=>card.includes('aspect-[4/3]')),'Both cover states retain the same image-frame proportions');
+ assert.ok(projectCards[0].includes('project-placeholder.webp')&&projectCards[0].includes('Project photo to be added'),'Empty cover uses the shared placeholder');
+ assert.ok(projectCards[1].includes('home-programme-water.webp')&&projectCards[1].includes('Verified project cover fixture')&&!projectCards[1].includes('project-placeholder.webp')&&!projectCards[1].includes('Project photo to be added'),'Supplying a real cover replaces the placeholder in the same card');
  console.log('All eight work pages passed: distinct general content/photos, managed field projects, canonical links and no prototype/source notes.');
  for(const route of ['privacy-policy','terms-of-use','accessibility','safeguarding-policy']){
   const policy=await read('/'+route);assert.equal(policy.status,200);
