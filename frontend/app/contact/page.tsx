@@ -35,7 +35,6 @@ export default function ContactPage() {
             <article className="rounded-lg border border-border bg-white p-6 sm:p-8" aria-labelledby="office-location">
               <div className="flex items-center gap-2"><MapPin className="h-5 w-5 text-teal-dark" aria-hidden="true" /><h2 id="office-location" className="text-2xl">Our office</h2></div>
               <address className="mt-4 text-sm not-italic leading-relaxed text-text">{details.address}<br />Postal code: <span dir="ltr" translate="no" className="notranslate">{details.postalCode}</span></address>
-              <a href={details.mapUrl} target="_blank" rel="noopener noreferrer" className={`${contactLink} mt-3`}>Open office location in Google Maps<ArrowUpRight className="h-4 w-4 shrink-0" aria-hidden="true" /><span className="sr-only"> (opens in a new tab)</span></a>
               <p className="mt-2 text-sm text-muted">Please call or email before visiting to arrange a suitable time.</p>
             </article>
             <div className="rounded-lg border border-border bg-soft-gray p-6 sm:p-8">
@@ -45,6 +44,24 @@ export default function ContactPage() {
             <p className="text-sm leading-relaxed text-muted">For immediate danger, contact your local emergency service. Please do not wait for a website or email response.</p>
           </div>
         </div>
+        <section className="mt-10 overflow-hidden border border-border bg-white" aria-labelledby="office-map-heading">
+          <div className="flex flex-wrap items-center justify-between gap-3 p-5 sm:p-6">
+            <h2 id="office-map-heading" className="text-2xl">Office location</h2>
+            <a href={details.mapUrl} target="_blank" rel="noopener noreferrer" className={contactLink}>Open in Google Maps<ArrowUpRight className="h-4 w-4 shrink-0" aria-hidden="true" /><span className="sr-only"> (opens in a new tab)</span></a>
+          </div>
+          <div className="notranslate border-t border-border bg-off-white" translate="no" dir="ltr">
+            <iframe
+              title="HRPF Pakistan office location in Google Maps"
+              src={details.mapEmbedUrl}
+              width="1200"
+              height="420"
+              loading="lazy"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+              className="block h-[320px] w-full border-0 sm:h-[420px]"
+            />
+          </div>
+        </section>
       </Container>
     </section>
   </main>;

@@ -16,7 +16,8 @@ See `ADMIN_FORMS.md`. This continuation stays on development / PR #9.
 
 The owner supplied the office map and requested a complete Contact update with
 real submissions. Added sourced emails/phone/address/postcode/social links and the
-exact map link; removed placeholders, office-hours and response-time claims.
+exact map link plus a responsive map embed using Google’s official office listing
+Share → Embed HTML. Removed placeholders, office-hours and response-time claims.
 Connected the form to the purpose-bound verified Contact API, durable storage,
 stable HRPF-MSG receipt and complete sender/admin emails with admin Reply-To.
 Retries keep the exact original submission and do not create duplicate enquiries;

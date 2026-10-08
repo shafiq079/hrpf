@@ -14,8 +14,13 @@ opening hours, a response-time promise and generic social icons with dead links.
 - Phone: +92 322 2670590; supplied organisation profile.
 - Map: https://maps.app.goo.gl/RwYYpU2y6po6vNzc6, explicitly supplied by the owner.
   Its redirect identifies Human Rights Protection Foundation Pakistan, at
-  32.391695, 73.4398304. The page retains the exact supplied short link; no guessed
-  directions, API key, separate branch address or map placeholder.
+  32.391695, 73.4398304. The page embeds the exact office listing using the
+  official Google Maps Share → Embed a map HTML, obtained and visually verified
+  on 8 October 2026. A responsive full-width map section follows the contact/form
+  grid, with a named lazy iframe, fullscreen support and origin-only referrers.
+  The original supplied short link remains beside it for directions or fallback.
+  This standard shared map embed needs no API key. Maps handles its own controls
+  and labels; the iframe container is excluded from website text translation.
 - Social destinations match `social handles.txt`. Do not invent WhatsApp availability,
   a dedicated departmental inbox, office hours or a response deadline.
 
@@ -63,7 +68,7 @@ Contact records have no automatic deletion period; no retention policy is invent
 ## Validation
 
 - Frontend lint, types, build; public SSR for exact source contacts/map/social links,
-  intake controls and removal of prototype claims.
+  intake controls, exact embed listing/iframe attributes and removal of prototype claims.
 - Client retry tests cover lost/malformed responses, exact original body/key/ticket,
   optional fields, normalized email and failed security verification.
 - Backend types/OpenAPI/unit tests and isolated Mongo/Redis integration cover real

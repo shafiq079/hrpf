@@ -35,6 +35,7 @@ export const privacyPolicy: WebsitePolicy = {
     ] },
     { id: "external-and-unconnected-forms", title: "Membership and other forms", paragraphs: [
       "Membership applications open in Google Forms. Information entered there is submitted through that service and may be accessible to HRPF as the form owner. Review the notice and permissions shown by Google before submitting.",
+      "The Contact page embeds Google Maps to show our office. When the map loads, your browser connects to Google. Google handles that interaction under its own privacy practices.",
       "The Contact form collects your name, email, optional phone and organization, enquiry type, subject, message and consent. It stores the enquiry for follow-up and queues complete message copies to your email address and designated HRPF administrators. The receipt confirms storage, not inbox delivery or a response. General enquiries have no automatic deletion period in this service. Use File a Complaint for a rights concern with documents.",
       "The feedback-about-HRPF form and newsletter box do not transmit entries or create a subscription. Their on-screen confirmations are not delivery receipts. Information sent directly by email is handled by recipients and email providers. Avoid sending unnecessary identity documents in an initial general enquiry.",
     ], links: contactLinks },

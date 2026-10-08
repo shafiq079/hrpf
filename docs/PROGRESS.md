@@ -1,5 +1,16 @@
 # HRPF Progress
 
+## 2026-10-08 — Embedded office map correction
+
+Corrected the Contact map implementation at the owner's request: the location
+was intended to be embedded, not only linked. Retrieved official Google Maps
+Share → Embed HTML for the exact supplied office listing and visually confirmed
+the office pin in Google's embed preview. Added a full-width responsive lazy
+iframe below the contact/form grid, a readable title, fullscreen support and the
+original short-link fallback. No API key is needed for this shared map embed.
+Updated Contact checks and documentation.
+
+
 ## 2026-10-08 — Admin form readability and language clarity
 
 Reviewed the supplied screenshot, GOV.UK/W3C guidance and actual translation/locale

@@ -70,7 +70,10 @@ try{
  for(const value of ['mailto:hrpf786@gmail.com','mailto:info@hrpf.org','tel:+923222670590','Pandowal Road','Mianwal Ranjha','50490','https://maps.app.goo.gl/RwYYpU2y6po6vNzc6','contact-consent','contact-message'])assert.ok(contactMain.includes(value),'Real contact detail/control: '+value);
  for(const value of ['+00 000','Organization address to be added','Map placeholder','3–5 working days','9:00 AM','href="#"'])assert.ok(!contactMain.includes(value),'Removed contact prototype: '+value);
  assert.equal((contactMain.match(/<h1[ >]/g)||[]).length,1);
- console.log('Contact checks passed: real email/phone/address/map/social links, consent/intake controls and no prototype claims.');
+ const officeMap=contactMain.match(/<iframe\b[^>]*title="HRPF Pakistan office location in Google Maps"[^>]*>/)?.[0];
+ assert.ok(officeMap,'Contact embeds the office map');
+ for(const value of ['https://www.google.com/maps/embed?pb=','0x3921dfad39fe7c3b%3A0x1adf787b0fcb615a','Human%20Rights%20Protection%20Foundation%20Pakistan.','loading="lazy"','referrerPolicy="strict-origin-when-cross-origin"','w-full'])assert.ok(officeMap.includes(value),'Office map attribute/place: '+value);
+ console.log('Contact checks passed: real email/phone/address/social links, exact office map embed, consent/intake controls and no prototype claims.');
  const donation=await read('/donate');assert.equal(donation.status,200);
  const donationMain=donation.html.match(/<main[\s\S]*?<\/main>/)[0];
  for(const text of ['Human Rights Protection Foundation','ABHI Micro Finance Bank','90099009181133945000','PK42ABHI9009181133945000','0322-2670590','mailto:hrpf786@gmail.com','Copy Account number','Copy IBAN','Copy JazzCash number'])assert.ok(donationMain.includes(text),'Sourced transfer details: '+text);
