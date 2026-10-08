@@ -9,6 +9,9 @@ import PageHero from "@/components/shared/PageHero";
 import ContentBlocks from "@/components/shared/ContentBlocks";
 import PublicDocuments from "@/components/shared/PublicDocuments";
 import PublicBoard from "@/components/shared/PublicBoard";
+import AboutProfile, { RegistrationSummary } from "@/components/about/AboutProfile";
+import SectionHeading from "@/components/shared/SectionHeading";
+import TranslationText from "@/components/translation/TranslationText";
 
 export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ section: string }>; searchParams: Promise<{ page?: string | string[] }> };
@@ -27,10 +30,16 @@ export default async function AboutSectionPage({ params, searchParams }: Props) 
   return (
     <main id="main-content" className="flex-1">
       <PageHero eyebrow="ABOUT HRPF" title={title} description={entry.description} breadcrumbs={[{ label: "About Us", href: "/about" }, { label: entry.label }]} />
+      {section === "who-we-are" ? <AboutProfile /> : (
       <section className="bg-off-white py-16 sm:py-20 lg:py-24">
         <Container>
           {section === "progress-reports" ? <PublicDocuments kind="reports" page={page} /> :
-           section === "registration-and-certificates" ? <PublicDocuments kind="certificates" page={page} /> :
+           section === "registration-and-certificates" ? <>
+             <SectionHeading title="Legal Status and Registration" description="The Foundation’s institutional records reflect its commitment to lawful and responsible organizational practices." />
+             <div className="mt-8"><RegistrationSummary /></div>
+             <p className="mt-6 max-w-3xl text-sm leading-relaxed text-muted"><TranslationText>The Charity Commission certificates record validity periods of 16 May 2022–15 May 2023 and 23 January 2024–22 January 2026. Registration history and document validity dates are shown below.</TranslationText></p>
+             <div className="mt-10"><PublicDocuments kind="certificates" page={page} /></div>
+           </> :
            section === "board-of-directors" ? <PublicBoard page={page} /> : section === "our-team" ? <PublicBoard kind="team" page={page} /> : (
             <div className="mx-auto max-w-3xl">
               {section === "mission-and-vision" ? <>
@@ -44,6 +53,7 @@ export default async function AboutSectionPage({ params, searchParams }: Props) 
           <div className="mt-12 border-t border-border pt-6"><Link href="/about" className="text-sm font-semibold text-teal-dark">Explore About HRPF</Link></div>
         </Container>
       </section>
+      )}
     </main>
   );
 }
