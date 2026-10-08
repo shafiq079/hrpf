@@ -1,3 +1,4 @@
+import { bumpPublicRevision } from '../services/public-cache.js';
 import { Router } from 'express';
 import mongoose from 'mongoose';
 import { z } from 'zod';
@@ -41,6 +42,7 @@ export function publicationRouter(auth: ReturnType<typeof createAuth>) {
     const tx = await mongoose.startSession();
     try {
       await tx.withTransaction(async () => {
+        await bumpPublicRevision(tx);
         await Counter.findOneAndUpdate({ key: 'security:user-governance' }, { $inc: { sequence: 1 } }, { session: tx, upsert: true });
         const actor = await User.findOne({ _id: principal.id, active: true }).session(tx);
         if (!actor || !can(actor.role, spec.permission as Permission)) throw new ApiError(403, 'FORBIDDEN', 'You do not have permission for this action.');

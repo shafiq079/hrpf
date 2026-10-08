@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import mongoose from 'mongoose';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
-import { AuditLog, BoardMember, Certificate, ContentPage, GalleryItem, Setting, SourceImport, ensureIndexes } from '../src/domain/models.js';
+import { AuditLog, BoardMember, Certificate, ContentPage, Counter, GalleryItem, Setting, SourceImport, ensureIndexes } from '../src/domain/models.js';
 import { importManifest, importRecord } from '../src/seed/importer.js';
 import { loadManifest, seedId, type Manifest } from '../src/seed/manifest.js';
 let mongo: MongoMemoryReplSet, manifest: Manifest;
@@ -33,7 +33,9 @@ describe('M3 transactional seed preservation and recovery', { timeout: 120000 },
     }
     assert.equal(await GalleryItem.countDocuments({ publishedAt: { $exists: true } }), 0);
     assert.equal(await Setting.countDocuments({ visibility: 'private' }), 4);
-    for (const name of ['User', 'Member', 'MembershipApplication', 'Complaint', 'Asset', 'EmailOutbox', 'Counter']) assert.equal(await mongoose.model(name).countDocuments(), 0);
+    for (const name of ['User', 'Member', 'MembershipApplication', 'Complaint', 'Asset', 'EmailOutbox']) assert.equal(await mongoose.model(name).countDocuments(), 0);
+    assert.equal(await Counter.countDocuments(), 1);
+    assert.equal((await Counter.findOne({key:'public:content-revision'}))!.sequence, 231);
     const again = await importManifest(manifest, true);
     assert.ok(again.every(r => r.status === 'preserved')); assert.equal(await AuditLog.countDocuments(), 231);
   });

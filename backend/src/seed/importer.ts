@@ -1,3 +1,4 @@
+import { bumpPublicRevision } from '../services/public-cache.js';
 import mongoose from 'mongoose';
 import { AuditLog, SourceImport } from '../domain/models.js';
 import { lookup, recordChecksum, seedId, seedModels, type Manifest, type SeedRecord } from './manifest.js';
@@ -31,6 +32,7 @@ export async function importRecord(manifest: Manifest, record: SeedRecord, apply
     // Create-only imports retain no document instances across retries. Use the
     // driver's transaction retry instead of Mongoose's document-state rollback.
     return await session.withTransaction(async () => {
+      await bumpPublicRevision(session);
       const concurrent = await inspect(session);
       if (concurrent) return concurrent;
       const payload = { ...record.payload, _id: seedId(record.key) };

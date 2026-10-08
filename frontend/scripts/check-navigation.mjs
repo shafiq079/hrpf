@@ -66,6 +66,7 @@ export async function checkNavigation(read, port) {
   for (const text of ['Validity date passed','15 May 2023','16 May 2022','View document','Historical document; no renewal asserted.']) assert.ok(page.html.includes(text), `Certificate public card: ${text}`);
   page = await read('/gallery/media-coverage');
   assert.ok(page.html.includes('Published media coverage') && page.html.includes('Reviewed media caption'));
+  assert.ok(/srcSet="[^"]*\?w=480[^"]*\?w=960/.test(page.html), 'Managed gallery cards use responsive bounded thumbnails');
   assert.ok(page.html.includes('View full image: Published media coverage') && page.html.includes('<dialog'), 'Gallery viewer entry point and accessible dialog');
   assert.ok(page.html.includes('AI-restored archive image') && page.html.includes('Published newspaper') && page.html.includes('2020-02-29'));
   assert.ok(page.html.includes('category=media-coverage') && page.html.includes('page=2'), 'Gallery pagination retains collection');

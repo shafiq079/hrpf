@@ -1,3 +1,4 @@
+import { bumpPublicRevision } from '../services/public-cache.js';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import mongoose from 'mongoose';
@@ -43,6 +44,7 @@ export async function publishHomepageRecord(manifest: Manifest, record: SeedReco
   const session = await mongoose.startSession();
   try {
     return await session.withTransaction(async () => {
+      await bumpPublicRevision(session);
       await Counter.findOneAndUpdate({ key: 'security:user-governance' }, { $inc: { sequence: 1 } }, { session, upsert: true });
       await actorAllowed(actorId, session);
       const row = await publishable(manifest, record, session);

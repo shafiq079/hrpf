@@ -19,7 +19,8 @@ export function safeFilename(value: string) {
 }
 export type Upload = { bytes: Buffer; filename: string; mime: string };
 export type StoredUpload = { publicId: string; resourceType: 'image' | 'raw'; deliveryType: 'authenticated'; format: string; bytes: number; version: number; width?: number; height?: number };
-export type UploadProvider = { store: (upload: Upload, folder: string, format: string, preserveOriginal?: boolean) => Promise<StoredUpload>; remove: (asset: { publicId: string; resourceType: 'image' | 'raw' }) => Promise<void>; read: (asset: { publicId: string; resourceType: 'image' | 'raw' }) => Promise<Response> };
+export type ImageVariant = { width: 480 | 960 | 1440 };
+export type UploadProvider = { store: (upload: Upload, folder: string, format: string, preserveOriginal?: boolean) => Promise<StoredUpload>; remove: (asset: { publicId: string; resourceType: 'image' | 'raw' }) => Promise<void>; read: (asset: { publicId: string; resourceType: 'image' | 'raw'; version?: number | null | undefined }, variant?: ImageVariant) => Promise<Response> };
 export async function readUpload(req: Request): Promise<Upload> {
   return new Promise((resolve, reject) => {
     let parser;
@@ -72,10 +73,12 @@ export function cloudinaryProvider(env: Environment): UploadProvider {
       });
     },
     remove: async asset => { check(); await cloudinary.uploader.destroy(asset.publicId, { resource_type: asset.resourceType, type: 'authenticated', invalidate: true }); },
-    read: async asset => {
+    read: async (asset, variant) => {
       check();
       // Signed provider URL is server-to-server only; never redirect or return it.
-      const url = cloudinary.url(asset.publicId, { resource_type: asset.resourceType, type: 'authenticated', sign_url: true, secure: true });
+      const url = cloudinary.url(asset.publicId, { resource_type: asset.resourceType, type: 'authenticated', sign_url: true, secure: true,
+        ...(asset.version ? { version: asset.version } : {}),
+        ...(variant ? { transformation: [{ width: variant.width, crop: 'limit', quality: 82, fetch_format: 'webp' }] } : {}) });
       const response = await fetch(url, { signal: AbortSignal.timeout(20000), redirect: 'error' });
       if (!response.ok) throw unavailable();
       return response;

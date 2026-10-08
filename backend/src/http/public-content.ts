@@ -1,4 +1,7 @@
 import type mongoose from 'mongoose';
+import type { Request } from 'express';
+import type { RedisServices } from '../infrastructure/redis-services.js';
+import { createPublicReadCache } from '../services/public-cache.js';
 import { Router } from 'express';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
@@ -31,10 +34,18 @@ export async function releasedAsset(assetId: mongoose.Types.ObjectId | undefined
   if (!assetId) return null;
   return Asset.findOne({ _id: assetId, entityType, entityId, purpose: entityType === 'Certificate' ? 'certificate' : 'content', deliveryType: 'authenticated', visibility: 'public', scanStatus: { $in: ['clean', 'type_checked'] }, claimStatus: 'claimed' }).select('format bytes width height').lean();
 }
-export function publicRouter(provider: UploadProvider) {
+export function publicRouter(provider: UploadProvider, redis?: RedisServices, ttl = 300) {
   const router = Router();
-  // No caching: publication/withdrawal is reflected immediately, including asset requests.
-  router.get('/settings/public', async (req, res) => {
+  const cached = redis ? createPublicReadCache(redis, ttl) : async (_path: string, _query: unknown, _models: mongoose.Model<any>[], load: () => Promise<unknown>, report?: (status: 'HIT' | 'MISS' | 'BYPASS') => void) => { report?.('BYPASS'); return load(); };
+  const cachedGet = (path: string | string[], schema: z.ZodType, models: mongoose.Model<any>[], load: (req: Request) => Promise<unknown>) => {
+    router.get(path, async (req, res) => {
+      const query = validate(schema, req.query);
+      const payload = await cached(req.path, query, models, () => load(req), status => res.setHeader('X-HRPF-Public-Cache', status));
+      // Browser JSON stays fresh; Redis caches only projected public data.
+      res.json(payload);
+    });
+  };
+  cachedGet('/settings/public', z.object({}).strict(), [], async req => {
     validate(z.object({}).strict(), req.query);
     const rows = await Setting.find({ key: { $in: Object.keys(publicSettingSchemas) }, visibility: 'public' }).select('key value').lean();
     const data: Record<string, unknown> = {};
@@ -43,7 +54,7 @@ export function publicRouter(provider: UploadProvider) {
       const parsed = schema?.safeParse(row.value);
       if (parsed?.success) data[row.key] = parsed.data;
     }
-    res.json({ data });
+    return ({ data });
   });
   const personView = async (row: any, locale: 'en' | 'ur', detailed = false) => ({
     name: row.name, slug: row.slug, designation: row.designation, rank: row.rank,
@@ -52,22 +63,22 @@ export function publicRouter(provider: UploadProvider) {
     photo: await releasedAsset(row.photo?.assetId, 'BoardMember', row._id) ? `/api/public-assets/${row.photo.assetId}` : null,
     ...(detailed ? { sections: (row.sections ?? []).map((section: any) => ({ heading: section.heading?.[locale] ?? '', body: section.body?.[locale] ?? '' })).filter((section: any) => section.heading && section.body) } : {}),
   });
-  for (const kind of ['board', 'team'] as const) router.get('/' + kind, async (req, res) => {
+  for (const kind of ['board', 'team'] as const) cachedGet('/' + kind, publicQuery, [], async req => {
     const { locale, page, limit } = validate(publicQuery, req.query);
     const filter = { isActive: true, ...(kind === 'board' ? { showOnBoard: { $ne: false } } : { showOnTeam: true }) };
     const [rows, total] = await Promise.all([BoardMember.find(filter).sort({ rank: 1, _id: 1 }).skip((page - 1) * limit).limit(limit).select('name slug designation rank bio photo photoAlt photoZoom showOnBoard showOnTeam').lean(), BoardMember.countDocuments(filter)]);
-    res.json({ data: await Promise.all(rows.map(row => personView(row, locale))), meta: { page, limit, total, pages: Math.ceil(total / limit) } });
+    return ({ data: await Promise.all(rows.map(row => personView(row, locale))), meta: { page, limit, total, pages: Math.ceil(total / limit) } });
   });
-  router.get('/board/:slug', async (req, res) => {
+  cachedGet('/board/:slug', publicQuery, [], async req => {
     const { locale } = validate(publicQuery, req.query);
     const row = await BoardMember.findOne({ slug: validate(slug, req.params.slug), isActive: true, $or: [{ showOnBoard: { $ne: false } }, { showOnTeam: true }] }).select('name slug designation rank bio photo photoAlt photoZoom showOnBoard showOnTeam sections').lean();
     if (!row) throw missing();
-    res.json({ data: await personView(row, locale, true) });
+    return ({ data: await personView(row, locale, true) });
   });
-  router.get('/blog-categories', async (req, res) => {
+  cachedGet('/blog-categories', publicQuery, [], async req => {
     const { locale } = validate(publicQuery, req.query);
     const rows = await BlogCategory.find({ isActive: true }).sort({ sortOrder: 1, _id: 1 }).select('name slug').lean();
-    res.json({ data: rows.map(r => ({ slug: r.slug, name: r.name?.[locale] ?? '' })) });
+    return ({ data: rows.map(r => ({ slug: r.slug, name: r.name?.[locale] ?? '' })) });
   });
   const blogView = async (row: any, locale: 'en' | 'ur') => ({
     title: row.title?.[locale] ?? '', slug: row.slug, excerpt: row.excerpt?.[locale] ?? '', publishedAt: row.publishedAt,
@@ -75,41 +86,41 @@ export function publicRouter(provider: UploadProvider) {
     readingMinutes: blogReadingMinutes(row), imageAlt: row.coverAlt || row.title?.[locale] || 'Blog photograph',
     image: await releasedAsset(row.cover?.assetId, 'BlogPost', row._id) ? `/api/public-assets/${row.cover.assetId}` : null,
   });
-  router.get(['/blogs', '/news'], async (req, res) => {
+  cachedGet(['/blogs', '/news'], publicQuery, [BlogPost], async req => {
     const { locale, page, limit, q } = validate(publicQuery, req.query);
     const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const filter = { locale, status: 'published' as const, reviewStatus: 'approved' as const, ...publicationFilter(), ...(q ? { [`title.${locale}`]: { $regex: escaped, $options: 'i' } } : {}) };
     const [rows, total] = await Promise.all([BlogPost.find(filter).sort({ publishedAt: -1, _id: 1 }).skip((page - 1) * limit).limit(limit).select('title slug excerpt publishedAt cover coverAlt details blocks').lean(), BlogPost.countDocuments(filter)]);
-    res.json({ data: await Promise.all(rows.map(r => blogView(r, locale))), meta: { page, limit, total, pages: Math.ceil(total / limit) } });
+    return ({ data: await Promise.all(rows.map(r => blogView(r, locale))), meta: { page, limit, total, pages: Math.ceil(total / limit) } });
   });
-  router.get(['/blogs/:slug', '/news/:slug'], async (req, res) => {
+  cachedGet(['/blogs/:slug', '/news/:slug'], publicQuery, [BlogPost], async req => {
     const { locale } = validate(publicQuery, req.query);
     const row = await BlogPost.findOne({ slug: validate(slug, req.params.slug), locale, status: 'published', reviewStatus: 'approved', ...publicationFilter() }).select('title slug excerpt blocks publishedAt cover coverAlt details tags gallery documents').lean();
     if (!row) throw missing();
     const gallery = await Promise.all((row.gallery ?? []).map(async item => await releasedAsset(item.asset.assetId, 'BlogPost', row._id) ? { image: `/api/public-assets/${item.asset.assetId}`, alt: item.alt, caption: item.caption ?? '' } : null));
     const documents = await Promise.all((row.documents ?? []).map(async item => await releasedAsset(item.asset.assetId, 'BlogPost', row._id) ? { file: `/api/public-assets/${item.asset.assetId}`, label: item.label } : null));
-    res.json({ data: { ...await blogView(row, locale), blocks: publicBlocks(row.blocks), details: row.details ?? {}, tags: row.tags ?? [], gallery: gallery.filter(Boolean), documents: documents.filter(Boolean) } });
+    return ({ data: { ...await blogView(row, locale), blocks: publicBlocks(row.blocks), details: row.details ?? {}, tags: row.tags ?? [], gallery: gallery.filter(Boolean), documents: documents.filter(Boolean) } });
   });
   const projectView = async (row: any, locale: 'en' | 'ur') => ({ title: row.title?.[locale] ?? '', slug: row.slug, summary: row.summary?.[locale] ?? '', focusArea: row.focusArea, location: row.location, status: row.projectStatus, startYear: row.startYear, imageAlt: row.coverAlt || row.title?.[locale] || 'Project photograph', image: await releasedAsset(row.cover?.assetId, 'Project', row._id) ? `/api/public-assets/${row.cover.assetId}` : null });
-  router.get('/projects', async (req, res) => {
+  cachedGet('/projects', projectQuery, [Project], async req => {
     const {locale, page, limit, focusArea} = validate(projectQuery, req.query);
     // Match the editor's focus label, including typographic apostrophes and combined areas.
     const escaped = focusArea?.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/['’]/g, "['’]");
     const filter = {locale, status: 'published' as const, reviewStatus: 'approved' as const, ...publicationFilter(),
       ...(escaped ? { focusArea: { $regex: `(?:^|[\\s,/&])${escaped}(?=$|[\\s,/&])`, $options: 'i' } } : {})};
     const [rows, total] = await Promise.all([Project.find(filter).sort({publishedAt:-1,_id:1}).skip((page-1)*limit).limit(limit).lean(), Project.countDocuments(filter)]);
-    res.json({data: await Promise.all(rows.map(r => projectView(r, locale))), meta:{page,limit,total,pages:Math.ceil(total/limit)}});
+    return ({data: await Promise.all(rows.map(r => projectView(r, locale))), meta:{page,limit,total,pages:Math.ceil(total/limit)}});
   });
-  router.get('/projects/:slug', async (req, res) => {
+  cachedGet('/projects/:slug', publicQuery, [Project], async req => {
     const {locale} = validate(publicQuery, req.query);
     const row = await Project.findOne({slug:validate(slug,req.params.slug),locale,status:'published',reviewStatus:'approved',...publicationFilter()}).lean();
     if (!row) throw missing();
     const gallery = await Promise.all((row.gallery ?? []).map(async item => await releasedAsset(item.asset.assetId, 'Project', row._id) ? { image: `/api/public-assets/${item.asset.assetId}`, alt: item.alt, caption: item.caption ?? '' } : null));
     const documents = await Promise.all((row.documents ?? []).map(async item => await releasedAsset(item.asset.assetId, 'Project', row._id) ? { file: `/api/public-assets/${item.asset.assetId}`, label: item.label } : null));
-    res.json({data:{...await projectView(row,locale),blocks:publicBlocks(row.blocks),details:row.details ?? {},gallery:gallery.filter(Boolean),documents:documents.filter(Boolean)}});
+    return ({data:{...await projectView(row,locale),blocks:publicBlocks(row.blocks),details:row.details ?? {},gallery:gallery.filter(Boolean),documents:documents.filter(Boolean)}});
   });
   for (const kind of ['gallery', 'reports', 'certificates'] as const) {
-    router.get(`/${kind}`, async (req, res) => {
+    cachedGet(`/${kind}`, publicQuery, [kind === 'gallery' ? GalleryItem : kind === 'reports' ? Report : Certificate], async req => {
       const { locale, page, limit, category, q } = validate(publicQuery, req.query);
       const model = kind === 'gallery' ? GalleryItem : kind === 'reports' ? Report : Certificate;
       const entityType = kind === 'gallery' ? 'GalleryItem' : kind === 'reports' ? 'Report' : 'Certificate';
@@ -130,18 +141,18 @@ export function publicRouter(provider: UploadProvider) {
         if (kind === 'reports') return { ...document, edition: r.edition ?? 'complete', coverageStart: r.coverageStart, coverageEnd: r.coverageEnd, slug: r.slug, year: r.year, summary: r.summary?.[locale] ?? '', pages: r.pages, download: `/api/reports/${r._id}/download` };
         return { ...document, issuer: r.issuer, reference: r.reference, issuedAt: r.issuedAt, validFrom: r.validFrom, expiresAt: r.expiresAt };
       });
-      res.json({ data, meta: { page, limit, total, pages: Math.ceil(total / limit) } });
+      return ({ data, meta: { page, limit, total, pages: Math.ceil(total / limit) } });
     });
   }
-  router.get('/interviews', async (req, res) => {
+  cachedGet('/interviews', publicQuery, [VideoInterview], async req => {
     const { locale, page, limit, q } = validate(publicQuery, req.query);
     const filter = { reviewStatus: 'approved', ...publicationFilter(), videoUrl: canonicalVideoPattern, ...(q ? { [`title.${locale}`]: { $regex: q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' } } : {}) };
     const [rows, total] = await Promise.all([VideoInterview.find(filter).sort({ sortOrder: 1, _id: 1 }).skip((page-1)*limit).limit(limit).lean(), VideoInterview.countDocuments(filter)]);
     const data = await Promise.all(rows.map(async row => ({ id: String(row._id), title: row.title?.[locale] ?? '', description: row.description?.[locale] ?? '', ...videoLink(row.videoUrl)!, sourceName: row.sourceName ?? '', eventDate: row.eventDate?.toISOString().slice(0,10), thumbnailAlt: row.thumbnailAlt ?? '', thumbnail: await releasedAsset(row.thumbnail?.assetId, 'VideoInterview', row._id) ? `/api/public-assets/${row.thumbnail!.assetId}` : null })));
-    res.json({ data, meta: { page, limit, total, pages: Math.ceil(total/limit) } });
+    return ({ data, meta: { page, limit, total, pages: Math.ceil(total/limit) } });
   });
   const stream: import('express').RequestHandler = async (req, res) => {
-    validate(z.object({}).strict(), req.query);
+    const variant = req.path.startsWith('/public-assets/') ? validate(z.object({ w: z.enum(['480', '960', '1440']).optional() }).strict(), req.query).w : (validate(z.object({}).strict(), req.query), undefined);
     const documentKind = req.path.startsWith('/reports/') ? 'reports' : req.params.kind ? validate(z.enum(['reports', 'certificates']), req.params.kind) : null;
     const documentAction = documentKind ? validate(z.enum(['view', 'download']), req.params.action ?? 'download') : null;
     const isDownload = documentKind === 'reports' && documentAction === 'download';
@@ -164,10 +175,20 @@ export function publicRouter(provider: UploadProvider) {
     if (!released || (documentKind && (asset.entityType !== (documentKind === 'reports' ? 'Report' : 'Certificate') || String(asset.entityId) !== value || (documentKind === 'reports' && asset.format !== 'pdf')))) throw missing();
     const types: Record<string, string> = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', pdf: 'application/pdf' };
     if (!types[asset.format]) throw missing();
-    const response = await provider.read(asset);
+    if (variant && (asset.resourceType !== 'image' || asset.format === 'pdf')) throw new ApiError(400, 'INVALID_IMAGE_VARIANT', 'Only released images support thumbnails.');
+    // Validation comes AFTER current asset and entity release checks. Even a matching
+    // ETag cannot authorize withdrawn media. Private caches must revalidate every use.
+    if (!documentKind && asset.format !== 'pdf') {
+      const etag = `W/"${asset.sha256}-${variant ?? 'original'}-webp82-v1"`;
+      res.setHeader('Cache-Control', 'private, no-cache, must-revalidate');
+      res.setHeader('ETag', etag);
+      const candidates = req.get('If-None-Match')?.split(',').map(value => value.trim().replace(/^W\//, '')) ?? [];
+      if (candidates.includes('*') || candidates.includes(etag.replace(/^W\//, ''))) { res.status(304).end(); return; }
+    }
+    const response = await provider.read(asset, variant ? { width: Number(variant) as 480 | 960 | 1440 } : undefined);
     if (!response.ok || !response.body) throw unavailable();
-    res.setHeader('Content-Type', types[asset.format]!);
-    res.setHeader('Content-Disposition', `${documentAction === 'view' ? 'inline' : documentAction === 'download' || asset.format === 'pdf' ? 'attachment' : 'inline'}; filename="hrpf-${value}.${asset.format}"`);
+    res.setHeader('Content-Type', variant ? 'image/webp' : types[asset.format]!);
+    res.setHeader('Content-Disposition', `${documentAction === 'view' ? 'inline' : documentAction === 'download' || asset.format === 'pdf' ? 'attachment' : 'inline'}; filename="hrpf-${value}.${variant ? 'webp' : asset.format}"`);
     if (req.method === 'HEAD') { await response.body.cancel(); res.end(); return; }
     await pipeline(Readable.fromWeb(response.body as import('node:stream/web').ReadableStream), res);
     if (isDownload) await Report.updateOne({ _id: value }, { $inc: { downloadCount: 1 } });

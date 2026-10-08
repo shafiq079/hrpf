@@ -142,10 +142,10 @@ same entity. Paginated responses include `meta.page/limit/total/pages`.
 
 Public asset delivery uses `/api/public-assets/:id`; report download links use
 `/api/reports/:id/download`. The backend rechecks current release and streams the
-authenticated provider file with no-store. It never returns provider URLs, original
+authenticated provider file after current release checks. Documents remain no-store; public raster images support private ETag revalidation. It never returns provider URLs, original
 source files or identity evidence. GET report downloads count after successful
-streaming; HEAD does not. Reads deliberately bypass Redis content caching, so
-publication and withdrawal take effect without waiting for a cache TTL. Shared
+streaming; HEAD does not. Projected public JSON uses bounded Redis caching keyed by the transactional Mongo content revision, so
+normal publication and withdrawal invalidate it without waiting for a cache TTL. Shared
 security limits and service readiness still use Redis.
 
 Authorized operators can inspect `/api/admin/publication/:kind?page=1` (20 records)
@@ -254,3 +254,7 @@ then run `npm run worker:dev` separately from the API/frontend. See
 [complaint workflow](../docs/COMPLAINTS.md) for all fields, limits, configuration
 and verification. Each complaint email contains the full form and all submitted
 private files. Receipt confirms storage/queued mail rather than inbox delivery.
+
+## Public performance
+
+See `../docs/PERFORMANCE_PLAN.md` for bounded public JSON caching, transactional revisions, scheduled release boundaries, managed thumbnails and safe browser ETag validation. No new dependency or service is required.

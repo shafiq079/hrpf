@@ -1,3 +1,4 @@
+import { bumpPublicRevision } from '../services/public-cache.js';
 import { Router } from "express";
 import mongoose from "mongoose";
 import { z } from "zod";
@@ -134,6 +135,7 @@ export function managedContentRouter(auth: ReturnType<typeof createAuth>) {
           ) as Record<string, any>;
           const principal = res.locals.principal as Principal;
           const result = await mongoose.connection.transaction(async (tx) => {
+            await bumpPublicRevision(tx);
             await Counter.findOneAndUpdate(
               { key: "security:user-governance" },
               { $inc: { sequence: 1 } },

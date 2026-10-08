@@ -14,6 +14,7 @@ import { digest, hashPassword } from '../src/security/crypto.js';
 import { createOutbox, mailSender, startEmbeddedOutbox, startOutboxWorker, type Mail } from '../src/services/outbox.js';
 import { createForms } from '../src/services/forms.js';
 import { createUploads, MB, type UploadProvider } from '../src/services/uploads.js';
+import { bumpPublicRevision, createPublicReadCache } from '../src/services/public-cache.js';
 const env = parseEnv({ NODE_ENV: 'test', JWT_ACCESS_SECRET: 'a'.repeat(64), JWT_REFRESH_SECRET: 'b'.repeat(64), DATA_ENCRYPTION_KEY: 'ab'.repeat(32), CNIC_HASH_KEY: 'c'.repeat(64), REDIS_URL: process.env.TEST_REDIS_URL!, ADMIN_NOTIFY_EMAILS: 'admin@example.org', FRONTEND_URL: 'http://localhost:3000', SMTP_HOST: 'test.invalid', MAIL_FROM: 'no-reply@example.org' });
 const redis = createClient({ url: env.REDIS_URL }); redis.on('error', () => {});
 const services = createRedisServices(redis, 'hrpf-test');
@@ -21,11 +22,13 @@ let mongo: MongoMemoryReplSet, passwordHash: string, app: ReturnType<typeof crea
 const pdf = Buffer.from('%PDF-1.4\n1 0 obj\n<<>>\nendobj\n%%EOF');
 // Valid tiny PNG. These fixture bytes are synthetic and are never sent to Cloudinary.
 const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aZ1sAAAAASUVORK5CYII=', 'base64');
+const webp = Buffer.from('UklGRjYAAABXRUJQVlA4ICoAAABwAQCdASoBAAEAAUAiJaACdAFAAAD+8qlCbsvf/7Gb//ozf/9Gb+soAAA=', 'base64');
+const providerWidths: number[] = [];
 const storedBytes = new Map<string, Buffer>();
 const provider: UploadProvider = {
   async store(upload, folder, format, preserveOriginal = false) { const publicId = `${folder}/${randomUUID()}`; storedBytes.set(publicId, upload.bytes); return { publicId, resourceType: preserveOriginal || upload.mime === 'application/pdf' ? 'raw' : 'image', deliveryType: 'authenticated', bytes: upload.bytes.length, format, version: 1 }; },
   async remove() {},
-  async read(asset) { providerReads++; return new Response(storedBytes.get(asset.publicId) ?? (asset.resourceType === 'image' ? png : pdf)); },
+  async read(asset, variant) { providerReads++; if (variant) providerWidths.push(variant.width); return new Response(variant ? webp : storedBytes.get(asset.publicId) ?? (asset.resourceType === 'image' ? png : pdf)); },
 };
 const bot = async (value: string) => value === 'verified-test-token';
 const personal = { name: 'Synthetic test', fatherName: 'Synthetic parent', email: 'applicant@example.org', phone: '03001234567', province: 'Test province', district: 'Test district', address: 'Test address' };
@@ -61,7 +64,7 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
   after(async () => { if (redis.isOpen) await redis.quit(); await mongoose.disconnect(); if (mongo) await mongo.stop(); });
   beforeEach(async () => {
     for (const model of Object.values(mongoose.models)) await model.deleteMany({});
-    await redis.flushDb(); providerReads = 0; storedBytes.clear();
+    await redis.flushDb(); providerReads = 0; providerWidths.length = 0; storedBytes.clear();
   });
   it('login, rotation and refresh replay revoke the whole family immediately', async () => {
     const auth = await login();
@@ -405,7 +408,7 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     assert.ok(!JSON.stringify(list.body).includes('publicId')); assert.ok(!JSON.stringify(list.body).includes('sha256'));
     assert.equal((await request(app).get('/api/gallery?category=media-coverage').expect(200)).body.meta.total, 0);
     const response = await request(app).get(`/api/public-assets/${file}`).expect(200);
-    assert.match(response.headers['cache-control'] ?? '', /no-store/); assert.equal(response.headers['content-type'], 'image/png');
+    assert.equal(response.headers['cache-control'], 'private, no-cache, must-revalidate'); assert.equal(response.headers['content-type'], 'image/png');
     await release(1, 'withdraw').expect(200);
     await request(app).get(`/api/public-assets/${file}`).expect(404);
     assert.equal((await request(app).get('/api/gallery').expect(200)).body.meta.total, 0);
@@ -536,7 +539,10 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     assert.deepEqual(new Set([first.body.data[0].slug,second.body.data[0].slug]),new Set(['women-one','women-two']));
     assert.equal((await request(app).get('/api/projects').query({focusArea:'Rights (community)'}).expect(200)).body.meta.total,1);
     assert.equal((await request(app).get('/api/projects').query({focusArea:'.*'}).expect(200)).body.meta.total,0);
-    await Project.updateOne({_id:women._id},{$set:{status:'draft'}});
+    await mongoose.connection.transaction(async session => {
+      await bumpPublicRevision(session);
+      await Project.updateOne({_id:women._id},{$set:{status:'draft'}}, {session});
+    });
     assert.equal((await list().expect(200)).body.meta.total,1);
     await request(app).get('/api/projects').query({focusArea:''}).expect(400);
   });
@@ -810,10 +816,14 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     const row = (await request(app).get('/api/certificates')).body.data[0]; assert.equal(row.expiresAt,'2023-05-15T00:00:00.000Z');
     await request(app).get(`/api/public-assets/${originalAsset!.id}`).expect(404);
     const releasedAsset = await Asset.findById(publicFile.body.data.assetId);
-    await Certificate.updateOne({_id:id},{$set:{original:{assetId:releasedAsset!._id,publicId:releasedAsset!.publicId,resourceType:'image',deliveryType:'authenticated',format:'png',bytes:releasedAsset!.bytes,sha256:releasedAsset!.sha256}}});
+    // External maintenance follows the same transactional revision contract as admin writes.
+    await mongoose.connection.transaction(async session => {
+      await bumpPublicRevision(session);
+      await Certificate.updateOne({_id:id},{$set:{original:{assetId:releasedAsset!._id,publicId:releasedAsset!.publicId,resourceType:'image',deliveryType:'authenticated',format:'png',bytes:releasedAsset!.bytes,sha256:releasedAsset!.sha256}}}, {session});
+    });
     assert.equal((await request(app).get('/api/certificates')).body.meta.total,0);
     await request(app).get(row.view).expect(404);
-    await Certificate.updateOne({_id:id},{$set:{'original.assetId':originalAsset!._id}});
+    await mongoose.connection.transaction(async session => { await bumpPublicRevision(session); await Certificate.updateOne({_id:id},{$set:{'original.assetId':originalAsset!._id}}, {session}); });
     assert.match((await request(app).get(row.view).expect(200)).headers['content-disposition']!,/^inline/);
     assert.match((await request(app).get(row.download).expect(200)).headers['content-disposition']!,/^attachment/);
     const detail = await admin.agent.get(`/api/admin/certificates/${id}`).expect(200); assert.ok(!JSON.stringify(detail.body).includes('original')); assert.ok(!JSON.stringify(detail.body).includes('publicId'));
@@ -971,6 +981,103 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     await request(app).post('/api/complaints').send(body).expect(400);
     assert.equal(await Complaint.countDocuments(), 0); assert.equal(await EmailOutbox.countDocuments(), 0);
     assert.equal(await Asset.countDocuments({ claimStatus: 'claimed' }), 0);
+  });
+
+  it('warm gallery pages reuse queries and unchanged image bytes; future admin uploads, edits, replacement, withdrawal and deletion invalidate all variants', async () => {
+    const auth = await login('editor');
+    const mutate = (method: 'post' | 'patch' | 'delete', path: string, body: object) => auth.agent[method](path).set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).send(body);
+    const release = (id: string, version: number, action = 'publish') => mutate('post', `/api/admin/publication/gallery/${id}`, { version, action, releaseReviewed: true });
+    const add = async (title: string, category = 'in-action') => {
+      const file = (await auth.agent.post('/api/admin/assets?purpose=content').set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).attach('file', png, 'synthetic.png').expect(201)).body.data.assetId;
+      const input = { title: { en: title, ur: 'محفوظ خبر' }, category, mediaType: 'photo', alt: { en: 'Synthetic photograph' }, caption: { en: 'Original caption' }, treatment: 'ORIGINAL', assetId: file };
+      const row = (await mutate('post', '/api/admin/gallery', input).expect(201)).body.data;
+      await release(row.id, 0).expect(200);
+      return { id: row.id, file, input };
+    };
+    for (let i = 0; i < 4; i++) await add(`Archive ${i}`);
+    let aggregates = 0;
+    mongoose.set('debug', (collection: string, method: string) => { if (collection === GalleryItem.collection.name && method === 'aggregate') aggregates++; });
+    try {
+      const path = (page: number) => `/api/gallery?category=in-action&limit=1&page=${page}`;
+      for (const page of [1, 2, 3, 4, 1]) assert.equal((await request(app).get(path(page)).expect(200)).body.meta.total, 4);
+      assert.equal(aggregates, 4, 'Returning to page 1 does not repeat its gallery aggregation');
+      const warm = (await request(app).get(path(1)).expect(200)).body;
+      const image = await request(app).get(warm.data[0].file + '?w=480').expect(200);
+      assert.equal(image.headers['content-type'], 'image/webp'); assert.deepEqual(image.body, webp);
+      const reads = providerReads;
+      const unchanged = await request(app).get(warm.data[0].file + '?w=480').set('If-None-Match', image.headers.etag!).expect(304);
+      assert.equal(unchanged.text, ''); assert.equal(providerReads, reads, 'No provider read or image bytes on repeat');
+      await request(app).get(warm.data[0].file + '?w=960').set('If-None-Match', image.headers.etag!).expect(200);
+      await request(app).get(warm.data[0].file + '?w=1440').expect(200);
+      assert.deepEqual(providerWidths.slice(-3), [480, 960, 1440]);
+      const original = await request(app).get(warm.data[0].file).expect(200);
+      assert.equal(original.headers['content-type'], 'image/png'); assert.deepEqual(original.body, png);
+      for (const width of ['1', '481', '99999', '480&w=960']) await request(app).get(warm.data[0].file + '?w=' + width).expect(400);
+      const later = await add('Future unseeded photograph');
+      assert.equal((await request(app).get(path(1)).expect(200)).body.meta.total, 5);
+      const search = '/api/gallery?category=in-action&q=Future';
+      assert.equal((await request(app).get(search).expect(200)).body.data[0].id, later.id);
+      assert.equal((await request(app).get('/api/gallery?category=in-action&locale=ur&limit=48').expect(200)).body.data.find((row: {id: string}) => row.id === later.id).title, 'محفوظ خبر');
+      assert.equal((await request(app).get('/api/gallery?category=media-coverage').expect(200)).body.meta.total, 0);
+      const other = await add('Press photograph', 'media-coverage');
+      assert.equal((await request(app).get('/api/gallery?category=media-coverage').expect(200)).body.data[0].id, other.id);
+      const laterImage = await request(app).get(`/api/public-assets/${later.file}?w=480`).expect(200);
+      await mutate('patch', `/api/admin/gallery/${later.id}`, { ...later.input, caption: { en: 'Edited caption' }, version: 1 }).expect(200);
+      assert.equal((await request(app).get(search).expect(200)).body.data.length, 0, 'Edits return to draft and invalidate warm lists');
+      await request(app).get(`/api/public-assets/${later.file}?w=480`).set('If-None-Match', laterImage.headers.etag!).expect(404);
+      await release(later.id, 2).expect(200);
+      assert.equal((await request(app).get(search).expect(200)).body.data[0].caption, 'Edited caption');
+      const replacement = (await auth.agent.post('/api/admin/assets?purpose=content').set('Origin', 'http://localhost:3000').set('X-CSRF-Token', auth.csrf).attach('file', png, 'replacement.png').expect(201)).body.data.assetId;
+      await mutate('patch', `/api/admin/gallery/${later.id}`, { ...later.input, assetId: replacement, version: 3 }).expect(200);
+      await release(later.id, 4).expect(200);
+      assert.equal((await request(app).get(search).expect(200)).body.data[0].file, `/api/public-assets/${replacement}`);
+      await request(app).get(`/api/public-assets/${later.file}?w=480`).set('If-None-Match', laterImage.headers.etag!).expect(404);
+      const replacedImage = await request(app).get(`/api/public-assets/${replacement}?w=480`).expect(200);
+      await release(later.id, 5, 'withdraw').expect(200);
+      assert.equal((await request(app).get(search).expect(200)).body.data.length, 0);
+      await request(app).get(`/api/public-assets/${replacement}?w=480`).set('If-None-Match', replacedImage.headers.etag!).expect(404);
+      await release(later.id, 6).expect(200);
+      await request(app).get(search).expect(200);
+      await mutate('delete', `/api/admin/gallery/${later.id}`, { version: 7 }).expect(200);
+      assert.equal((await request(app).get(search).expect(200)).body.data.length, 0);
+      await request(app).get(`/api/public-assets/${replacement}?w=480`).set('If-None-Match', '*').expect(404);
+      console.log('Gallery cache evidence: page 1→2→3→4→1 = 4 list aggregations; repeat thumbnail = 304, zero image bytes and zero additional provider reads.');
+    } finally { mongoose.set('debug', false); }
+  });
+
+  it('public caching survives Redis failure, bounds entries and prevents a late fill from hiding a concurrent committed write', async () => {
+    const cache = createPublicReadCache(services, 300);
+    let version = 0, loads = 0;
+    let started!: () => void, release!: () => void;
+    const start = new Promise<void>(resolve => { started = resolve; });
+    const gate = new Promise<void>(resolve => { release = resolve; });
+    const load = async () => { const old = version; loads++; if (loads === 1) { started(); await gate; } return { version: old }; };
+    const filling = cache('/concurrent', {}, [], load);
+    await start;
+    await mongoose.connection.transaction(async session => { await bumpPublicRevision(session); version = 1; });
+    release();
+    assert.deepEqual(await filling, { version: 1 });
+    assert.deepEqual(await cache('/concurrent', {}, [], load), { version: 1 });
+    const unavailable = createRedisServices({ isReady: true, get: async () => { throw new Error('cache read failure'); }, eval: async () => { throw new Error('cache write failure'); } } as unknown as Parameters<typeof createRedisServices>[0], 'failure');
+    assert.deepEqual(await createPublicReadCache(unavailable, 300)('/failure', {}, [], async () => ({ fresh: true })), { fresh: true });
+    let coalesced = 0;
+    await Promise.all(Array.from({ length: 6 }, () => services.publicCache('one-flight', 300, async () => { coalesced++; await new Promise(resolve => setTimeout(resolve, 30)); return { ok: true }; })));
+    assert.equal(coalesced, 1);
+    for (let i = 0; i < 280; i++) await services.publicCache(`bounded-${i}`, 300, async () => ({ i }));
+    assert.ok(await redis.zCard('hrpf-test:public-index') <= 256);
+    await services.publicCache('oversize', 300, async () => ({ value: 'x'.repeat(300 * 1024) }));
+    assert.ok(await redis.zCard('hrpf-test:public-index') <= 256);
+  });
+
+  it('scheduled publication becomes visible across a warm cache without an editor write and rolled-back writes preserve the revision', async () => {
+    const publishAt = new Date(Date.now() + 800);
+    await BlogPost.create({ title: { en: 'Scheduled release' }, slug: 'scheduled-release', locale: 'en', status: 'published', reviewStatus: 'approved', publishedAt: publishAt });
+    assert.equal((await request(app).get('/api/blogs').expect(200)).body.data.length, 0);
+    await new Promise(resolve => setTimeout(resolve, Math.max(0, publishAt.getTime() - Date.now() + 30)));
+    assert.equal((await request(app).get('/api/blogs').expect(200)).body.data[0].slug, 'scheduled-release');
+    const before = await Counter.findOne({ key: 'public:content-revision' }).lean();
+    await assert.rejects(mongoose.connection.transaction(async session => { await bumpPublicRevision(session); throw new Error('Rollback'); }));
+    assert.deepEqual(await Counter.findOne({ key: 'public:content-revision' }).lean(), before);
   });
 
 });

@@ -57,6 +57,8 @@ export function createApp(env: Environment, readiness: Readiness, adapters?: Bus
       if (error.type === 'entity.parse.failed') known = new ApiError(400, 'INVALID_JSON', 'Request body must be valid JSON.');
     }
     if (res.headersSent) { res.destroy(); return; }
+    res.setHeader('Cache-Control', 'no-store');
+    res.removeHeader('ETag');
     if (!known && error && typeof error === 'object' && 'code' in error && error.code === 11000) known = new ApiError(409, 'CONFLICT', 'A record with this unique value already exists.');
     res.status(known?.status ?? 500).json({ error: {
       code: known?.code ?? 'INTERNAL_ERROR',

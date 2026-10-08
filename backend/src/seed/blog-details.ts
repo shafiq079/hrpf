@@ -1,3 +1,4 @@
+import { bumpPublicRevision } from '../services/public-cache.js';
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import mongoose from "mongoose";
@@ -316,6 +317,7 @@ export async function applyBlogDetails(options: {
     let result: BlogDetailsResult;
     try {
       result = await session.withTransaction(async () => {
+        await bumpPublicRevision(session);
         await Counter.findOneAndUpdate(
           { key: "security:user-governance" },
           { $inc: { sequence: 1 } },
