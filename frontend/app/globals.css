@@ -85,6 +85,15 @@
     letter-spacing: -0.01em;
   }
 
+  :is(button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"]):not(:disabled):not([aria-disabled="true"]),
+  summary {
+    cursor: pointer;
+  }
+
+  :is(button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"]):is(:disabled, [aria-disabled="true"]) {
+    cursor: not-allowed;
+  }
+
   :focus-visible {
     outline: 3px solid var(--color-teal);
     outline-offset: 2px;

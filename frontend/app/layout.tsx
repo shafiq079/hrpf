@@ -3,6 +3,7 @@ import { Inter, Lora, Noto_Naskh_Arabic } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import SiteFrame from "@/components/layout/SiteFrame";
 import LanguageSwitcher from "@/components/translation/LanguageSwitcher";
 
 // Editorial serif for headings; clean sans for body copy.
@@ -108,9 +109,9 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        <Header />
-        {children}
-        <Footer />
+        <SiteFrame header={<Header />} footer={<Footer />}>
+          {children}
+        </SiteFrame>
         <LanguageSwitcher />
         <script
           type="application/ld+json"

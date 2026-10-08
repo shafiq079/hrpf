@@ -1,4 +1,14 @@
-# Current handoff: Admin form readability on development
+# Current handoff: Private admin navigation on development
+
+## Admin navigation and cursor milestone — 2026-10-08
+
+Removed public Header/Footer from admin routes using a pathname-aware server-slot
+frame. The six consoles share active-state admin navigation with their existing
+role/sign-in guards; complaint-only staff keep their restricted menu. Public
+pages retain their chrome and root translation cleanup. Added hand cursors for
+enabled buttons/action inputs and disabled cursors for unavailable actions.
+Production SSR and synthetic frame/menu checks cover this development update.
+See `ADMIN_FORMS.md`. This continuation remains in development / PR #9.
 
 ## Admin form readability milestone — 2026-10-08
 

@@ -1,5 +1,15 @@
 # HRPF Progress
 
+## 2026-10-08 — Private admin navigation and action cursors
+
+At the owner's request, admin routes omit the public header/footer and use shared
+active-state administration navigation under existing role guards. Public page
+chrome, auth behaviour, previews and translation route cleanup remain available.
+Global enabled actions now show hand cursors; disabled actions retain a disabled
+cursor. SSR verifies all six admin pages omit public chrome and public pages keep
+it; synthetic rendering checks frame transitions and active/restricted menus.
+
+
 ## 2026-10-08 — Embedded office map correction
 
 Corrected the Contact map implementation at the owner's request: the location

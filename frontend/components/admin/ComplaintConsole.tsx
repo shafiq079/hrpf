@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import Link from "next/link";
+import AdminNavigation from "@/components/admin/AdminNavigation";
 import Container from "@/components/shared/Container";
 import { adminRequest } from "@/lib/admin-api";
 
@@ -232,25 +232,7 @@ export default function ComplaintConsole() {
           </button>
         )}
       </div>
-      {allowed && (
-        <nav
-          className="mb-6 flex flex-wrap gap-5 text-sm font-semibold"
-          aria-label="Administration"
-        >
-          {canRetry && (
-            <>
-              <Link href="/admin/projects">Projects</Link>
-              <Link href="/admin/blogs">Blogs</Link>
-              <Link href="/admin/gallery">Gallery</Link>
-              <Link href="/admin/documents">Documents</Link>
-              <Link href="/admin/board">Board and Team</Link>
-            </>
-          )}
-          <Link href="/admin/complaints" className="text-teal-dark">
-            Complaints
-          </Link>
-        </nav>
-      )}
+      {allowed && <AdminNavigation contentAllowed={canRetry} />}
       {error && (
         <p
           role="alert"

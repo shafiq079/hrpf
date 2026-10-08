@@ -42,6 +42,15 @@ try{
  const privatePage=await read('/admin/complaints');
  assert.ok(!privatePage.html.includes('id="hrpf-language-widget"'),'No language control on private administration');
  assert.ok(privatePage.html.includes('translate="no"'),'Private content excluded from automatic translation');
+ for(const route of ['projects','blogs','gallery','documents','board','complaints']){
+  const adminPage=route==='complaints'?privatePage:await read('/admin/'+route);
+  assert.equal(adminPage.status,200,'Admin route remains available: '+route);
+  const rendered=adminPage.html.replace(/<script\b[\s\S]*?<\/script>/g,'');
+  assert.ok(!/<header\b|<footer\b/.test(rendered),'No public header/footer in admin: '+route);
+  assert.ok(!rendered.includes('aria-label="Primary"')&&!rendered.includes('id="hrpf-language-widget"'),'No public navigation/translation control in admin: '+route);
+  assert.ok(rendered.includes('id="main-content"'),'Admin skip-link target remains available: '+route);
+ }
+ assert.ok(/<header\b/.test(page.html)&&/<footer\b/.test(page.html),'Public homepage keeps its header and footer');
  const women=await read('/our-work/womens-rights');assert.equal(women.status,200);
  assert.equal((women.html.match(/<h1[ >]/g)||[]).length,1,'Women rights page has one primary heading');
  for(const text of ['Projects in this field','Managed project 1','/projects/real-project','womens-rights-archive.webp','/file-a-complaint'])assert.ok(women.html.includes(text),`General women rights page: ${text}`);
