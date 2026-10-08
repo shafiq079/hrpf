@@ -14,7 +14,13 @@
       "evidenceFile": "progress reports/work-project-evidence/safe-classrooms-mianwal-ranjha.json",
       "confidence": "supplied-document-and-primary-post",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "childrens-rights",
+        "access-to-justice",
+        "education-and-awareness"
+      ]
     },
     {
       "slug": "child-protection-institutional-advocacy",
@@ -28,7 +34,12 @@
       "evidenceFile": "progress reports/work-project-evidence/child-protection-institutional-advocacy.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "childrens-rights",
+        "access-to-justice"
+      ]
     },
     {
       "slug": "domestic-violence-emergency-response",
@@ -43,7 +54,13 @@
       "evidenceFile": "progress reports/work-project-evidence/domestic-violence-emergency-response.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "womens-rights",
+        "access-to-justice",
+        "research-and-advocacy"
+      ]
     },
     {
       "slug": "womens-dignity-public-services",
@@ -58,7 +75,13 @@
       "evidenceFile": "progress reports/work-project-evidence/womens-dignity-public-services.json",
       "confidence": "primary-post",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "womens-rights",
+        "access-to-justice",
+        "education-and-awareness"
+      ]
     },
     {
       "slug": "prison-healthcare-mandi-bahauddin",
@@ -72,7 +95,12 @@
       "evidenceFile": "progress reports/work-project-evidence/prison-healthcare-mandi-bahauddin.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "access-to-justice",
+        "community-development"
+      ]
     },
     {
       "slug": "trafficking-prevention-migration-awareness",
@@ -87,7 +115,13 @@
       "evidenceFile": "progress reports/work-project-evidence/trafficking-prevention-migration-awareness.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "education-and-awareness",
+        "research-and-advocacy",
+        "refugees-and-migrants"
+      ]
     },
     {
       "slug": "overseas-travel-document-support",
@@ -101,7 +135,12 @@
       "evidenceFile": "progress reports/work-project-evidence/overseas-travel-document-support.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "access-to-justice",
+        "refugees-and-migrants"
+      ]
     },
     {
       "slug": "clean-water-feasibility-mianwal-ranjha",
@@ -115,7 +154,12 @@
       "evidenceFile": "progress reports/work-project-evidence/clean-water-feasibility-mianwal-ranjha.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": "gallery:project-verified:clean-water-feasibility-mianwal-ranjha",
+      "imageVerification": "2022–2023 original report page 7, photograph continues water and sewerage intervention on page 6; archive image 138. Recognition photograph; does not show a completed plant.",
+      "workAreas": [
+        "access-to-justice",
+        "community-development"
+      ]
     },
     {
       "slug": "canal-water-environmental-accountability",
@@ -130,7 +174,13 @@
       "evidenceFile": "progress reports/work-project-evidence/canal-water-environmental-accountability.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "access-to-justice",
+        "research-and-advocacy",
+        "community-development"
+      ]
     },
     {
       "slug": "gas-service-restoration-mianwal-ranjha",
@@ -144,7 +194,12 @@
       "evidenceFile": "progress reports/work-project-evidence/gas-service-restoration-mianwal-ranjha.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "access-to-justice",
+        "community-development"
+      ]
     },
     {
       "slug": "electricity-distribution-mianwal-ranjha",
@@ -158,7 +213,12 @@
       "evidenceFile": "progress reports/work-project-evidence/electricity-distribution-mianwal-ranjha.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": "gallery:project-verified:electricity-distribution-mianwal-ranjha",
+      "imageVerification": "2022–2023 original report page 8, beside LT/HT proposal and feeder maintenance section; archive image 154",
+      "workAreas": [
+        "access-to-justice",
+        "community-development"
+      ]
     },
     {
       "slug": "community-drinking-water-cooler",
@@ -171,7 +231,11 @@
       "evidenceFile": "progress reports/work-project-evidence/community-drinking-water-cooler.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": "gallery:project-verified:community-drinking-water-cooler",
+      "imageVerification": "2025 original report page 32; exact embedded photograph",
+      "workAreas": [
+        "community-development"
+      ]
     },
     {
       "slug": "right-to-information-public-accountability",
@@ -186,7 +250,13 @@
       "evidenceFile": "progress reports/work-project-evidence/right-to-information-public-accountability.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "access-to-justice",
+        "education-and-awareness",
+        "research-and-advocacy"
+      ]
     },
     {
       "slug": "sialkot-health-data-research",
@@ -201,7 +271,13 @@
       "evidenceFile": "progress reports/work-project-evidence/sialkot-health-data-research.json",
       "confidence": "supplied-document-and-primary-post",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "education-and-awareness",
+        "research-and-advocacy",
+        "community-development"
+      ]
     },
     {
       "slug": "press-freedom-journalist-protection",
@@ -216,7 +292,13 @@
       "evidenceFile": "progress reports/work-project-evidence/press-freedom-journalist-protection.json",
       "confidence": "supplied-document-and-primary-post",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "access-to-justice",
+        "education-and-awareness",
+        "research-and-advocacy"
+      ]
     },
     {
       "slug": "flood-relief-access-accountability",
@@ -231,7 +313,13 @@
       "evidenceFile": "progress reports/work-project-evidence/flood-relief-access-accountability.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "research-and-advocacy",
+        "refugees-and-migrants",
+        "community-development"
+      ]
     },
     {
       "slug": "education-access-research",
@@ -246,7 +334,13 @@
       "evidenceFile": "progress reports/work-project-evidence/education-access-research.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "childrens-rights",
+        "education-and-awareness",
+        "research-and-advocacy"
+      ]
     },
     {
       "slug": "smart-school-student-support",
@@ -260,7 +354,12 @@
       "evidenceFile": "progress reports/work-project-evidence/smart-school-student-support.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": "gallery:project-verified:smart-school-student-support",
+      "imageVerification": "2024 original report: HRPF CHAIRMAN VISITED THE SMART SCHOOL KUTHIYALA SHEIKHAN; exact embedded image28.png, JPEG bytes originally misnamed PNG",
+      "workAreas": [
+        "childrens-rights",
+        "education-and-awareness"
+      ]
     },
     {
       "slug": "canal-bank-road-safety",
@@ -274,7 +373,12 @@
       "evidenceFile": "progress reports/work-project-evidence/canal-bank-road-safety.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "access-to-justice",
+        "community-development"
+      ]
     },
     {
       "slug": "road-drainage-waterlogging-advocacy",
@@ -288,7 +392,12 @@
       "evidenceFile": "progress reports/work-project-evidence/road-drainage-waterlogging-advocacy.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "access-to-justice",
+        "community-development"
+      ]
     },
     {
       "slug": "electricity-connection-fairness",
@@ -303,7 +412,13 @@
       "evidenceFile": "progress reports/work-project-evidence/electricity-connection-fairness.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "access-to-justice",
+        "research-and-advocacy",
+        "community-development"
+      ]
     },
     {
       "slug": "sukkur-community-peace-walk",
@@ -317,7 +432,12 @@
       "evidenceFile": "progress reports/work-project-evidence/sukkur-community-peace-walk.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": "gallery:project-verified:sukkur-community-peace-walk",
+      "imageVerification": "Exact scene match to 2024 report embedded image57.jpeg under AMAN RALLY IN SUKKUR; archive image 185",
+      "workAreas": [
+        "education-and-awareness",
+        "community-development"
+      ]
     },
     {
       "slug": "mandi-bahauddin-peace-petition",
@@ -332,7 +452,13 @@
       "evidenceFile": "progress reports/work-project-evidence/mandi-bahauddin-peace-petition.json",
       "confidence": "primary-post",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "education-and-awareness",
+        "research-and-advocacy",
+        "community-development"
+      ]
     },
     {
       "slug": "public-safety-information-research",
@@ -347,7 +473,13 @@
       "evidenceFile": "progress reports/work-project-evidence/public-safety-information-research.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "access-to-justice",
+        "research-and-advocacy",
+        "community-development"
+      ]
     },
     {
       "slug": "road-visibility-public-safety",
@@ -361,7 +493,12 @@
       "evidenceFile": "progress reports/work-project-evidence/road-visibility-public-safety.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "research-and-advocacy",
+        "community-development"
+      ]
     },
     {
       "slug": "roadside-electrical-hazard-removal",
@@ -375,7 +512,12 @@
       "evidenceFile": "progress reports/work-project-evidence/roadside-electrical-hazard-removal.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": "gallery:project-verified:roadside-electrical-hazard-removal",
+      "imageVerification": "2024 original report: REMOVAL OF DANGROUS HT ELECTRIC POLE ON THE ROAD; exact embedded image39.png, JPEG bytes originally misnamed PNG",
+      "workAreas": [
+        "access-to-justice",
+        "community-development"
+      ]
     },
     {
       "slug": "union-council-building-advocacy",
@@ -389,7 +531,12 @@
       "evidenceFile": "progress reports/work-project-evidence/union-council-building-advocacy.json",
       "confidence": "supplied-document",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "access-to-justice",
+        "community-development"
+      ]
     },
     {
       "slug": "national-minorities-day-awareness",
@@ -403,7 +550,11 @@
       "evidenceFile": "progress reports/work-project-evidence/national-minorities-day-awareness.json",
       "confidence": "corroborated-secondary",
       "publication": "eligible",
-      "image": "Reviewed HRPF report cover; not an event photograph"
+      "image": null,
+      "imageVerification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery.",
+      "workAreas": [
+        "minority-rights"
+      ]
     }
   ],
   "existingProjectsNotDuplicated": [

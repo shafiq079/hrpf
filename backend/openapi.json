@@ -4624,9 +4624,27 @@
             }
           },
           {
+            "name": "workArea",
+            "in": "query",
+            "description": "Filter by explicitly selected Our Work page.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "womens-rights",
+                "childrens-rights",
+                "access-to-justice",
+                "minority-rights",
+                "education-and-awareness",
+                "research-and-advocacy",
+                "refugees-and-migrants",
+                "community-development"
+              ]
+            }
+          },
+          {
             "name": "focusArea",
             "in": "query",
-            "description": "Filter by the editor focus-area label; case and apostrophe variants are matched.",
+            "description": "Legacy label alias; explicit work-page selections take precedence.",
             "schema": {
               "type": "string",
               "minLength": 1,
@@ -4659,6 +4677,22 @@
                           "focusArea": {
                             "type": "string"
                           },
+                          "workAreas": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "womens-rights",
+                                "childrens-rights",
+                                "access-to-justice",
+                                "minority-rights",
+                                "education-and-awareness",
+                                "research-and-advocacy",
+                                "refugees-and-migrants",
+                                "community-development"
+                              ]
+                            }
+                          },
                           "location": {
                             "type": "string"
                           },
@@ -4689,6 +4723,7 @@
                           "slug",
                           "summary",
                           "focusArea",
+                          "workAreas",
                           "location",
                           "status",
                           "imageAlt",
@@ -4829,6 +4864,22 @@
                         },
                         "focusArea": {
                           "type": "string"
+                        },
+                        "workAreas": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "womens-rights",
+                              "childrens-rights",
+                              "access-to-justice",
+                              "minority-rights",
+                              "education-and-awareness",
+                              "research-and-advocacy",
+                              "refugees-and-migrants",
+                              "community-development"
+                            ]
+                          }
                         },
                         "location": {
                           "type": "string"
@@ -5077,6 +5128,7 @@
                         "slug",
                         "summary",
                         "focusArea",
+                        "workAreas",
                         "location",
                         "status",
                         "imageAlt",
@@ -5513,6 +5565,23 @@
                     "minLength": 1,
                     "maxLength": 150
                   },
+                  "workAreas": {
+                    "maxItems": 8,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "womens-rights",
+                        "childrens-rights",
+                        "access-to-justice",
+                        "minority-rights",
+                        "education-and-awareness",
+                        "research-and-advocacy",
+                        "refugees-and-migrants",
+                        "community-development"
+                      ]
+                    }
+                  },
                   "location": {
                     "type": "string",
                     "minLength": 1,
@@ -5925,6 +5994,23 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 150
+                  },
+                  "workAreas": {
+                    "maxItems": 8,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "womens-rights",
+                        "childrens-rights",
+                        "access-to-justice",
+                        "minority-rights",
+                        "education-and-awareness",
+                        "research-and-advocacy",
+                        "refugees-and-migrants",
+                        "community-development"
+                      ]
+                    }
                   },
                   "location": {
                     "type": "string",

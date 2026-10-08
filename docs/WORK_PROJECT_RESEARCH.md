@@ -76,10 +76,10 @@ as direct verification.
 - Do not invent beneficiary totals, funding, schools built, workshops held,
   legal victories, medical services or partnerships. Empty optional sections
   stay empty. The school contribution is attributed to the chairman.
-- Use the already-reviewed annual-report covers, with accurate alt text. There
-  is no confirmed photograph for most interventions; unrelated archive people
-  are not labelled as participants. Admins can replace a cover with a verified
-  project photograph later.
+- Use only activity-specific photographs verified against the original reports.
+  Eight of 31 projects have verified covers. The other 23 use text cards without
+  a substitute image. The photograph review and correction procedure are in
+  PROJECT_IMAGE_REVIEW.md. Public captions do not show internal review notes.
 - Keep references and source-review notes in internal evidence files and
   sourceReferences. Public narratives omit technical archive captions and source
   footnotes. The public API excludes internal references.
@@ -182,17 +182,20 @@ counter. Reruns don't upload or publish the same completed batch again.
 
 Projects remain English source content and use the existing website translation
 widget. No duplicate Urdu-only records or generated translations are imported.
-Related fields use the existing comma-separated focusArea property, preserving
-schema/API compatibility. Admin help explains the format. Public field filters
-match the whole field and apostrophe variants; the Projects explorer now presents
-individual field options rather than combinations. Field links open the explorer
-with the relevant filter selected. All eight subpages use the general approach
+Admins select explicit `workAreas` with the “Display on Our Work pages” checkboxes.
+Published projects always appear in All Projects, and only selected work pages
+show them. An empty selection means All Projects only. The topic label is
+separate metadata. Older records without selections retain their legacy mapping
+until saved; explicit selections always override that mapping. Field links open
+the explorer with the relevant filter selected. All eight subpages use the general approach
 layout and managed project feed; the last two no longer show prototype projects,
 statistics or testimonials. The explorer currently reads up to 48 projects,
 which covers this catalog plus the three existing entries; server pagination is
 needed if the published collection later exceeds that limit.
 
-Catalog: backend/seed/work-projects-manifest.json. Provenance inventory:
+The immutable v1 catalog is retained for checksum upgrades. The effective v2
+catalog combines backend/seed/work-projects-manifest.json with the reviewed
+backend/seed/project-presentations.json. Provenance inventory:
 docs/WORK_PROJECT_RESEARCH.json. Per-project evidence:
 backend/seed/home-assets/progress reports/work-project-evidence/.
 

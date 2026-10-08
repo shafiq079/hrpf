@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import mongoose, { Types } from 'mongoose';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
+import type { WorkAreaSlug } from '../src/domain/work-areas.js';
 import { createClient } from 'redis';
 import request from 'supertest';
 import express from 'express';
@@ -547,6 +548,38 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     await request(app).get('/api/projects').query({focusArea:''}).expect(400);
   });
 
+  it('explicit work-page placements override topic text, filter before pagination and allow All Projects only', async () => {
+    const create = (slug: string, workAreas: WorkAreaSlug[], extra: Record<string, unknown> = {}) => Project.create({ title: { en: slug }, summary: { en: 'Summary' }, slug, focusArea: "Women's Rights, Education and Awareness", workAreas, location: 'District', status: 'published', reviewStatus: 'approved', publishedAt: new Date(Date.now()-1000), ...extra });
+    await create('minority-one', ['minority-rights']); await create('minority-two', ['minority-rights','research-and-advocacy']);
+    await create('all-only', []); await create('minority-draft', ['minority-rights'], {status:'draft'});
+    await create('minority-future', ['minority-rights'], {publishedAt:new Date(Date.now()+60000)});
+    await create('minority-pending', ['minority-rights'], {reviewStatus:'pending'});
+    const first = await request(app).get('/api/projects').query({workArea:'minority-rights',limit:1}).expect(200);
+    const second = await request(app).get('/api/projects').query({workArea:'minority-rights',limit:1,page:2}).expect(200);
+    assert.equal(first.body.meta.total,2); assert.equal(first.body.meta.pages,2);
+    assert.deepEqual(new Set([first.body.data[0].slug,second.body.data[0].slug]),new Set(['minority-one','minority-two']));
+    assert.equal((await request(app).get('/api/projects').query({workArea:'womens-rights'}).expect(200)).body.meta.total,0);
+    assert.equal((await request(app).get('/api/projects').query({focusArea:"Women's Rights"}).expect(200)).body.meta.total,0);
+    const all = await request(app).get('/api/projects').expect(200);
+    assert.equal(all.body.meta.total,3); assert.deepEqual(all.body.data.find((row: any) => row.slug === 'all-only').workAreas,[]);
+    await request(app).get('/api/projects').query({workArea:'unknown-page'}).expect(400);
+  });
+  it('admin editors can save, clear and republish work-page selections with normal version checks', async () => {
+    const editor = await login('editor');
+    const body = { title:{en:'Minority project'},summary:{en:'Summary'},slug:'admin-minority-project',locale:'en',focusArea:"Women's Rights",workAreas:['minority-rights'],location:'District',projectStatus:'Completed',blocks:[{type:'paragraph',text:'Details'}] };
+    const created = await editor.agent.post('/api/admin/projects').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(body).expect(201);
+    const id = created.body.data.id;
+    assert.deepEqual((await editor.agent.get(`/api/admin/projects/${id}`).expect(200)).body.data.workAreas,['minority-rights']);
+    const publish = (version: number) => editor.agent.post(`/api/admin/publication/project/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version,action:'publish',releaseReviewed:true});
+    await publish(0).expect(200);
+    assert.equal((await request(app).get('/api/projects').query({workArea:'minority-rights'}).expect(200)).body.meta.total,1);
+    assert.equal((await request(app).get('/api/projects').query({workArea:'womens-rights'}).expect(200)).body.meta.total,0);
+    for (const workAreas of [['unknown'],['minority-rights','minority-rights']]) await editor.agent.patch(`/api/admin/projects/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...body,workAreas,version:1}).expect(400);
+    await editor.agent.patch(`/api/admin/projects/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...body,workAreas:[],version:1}).expect(200);
+    await publish(2).expect(200);
+    assert.equal((await request(app).get('/api/projects').query({workArea:'minority-rights'}).expect(200)).body.meta.total,0);
+    const all = await request(app).get('/api/projects').expect(200); assert.equal(all.body.meta.total,1); assert.deepEqual(all.body.data[0].workAreas,[]);
+  });
   it('rich project drafts retain media privately, publish every reviewed file, and revoke removed media', async () => {
     const editor = await login('editor');
     const stage = async (bytes = png, filename = 'project.png') => {

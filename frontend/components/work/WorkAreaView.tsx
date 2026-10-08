@@ -21,8 +21,8 @@ const sections = [
 ];
 
 /** Source-based thematic page. No illustrative statistics or prototype feeds. */
-export default async function WorkAreaView({ content }: { content: WorkAreaContent }) {
-  const projects = await readPublicCollection<ProjectRecord>("projects", 1, undefined, 3, "en", "", content.title);
+export default async function WorkAreaView({ content, workArea }: { content: WorkAreaContent; workArea: string }) {
+  const projects = await readPublicCollection<ProjectRecord>("projects", 1, undefined, 3, "en", "", workArea);
   return <main id="main-content" className="flex-1">
     <section className="bg-navy text-white">
       <Container className="py-10 sm:py-14 lg:py-16">

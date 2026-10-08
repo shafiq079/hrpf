@@ -6,6 +6,7 @@ import { ConfigurationError, parseEnv } from '../config/env.js';
 import { User, ensureIndexes } from '../domain/models.js';
 import { cloudinaryProvider } from '../services/uploads.js';
 import { importManifest } from '../seed/importer.js';
+import { workAreas } from '../domain/work-areas.js';
 import { applyWorkProjectsSeed, loadWorkProjectsManifest, workProjectAssetRoot, workProjectFields, workProjectFiles } from '../seed/work-projects.js';
 
 async function main() {
@@ -13,8 +14,8 @@ async function main() {
   if (args.length > 1 || args.some(arg => !['--apply', '--database'].includes(arg))) throw new ConfigurationError('Use seed:work-projects, --database (read-only plan), or --apply.');
   const manifest = await loadWorkProjectsManifest();
   const files = await workProjectFiles(manifest, fileURLToPath(workProjectAssetRoot));
-  console.log(JSON.stringify({ manifest: manifest.version, newProjects: manifest.records.length, verifiedCovers: files.size,
-    fields: Object.fromEntries(workProjectFields.map(field => [field, manifest.records.filter(record => String(record.payload.focusArea).split(', ').includes(field)).length])), mode: args.includes('--apply') ? 'apply' : 'offline-plan' }));
+  console.log(JSON.stringify({ manifest: manifest.version, newProjects: manifest.records.length, verifiedPhotos: files.size, projectCovers: manifest.records.filter(record => record.files.some(id => id.startsWith('gallery:'))).length,
+    fields: Object.fromEntries(workProjectFields.map(field => [field, manifest.records.filter(record => (record.payload.workAreas as string[]).includes(workAreas.find(area => area.title === field)!.slug)).length])), mode: args.includes('--apply') ? 'apply' : 'offline-plan' }));
   if (!args.length) { console.log('Offline sources verified. No database or Cloudinary writes.'); return; }
   dotenv.config({ path: resolve(fileURLToPath(new URL('../../', import.meta.url)), '.env'), quiet: true });
   const env = parseEnv(process.env);
@@ -27,7 +28,7 @@ async function main() {
     const actor = await User.findOne({ email: process.env.SEED_ACTOR_EMAIL!.trim().toLowerCase(), active: true, role: { $in: ['super_admin', 'admin', 'editor'] } });
     if (!actor) throw new ConfigurationError('SEED_ACTOR_EMAIL must identify an existing active content administrator or editor.');
     await ensureIndexes();
-    const results = await applyWorkProjectsSeed({ manifest, files, actorId: actor.id, namespace: env.CLOUDINARY_NAMESPACE, provider: cloudinaryProvider(env), report: result => console.log(JSON.stringify(result)) });
+    const results = await applyWorkProjectsSeed({ manifest, files, actorId: actor.id, namespace: env.CLOUDINARY_NAMESPACE, provider: cloudinaryProvider(env), report: result => console.log(JSON.stringify(result)), repairReport: result => console.log(JSON.stringify({repair: result})) });
     if (results.some(result => ['conflict', 'source-changed'].includes(result.status))) process.exitCode = 2;
   } finally { await mongoose.disconnect(); }
 }

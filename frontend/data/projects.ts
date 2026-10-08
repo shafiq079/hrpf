@@ -28,10 +28,11 @@ export interface Project {
   title: string;
   status: ProjectStatus;
   focusArea: string;
+  workAreas?: string[];
   location: string;
   startYear: number;
   summary: string;
-  image: string;
+  image: string | null;
   imageAlt: string;
   href: string;
   // Detail-page content (optional so cards stay lightweight)

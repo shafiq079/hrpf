@@ -10,7 +10,7 @@ import FilterBar from "@/components/shared/FilterBar";
 import ProjectCard from "@/components/shared/ProjectCard";
 import EmptyState from "@/components/shared/EmptyState";
 import PrimaryButton from "@/components/shared/PrimaryButton";
-import { projectFields, projectMatchesField } from "@/lib/project-focus";
+import { projectPageLabels, projectAppearsInField } from "@/lib/project-focus";
 
 const INITIAL_VISIBLE = 6;
 
@@ -24,7 +24,7 @@ export default function ProjectsExplorer({ projects, initialFocusArea = "" }: { 
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
 
   const focusAreaOptions = useMemo(
-    () => Array.from(new Set([...projects.flatMap((p) => projectFields(p.focusArea)), ...(initialFocusArea ? [initialFocusArea] : [])])).sort(),
+    () => Array.from(new Set([...projects.flatMap(projectPageLabels), ...(initialFocusArea ? [initialFocusArea] : [])])).sort(),
     [projects, initialFocusArea],
   );
   const locationOptions = useMemo(
@@ -47,7 +47,7 @@ export default function ProjectsExplorer({ projects, initialFocusArea = "" }: { 
         project.title.toLowerCase().includes(normalizedQuery) ||
         project.summary.toLowerCase().includes(normalizedQuery);
       const matchesFocusArea =
-        focusArea === "" || projectMatchesField(project.focusArea, focusArea);
+        focusArea === "" || projectAppearsInField(project, focusArea);
       const matchesStatus = status === "" || project.status === status;
       const matchesLocation = location === "" || project.location === location;
       const matchesYear = year === "" || String(project.startYear) === year;

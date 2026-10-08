@@ -28,5 +28,5 @@ export default async function FocusAreaPage({ params }: { params: Promise<{ slug
   const { slug } = await params;
   const content = getWorkAreaContent(slug);
   if (!content) notFound();
-  return <WorkAreaView content={content} />;
+  return <WorkAreaView content={content} workArea={slug} />;
 }

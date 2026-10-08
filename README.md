@@ -8,6 +8,12 @@ editor accounts. Add galleries, structured descriptions, timelines, results and
 PDF reports, preview them, then save a draft or publish. Existing seeded projects
 can be edited without reseeding. See [project details](docs/PROJECT_DETAILS.md).
 
+Use **Display on Our Work pages** in the project editor to choose page placement;
+every published project also appears in All Projects. The corrected development
+catalog uses eight verified project photos and leaves unmatched covers empty.
+See [photo review and repair instructions](docs/PROJECT_IMAGE_REVIEW.md) to update
+an existing seeded database without resetting records or overwriting admin uploads.
+
 ## Independent applications
 
 - `frontend/`: Next.js, its own package.json, lockfile, configuration and assets.
@@ -128,7 +134,9 @@ M3 adds audited source metadata, repeatable unpublished imports and local asset
 preparation. Backend CI also runs source checks and isolated seed integration.
 See [backend/seed/README.md](backend/seed/README.md) for commands and the source
 layout, and [docs/M3_VERIFICATION.md](docs/M3_VERIFICATION.md) for evidence. Source
-files stay ignored; no seed command uploads, publishes or overwrites admin edits.
+files stay ignored. The generic M3 import creates drafts without uploads or
+publication; the separately documented development content seeds publish reviewed
+content and preserve admin edits.
 
 Read the Project Files brief, docs/PROJECT_CONTEXT.md, docs/DECISIONS.md and
 docs/PROGRESS.md for current state. M2 adds models/indexes, cookie auth and CSRF,

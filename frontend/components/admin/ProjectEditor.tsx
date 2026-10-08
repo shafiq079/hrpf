@@ -20,6 +20,7 @@ import type {
   TextBlock,
 } from "@/lib/project-details";
 import ProjectDetailView from "@/components/projects/ProjectDetailView";
+import { projectWorkPages, selectedWorkPages } from "@/lib/project-focus";
 
 type Localized = { en: string; ur?: string };
 type Photo = { assetId: string; alt: string; caption: string };
@@ -33,6 +34,7 @@ export type EditorRecord = {
   slug: string;
   locale: "en" | "ur";
   focusArea: string;
+  workAreas: string[];
   location: string;
   projectStatus: ProjectDetail["status"];
   startYear?: number;
@@ -49,6 +51,7 @@ export const newProject = (): EditorRecord => ({
   slug: "",
   locale: "en",
   focusArea: "",
+  workAreas: [],
   location: "",
   projectStatus: "Proposed",
   blocks: [],
@@ -148,7 +151,7 @@ export default function ProjectEditor({
   onSaved: (record: EditorRecord, message: string) => void;
   onCancel: () => void;
 }) {
-  const [form, setForm] = useState(initial);
+  const [form, setForm] = useState(() => ({ ...initial, workAreas: selectedWorkPages(initial) }));
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
@@ -333,6 +336,7 @@ export default function ProjectEditor({
         slug: form.slug,
         locale: form.locale,
         focusArea: form.focusArea,
+        workAreas: form.workAreas,
         location: form.location,
         projectStatus: form.projectStatus,
         ...(form.startYear ? { startYear: form.startYear } : {}),
@@ -463,7 +467,7 @@ export default function ProjectEditor({
                   onChange={(event) => patch({ slug: event.target.value })}
                 />
               </Field>
-              <Field label="Focus area" hint="Use the work-page names. Separate related fields with commas, for example Children's Rights, Education and Awareness.">
+              <Field label="Project topic" hint="A short label shown on project cards. Choose the work pages separately below.">
                 <input
                   required
                   maxLength={150}
@@ -611,9 +615,18 @@ export default function ProjectEditor({
               </p>
             </details>
           </Section>
+          <Section title="Display on Our Work pages" description="Every published project appears in All Projects. Select the work pages where this project should also appear. Leave all unchecked to show it in All Projects only.">
+            <fieldset className="grid min-w-0 gap-3 sm:grid-cols-2">
+              <legend className="sr-only">Work pages for this project</legend>
+              {projectWorkPages.map(page => <label key={page.slug} className={`flex min-h-12 cursor-pointer items-center gap-3 rounded border p-4 text-sm font-medium text-navy transition-colors ${form.workAreas.includes(page.slug) ? "border-teal bg-teal/5" : "border-border bg-white hover:border-teal"}`}>
+                <input type="checkbox" checked={form.workAreas.includes(page.slug)} className="h-4 w-4 cursor-pointer accent-teal-dark" onChange={event => patch({ workAreas: event.target.checked ? [...form.workAreas, page.slug] : form.workAreas.filter(slug => slug !== page.slug) })} />
+                {page.title}
+              </label>)}
+            </fieldset>
+          </Section>
           <Section
             title="Photos and gallery"
-            description="Add one cover and up to 20 gallery photos. JPG, PNG or WebP, up to 5 MB each. Write a clear description for every photo and add captions where useful."
+            description="Use photographs from this specific project. Leave the cover empty if no matching photograph is available. JPG, PNG or WebP, up to 5 MB each; one cover and up to 20 gallery photos."
           >
             <label className={buttonClass + " cursor-pointer"}>
               <Upload size={17} aria-hidden="true" />

@@ -37,21 +37,22 @@ export default function ProjectCard({
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-white transition-shadow duration-200 hover:shadow-[0_8px_24px_-14px_rgba(8,47,67,0.28)]">
-      <div className="relative aspect-[4/3] overflow-hidden">
+      {image ? <div className="relative aspect-[4/3] overflow-hidden bg-soft-gray">
         <AppImage
           src={image}
           alt={imageAlt}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          className="h-full w-full object-contain"
         />
         <span
           className={`absolute left-3 top-3 z-10 rounded px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${statusStyles[status]}`}
         >
           <TranslationText>{statusLabel ?? status}</TranslationText>
         </span>
-      </div>
+      </div> : null}
       <div className="flex flex-1 flex-col p-6">
+        {!image && <span className={`mb-5 self-start rounded px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${statusStyles[status]}`}><TranslationText>{statusLabel ?? status}</TranslationText></span>}
         <p className="eyebrow"><TranslationText>{focusArea}</TranslationText></p>
         <h3 className="mt-2 text-xl font-semibold">
           <Link
