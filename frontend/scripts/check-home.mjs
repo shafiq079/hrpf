@@ -65,6 +65,13 @@ try{
  const safeguarding=await read('/safeguarding-policy');assert.ok(safeguarding.html.includes('not an anonymous channel')&&safeguarding.html.includes('dedicated independent reporting contact'),'Safeguarding distinguishes actual reporting and its limits');
  const access=await read('/accessibility');assert.ok(access.html.includes('WCAG 2.2 Level AA')&&access.html.includes('do not claim full conformance'),'Accessibility states target rather than unaudited compliance');
  console.log('Policy checks passed: dated pages, sourced contact, actual complaint/email/translation/retention behaviour, honest safeguarding and accessibility limits, no prototype notes or dead PDF controls.');
+ const donation=await read('/donate');assert.equal(donation.status,200);
+ const donationMain=donation.html.match(/<main[\s\S]*?<\/main>/)[0];
+ for(const text of ['Human Rights Protection Foundation','ABHI Micro Finance Bank','90099009181133945000','PK42ABHI9009181133945000','0322-2670590','mailto:hrpf786@gmail.com','Copy Account number','Copy IBAN','Copy JazzCash number'])assert.ok(donationMain.includes(text),'Sourced transfer details: '+text);
+ for(const text of ['<form','<input','Payments are not configured','Bank details to be added','Payment provider integration pending','demonstration website','refund policy','Sponsor-a-project'])assert.ok(!donationMain.includes(text),'Removed payment prototype: '+text);
+ assert.ok(!donationMain.includes('Easypaisa'),'No unsourced wallet account');
+ assert.equal((donationMain.match(/<h1[ >]/g)||[]).length,1);
+ console.log('Donation page checks passed: exact sourced bank/JazzCash details, copy controls, no payment form or unsourced wallet.');
  assert.equal((await read('/our-work/unknown-area')).status,404);
  console.log('Women rights checks passed: general content, managed field projects, one H1, archive photo, actions and removal of hardcoded case/source notes.');
  for(const text of ['Managed project 1','Managed news 1','Our Guiding Principles','Muhammad Yousaf Badar','home-hero.webp','home-about.webp','home-chairman.webp'])assert.ok(page.html.includes(text),text);

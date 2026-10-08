@@ -1,4 +1,15 @@
-# Current handoff: Website policy pages on development
+# Current handoff: Policy and donation pages on development
+
+## Donation information milestone — 2026-10-08
+
+The owner requested bank/mobile payment details only. Replaced `/donate` prototype
+checkout with source-supported ABHI account title, bank, branch, account number,
+IBAN and JazzCash number, copy controls, transfer steps and direct email links.
+Removed the unused DonationForm and updated donation FAQs. No Easypaisa details
+were supplied. Identifiers retain exact text and LTR order under translation.
+No live payment, verification or automatic receipt feature. See `DONATIONS.md`.
+This continuation stays on development / PR #9 with the policy work. Accessibility
+remains directly available but temporarily hidden from public navigation/footer.
 
 ## Website policy milestone — 2026-10-08
 

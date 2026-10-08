@@ -1,5 +1,15 @@
 # HRPF Progress
 
+## Donation information — 2026-10-08
+
+- Owner requested payment details only; replace `/donate` prototype checkout with
+  supplied ABHI bank/account/IBAN/branch and JazzCash details plus transfer steps.
+- Exact-value copy controls, keyboard status, manual-copy fallback, LTR identifiers
+  and translation exclusions; direct email enquiries and updated donation FAQs.
+- No unsourced Easypaisa account, live payment, automatic verification/receipt,
+  backend or seed changes. See `DONATIONS.md`; development / PR #9 remains target.
+
+
 ## Website policies — 2026-10-08
 
 - PR #8 passed GitHub checks and merged Our Work into main at `877e0e3`;

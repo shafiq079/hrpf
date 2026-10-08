@@ -95,22 +95,22 @@ export const faqGroups: FAQGroup[] = [
       {
         question: "How are donations used?",
         answer:
-          "Contributions may support awareness, documentation, community engagement, research and referral programmes (illustrative).",
+          "Contributions help sustain HRPF's work for human dignity, justice, public awareness and responsible documentation.",
       },
       {
         question: "Is online payment available?",
         answer:
-          "Online payment processing is not yet configured on this demonstration website. Please do not enter real financial information.",
+          "The Donate page lists HRPF's bank account and JazzCash details. Complete your transfer through your bank or JazzCash; the website does not process payments.",
       },
       {
         question: "Will I receive a receipt?",
         answer:
-          "Donation receipts will be provided once secure processing is configured.",
+          "Keep your transaction reference and email HRPF to request an acknowledgement. The website does not automatically verify transfers or issue receipts.",
       },
       {
         question: "Can I support a specific project?",
         answer:
-          "Yes. Sponsor-a-project options are illustrated on the donate page.",
+          "Email HRPF before transferring if you would like to discuss support for a specific project.",
       },
     ],
   },
