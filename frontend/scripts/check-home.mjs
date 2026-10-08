@@ -42,6 +42,15 @@ try{
  const privatePage=await read('/admin/complaints');
  assert.ok(!privatePage.html.includes('id="hrpf-language-widget"'),'No language control on private administration');
  assert.ok(privatePage.html.includes('translate="no"'),'Private content excluded from automatic translation');
+ for(const route of ['projects','blogs','gallery','documents','board','complaints']){
+  const adminPage=route==='complaints'?privatePage:await read('/admin/'+route);
+  assert.equal(adminPage.status,200,'Admin route remains available: '+route);
+  const rendered=adminPage.html.replace(/<script\b[\s\S]*?<\/script>/g,'');
+  assert.ok(!/<header\b|<footer\b/.test(rendered),'No public header/footer in admin: '+route);
+  assert.ok(!rendered.includes('aria-label="Primary"')&&!rendered.includes('id="hrpf-language-widget"'),'No public navigation/translation control in admin: '+route);
+  assert.ok(rendered.includes('id="main-content"'),'Admin skip-link target remains available: '+route);
+ }
+ assert.ok(/<header\b/.test(page.html)&&/<footer\b/.test(page.html),'Public homepage keeps its header and footer');
  const women=await read('/our-work/womens-rights');assert.equal(women.status,200);
  assert.equal((women.html.match(/<h1[ >]/g)||[]).length,1,'Women rights page has one primary heading');
  for(const text of ['Projects in this field','Managed project 1','/projects/real-project','womens-rights-archive.webp','/file-a-complaint'])assert.ok(women.html.includes(text),`General women rights page: ${text}`);
@@ -55,6 +64,32 @@ try{
   assert.ok(requests.some(r=>new URL(r.path,'http://localhost').searchParams.get('focusArea')===title),slug+' requests its focus label');
  }
  console.log('All six work pages passed: distinct general content/photos, managed field projects, canonical links and no prototype/source notes.');
+ for(const route of ['privacy-policy','terms-of-use','accessibility','safeguarding-policy']){
+  const policy=await read('/'+route);assert.equal(policy.status,200);
+  assert.equal((policy.html.match(/<h1[ >]/g)||[]).length,1,route+' has one H1');
+  for(const removed of ['placeholder — update before publication','(placeholder address)','Download PDF','File coming soon','review schedule should be confirmed'])assert.ok(!policy.html.includes(removed),route+' removed '+removed);
+  assert.ok(policy.html.includes('2026-10-08')&&policy.html.includes('mailto:hrpf786@gmail.com'),route+' dated and has source contact');
+ }
+ const privacy=await read('/privacy-policy');for(const text of ['every uploaded file','fixed automatic deletion period','Google Forms','GTranslate','do not transmit entries'])assert.ok(privacy.html.includes(text),'Privacy current feature: '+text);
+ const safeguarding=await read('/safeguarding-policy');assert.ok(safeguarding.html.includes('not an anonymous channel')&&safeguarding.html.includes('dedicated independent reporting contact'),'Safeguarding distinguishes actual reporting and its limits');
+ const access=await read('/accessibility');assert.ok(access.html.includes('WCAG 2.2 Level AA')&&access.html.includes('do not claim full conformance'),'Accessibility states target rather than unaudited compliance');
+ console.log('Policy checks passed: dated pages, sourced contact, actual complaint/email/translation/retention behaviour, honest safeguarding and accessibility limits, no prototype notes or dead PDF controls.');
+ const contact=await read('/contact');assert.equal(contact.status,200);
+ const contactMain=contact.html.match(/<main[\s\S]*?<\/main>/)[0];
+ for(const value of ['mailto:hrpf786@gmail.com','mailto:info@hrpf.org','tel:+923222670590','Pandowal Road','Mianwal Ranjha','50490','https://maps.app.goo.gl/RwYYpU2y6po6vNzc6','contact-consent','contact-message'])assert.ok(contactMain.includes(value),'Real contact detail/control: '+value);
+ for(const value of ['+00 000','Organization address to be added','Map placeholder','3–5 working days','9:00 AM','href="#"'])assert.ok(!contactMain.includes(value),'Removed contact prototype: '+value);
+ assert.equal((contactMain.match(/<h1[ >]/g)||[]).length,1);
+ const officeMap=contactMain.match(/<iframe\b[^>]*title="HRPF Pakistan office location in Google Maps"[^>]*>/)?.[0];
+ assert.ok(officeMap,'Contact embeds the office map');
+ for(const value of ['https://www.google.com/maps/embed?pb=','0x3921dfad39fe7c3b%3A0x1adf787b0fcb615a','Human%20Rights%20Protection%20Foundation%20Pakistan.','loading="lazy"','referrerPolicy="strict-origin-when-cross-origin"','w-full'])assert.ok(officeMap.includes(value),'Office map attribute/place: '+value);
+ console.log('Contact checks passed: real email/phone/address/social links, exact office map embed, consent/intake controls and no prototype claims.');
+ const donation=await read('/donate');assert.equal(donation.status,200);
+ const donationMain=donation.html.match(/<main[\s\S]*?<\/main>/)[0];
+ for(const text of ['Human Rights Protection Foundation','ABHI Micro Finance Bank','90099009181133945000','PK42ABHI9009181133945000','0322-2670590','mailto:hrpf786@gmail.com','Copy Account number','Copy IBAN','Copy JazzCash number'])assert.ok(donationMain.includes(text),'Sourced transfer details: '+text);
+ for(const text of ['<form','<input','Payments are not configured','Bank details to be added','Payment provider integration pending','demonstration website','refund policy','Sponsor-a-project'])assert.ok(!donationMain.includes(text),'Removed payment prototype: '+text);
+ assert.ok(!donationMain.includes('Easypaisa'),'No unsourced wallet account');
+ assert.equal((donationMain.match(/<h1[ >]/g)||[]).length,1);
+ console.log('Donation page checks passed: exact sourced bank/JazzCash details, copy controls, no payment form or unsourced wallet.');
  assert.equal((await read('/our-work/unknown-area')).status,404);
  console.log('Women rights checks passed: general content, managed field projects, one H1, archive photo, actions and removal of hardcoded case/source notes.');
  for(const text of ['Managed project 1','Managed news 1','Our Guiding Principles','Muhammad Yousaf Badar','home-hero.webp','home-about.webp','home-chairman.webp'])assert.ok(page.html.includes(text),text);

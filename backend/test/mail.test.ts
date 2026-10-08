@@ -6,7 +6,7 @@ import { assertMailConfiguration, mailSender, type Mail } from '../src/services/
 const env = parseEnv({ NODE_ENV: 'test', EMAIL_PROVIDER: 'resend', RESEND_API_KEY: 'private-test-key', MAIL_FROM: 'sender@example.org' });
 const bytes = Buffer.from('%PDF-1.4\nSynthetic attachment\n%%EOF');
 const mail: Mail = { to: 'user@example.org', subject: 'Test receipt', text: 'Complete synthetic form',
-  html: '<p>Complete synthetic form</p>', messageId: '<hrpf-test@example.org>',
+  html: '<p>Complete synthetic form</p>', replyTo: 'reply@example.org', messageId: '<hrpf-test@example.org>',
   attachments: [{ filename: 'complaint.pdf', content: bytes, contentType: 'application/pdf', contentDisposition: 'attachment' }],
 };
 test('HTTPS sender transmits full copies and exact original attachments without provider file URLs', async () => {
@@ -17,7 +17,7 @@ test('HTTPS sender transmits full copies and exact original attachments without 
     const body = JSON.parse(String(options?.body));
     assert.deepEqual(body.to, [mail.to]); assert.equal(body.from, env.MAIL_FROM);
     assert.equal(body.text, mail.text); assert.equal(body.html, mail.html); assert.equal(body.subject, mail.subject);
-    assert.equal(body.headers['Message-ID'], mail.messageId);
+    assert.equal(body.headers['Message-ID'], mail.messageId); assert.equal(body.reply_to, mail.replyTo);
     assert.equal(body.attachments.length, 1); assert.equal(body.attachments[0].filename, 'complaint.pdf');
     assert.deepEqual(Buffer.from(body.attachments[0].content, 'base64'), bytes);
     assert.equal(body.attachments[0].path, undefined);

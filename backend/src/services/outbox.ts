@@ -7,7 +7,8 @@ import { decrypt, digest, token } from '../security/crypto.js';
 import { unavailable } from '../http/errors.js';
 import { cloudinaryProvider, type UploadProvider } from './uploads.js';
 import { complaintMail, type ComplaintAttachment } from './complaint-mail.js';
-export type Mail = { to: string; subject: string; text: string; html?: string; attachments?: ComplaintAttachment[]; messageId: string };
+import { contactMail } from './contact-mail.js';
+export type Mail = { to: string; subject: string; text: string; html?: string; replyTo?: string; attachments?: ComplaintAttachment[]; messageId: string };
 export type MailSender = (mail: Mail) => Promise<string>;
 export function assertMailConfiguration(env: Environment) {
   if (!env.MAIL_FROM || (env.EMAIL_PROVIDER === 'resend' ? !env.RESEND_API_KEY : !env.SMTP_HOST)) {
@@ -27,7 +28,7 @@ export function mailSender(env: Environment, fetcher: typeof fetch = fetch): Mai
           'Idempotency-Key': `hrpf-${digest(mail.messageId)}`,
         },
         body: JSON.stringify({ from: env.MAIL_FROM, to: [mail.to], subject: mail.subject,
-          text: mail.text, ...(mail.html ? { html: mail.html } : {}),
+          text: mail.text, ...(mail.html ? { html: mail.html } : {}), ...(mail.replyTo ? { reply_to: mail.replyTo } : {}),
           headers: { 'Message-ID': mail.messageId },
           ...(mail.attachments?.length ? { attachments: mail.attachments.map(file => ({
             filename: file.filename, content: file.content.toString('base64'),
@@ -79,7 +80,7 @@ export function createOutbox(env: Environment, send: MailSender, provider: Uploa
           text = `Reset your HRPF administrator password within 30 minutes: ${env.FRONTEND_URL}/admin/reset-password#token=${encodeURIComponent(value)}\nIf you did not request this, ignore the message.`;
         }
         const host = env.FRONTEND_URL ? new URL(env.FRONTEND_URL).hostname : 'hrpf.local';
-        const complete = ['complaint-copy', 'complaint-admin-copy'].includes(entry.template) ? await complaintMail(env, provider, entry) : {};
+        const complete = ['complaint-copy', 'complaint-admin-copy'].includes(entry.template) ? await complaintMail(env, provider, entry) : entry.entityType === 'ContactMessage' ? await contactMail(entry) : {};
         const providerId = await send({ to: entry.recipient, subject, text, ...complete, messageId: `<hrpf-${entry.id}@${host}>` });
         await EmailOutbox.updateOne({ _id: id, leaseToken }, { $set: { status: 'sent', sentAt: new Date(), providerId }, $unset: { leaseUntil: 1, leaseToken: 1, errorCode: 1, encryptedToken: 1 } });
       } catch {

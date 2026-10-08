@@ -1,5 +1,77 @@
 # HRPF Progress
 
+## 2026-10-08 — Private admin navigation and action cursors
+
+At the owner's request, admin routes omit the public header/footer and use shared
+active-state administration navigation under existing role guards. Public page
+chrome, auth behaviour, previews and translation route cleanup remain available.
+Global enabled actions now show hand cursors; disabled actions retain a disabled
+cursor. SSR verifies all six admin pages omit public chrome and public pages keep
+it; synthetic rendering checks frame transitions and active/restricted menus.
+
+
+## 2026-10-08 — Embedded office map correction
+
+Corrected the Contact map implementation at the owner's request: the location
+was intended to be embedded, not only linked. Retrieved official Google Maps
+Share → Embed HTML for the exact supplied office listing and visually confirmed
+the office pin in Google's embed preview. Added a full-width responsive lazy
+iframe below the contact/form grid, a readable title, fullscreen support and the
+original short-link fallback. No API key is needed for this shared map embed.
+Updated Contact checks and documentation.
+
+
+## 2026-10-08 — Admin form readability and language clarity
+
+Reviewed the supplied screenshot, GOV.UK/W3C guidance and actual translation/locale
+behaviour. Fixed bold inherited Project/Blog values, added shared explicit labels
+and associated hints, and scoped readable controls/headings/focus to administration
+while preserving public preview typography. Clarified optional manual Urdu in all
+five editors; Blog source language no longer interrupts ordinary English essentials.
+Existing Urdu values and publishing contracts are preserved. Frontend build/public
+checks and synthetic five-editor render validation cover this development update.
+See `ADMIN_FORMS.md`.
+
+
+## Contact page and real enquiries — 2026-10-08
+
+- Owner supplied the office map and requested sourced Contact details and a working
+  form. Added emails, phone, office/postcode, map and real social destinations.
+- Replace simulated submission with verified Contact tickets, real storage,
+  stable references and complete sender/admin emails; include enquiry type and
+  optional organization, safe HTML and admin Reply-To.
+- Preserve exact retries after lost responses, keep inputs on errors and state
+  receipt versus delivery clearly. No hours or response-time promises.
+- Update related policies and source docs; Contact is connected, feedback and
+  newsletter remain unconnected. See `CONTACT.md`; development / PR #9.
+
+
+## Donation information — 2026-10-08
+
+- Owner requested payment details only; replace `/donate` prototype checkout with
+  supplied ABHI bank/account/IBAN/branch and JazzCash details plus transfer steps.
+- Exact-value copy controls, keyboard status, manual-copy fallback, LTR identifiers
+  and translation exclusions; direct email enquiries and updated donation FAQs.
+- No unsourced Easypaisa account, live payment, automatic verification/receipt,
+  backend or seed changes. See `DONATIONS.md`; development / PR #9 remains target.
+
+
+## Website policies — 2026-10-08
+
+- PR #8 passed GitHub checks and merged Our Work into main at `877e0e3`;
+  development aligned before policy work, as requested.
+- Retained Privacy Policy, Terms of Use, Accessibility and Safeguarding routes;
+  replaced prototype content with actual complaint/email/translation/retention
+  behaviour, limitations and sourced email contacts.
+- Shared dated view provides contents navigation, stable anchors and readable
+  mobile layout; removed dead PDF downloads and publication placeholders.
+- Accessibility avoids unsupported conformance claims; safeguarding avoids
+  invented procedures and independent contacts. Disclosed unconnected forms.
+- Frontend lint/type/build, existing tests, public SSR/navigation and four-page
+  desktop/mobile/keyboard checks pass, with isolated Urdu RTL/English restore.
+- Policy changes stay on development. See `WEBSITE_POLICIES.md` for evidence and
+  organisation decisions; no backend or form-delivery changes in this task.
+
 ## Remaining five Our Work pages — 2026-10-08
 
 - Owner accepted general Women's Rights and requested the other menu pages in sequence.
@@ -12,7 +84,7 @@
   six focus queries, managed links and empty/offline states. Browser checks cover
   desktop/mobile, metadata/images, anchors, keyboard FAQ and women's RTL regression.
 - No backend or seed changes; homepage/overview/two legacy routes retained.
-  Development / draft PR #8 is the review target. Main merge remains separate.
+  PR #8 subsequently merged to main at `877e0e3` before the policy task.
 
 ## General category pages and managed field projects — 2026-10-08
 

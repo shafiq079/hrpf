@@ -85,6 +85,15 @@
     letter-spacing: -0.01em;
   }
 
+  :is(button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"]):not(:disabled):not([aria-disabled="true"]),
+  summary {
+    cursor: pointer;
+  }
+
+  :is(button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"]):is(:disabled, [aria-disabled="true"]) {
+    cursor: not-allowed;
+  }
+
   :focus-visible {
     outline: 3px solid var(--color-teal);
     outline-offset: 2px;
@@ -155,4 +164,44 @@ html[lang="ps"], html[lang="sd"] {
   --font-inter: var(--font-arabic);
   --font-sans: var(--font-arabic), Tahoma, sans-serif;
   --font-serif: var(--font-arabic), Tahoma, serif;
+}
+
+/* Private admin forms: a clear hierarchy and readable, regular-weight answers.
+   Unlayered rules override legacy utility styles only inside administration. */
+.hrpf-admin :is(h1, h2, h3, h4, legend):not([data-public-preview] *) {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: normal;
+}
+
+.hrpf-admin :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]):not([type="file"]):not([type="submit"]):not([type="button"]), textarea, select) {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 2.75rem;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: var(--color-text);
+  border-color: #8194a3;
+  background-color: white;
+}
+
+.hrpf-admin :is(input, textarea, select):focus-visible {
+  outline: 3px solid var(--color-navy);
+  outline-offset: 2px;
+}
+
+.hrpf-admin :is(input, textarea, select):disabled {
+  background-color: var(--color-off-white);
+  color: var(--color-muted);
+  cursor: not-allowed;
+}
+
+.hrpf-admin textarea { resize: vertical; }
+.hrpf-admin :is(input, textarea)[lang="ur"] {
+  font-family: var(--font-arabic), Tahoma, sans-serif;
+  line-height: 1.8;
 }

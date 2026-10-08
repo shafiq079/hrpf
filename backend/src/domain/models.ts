@@ -158,7 +158,7 @@ export const Certificate = mongoose.model('Certificate', new Schema({
   summary: localized, releaseNote: localized, original: assetRefSchema, publicFile: assetRefSchema, sortOrder: { type: Number, default: 0 }, publishedAt: Date, releaseReview: review,
 }, options));
 export const ContactMessage = mongoose.model('ContactMessage', new Schema({
-  name: requiredText(150), email: { ...requiredText(254), lowercase: true }, phone: text(30), subject: requiredText(200), message: requiredText(5000),
+  name: requiredText(150), email: { ...requiredText(254), lowercase: true }, phone: text(30), organization: text(150), inquiryType: { type: String, enum: ['General', 'Partnership', 'Media', 'Membership', 'Donation', 'Technical'], default: 'General' }, subject: requiredText(200), message: requiredText(5000),
   submissionKey: { ...requiredText(64), unique: true }, payloadHash: requiredText(64), consent: { type: consent, required: true },
   status: { type: String, enum: ['new', 'in_progress', 'replied', 'closed', 'spam'], default: 'new' }, assigneeId: oid('User'), notes: [note],
 }, options));

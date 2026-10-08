@@ -1,6 +1,7 @@
 "use client";
 import { useState, type FormEvent } from "react";
 import { Plus, Trash2, Upload, ArrowLeft } from "lucide-react";
+import { ManualUrduNote } from "@/components/admin/AdminField";
 import { adminRequest } from "@/lib/admin-api";
 import PersonProfile from "@/components/people/PersonProfile";
 
@@ -214,7 +215,7 @@ export default function BoardEditor({
         </p>
       )}
       {preview && (
-        <div className="mt-8 rounded-lg border border-border bg-off-white p-6 sm:p-9">
+        <div data-public-preview className="mt-8 rounded-lg border border-border bg-off-white p-6 sm:p-9">
           <p className="eyebrow mb-6">Private profile preview</p>
           <PersonProfile
             person={{
@@ -337,8 +338,9 @@ export default function BoardEditor({
             </label>
             <details className="mt-5">
               <summary className="cursor-pointer text-sm font-semibold text-teal-dark">
-                Optional Urdu introduction
+                Manual Urdu introduction (optional)
               </summary>
+              <ManualUrduNote />
               <label className="mt-3 block text-sm">
                 Urdu introduction
                 <textarea
@@ -465,8 +467,9 @@ export default function BoardEditor({
                   </label>
                   <details className="mt-4">
                     <summary className="cursor-pointer text-sm text-teal-dark">
-                      Optional Urdu section
+                      Manual Urdu section (optional)
                     </summary>
+                    <ManualUrduNote />
                     <label className="mt-3 block text-sm">
                       Urdu heading
                       <input

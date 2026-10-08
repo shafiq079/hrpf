@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useRef, useState, type FormEvent } from "react";
+import { AdminField as Field, ManualUrduNote } from "@/components/admin/AdminField";
 import { adminRequest } from "@/lib/admin-api";
 import DocumentGrid from "@/components/shared/DocumentGrid";
 export type DocumentKind = "reports" | "certificates";
@@ -506,8 +507,9 @@ export default function DocumentEditor({
         </fieldset>
         <details className="rounded-xl border border-border bg-white p-6">
           <summary className="cursor-pointer text-sm font-semibold">
-            Optional Urdu text
+            Manual Urdu content (optional)
           </summary>
+          <ManualUrduNote />
           <fieldset disabled={busy || uploading} className="mt-5 space-y-5">
             {(["title", "summary", "releaseNote"] as const).map((key) => (
               <Field
@@ -515,7 +517,7 @@ export default function DocumentEditor({
                 label={`Urdu ${key === "releaseNote" ? "public copy notes" : key}`}
               >
                 <textarea
-                  dir="rtl"
+                  dir="rtl" lang="ur"
                   rows={key === "title" ? 2 : 4}
                   maxLength={
                     key === "title" ? 200 : key === "summary" ? 4000 : 2000
@@ -567,7 +569,7 @@ export default function DocumentEditor({
         </div>
       </form>
       {preview && (
-        <section className="mt-10" aria-label="Public document preview">
+        <section data-public-preview className="mt-10" aria-label="Public document preview">
           <h2 className="mb-5 text-2xl">Public card preview</h2>
           {file ? (
             <DocumentGrid kind={kind} documents={[previewDocument]} />
@@ -577,13 +579,5 @@ export default function DocumentEditor({
         </section>
       )}
     </>
-  );
-}
-function Field({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <label className="block text-sm font-semibold text-navy">
-      {label}
-      {children}
-    </label>
   );
 }

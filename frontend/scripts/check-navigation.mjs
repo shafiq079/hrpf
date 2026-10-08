@@ -29,7 +29,7 @@ export async function checkNavigation(read, port) {
   for(const text of ['Your details','CNIC number','Father','Province / region','District','Your form details and uploaded files will be emailed']) assert.ok(page.html.includes(text),'Live complaint form: '+text);
   assert.ok(!page.html.includes('report anonymously') && !page.html.includes('demonstration only'));
   assert.ok((await read('/admin/complaints')).html.includes('Loading complaint management'));
-  assert.ok((await read('/privacy-policy')).html.includes('Complaint Submissions'));
+  assert.ok((await read('/privacy-policy')).html.includes('id="complaint-information"'), 'Privacy guidance for the connected complaint route');
   page = await read('/blogs');
   assert.ok(page.html.includes('Managed news 2') && page.html.includes('/blogs/real-news'), 'Blogs use published records');
   assert.ok(!page.html.includes('Building Safer Digital Spaces'), 'No prototype blogs');

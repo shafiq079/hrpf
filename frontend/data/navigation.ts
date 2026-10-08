@@ -83,18 +83,17 @@ export const footerSupportLinks: NavLink[] = [
   { label: "Progress Reports", href: "/about/progress-reports" },
 ];
 
+// Accessibility remains at /accessibility but is temporarily hidden from public navigation.
 // Footer: policy links.
 export const footerResourceLinks: NavLink[] = [
   { label: "Privacy Policy", href: "/privacy-policy" },
   { label: "Terms of Use", href: "/terms-of-use" },
-  { label: "Safeguarding Policy", href: "/safeguarding-policy" },
-  { label: "Accessibility", href: "/accessibility" },
+  { label: "Safeguarding", href: "/safeguarding-policy" },
 ];
 
 // Footer bottom bar legal links.
 export const footerLegalLinks: NavLink[] = [
   { label: "Privacy Policy", href: "/privacy-policy" },
   { label: "Terms of Use", href: "/terms-of-use" },
-  { label: "Accessibility", href: "/accessibility" },
   { label: "Safeguarding", href: "/safeguarding-policy" },
 ];

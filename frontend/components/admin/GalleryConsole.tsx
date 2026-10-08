@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { FolderOpen, Plus, LogOut, Pencil, ExternalLink } from "lucide-react";
+import AdminNavigation from "@/components/admin/AdminNavigation";
 import Container from "@/components/shared/Container";
 import { adminRequest } from "@/lib/admin-api";
 import GalleryEditor, { newMedia, type MediaRecord, type MediaKind } from "./GalleryEditor";
@@ -173,7 +174,7 @@ export default function GalleryConsole() {
     );
   return (
     <Container className="py-10 sm:py-14">
-      {allowed && <nav aria-label="Content administration" className="mb-6 flex flex-wrap gap-5 text-sm font-semibold"><Link href="/admin/projects" className="text-teal-dark">Projects</Link><Link href="/admin/blogs" className="text-teal-dark">Blogs</Link><Link href="/admin/gallery" className="text-teal-dark">Gallery</Link><Link href="/admin/documents" className="text-teal-dark">Documents</Link><Link href="/admin/board" className="text-teal-dark">Board and Team</Link><Link href="/admin/complaints" className="text-teal-dark">Complaints</Link></nav>}
+      {allowed && <AdminNavigation />}
       {user && (
         <div className="mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
           <p className="text-sm text-muted">

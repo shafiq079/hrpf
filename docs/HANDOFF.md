@@ -1,6 +1,71 @@
-# Current handoff: All six Our Work menu pages redesigned
+# Current handoff: Private admin navigation on development
 
-## Current milestone — 2026-10-08
+## Admin navigation and cursor milestone — 2026-10-08
+
+Removed public Header/Footer from admin routes using a pathname-aware server-slot
+frame. The six consoles share active-state admin navigation with their existing
+role/sign-in guards; complaint-only staff keep their restricted menu. Public
+pages retain their chrome and root translation cleanup. Added hand cursors for
+enabled buttons/action inputs and disabled cursors for unavailable actions.
+Production SSR and synthetic frame/menu checks cover this development update.
+See `ADMIN_FORMS.md`. This continuation remains in development / PR #9.
+
+## Admin form readability milestone — 2026-10-08
+
+Reviewed the owner's screenshot and traced manual Urdu versus public GTranslate.
+Urdu controls remain a separate original-content capability and are not required
+for English publishing. Clarified the distinction across five editors; moved Blog
+language controls to an optional section and kept existing Urdu data intact.
+Fixed inherited bold Project/Blog answers with shared explicit labels and hint
+associations. Scoped larger regular-weight answers, stronger borders/focus and
+consistent heading typography to private administration, excluding public previews.
+Frontend checks and synthetic editor render verification cover the update.
+See `ADMIN_FORMS.md`. This continuation stays on development / PR #9.
+
+## Contact milestone — 2026-10-08
+
+The owner supplied the office map and requested a complete Contact update with
+real submissions. Added sourced emails/phone/address/postcode/social links and the
+exact map link plus a responsive map embed using Google’s official office listing
+Share → Embed HTML. Removed placeholders, office-hours and response-time claims.
+Connected the form to the purpose-bound verified Contact API, durable storage,
+stable HRPF-MSG receipt and complete sender/admin emails with admin Reply-To.
+Retries keep the exact original submission and do not create duplicate enquiries;
+email failure does not lose the saved record. Updated policies to describe the
+connected Contact form. See `CONTACT.md` for sources, configuration and tests.
+This continuation stays on development / PR #9. Feedback and newsletter remain
+unconnected. Production inbox delivery depends on the existing private mail setup.
+
+## Donation information milestone — 2026-10-08
+
+The owner requested bank/mobile payment details only. Replaced `/donate` prototype
+checkout with source-supported ABHI account title, bank, branch, account number,
+IBAN and JazzCash number, copy controls, transfer steps and direct email links.
+Removed the unused DonationForm and updated donation FAQs. No Easypaisa details
+were supplied. Identifiers retain exact text and LTR order under translation.
+No live payment, verification or automatic receipt feature. See `DONATIONS.md`.
+This continuation stays on development / PR #9 with the policy work. Accessibility
+remains directly available but temporarily hidden from public navigation/footer.
+
+## Website policy milestone — 2026-10-08
+
+At the owner's request, PR #8 passed GitHub checks and merged the complete Our Work
+redesign into main at `877e0e3`. Development was aligned with that merge before the
+next task. All four policy routes are retained and rewritten using the actual
+complaint, email, translation, membership and storage behaviour. A shared PolicyView
+provides dated readable sections and keyboard-accessible contents navigation, with
+no dead PDF control or prototype publication notes.
+
+Accessibility states a WCAG 2.2 AA target and known limits without claiming full
+conformance. Safeguarding is a commitment and reporting guide without an invented
+independent contact, procedure or deadline. Both published organisation email
+addresses are supported by supplied documents. The feedback and newsletter forms remain unconnected; Contact was subsequently
+connected in the milestone above.
+Formal retention rules and independent safeguarding arrangements remain organisation
+decisions. See `WEBSITE_POLICIES.md` for sources, implementation and verification.
+This policy task stays on development; main contains the prior Our Work milestone.
+
+## Completed Our Work milestone — 2026-10-08
 
 The owner accepted the general Women’s Rights page and asked for the remaining
 menu pages one by one. Implemented Children’s Rights, Access to Justice, Minority
@@ -25,8 +90,7 @@ passed. Browser checks cover all five new pages’ desktop/mobile images, metada
 anchors, keyboard FAQs and project links, plus women’s regression and isolated
 Urdu RTL/English restoration. No backend changes in this continuation.
 
-Development remains the working branch; PR #8 contains the complete six-page
-redesign. Main is not merged. See `OUR_WORK_REDESIGN.md` for the source map,
+PR #8 contains the complete six-page redesign and is merged into main at `877e0e3`. See `OUR_WORK_REDESIGN.md` for the source map,
 photo provenance and full scope. Next content review: Our Work overview and its two
 legacy non-menu categories, if requested. Caching remains deferred until the owner
 is satisfied with the page corrections.
