@@ -10,21 +10,22 @@ import FilterBar from "@/components/shared/FilterBar";
 import ProjectCard from "@/components/shared/ProjectCard";
 import EmptyState from "@/components/shared/EmptyState";
 import PrimaryButton from "@/components/shared/PrimaryButton";
+import { projectFields, projectMatchesField } from "@/lib/project-focus";
 
 const INITIAL_VISIBLE = 6;
 
 /** Client-side search, filtering and progressive loading for projects. */
-export default function ProjectsExplorer({ projects }: { projects: (Project & { startedLabel?: string })[] }) {
+export default function ProjectsExplorer({ projects, initialFocusArea = "" }: { projects: (Project & { startedLabel?: string })[]; initialFocusArea?: string }) {
   const [query, setQuery] = useState("");
-  const [focusArea, setFocusArea] = useState("");
+  const [focusArea, setFocusArea] = useState(initialFocusArea);
   const [status, setStatus] = useState("");
   const [location, setLocation] = useState("");
   const [year, setYear] = useState("");
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
 
   const focusAreaOptions = useMemo(
-    () => Array.from(new Set(projects.map((p) => p.focusArea))).sort(),
-    [projects],
+    () => Array.from(new Set([...projects.flatMap((p) => projectFields(p.focusArea)), ...(initialFocusArea ? [initialFocusArea] : [])])).sort(),
+    [projects, initialFocusArea],
   );
   const locationOptions = useMemo(
     () => Array.from(new Set(projects.map((p) => p.location))).sort(),
@@ -46,7 +47,7 @@ export default function ProjectsExplorer({ projects }: { projects: (Project & { 
         project.title.toLowerCase().includes(normalizedQuery) ||
         project.summary.toLowerCase().includes(normalizedQuery);
       const matchesFocusArea =
-        focusArea === "" || project.focusArea === focusArea;
+        focusArea === "" || projectMatchesField(project.focusArea, focusArea);
       const matchesStatus = status === "" || project.status === status;
       const matchesLocation = location === "" || project.location === location;
       const matchesYear = year === "" || String(project.startYear) === year;

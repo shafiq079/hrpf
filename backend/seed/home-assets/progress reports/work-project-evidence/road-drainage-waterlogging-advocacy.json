@@ -1,0 +1,20 @@
+{
+  "project": "road-drainage-waterlogging-advocacy",
+  "reviewedAt": "2026-10-08",
+  "sources": [
+    {
+      "label": "Supplied HRPF Profile, May 2026",
+      "originalFile": "PROFILE HRPF.docx",
+      "sha256": "99cf62f12b7e57cb1e0101b92aec721a7c90704a202a013d0d4266fc2d8b6236",
+      "bytes": 17281586,
+      "type": "supplied-document",
+      "locator": "Key programmes A; road-construction and drainage complaint"
+    }
+  ],
+  "verificationNotes": "Supplied profile is a fallback source; no primary order or completion evidence supplied.",
+  "fields": [
+    "Community Development",
+    "Access to Justice"
+  ],
+  "statusMeaning": "Last documented stage; an Ongoing label does not assert continuous operation today."
+}

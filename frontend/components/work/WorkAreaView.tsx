@@ -76,11 +76,11 @@ export default async function WorkAreaView({ content }: { content: WorkAreaConte
       <Container>
         <div className="flex flex-wrap items-end justify-between gap-5">
           <SectionHeading eyebrow="Our work in action" title="Projects in this field" description={content.projectIntroduction} />
-          <PrimaryButton href="/projects" variant="outline" icon={ArrowRight}>View all projects</PrimaryButton>
+          <PrimaryButton href={`/projects?focusArea=${encodeURIComponent(content.title)}`} variant="outline" icon={ArrowRight}>View projects in this field</PrimaryButton>
         </div>
         {projects.data.length > 0 ? <div className="mt-9 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {projects.data.map(row => {
-            const project = { ...projectCard(row), href: `/projects/${row.slug}` };
+            const project = { ...projectCard(row), focusArea: content.title, href: `/projects/${row.slug}` };
             return <ProjectCard key={row.slug} project={project} startedLabel={project.startedLabel} />;
           })}
         </div> : <p className="mt-9 border border-border bg-white p-6 text-[15px] leading-relaxed text-muted" role="status">

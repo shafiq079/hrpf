@@ -1,0 +1,19 @@
+{
+  "project": "community-drinking-water-cooler",
+  "reviewedAt": "2026-10-08",
+  "sources": [
+    {
+      "label": "Supplied HRPF Annual Performance Report 2025",
+      "originalFile": "2025 Progress Report.pdf",
+      "sha256": "cfbff888af513ea5cf0af087361e586fa358f2f7b8ec693a485cb89d71ec04f1",
+      "bytes": 6400878,
+      "type": "supplied-document",
+      "locator": "page 32; installation of cold-water cooler"
+    }
+  ],
+  "verificationNotes": "No claim about water treatment, testing, continuing maintenance, daily users or beneficiaries is made.",
+  "fields": [
+    "Community Development"
+  ],
+  "statusMeaning": "Completed describes the specific recorded action, not resolution of all underlying needs."
+}

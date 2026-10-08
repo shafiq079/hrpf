@@ -1,0 +1,20 @@
+{
+  "project": "prison-healthcare-mandi-bahauddin",
+  "reviewedAt": "2026-10-08",
+  "sources": [
+    {
+      "label": "Supplied HRPF Annual Performance Report 2025",
+      "originalFile": "2025 Progress Report.pdf",
+      "sha256": "cfbff888af513ea5cf0af087361e586fa358f2f7b8ec693a485cb89d71ec04f1",
+      "bytes": 6400878,
+      "type": "supplied-document",
+      "locator": "page 19; medical facilities at District Jail"
+    }
+  ],
+  "verificationNotes": "Completed describes the recorded intervention, not a guarantee of present-day jail conditions.",
+  "fields": [
+    "Access to Justice",
+    "Community Development"
+  ],
+  "statusMeaning": "Completed describes the specific recorded action, not resolution of all underlying needs."
+}

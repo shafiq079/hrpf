@@ -1,0 +1,1641 @@
+{
+  "version": "work-projects-v1",
+  "files": [
+    {
+      "id": "gallery:work-report-2023",
+      "path": "other_images_final/home-report-2023.webp",
+      "sha256": "5eecaea1966461f2663b6b7d36f02a62dbb43b07c4b14bf7b219da28b2a01174",
+      "bytes": 142666
+    },
+    {
+      "id": "gallery:work-report-2024",
+      "path": "other_images_final/home-report-2024.webp",
+      "sha256": "3649af3bca3fc43c7a2081b2e3fa03b52d176e84e20f618e3811682d2533a44e",
+      "bytes": 97950
+    },
+    {
+      "id": "gallery:work-report-2025",
+      "path": "other_images_final/home-report-2025.webp",
+      "sha256": "5e614e56f14783ba2cddc7bbb9faaa50147fe322b15faa15ee71bbd3544a16b1",
+      "bytes": 224248
+    },
+    {
+      "id": "work-evidence:safe-classrooms-mianwal-ranjha",
+      "path": "progress reports/work-project-evidence/safe-classrooms-mianwal-ranjha.json",
+      "sha256": "f0aa5dde242bb3013d4c60d1c6336e364170a70afff72076c0d3a4a073a89ce8",
+      "bytes": 1235
+    },
+    {
+      "id": "work-evidence:child-protection-institutional-advocacy",
+      "path": "progress reports/work-project-evidence/child-protection-institutional-advocacy.json",
+      "sha256": "f93c4c8fc87985e26b67ffdf4546270db98db6e0ea1b3ce230b8d6dce819eeca",
+      "bytes": 722
+    },
+    {
+      "id": "work-evidence:domestic-violence-emergency-response",
+      "path": "progress reports/work-project-evidence/domestic-violence-emergency-response.json",
+      "sha256": "b700c0ed0e3591a1d0fba4f940b6c9055d848d5e06d57d682366ad0799c17dad",
+      "bytes": 670
+    },
+    {
+      "id": "work-evidence:womens-dignity-public-services",
+      "path": "progress reports/work-project-evidence/womens-dignity-public-services.json",
+      "sha256": "bc24e3b1099acb3de435ae67bf5be09c33ea7056189376fc510b7cdb14cf7a2c",
+      "bytes": 928
+    },
+    {
+      "id": "work-evidence:prison-healthcare-mandi-bahauddin",
+      "path": "progress reports/work-project-evidence/prison-healthcare-mandi-bahauddin.json",
+      "sha256": "9cb0190aa2765cbc7dff63e7e35177dfec77aad76434fec5f8e969302f02e101",
+      "bytes": 740
+    },
+    {
+      "id": "work-evidence:trafficking-prevention-migration-awareness",
+      "path": "progress reports/work-project-evidence/trafficking-prevention-migration-awareness.json",
+      "sha256": "1aad0af6054a96a807fe840a989016d2807ca374c76ad020d2fc6acab6cf6dca",
+      "bytes": 1046
+    },
+    {
+      "id": "work-evidence:overseas-travel-document-support",
+      "path": "progress reports/work-project-evidence/overseas-travel-document-support.json",
+      "sha256": "854437490742d007ca79acc3ca79cf3a64cc695b2d5bfa79952c66dea1fcab75",
+      "bytes": 797
+    },
+    {
+      "id": "work-evidence:clean-water-feasibility-mianwal-ranjha",
+      "path": "progress reports/work-project-evidence/clean-water-feasibility-mianwal-ranjha.json",
+      "sha256": "2dd56446ff6ef1a5581bcbc14bb3e7eb220fbccfde8dc90a42133a994cbbcb15",
+      "bytes": 767
+    },
+    {
+      "id": "work-evidence:canal-water-environmental-accountability",
+      "path": "progress reports/work-project-evidence/canal-water-environmental-accountability.json",
+      "sha256": "63b75b8b1039a488e7bf3502318e2fe82dea351187c8e18a7539793e0b4c2551",
+      "bytes": 1151
+    },
+    {
+      "id": "work-evidence:gas-service-restoration-mianwal-ranjha",
+      "path": "progress reports/work-project-evidence/gas-service-restoration-mianwal-ranjha.json",
+      "sha256": "8da1ab5b6831786e62599cca408d4cd5e2d19ab14faeb5fe37fcbba9654aef85",
+      "bytes": 672
+    },
+    {
+      "id": "work-evidence:electricity-distribution-mianwal-ranjha",
+      "path": "progress reports/work-project-evidence/electricity-distribution-mianwal-ranjha.json",
+      "sha256": "bc0356ff934db321774e9dcfc985bf6aa2648a872701eed9625cc5d2ecb1f96e",
+      "bytes": 1141
+    },
+    {
+      "id": "work-evidence:community-drinking-water-cooler",
+      "path": "progress reports/work-project-evidence/community-drinking-water-cooler.json",
+      "sha256": "71c5dac1e687f913c95df07ce1e4c8aa7cd4c4cfbe13c58341b2fe77b6f89d12",
+      "bytes": 719
+    },
+    {
+      "id": "work-evidence:right-to-information-public-accountability",
+      "path": "progress reports/work-project-evidence/right-to-information-public-accountability.json",
+      "sha256": "81a7882e922ba5171206efc7378d676f5a8818e029467b25fb2ed4605a26f052",
+      "bytes": 1437
+    },
+    {
+      "id": "work-evidence:sialkot-health-data-research",
+      "path": "progress reports/work-project-evidence/sialkot-health-data-research.json",
+      "sha256": "27bf1094132c0e26accf09c5a8ffe0a6940fa1ad02207163b854627fcccbeda2",
+      "bytes": 1067
+    },
+    {
+      "id": "work-evidence:press-freedom-journalist-protection",
+      "path": "progress reports/work-project-evidence/press-freedom-journalist-protection.json",
+      "sha256": "622617bac42c60cc776a0d6d4452249ca49d518937181d58150a8d8804f17d19",
+      "bytes": 1950
+    },
+    {
+      "id": "work-evidence:flood-relief-access-accountability",
+      "path": "progress reports/work-project-evidence/flood-relief-access-accountability.json",
+      "sha256": "e1ea5f971944f6307ada5678f34f753a405b75bc8373c4ddff98c35af2ebf0f8",
+      "bytes": 822
+    },
+    {
+      "id": "work-evidence:education-access-research",
+      "path": "progress reports/work-project-evidence/education-access-research.json",
+      "sha256": "f3c350585a168add4fa9a169c10c3d8454c356d34253066624ca655db32c3de6",
+      "bytes": 671
+    },
+    {
+      "id": "work-evidence:smart-school-student-support",
+      "path": "progress reports/work-project-evidence/smart-school-student-support.json",
+      "sha256": "e5221724dc9b93d15c3a5bf86a0838f8c80d3a9a69123a26db9f21d2a9a1828b",
+      "bytes": 813
+    },
+    {
+      "id": "work-evidence:canal-bank-road-safety",
+      "path": "progress reports/work-project-evidence/canal-bank-road-safety.json",
+      "sha256": "ca639d5d8662a3a003bffb611873fa65e036babf8878b06b647be651c984a2ff",
+      "bytes": 659
+    },
+    {
+      "id": "work-evidence:road-drainage-waterlogging-advocacy",
+      "path": "progress reports/work-project-evidence/road-drainage-waterlogging-advocacy.json",
+      "sha256": "0a322983933b66900c8d66675343f0ecd7a6afd20b6f42e3c88bdfc8f851d8ef",
+      "bytes": 725
+    },
+    {
+      "id": "work-evidence:electricity-connection-fairness",
+      "path": "progress reports/work-project-evidence/electricity-connection-fairness.json",
+      "sha256": "bc84f2c730fcbdf0b5e6f88877e03b94fe827cd02fc609add5c96627b2fd0524",
+      "bytes": 747
+    },
+    {
+      "id": "work-evidence:sukkur-community-peace-walk",
+      "path": "progress reports/work-project-evidence/sukkur-community-peace-walk.json",
+      "sha256": "6aae902ae419b46df77e8322eb3a85d3e31132e683ea611a439bf6cc382c9723",
+      "bytes": 789
+    },
+    {
+      "id": "work-evidence:mandi-bahauddin-peace-petition",
+      "path": "progress reports/work-project-evidence/mandi-bahauddin-peace-petition.json",
+      "sha256": "ca3e40a9705b4c2f2e2328b37eaf50cccd94411b108e9ab99755afaebf2a4685",
+      "bytes": 850
+    },
+    {
+      "id": "work-evidence:public-safety-information-research",
+      "path": "progress reports/work-project-evidence/public-safety-information-research.json",
+      "sha256": "34fd25bbdf9bf93c5beb3263353c006ace9a33a8937c501e355853538cc2ce92",
+      "bytes": 817
+    },
+    {
+      "id": "work-evidence:road-visibility-public-safety",
+      "path": "progress reports/work-project-evidence/road-visibility-public-safety.json",
+      "sha256": "89ab84d2d0b4d035afcc1fa32da9cca98b0c58a237f2e5ef1acaa639397b526b",
+      "bytes": 754
+    },
+    {
+      "id": "work-evidence:roadside-electrical-hazard-removal",
+      "path": "progress reports/work-project-evidence/roadside-electrical-hazard-removal.json",
+      "sha256": "4ec0b17bbeaf640718c79e96e984e6f9d5ea5704f7b40e30e1975ea69aa39d20",
+      "bytes": 792
+    },
+    {
+      "id": "work-evidence:union-council-building-advocacy",
+      "path": "progress reports/work-project-evidence/union-council-building-advocacy.json",
+      "sha256": "a6a5f6f22d3fd61eae3b7f22493ead008b1823da689a6941a7de8ddf1ba2051c",
+      "bytes": 703
+    },
+    {
+      "id": "work-evidence:national-minorities-day-awareness",
+      "path": "progress reports/work-project-evidence/national-minorities-day-awareness.json",
+      "sha256": "fe7ce7e18c9de2a02ee8a5dc5126f61c35daf7049c2a7629a0a89909f8a9bdf1",
+      "bytes": 1279
+    }
+  ],
+  "records": [
+    {
+      "kind": "Project",
+      "key": "work-project:safe-classrooms-mianwal-ranjha",
+      "payload": {
+        "title": {
+          "en": "Safe Classrooms in Mianwal Ranjha"
+        },
+        "slug": "safe-classrooms-mianwal-ranjha",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF sought action on an unsafe primary-school building through education officials and the Provincial Ombudsman, securing a decision for new classrooms subject to funding approval."
+        },
+        "blocks": [],
+        "focusArea": "Children's Rights, Education and Awareness, Access to Justice",
+        "location": "Mianwal Ranjha, Mandi Bahauddin",
+        "projectStatus": "Ongoing",
+        "coverAlt": "Human Rights Protection Foundation annual report 2025",
+        "details": {
+          "overview": "HRPF sought action on an unsafe primary-school building through education officials and the Provincial Ombudsman, securing a decision for new classrooms subject to funding approval.",
+          "challenge": "Children continued attending lessons in a deteriorated building. Safe premises and functioning classrooms were the central concerns.",
+          "approach": "HRPF submitted applications to the education authorities, brought the matter before the Provincial Ombudsman Punjab and provided supporting records during follow-up.",
+          "period": "School safety advocacy recorded in 2025; update shared in 2026",
+          "targetCommunity": "Children attending Government Primary School Mianwal Ranjha",
+          "objectives": [
+            "Seek safe classrooms for primary-school children."
+          ],
+          "activities": [
+            "Raised concerns with the responsible education officials.",
+            "Submitted an application to the Provincial Ombudsman Punjab.",
+            "Provided records and followed the proceedings."
+          ],
+          "outcomes": [
+            "An Ombudsman decision called for new classrooms once the necessary funding is approved.",
+            "Construction completion and funding approval remain unconfirmed."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Annual Performance Report 2025; pages 13 and 16; Government Primary School Mianwal Ranjha",
+          "https://www.linkedin.com/posts/human-rights-protection-foundation-hrpf-3b545677_hrpf-performance-report-government-primary-activity-7429422386921443328-9hOp"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:safe-classrooms-mianwal-ranjha",
+        "gallery:work-report-2025"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:child-protection-institutional-advocacy",
+      "payload": {
+        "title": {
+          "en": "Child Protection and Institutional Advocacy"
+        },
+        "slug": "child-protection-institutional-advocacy",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF engaged human-rights, police and judicial authorities after a serious child-protection concern, advocating for a prompt investigation and support for the affected family."
+        },
+        "blocks": [],
+        "focusArea": "Children's Rights, Access to Justice",
+        "location": "Mandi Bahauddin, Punjab",
+        "projectStatus": "Ongoing",
+        "coverAlt": "Human Rights Protection Foundation annual report 2025",
+        "details": {
+          "overview": "HRPF engaged human-rights, police and judicial authorities after a serious child-protection concern, advocating for a prompt investigation and support for the affected family.",
+          "challenge": "A child and family needed protection and a responsive investigation following a reported incident of sexual violence.",
+          "approach": "HRPF raised the concern with relevant institutions and followed the case while advocating for stronger protection of children.",
+          "period": "Child-protection intervention recorded in 2025",
+          "targetCommunity": "Children and families seeking protection from violence",
+          "objectives": [
+            "Seek protection and a responsive investigation for a child and family."
+          ],
+          "activities": [
+            "Contacted national human-rights institutions.",
+            "Engaged Punjab Police and relevant judicial authorities.",
+            "Advocated for family support, protection and a transparent investigation."
+          ],
+          "outcomes": [
+            "The concern was brought to the attention of the relevant authorities.",
+            "The available record does not establish a final court outcome."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Annual Performance Report 2025; page 46; child-protection intervention"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:child-protection-institutional-advocacy",
+        "gallery:work-report-2025"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:domestic-violence-emergency-response",
+      "payload": {
+        "title": {
+          "en": "Domestic Violence and Emergency Response Advocacy"
+        },
+        "slug": "domestic-violence-emergency-response",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF raised concerns about delayed police assistance in domestic-violence emergencies and called for more responsive, accountable protection services."
+        },
+        "blocks": [],
+        "focusArea": "Women's Rights, Access to Justice, Research and Advocacy",
+        "location": "Mandi Bahauddin, Punjab",
+        "projectStatus": "Ongoing",
+        "coverAlt": "Human Rights Protection Foundation annual report 2025",
+        "details": {
+          "overview": "HRPF raised concerns about delayed police assistance in domestic-violence emergencies and called for more responsive, accountable protection services.",
+          "challenge": "Reports of delayed responses to distress calls highlighted risks for people facing violence at home.",
+          "approach": "HRPF communicated the concerns to higher authorities and recommended review of emergency response, complaint handling and staff sensitivity.",
+          "period": "Emergency-response concerns recorded in 2025",
+          "targetCommunity": "Women and families facing domestic violence",
+          "objectives": [
+            "Seek timely and accountable responses to domestic-violence emergencies."
+          ],
+          "activities": [
+            "Documented concerns about emergency response.",
+            "Made formal representations to higher authorities.",
+            "Called for independent monitoring and better handling of domestic-violence complaints."
+          ],
+          "outcomes": [
+            "Emergency-response and protection concerns were formally raised.",
+            "Implementation of the recommended reforms is not confirmed."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Annual Performance Report 2025; page 40; emergency response and domestic violence"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:domestic-violence-emergency-response",
+        "gallery:work-report-2025"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:womens-dignity-public-services",
+      "payload": {
+        "title": {
+          "en": "Women's Dignity in Public Services"
+        },
+        "slug": "womens-dignity-public-services",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF called for an impartial inquiry and respectful treatment of women in public offices after reports of an elderly woman being mistreated at an electricity-services office."
+        },
+        "blocks": [],
+        "focusArea": "Women's Rights, Access to Justice, Education and Awareness",
+        "location": "Sheikhupura, Punjab",
+        "projectStatus": "Ongoing",
+        "startYear": 2025,
+        "coverAlt": "Human Rights Protection Foundation annual report 2025",
+        "details": {
+          "overview": "HRPF called for an impartial inquiry and respectful treatment of women in public offices after reports of an elderly woman being mistreated at an electricity-services office.",
+          "challenge": "Reported mistreatment of an older woman raised concerns about safety, dignity and how public institutions respond to vulnerable citizens.",
+          "approach": "HRPF issued a public statement calling for accountability, an independent inquiry and staff training in respectful public service.",
+          "period": "Public advocacy statement issued in 2025",
+          "targetCommunity": "Women and older people using public services",
+          "objectives": [
+            "Promote dignity and respectful treatment of women in public offices."
+          ],
+          "activities": [
+            "Published a public-interest advocacy statement.",
+            "Called for an independent inquiry.",
+            "Recommended respectful public dealing and human-rights awareness for staff."
+          ],
+          "outcomes": [
+            "The concern and reform requests were made public.",
+            "A completed inquiry, compensation or disciplinary outcome is not established."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "https://www.linkedin.com/posts/human-rights-protection-foundation-hrpf-3b545677_treatment-of-elderly-woman-by-wapda-staff-activity-7346003344940830721-CSy2"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:womens-dignity-public-services",
+        "gallery:work-report-2025"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:prison-healthcare-mandi-bahauddin",
+      "payload": {
+        "title": {
+          "en": "Healthcare Access at District Jail"
+        },
+        "slug": "prison-healthcare-mandi-bahauddin",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF used an Ombudsman complaint and sustained follow-up to seek reliable medical care at District Jail Mandi Bahauddin, with improved medical-staff availability recorded after the intervention."
+        },
+        "blocks": [],
+        "focusArea": "Access to Justice, Community Development",
+        "location": "District Jail Mandi Bahauddin, Punjab",
+        "projectStatus": "Completed",
+        "coverAlt": "Human Rights Protection Foundation annual report 2025",
+        "details": {
+          "overview": "HRPF used an Ombudsman complaint and sustained follow-up to seek reliable medical care at District Jail Mandi Bahauddin, with improved medical-staff availability recorded after the intervention.",
+          "challenge": "Concerns about the absence of the designated doctor indicated that prisoners were having difficulty obtaining basic medical attention.",
+          "approach": "HRPF contacted jail authorities and submitted a complaint to the Ombudsman Punjab. The proceedings sought information from the jail administration and led to a decision addressing the concerns.",
+          "period": "Healthcare intervention recorded in 2025",
+          "targetCommunity": "People detained at District Jail Mandi Bahauddin",
+          "objectives": [
+            "Improve detained people’s access to basic medical care."
+          ],
+          "activities": [
+            "Raised the medical-care concern with jail authorities.",
+            "Filed and followed an Ombudsman complaint.",
+            "Sought reports and corrective action concerning staff availability."
+          ],
+          "outcomes": [
+            "The Ombudsman issued a decision on the complaint.",
+            "Improved availability of medical staff was recorded after implementation."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Annual Performance Report 2025; page 19; medical facilities at District Jail"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:prison-healthcare-mandi-bahauddin",
+        "gallery:work-report-2025"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:trafficking-prevention-migration-awareness",
+      "payload": {
+        "title": {
+          "en": "Trafficking Prevention and Migration Awareness"
+        },
+        "slug": "trafficking-prevention-migration-awareness",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF researched human smuggling and trafficking, published awareness material and raised the risks of unsafe migration with public authorities."
+        },
+        "blocks": [],
+        "focusArea": "Refugees and Migrants, Education and Awareness, Research and Advocacy",
+        "location": "Mandi Bahauddin and Gujranwala Division",
+        "projectStatus": "Ongoing",
+        "coverAlt": "Human Rights Protection Foundation annual report 2024",
+        "details": {
+          "overview": "HRPF researched human smuggling and trafficking, published awareness material and raised the risks of unsafe migration with public authorities.",
+          "challenge": "Families in the region faced loss, exploitation and uncertainty linked to dangerous migration routes and trafficking networks.",
+          "approach": "HRPF combined public-interest research, media awareness and representations to authorities to bring the risks and families’ concerns into public discussion.",
+          "period": "Awareness and advocacy recorded in 2024–2025",
+          "targetCommunity": "Young people and families affected by unsafe migration",
+          "objectives": [
+            "Increase public understanding of trafficking and unsafe migration risks."
+          ],
+          "activities": [
+            "Published research and awareness material on trafficking.",
+            "Raised concerns with senior officials.",
+            "Highlighted the need for safer migration information and family support."
+          ],
+          "outcomes": [
+            "Trafficking risks and affected families’ concerns were documented and communicated.",
+            "Government prevention and rehabilitation proposals are advocacy requests, not HRPF-delivered programmes."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Progress Report 2024 Revised; section HRPF’s efforts against human smuggling and trafficking",
+          "Supplied HRPF Annual Performance Report 2025; pages 8–11; human smuggling and trafficking"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:trafficking-prevention-migration-awareness",
+        "gallery:work-report-2024"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:overseas-travel-document-support",
+      "payload": {
+        "title": {
+          "en": "Travel Document Support for an Overseas Pakistani"
+        },
+        "slug": "overseas-travel-document-support",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF pursued travel-document processing through Pakistani authorities and the overseas-grievance mechanism, helping an overseas Pakistani return home from Saudi Arabia."
+        },
+        "blocks": [],
+        "focusArea": "Refugees and Migrants, Access to Justice",
+        "location": "Pakistan and Saudi Arabia",
+        "projectStatus": "Completed",
+        "coverAlt": "Human Rights Protection Foundation annual report 2024",
+        "details": {
+          "overview": "HRPF pursued travel-document processing through Pakistani authorities and the overseas-grievance mechanism, helping an overseas Pakistani return home from Saudi Arabia.",
+          "challenge": "A person remained abroad in detention while unresolved travel-document arrangements prevented a return to Pakistan.",
+          "approach": "HRPF wrote to the responsible Interior and passport authorities and followed the matter through the Commissioner for Overseas Pakistanis.",
+          "period": "Return to Pakistan recorded in the 2024 report",
+          "targetCommunity": "An overseas Pakistani facing prolonged detention and documentation barriers",
+          "objectives": [
+            "Resolve travel-document barriers preventing a return to Pakistan."
+          ],
+          "activities": [
+            "Raised the documentation barrier with the relevant Pakistani authorities.",
+            "Pursued the matter through the overseas-grievance mechanism.",
+            "Followed travel-document processing."
+          ],
+          "outcomes": [
+            "The 2024 report records that the documents were processed and the person returned safely to Pakistan."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Progress Report 2024 Revised; section Support for overseas Pakistanis released from KSA jail by HRPF efforts"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:overseas-travel-document-support",
+        "gallery:work-report-2024"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:clean-water-feasibility-mianwal-ranjha",
+      "payload": {
+        "title": {
+          "en": "Clean Water Feasibility Advocacy"
+        },
+        "slug": "clean-water-feasibility-mianwal-ranjha",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF raised drinking-water concerns with public-health engineering authorities and sought testing and feasibility work for improved water provision in Mianwal Ranjha."
+        },
+        "blocks": [],
+        "focusArea": "Community Development, Access to Justice",
+        "location": "Mianwal Ranjha, Mandi Bahauddin",
+        "projectStatus": "Ongoing",
+        "coverAlt": "Human Rights Protection Foundation annual report 2023",
+        "details": {
+          "overview": "HRPF raised drinking-water concerns with public-health engineering authorities and sought testing and feasibility work for improved water provision in Mianwal Ranjha.",
+          "challenge": "Community concerns about drinking-water quality required assessment and a response from the responsible public-service departments.",
+          "approach": "HRPF approached the Secretary of Public Health Engineering and related authorities to seek water-quality testing and feasibility reports.",
+          "period": "Water-quality and feasibility action recorded in 2022–2023",
+          "targetCommunity": "Residents seeking safer drinking water",
+          "objectives": [
+            "Seek assessment and action on drinking-water quality."
+          ],
+          "activities": [
+            "Raised drinking-water concerns with the relevant authorities.",
+            "Requested assessment and improved water provision."
+          ],
+          "outcomes": [
+            "Directions for water-quality testing and feasibility reports were recorded.",
+            "The record does not establish construction of a filtration plant."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Progress Report 2022–2023; page 6; water filtration and sewerage concerns"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:clean-water-feasibility-mianwal-ranjha",
+        "gallery:work-report-2023"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:canal-water-environmental-accountability",
+      "payload": {
+        "title": {
+          "en": "Canal Water and Environmental Accountability"
+        },
+        "slug": "canal-water-environmental-accountability",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF brought canal-pollution concerns before environmental authorities and the Provincial Ombudsman, seeking enforcement and departmental follow-up."
+        },
+        "blocks": [],
+        "focusArea": "Community Development, Research and Advocacy, Access to Justice",
+        "location": "Mandi Bahauddin, Punjab",
+        "projectStatus": "Ongoing",
+        "coverAlt": "Human Rights Protection Foundation annual report 2024",
+        "details": {
+          "overview": "HRPF brought canal-pollution concerns before environmental authorities and the Provincial Ombudsman, seeking enforcement and departmental follow-up.",
+          "challenge": "Reported sewage and poultry-waste discharge threatened the condition of fresh canal water and the surrounding environment.",
+          "approach": "HRPF gathered information, approached the responsible departments and presented documentary evidence during Ombudsman proceedings.",
+          "period": "Environmental advocacy recorded in 2022–2024",
+          "targetCommunity": "Communities relying on local canals and a healthy environment",
+          "objectives": [
+            "Seek enforcement and departmental accountability for canal pollution."
+          ],
+          "activities": [
+            "Reported pollution concerns to environmental and other relevant departments.",
+            "Presented supporting documents during Ombudsman proceedings.",
+            "Sought enforcement and follow-up reports."
+          ],
+          "outcomes": [
+            "Show-cause notices and referrals for environmental proceedings were recorded.",
+            "Ombudsman directions called for departmental action and a follow-up report.",
+            "Long-term water-quality improvement is not measured in the available record."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Progress Report 2022–2023; page 8; environmental situation",
+          "Supplied HRPF Progress Report 2024 Revised; sections Water pollution and contamination of canals"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:canal-water-environmental-accountability",
+        "gallery:work-report-2024"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:gas-service-restoration-mianwal-ranjha",
+      "payload": {
+        "title": {
+          "en": "Gas Service Restoration in Mianwal Ranjha"
+        },
+        "slug": "gas-service-restoration-mianwal-ranjha",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF pursued residents’ concerns about low gas pressure, interruptions and pipeline maintenance with SNGPL and the Federal Ombudsman."
+        },
+        "blocks": [],
+        "focusArea": "Community Development, Access to Justice",
+        "location": "Mianwal Ranjha, Mandi Bahauddin",
+        "projectStatus": "Completed",
+        "coverAlt": "Human Rights Protection Foundation annual report 2024",
+        "details": {
+          "overview": "HRPF pursued residents’ concerns about low gas pressure, interruptions and pipeline maintenance with SNGPL and the Federal Ombudsman.",
+          "challenge": "Unreliable gas supply and maintenance issues disrupted an essential household service.",
+          "approach": "HRPF made representations to SNGPL and the Secretary of Petroleum and filed a Federal Ombudsman petition seeking redress.",
+          "period": "Gas-service grievance resolved in the 2024 record",
+          "targetCommunity": "Residents affected by poor gas supply",
+          "objectives": [
+            "Seek reliable gas supply and maintenance for residents."
+          ],
+          "activities": [
+            "Raised service concerns with SNGPL and the relevant ministry.",
+            "Filed a petition before the Federal Ombudsman."
+          ],
+          "outcomes": [
+            "The 2024 report records that the department resolved the gas-service issues raised."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Progress Report 2024 Revised; section HRPF raised its voice about SNGPL services issues"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:gas-service-restoration-mianwal-ranjha",
+        "gallery:work-report-2024"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:electricity-distribution-mianwal-ranjha",
+      "payload": {
+        "title": {
+          "en": "Electricity Distribution Improvements"
+        },
+        "slug": "electricity-distribution-mianwal-ranjha",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF followed electricity-distribution proposals with GEPCO and oversight authorities, supporting approval and delivery of transformer, pole and cable improvements in Mianwal Ranjha."
+        },
+        "blocks": [],
+        "focusArea": "Community Development, Access to Justice",
+        "location": "Mianwal Ranjha, Mandi Bahauddin",
+        "projectStatus": "Ongoing",
+        "coverAlt": "Human Rights Protection Foundation annual report 2025",
+        "details": {
+          "overview": "HRPF followed electricity-distribution proposals with GEPCO and oversight authorities, supporting approval and delivery of transformer, pole and cable improvements in Mianwal Ranjha.",
+          "challenge": "Overloading and distribution problems affected local electricity supply and required coordinated infrastructure action.",
+          "approach": "HRPF raised unresolved proposals with the Power Division, GEPCO and the Federal Ombudsman and followed implementation by the electricity provider.",
+          "period": "Electricity infrastructure advocacy recorded in 2023–2025",
+          "targetCommunity": "Residents affected by overloading and distribution problems",
+          "objectives": [
+            "Seek improvements to overloaded electricity-distribution infrastructure."
+          ],
+          "activities": [
+            "Raised distribution and overloading concerns.",
+            "Followed HT/LT proposals with GEPCO and oversight authorities.",
+            "Pursued remaining infrastructure work."
+          ],
+          "outcomes": [
+            "Approval and implementation of several infrastructure proposals were recorded.",
+            "The 2025 account describes completed work alongside remaining items under follow-up."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Progress Report 2024 Revised; section Approval of HT/LT proposals",
+          "Supplied HRPF Annual Performance Report 2025; page 30; electricity infrastructure development"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:electricity-distribution-mianwal-ranjha",
+        "gallery:work-report-2025"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:community-drinking-water-cooler",
+      "payload": {
+        "title": {
+          "en": "Community Drinking Water Cooler"
+        },
+        "slug": "community-drinking-water-cooler",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF installed a cold-water cooler at the Western Graveyard in Mianwal Ranjha to provide drinking water for visitors during hot weather and funeral gatherings."
+        },
+        "blocks": [],
+        "focusArea": "Community Development",
+        "location": "Western Graveyard, Mianwal Ranjha",
+        "projectStatus": "Completed",
+        "coverAlt": "Human Rights Protection Foundation annual report 2025",
+        "details": {
+          "overview": "HRPF installed a cold-water cooler at the Western Graveyard in Mianwal Ranjha to provide drinking water for visitors during hot weather and funeral gatherings.",
+          "challenge": "Visitors attending gatherings in hot weather needed convenient access to drinking water.",
+          "approach": "HRPF addressed the practical need through a small community-welfare installation at the graveyard.",
+          "period": "Water cooler installed in 2025",
+          "targetCommunity": "Visitors and families attending funeral gatherings",
+          "objectives": [
+            "Provide convenient drinking water for graveyard visitors."
+          ],
+          "activities": [
+            "Installed a cold-water cooler for visitors."
+          ],
+          "outcomes": [
+            "Installation of the water cooler was recorded."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Annual Performance Report 2025; page 32; installation of cold-water cooler"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:community-drinking-water-cooler",
+        "gallery:work-report-2025"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:right-to-information-public-accountability",
+      "payload": {
+        "title": {
+          "en": "Right to Information and Public Accountability"
+        },
+        "slug": "right-to-information-public-accountability",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF used information requests and appeals to seek certified public-service records and strengthen institutional accountability."
+        },
+        "blocks": [],
+        "focusArea": "Research and Advocacy, Access to Justice, Education and Awareness",
+        "location": "Punjab and federal public-service institutions",
+        "projectStatus": "Ongoing",
+        "coverAlt": "Human Rights Protection Foundation annual report 2025",
+        "details": {
+          "overview": "HRPF used information requests and appeals to seek certified public-service records and strengthen institutional accountability.",
+          "challenge": "Delayed or refused access to operational records made it harder to understand public decisions and pursue community concerns.",
+          "approach": "HRPF requested records from the relevant institutions and brought refusals before the appropriate information commission.",
+          "period": "Information requests and appeals recorded in 2024–2026",
+          "targetCommunity": "Citizens seeking transparent public services",
+          "objectives": [
+            "Seek access to public information and transparent services."
+          ],
+          "activities": [
+            "Submitted requests for certified public information.",
+            "Pursued appeals concerning withheld records.",
+            "Used available information for public-interest advocacy."
+          ],
+          "outcomes": [
+            "Information-commission directions and continued appeals were recorded.",
+            "Release of every requested record is not confirmed."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Progress Report 2024 Revised; section Transparency in institutions",
+          "Supplied HRPF Annual Performance Report 2025; page 64; Right to Information action",
+          "Supplied HRPF Profile, May 2026; Key programmes A; RTI appeal concerning GEPCO operational data"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:right-to-information-public-accountability",
+        "gallery:work-report-2025"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:sialkot-health-data-research",
+      "payload": {
+        "title": {
+          "en": "Sialkot Public Health Data Research"
+        },
+        "slug": "sialkot-health-data-research",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF obtained district health data through a Right to Information request, analysed disease patterns in Sialkot and published recommendations for public-health action."
+        },
+        "blocks": [],
+        "focusArea": "Research and Advocacy, Education and Awareness, Community Development",
+        "location": "Sialkot, Punjab",
+        "projectStatus": "Completed",
+        "coverAlt": "Human Rights Protection Foundation annual report 2024",
+        "details": {
+          "overview": "HRPF obtained district health data through a Right to Information request, analysed disease patterns in Sialkot and published recommendations for public-health action.",
+          "challenge": "Public-service planning required a clearer picture of disease patterns and priorities for water, sanitation and healthcare.",
+          "approach": "HRPF reviewed data supplied by the District Health Authority and prepared an analysis calling attention to public-health needs.",
+          "period": "January–April 2024 data; analysis published May 2024",
+          "targetCommunity": "Communities whose health needs inform public-service planning",
+          "objectives": [
+            "Inform public-health planning through analysis of district records."
+          ],
+          "activities": [
+            "Requested district health records.",
+            "Analysed January–April 2024 data.",
+            "Published recommendations for the responsible health authorities."
+          ],
+          "outcomes": [
+            "A public-health analysis and recommendations were published.",
+            "The research does not establish that recommended services were subsequently delivered."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Progress Report 2024 Revised; section Disease survey report in Sialkot",
+          "https://www.linkedin.com/pulse/health-status-report-sialkot-january-2024-april-hrpf--sbk3f"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:sialkot-health-data-research",
+        "gallery:work-report-2024"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:press-freedom-journalist-protection",
+      "payload": {
+        "title": {
+          "en": "Press Freedom and Journalist Protection"
+        },
+        "slug": "press-freedom-journalist-protection",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF documented journalist-safety concerns, raised cases with relevant institutions and published research defending freedom of expression and public-interest reporting."
+        },
+        "blocks": [],
+        "focusArea": "Research and Advocacy, Access to Justice, Education and Awareness",
+        "location": "Pakistan",
+        "projectStatus": "Ongoing",
+        "coverAlt": "Human Rights Protection Foundation annual report 2025",
+        "details": {
+          "overview": "HRPF documented journalist-safety concerns, raised cases with relevant institutions and published research defending freedom of expression and public-interest reporting.",
+          "challenge": "Reports of threats, violence and legal pressure on journalists raised concerns about safety and access to independent information.",
+          "approach": "HRPF combined public statements, institutional representations and press-freedom analysis to call for impartial investigations and protection of journalists.",
+          "period": "Journalist-safety advocacy recorded in 2024–2026",
+          "targetCommunity": "Journalists and communities relying on independent information",
+          "objectives": [
+            "Promote journalist safety and freedom of expression."
+          ],
+          "activities": [
+            "Documented reported threats and attacks.",
+            "Raised concerns with relevant authorities and human-rights organisations.",
+            "Published press-freedom analysis and recommendations."
+          ],
+          "outcomes": [
+            "Journalist-safety concerns were communicated through public and institutional channels.",
+            "The available records do not establish final outcomes for all individual cases."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Progress Report 2024 Revised; section Freedom of Press",
+          "Supplied HRPF Annual Performance Report 2025; pages 48, 59–60 and 68–71; journalist protection",
+          "Supplied HRPF Profile, May 2026; Key programmes B; journalist-safety statement",
+          "https://www.linkedin.com/posts/human-rights-protection-foundation-pakistan-hrpf-3b545677_human-rights-protection-foundation-pakistan-activity-7456595039423545344-oy-9"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:press-freedom-journalist-protection",
+        "gallery:work-report-2025"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:flood-relief-access-accountability",
+      "payload": {
+        "title": {
+          "en": "Flood Relief Access and Accountability"
+        },
+        "slug": "flood-relief-access-accountability",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF documented concerns about relief access and accountability, advocating for assistance to reach flood-affected families fairly and without unnecessary barriers."
+        },
+        "blocks": [],
+        "focusArea": "Refugees and Migrants, Community Development, Research and Advocacy",
+        "location": "Flood-affected communities in Punjab",
+        "projectStatus": "Ongoing",
+        "coverAlt": "Human Rights Protection Foundation annual report 2025",
+        "details": {
+          "overview": "HRPF documented concerns about relief access and accountability, advocating for assistance to reach flood-affected families fairly and without unnecessary barriers.",
+          "challenge": "Displaced families needed food, shelter, medical care and safe water, while reported relief restrictions and accountability problems required attention.",
+          "approach": "HRPF used formal representations, public reporting and institutional engagement to seek transparent, accessible humanitarian assistance.",
+          "period": "Flood-response advocacy recorded in 2025",
+          "targetCommunity": "Displaced families and communities affected by flooding",
+          "objectives": [
+            "Seek fair and accessible relief for flood-affected families."
+          ],
+          "activities": [
+            "Documented concerns about relief access and distribution.",
+            "Raised those concerns with responsible authorities.",
+            "Advocated for transparent relief and protection of affected families."
+          ],
+          "outcomes": [
+            "Relief-access and accountability concerns were raised publicly and through institutional channels.",
+            "Aid totals, family counts and resolution of the reported concerns are not established."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Annual Performance Report 2025; pages 53–55; flood victims’ rights"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:flood-relief-access-accountability",
+        "gallery:work-report-2025"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:education-access-research",
+      "payload": {
+        "title": {
+          "en": "Education Access and Public Awareness"
+        },
+        "slug": "education-access-research",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF published an education-access analysis highlighting barriers that keep children out of school and recommending action on inclusion, affordability and safe learning environments."
+        },
+        "blocks": [],
+        "focusArea": "Children's Rights, Education and Awareness, Research and Advocacy",
+        "location": "Pakistan",
+        "projectStatus": "Completed",
+        "coverAlt": "Human Rights Protection Foundation annual report 2025",
+        "details": {
+          "overview": "HRPF published an education-access analysis highlighting barriers that keep children out of school and recommending action on inclusion, affordability and safe learning environments.",
+          "challenge": "Children facing financial, geographic and social barriers can struggle to attend and remain in school.",
+          "approach": "HRPF prepared a public-interest report bringing education-access concerns and policy recommendations into public discussion.",
+          "period": "Education analysis published in 2025",
+          "targetCommunity": "Children facing barriers to school attendance",
+          "objectives": [
+            "Raise awareness of barriers to children’s education."
+          ],
+          "activities": [
+            "Published an education-access analysis.",
+            "Highlighted barriers affecting girls and marginalised communities.",
+            "Recommended improvements in school access and learning conditions."
+          ],
+          "outcomes": [
+            "An education report and recommendations were published.",
+            "The recommendations are not a record of schools built, scholarships awarded or children enrolled by HRPF."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Annual Performance Report 2025; pages 21–22; education crisis special report"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:education-access-research",
+        "gallery:work-report-2025"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:smart-school-student-support",
+      "payload": {
+        "title": {
+          "en": "Student Support at The Smart School"
+        },
+        "slug": "smart-school-student-support",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF’s chairman attended The Smart School’s annual ceremony and contributed PKR 50,000 to support deserving students."
+        },
+        "blocks": [],
+        "focusArea": "Children's Rights, Education and Awareness",
+        "location": "Kuthiyala Sheikhan, Mandi Bahauddin",
+        "projectStatus": "Completed",
+        "coverAlt": "Human Rights Protection Foundation annual report 2024",
+        "details": {
+          "overview": "HRPF’s chairman attended The Smart School’s annual ceremony and contributed PKR 50,000 to support deserving students.",
+          "challenge": "Students from families with limited means can face financial barriers to education.",
+          "approach": "The chairman used the school’s annual ceremony as an opportunity to support students through a recorded contribution.",
+          "period": "School ceremony and contribution recorded in 2024",
+          "targetCommunity": "Students needing financial support",
+          "objectives": [
+            "Support deserving students through a recorded contribution."
+          ],
+          "activities": [
+            "Attended the school’s annual ceremony.",
+            "Contributed PKR 50,000 for deserving students."
+          ],
+          "outcomes": [
+            "A PKR 50,000 contribution by the chairman was recorded."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Progress Report 2024 Revised; section HRPF chairman visited The Smart School Kuthiyala Sheikhan"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:smart-school-student-support",
+        "gallery:work-report-2024"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:canal-bank-road-safety",
+      "payload": {
+        "title": {
+          "en": "Canal Bank and Road Safety Advocacy"
+        },
+        "slug": "canal-bank-road-safety",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF sought priority repairs to damaged canal banks beside the road between Mandi Bahauddin District Complex and Bhojwal through the Provincial Ombudsman."
+        },
+        "blocks": [],
+        "focusArea": "Community Development, Access to Justice",
+        "location": "Mandi Bahauddin District Complex to Bhojwal",
+        "projectStatus": "Ongoing",
+        "coverAlt": "Human Rights Protection Foundation annual report 2024",
+        "details": {
+          "overview": "HRPF sought priority repairs to damaged canal banks beside the road between Mandi Bahauddin District Complex and Bhojwal through the Provincial Ombudsman.",
+          "challenge": "Damaged canal banks beside a public road raised a community safety and maintenance concern.",
+          "approach": "HRPF submitted an application to the Provincial Ombudsman Regional Office requesting action in the public interest.",
+          "period": "Repair directions recorded in 2024",
+          "targetCommunity": "People travelling along the canal-side road",
+          "objectives": [
+            "Seek priority repair of canal banks beside a public road."
+          ],
+          "activities": [
+            "Brought the damaged canal banks to the Ombudsman’s attention.",
+            "Sought priority repair by the responsible department."
+          ],
+          "outcomes": [
+            "An Ombudsman decision directed priority repairs.",
+            "Completion of those repairs is not confirmed in the available account."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Progress Report 2024 Revised; section HRPF efforts to repair the banks of canal beside main road"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:canal-bank-road-safety",
+        "gallery:work-report-2024"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:road-drainage-waterlogging-advocacy",
+      "payload": {
+        "title": {
+          "en": "Road Drainage and Waterlogging Advocacy"
+        },
+        "slug": "road-drainage-waterlogging-advocacy",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF raised concerns about road-construction deficiencies and waterlogging with Punjab’s Communication and Works Department and the Provincial Ombudsman."
+        },
+        "blocks": [],
+        "focusArea": "Community Development, Access to Justice",
+        "location": "Mianwal Ranjha, Mandi Bahauddin",
+        "projectStatus": "Ongoing",
+        "coverAlt": "Human Rights Protection Foundation annual report 2025",
+        "details": {
+          "overview": "HRPF raised concerns about road-construction deficiencies and waterlogging with Punjab’s Communication and Works Department and the Provincial Ombudsman.",
+          "challenge": "Waterlogging linked to road conditions created a public-service concern for local residents.",
+          "approach": "HRPF submitted a departmental complaint and pursued the matter through the Provincial Ombudsman.",
+          "period": "Complaint and Ombudsman follow-up recorded in May 2026",
+          "targetCommunity": "Residents affected by road drainage problems",
+          "objectives": [
+            "Seek action on road drainage and waterlogging concerns."
+          ],
+          "activities": [
+            "Submitted a complaint to the responsible provincial department.",
+            "Pursued Ombudsman follow-up."
+          ],
+          "outcomes": [
+            "Formal complaints were recorded.",
+            "Repair completion and resolution of waterlogging are not confirmed."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Profile, May 2026; Key programmes A; road-construction and drainage complaint"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:road-drainage-waterlogging-advocacy",
+        "gallery:work-report-2025"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:electricity-connection-fairness",
+      "payload": {
+        "title": {
+          "en": "Fair Electricity Connection Charges"
+        },
+        "slug": "electricity-connection-fairness",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF challenged revised electricity-connection charges through the Power Division, GEPCO and NEPRA, prompting a regulatory inquiry."
+        },
+        "blocks": [],
+        "focusArea": "Community Development, Access to Justice, Research and Advocacy",
+        "location": "GEPCO service area, Punjab",
+        "projectStatus": "Ongoing",
+        "coverAlt": "Human Rights Protection Foundation annual report 2025",
+        "details": {
+          "overview": "HRPF challenged revised electricity-connection charges through the Power Division, GEPCO and NEPRA, prompting a regulatory inquiry.",
+          "challenge": "Revised demand notices created concerns about affordability and fair treatment for households seeking electricity connections.",
+          "approach": "HRPF sought a review through the responsible provider and regulator and considered further lawful remedies.",
+          "period": "Regulatory inquiry recorded in 2025",
+          "targetCommunity": "Households seeking new electricity connections",
+          "objectives": [
+            "Seek review of revised electricity-connection charges."
+          ],
+          "activities": [
+            "Raised connection-charge concerns with the provider and Power Division.",
+            "Submitted a petition to NEPRA.",
+            "Requested review of revised estimates and notices."
+          ],
+          "outcomes": [
+            "NEPRA initiated an inquiry and requested a report from GEPCO.",
+            "A final tariff decision or completed court proceeding is not established."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Annual Performance Report 2025; page 61; NEPRA inquiry on connection charges"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:electricity-connection-fairness",
+        "gallery:work-report-2025"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:sukkur-community-peace-walk",
+      "payload": {
+        "title": {
+          "en": "Community Peace Walk in Sukkur"
+        },
+        "slug": "sukkur-community-peace-walk",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF’s chairman led a peace walk outside Sukkur Press Club to encourage peaceful civic engagement and trust between communities and institutions."
+        },
+        "blocks": [],
+        "focusArea": "Community Development, Education and Awareness",
+        "location": "Sukkur, Sindh",
+        "projectStatus": "Completed",
+        "coverAlt": "Human Rights Protection Foundation annual report 2024",
+        "details": {
+          "overview": "HRPF’s chairman led a peace walk outside Sukkur Press Club to encourage peaceful civic engagement and trust between communities and institutions.",
+          "challenge": "Growing distrust between the public and institutions called for constructive, peaceful public engagement.",
+          "approach": "The peace walk brought community members and legal professionals together around a message of peace.",
+          "period": "Peace walk recorded in 2024",
+          "targetCommunity": "Community members and legal professionals",
+          "objectives": [
+            "Encourage peaceful civic engagement and community trust."
+          ],
+          "activities": [
+            "Organised a peace walk outside Sukkur Press Club.",
+            "Encouraged constructive engagement between people and institutions."
+          ],
+          "outcomes": [
+            "The peace walk took place with community and lawyer participation."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Progress Report 2024 Revised; section Aman rally in Sukkur, Sindh led by chairman HRPF"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:sukkur-community-peace-walk",
+        "gallery:work-report-2024"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:mandi-bahauddin-peace-petition",
+      "payload": {
+        "title": {
+          "en": "Community Peace Advocacy in Mandi Bahauddin"
+        },
+        "slug": "mandi-bahauddin-peace-petition",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF launched a public petition calling for peace in Mandi Bahauddin, proposing community dialogue, conflict-resolution education and constructive opportunities for local people."
+        },
+        "blocks": [],
+        "focusArea": "Community Development, Education and Awareness, Research and Advocacy",
+        "location": "Mandi Bahauddin, Punjab",
+        "projectStatus": "Ongoing",
+        "startYear": 2026,
+        "coverAlt": "Human Rights Protection Foundation annual report 2025",
+        "details": {
+          "overview": "HRPF launched a public petition calling for peace in Mandi Bahauddin, proposing community dialogue, conflict-resolution education and constructive opportunities for local people.",
+          "challenge": "Community insecurity affected families, children and local economic activity.",
+          "approach": "The petition invited public support for coordinated peace-building action by local leaders and authorities.",
+          "period": "Public petition launched in September 2026",
+          "targetCommunity": "Families and communities seeking a safer district",
+          "objectives": [
+            "Encourage coordinated peace-building action in the district."
+          ],
+          "activities": [
+            "Launched a public peace petition.",
+            "Proposed dialogue and conflict-resolution education."
+          ],
+          "outcomes": [
+            "The petition was publicly launched.",
+            "The proposed workshops and dialogue programmes are not confirmed as delivered."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "https://www.change.org/p/promote-peace-in-district-mandi-baha-ud-din"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:mandi-bahauddin-peace-petition",
+        "gallery:work-report-2025"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:public-safety-information-research",
+      "payload": {
+        "title": {
+          "en": "Public Safety Research and Institutional Accountability"
+        },
+        "slug": "public-safety-information-research",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF obtained district crime records, prepared an analysis and shared concerns and recommendations with relevant officials and human-rights organisations."
+        },
+        "blocks": [],
+        "focusArea": "Research and Advocacy, Access to Justice, Community Development",
+        "location": "Mandi Bahauddin, Punjab",
+        "projectStatus": "Completed",
+        "coverAlt": "Human Rights Protection Foundation annual report 2024",
+        "details": {
+          "overview": "HRPF obtained district crime records, prepared an analysis and shared concerns and recommendations with relevant officials and human-rights organisations.",
+          "challenge": "Community concerns about crime and investigations required reliable information and an accountable institutional response.",
+          "approach": "HRPF used an information request and the information-commission process to obtain records, then analysed them and communicated recommendations.",
+          "period": "District crime analysis prepared in 2024",
+          "targetCommunity": "Communities seeking accountable policing and public safety",
+          "objectives": [
+            "Use district records to inform public-safety advocacy."
+          ],
+          "activities": [
+            "Requested district crime records.",
+            "Prepared an analysis of January–August 2024 data.",
+            "Shared findings and recommendations with relevant institutions."
+          ],
+          "outcomes": [
+            "A district public-safety analysis was prepared and communicated.",
+            "The record does not establish implementation of every recommended policing reform."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Progress Report 2024 Revised; sections Crime analysis and Right to Information requests"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:public-safety-information-research",
+        "gallery:work-report-2024"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:road-visibility-public-safety",
+      "payload": {
+        "title": {
+          "en": "Road Visibility and Public Safety Advocacy"
+        },
+        "slug": "road-visibility-public-safety",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF raised concerns about road visibility and unmarked trailers during smog conditions, calling for enforcement of reflector requirements to protect road users."
+        },
+        "blocks": [],
+        "focusArea": "Community Development, Research and Advocacy",
+        "location": "Mandi Bahauddin, Punjab",
+        "projectStatus": "Ongoing",
+        "coverAlt": "Human Rights Protection Foundation annual report 2024",
+        "details": {
+          "overview": "HRPF raised concerns about road visibility and unmarked trailers during smog conditions, calling for enforcement of reflector requirements to protect road users.",
+          "challenge": "Reported fatal road incidents highlighted risks associated with poorly visible trailers in smog.",
+          "approach": "HRPF communicated the concern to provincial authorities and human-rights institutions and requested preventive action.",
+          "period": "Road-safety representations recorded in 2024",
+          "targetCommunity": "Road users and emergency-service workers",
+          "objectives": [
+            "Seek safer road visibility and preventive enforcement."
+          ],
+          "activities": [
+            "Raised visibility concerns with provincial authorities.",
+            "Called for reflector enforcement and departmental accountability."
+          ],
+          "outcomes": [
+            "The road-safety concern was communicated to the relevant institutions.",
+            "Implementation of the requested enforcement measures is not confirmed."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Progress Report 2024 Revised; section Rescue-worker death and reflector lights on trailers"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:road-visibility-public-safety",
+        "gallery:work-report-2024"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:roadside-electrical-hazard-removal",
+      "payload": {
+        "title": {
+          "en": "Roadside Electrical Hazard Removal"
+        },
+        "slug": "roadside-electrical-hazard-removal",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF raised a complaint about a dangerous roadside electricity pole, after which GEPCO staff replaced the pole."
+        },
+        "blocks": [],
+        "focusArea": "Community Development, Access to Justice",
+        "location": "Kuthiyala Sheikhan–Mianwal Ranjha Road",
+        "projectStatus": "Completed",
+        "coverAlt": "Human Rights Protection Foundation annual report 2024",
+        "details": {
+          "overview": "HRPF raised a complaint about a dangerous roadside electricity pole, after which GEPCO staff replaced the pole.",
+          "challenge": "An electricity pole beside the road presented a reported public-safety concern.",
+          "approach": "HRPF brought the concern to GEPCO so that the responsible operations team could take corrective action.",
+          "period": "Pole replacement recorded in 2024",
+          "targetCommunity": "Road users and nearby residents",
+          "objectives": [
+            "Seek corrective action on a roadside electrical hazard."
+          ],
+          "activities": [
+            "Forwarded a public-safety complaint to GEPCO."
+          ],
+          "outcomes": [
+            "GEPCO operations staff replaced the pole in response to the complaint."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Progress Report 2024 Revised; section Removal of dangerous HT electric pole on the road"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:roadside-electrical-hazard-removal",
+        "gallery:work-report-2024"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:union-council-building-advocacy",
+      "payload": {
+        "title": {
+          "en": "Union Council Building Advocacy"
+        },
+        "slug": "union-council-building-advocacy",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF raised concerns about the condition of the Union Council building with Punjab’s Local Government and Community Development Department."
+        },
+        "blocks": [],
+        "focusArea": "Community Development, Access to Justice",
+        "location": "Mianwal Ranjha, Mandi Bahauddin",
+        "projectStatus": "Ongoing",
+        "coverAlt": "Human Rights Protection Foundation annual report 2025",
+        "details": {
+          "overview": "HRPF raised concerns about the condition of the Union Council building with Punjab’s Local Government and Community Development Department.",
+          "challenge": "Deteriorating local-government premises required the attention of the department responsible for the facility.",
+          "approach": "HRPF submitted a formal departmental complaint seeking attention to the building’s condition.",
+          "period": "Building-condition complaint recorded in May 2026",
+          "targetCommunity": "Residents using local-government services",
+          "objectives": [
+            "Seek attention to the condition of local-government premises."
+          ],
+          "activities": [
+            "Submitted a complaint to the responsible provincial department."
+          ],
+          "outcomes": [
+            "A formal complaint was recorded.",
+            "Repairs or rebuilding are not confirmed in the available record."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Profile, May 2026; Key programmes A; Union Council building complaint"
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:union-council-building-advocacy",
+        "gallery:work-report-2025"
+      ],
+      "reviewTasks": []
+    },
+    {
+      "kind": "Project",
+      "key": "work-project:national-minorities-day-awareness",
+      "payload": {
+        "title": {
+          "en": "National Minorities Day Awareness"
+        },
+        "slug": "national-minorities-day-awareness",
+        "locale": "en",
+        "summary": {
+          "en": "HRPF shared a National Minorities Day message advocating equality, freedom of belief and fair access to public services."
+        },
+        "blocks": [],
+        "focusArea": "Minority Rights, Education and Awareness",
+        "location": "Pakistan",
+        "projectStatus": "Completed",
+        "startYear": 2026,
+        "coverAlt": "Human Rights Protection Foundation annual report 2025",
+        "details": {
+          "overview": "HRPF shared a National Minorities Day message advocating equality, freedom of belief and fair access to public services.",
+          "challenge": "Minority communities need equal treatment, safety and participation.",
+          "approach": "The message called for stronger protection, access to justice and respectful interfaith dialogue.",
+          "period": "Public statement dated 11 August 2026",
+          "targetCommunity": "Religious and other minority communities",
+          "objectives": [
+            "Promote equal rights and respect for minority communities."
+          ],
+          "activities": [
+            "Shared a minority-rights awareness message."
+          ],
+          "outcomes": [
+            "An awareness statement was published; no service-delivery outcome is claimed."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "sourceReferences": [
+          "Supplied HRPF Profile, May 2026; Programme focus 10; interfaith harmony and social cohesion",
+          "https://www.findglocal.com/PK/Mianwal/1500163953642649/Human-Rights-Protection-Foundation-Pakistan."
+        ],
+        "status": "draft",
+        "reviewStatus": "pending"
+      },
+      "files": [
+        "work-evidence:national-minorities-day-awareness",
+        "gallery:work-report-2025"
+      ],
+      "reviewTasks": []
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "project": "press-freedom-journalist-protection",
+  "reviewedAt": "2026-10-08",
+  "sources": [
+    {
+      "label": "Supplied HRPF Progress Report 2024 Revised",
+      "originalFile": "PROGRESS REPORT 2024 Revised.docx",
+      "sha256": "5d9067ae4c149423dea1d4558cfd5368b692a186b57ccf03251d409cb7d4cc2f",
+      "bytes": 10890607,
+      "type": "supplied-document",
+      "locator": "section Freedom of Press"
+    },
+    {
+      "label": "Supplied HRPF Annual Performance Report 2025",
+      "originalFile": "2025 Progress Report.pdf",
+      "sha256": "cfbff888af513ea5cf0af087361e586fa358f2f7b8ec693a485cb89d71ec04f1",
+      "bytes": 6400878,
+      "type": "supplied-document",
+      "locator": "pages 48, 59–60 and 68–71; journalist protection"
+    },
+    {
+      "label": "Supplied HRPF Profile, May 2026",
+      "originalFile": "PROFILE HRPF.docx",
+      "sha256": "99cf62f12b7e57cb1e0101b92aec721a7c90704a202a013d0d4266fc2d8b6236",
+      "bytes": 17281586,
+      "type": "supplied-document",
+      "locator": "Key programmes B; journalist-safety statement"
+    },
+    {
+      "type": "primary-public-post",
+      "url": "https://www.linkedin.com/posts/human-rights-protection-foundation-pakistan-hrpf-3b545677_human-rights-protection-foundation-pakistan-activity-7456595039423545344-oy-9",
+      "retrievedAt": "2026-10-08",
+      "supportedAction": "HRPF documented journalist-safety concerns, raised cases with relevant institutions and published research defending freedom of expression and public-interest reporting."
+    }
+  ],
+  "verificationNotes": "The 2025-named report includes some 2026 material. Use section dates rather than treating every entry as a 2025 event. Historic 2018 petition is a separate review lead.",
+  "fields": [
+    "Research and Advocacy",
+    "Access to Justice",
+    "Education and Awareness"
+  ],
+  "statusMeaning": "Last documented stage; an Ongoing label does not assert continuous operation today."
+}

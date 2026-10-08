@@ -1,0 +1,19 @@
+{
+  "project": "womens-dignity-public-services",
+  "reviewedAt": "2026-10-08",
+  "sources": [
+    {
+      "type": "primary-public-post",
+      "url": "https://www.linkedin.com/posts/human-rights-protection-foundation-hrpf-3b545677_treatment-of-elderly-woman-by-wapda-staff-activity-7346003344940830721-CSy2",
+      "retrievedAt": "2026-10-08",
+      "supportedAction": "HRPF called for an impartial inquiry and respectful treatment of women in public offices after reports of an elderly woman being mistreated at an electricity-services office."
+    }
+  ],
+  "verificationNotes": "Activity timestamp identifies 2025; relative platform labels are not used as event dates. Allegations are not presented as judicial findings.",
+  "fields": [
+    "Women's Rights",
+    "Access to Justice",
+    "Education and Awareness"
+  ],
+  "statusMeaning": "Last documented stage; an Ongoing label does not assert continuous operation today."
+}

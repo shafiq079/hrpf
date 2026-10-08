@@ -1,0 +1,432 @@
+{
+  "reviewedAt": "2026-10-08",
+  "newProjects": [
+    {
+      "slug": "safe-classrooms-mianwal-ranjha",
+      "title": "Safe Classrooms in Mianwal Ranjha",
+      "fields": [
+        "Children's Rights",
+        "Education and Awareness",
+        "Access to Justice"
+      ],
+      "lastDocumentedStatus": "Ongoing",
+      "period": "School safety advocacy recorded in 2025; update shared in 2026",
+      "evidenceFile": "progress reports/work-project-evidence/safe-classrooms-mianwal-ranjha.json",
+      "confidence": "supplied-document-and-primary-post",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "child-protection-institutional-advocacy",
+      "title": "Child Protection and Institutional Advocacy",
+      "fields": [
+        "Children's Rights",
+        "Access to Justice"
+      ],
+      "lastDocumentedStatus": "Ongoing",
+      "period": "Child-protection intervention recorded in 2025",
+      "evidenceFile": "progress reports/work-project-evidence/child-protection-institutional-advocacy.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "domestic-violence-emergency-response",
+      "title": "Domestic Violence and Emergency Response Advocacy",
+      "fields": [
+        "Women's Rights",
+        "Access to Justice",
+        "Research and Advocacy"
+      ],
+      "lastDocumentedStatus": "Ongoing",
+      "period": "Emergency-response concerns recorded in 2025",
+      "evidenceFile": "progress reports/work-project-evidence/domestic-violence-emergency-response.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "womens-dignity-public-services",
+      "title": "Women's Dignity in Public Services",
+      "fields": [
+        "Women's Rights",
+        "Access to Justice",
+        "Education and Awareness"
+      ],
+      "lastDocumentedStatus": "Ongoing",
+      "period": "Public advocacy statement issued in 2025",
+      "evidenceFile": "progress reports/work-project-evidence/womens-dignity-public-services.json",
+      "confidence": "primary-post",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "prison-healthcare-mandi-bahauddin",
+      "title": "Healthcare Access at District Jail",
+      "fields": [
+        "Access to Justice",
+        "Community Development"
+      ],
+      "lastDocumentedStatus": "Completed",
+      "period": "Healthcare intervention recorded in 2025",
+      "evidenceFile": "progress reports/work-project-evidence/prison-healthcare-mandi-bahauddin.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "trafficking-prevention-migration-awareness",
+      "title": "Trafficking Prevention and Migration Awareness",
+      "fields": [
+        "Refugees and Migrants",
+        "Education and Awareness",
+        "Research and Advocacy"
+      ],
+      "lastDocumentedStatus": "Ongoing",
+      "period": "Awareness and advocacy recorded in 2024–2025",
+      "evidenceFile": "progress reports/work-project-evidence/trafficking-prevention-migration-awareness.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "overseas-travel-document-support",
+      "title": "Travel Document Support for an Overseas Pakistani",
+      "fields": [
+        "Refugees and Migrants",
+        "Access to Justice"
+      ],
+      "lastDocumentedStatus": "Completed",
+      "period": "Return to Pakistan recorded in the 2024 report",
+      "evidenceFile": "progress reports/work-project-evidence/overseas-travel-document-support.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "clean-water-feasibility-mianwal-ranjha",
+      "title": "Clean Water Feasibility Advocacy",
+      "fields": [
+        "Community Development",
+        "Access to Justice"
+      ],
+      "lastDocumentedStatus": "Ongoing",
+      "period": "Water-quality and feasibility action recorded in 2022–2023",
+      "evidenceFile": "progress reports/work-project-evidence/clean-water-feasibility-mianwal-ranjha.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "canal-water-environmental-accountability",
+      "title": "Canal Water and Environmental Accountability",
+      "fields": [
+        "Community Development",
+        "Research and Advocacy",
+        "Access to Justice"
+      ],
+      "lastDocumentedStatus": "Ongoing",
+      "period": "Environmental advocacy recorded in 2022–2024",
+      "evidenceFile": "progress reports/work-project-evidence/canal-water-environmental-accountability.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "gas-service-restoration-mianwal-ranjha",
+      "title": "Gas Service Restoration in Mianwal Ranjha",
+      "fields": [
+        "Community Development",
+        "Access to Justice"
+      ],
+      "lastDocumentedStatus": "Completed",
+      "period": "Gas-service grievance resolved in the 2024 record",
+      "evidenceFile": "progress reports/work-project-evidence/gas-service-restoration-mianwal-ranjha.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "electricity-distribution-mianwal-ranjha",
+      "title": "Electricity Distribution Improvements",
+      "fields": [
+        "Community Development",
+        "Access to Justice"
+      ],
+      "lastDocumentedStatus": "Ongoing",
+      "period": "Electricity infrastructure advocacy recorded in 2023–2025",
+      "evidenceFile": "progress reports/work-project-evidence/electricity-distribution-mianwal-ranjha.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "community-drinking-water-cooler",
+      "title": "Community Drinking Water Cooler",
+      "fields": [
+        "Community Development"
+      ],
+      "lastDocumentedStatus": "Completed",
+      "period": "Water cooler installed in 2025",
+      "evidenceFile": "progress reports/work-project-evidence/community-drinking-water-cooler.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "right-to-information-public-accountability",
+      "title": "Right to Information and Public Accountability",
+      "fields": [
+        "Research and Advocacy",
+        "Access to Justice",
+        "Education and Awareness"
+      ],
+      "lastDocumentedStatus": "Ongoing",
+      "period": "Information requests and appeals recorded in 2024–2026",
+      "evidenceFile": "progress reports/work-project-evidence/right-to-information-public-accountability.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "sialkot-health-data-research",
+      "title": "Sialkot Public Health Data Research",
+      "fields": [
+        "Research and Advocacy",
+        "Education and Awareness",
+        "Community Development"
+      ],
+      "lastDocumentedStatus": "Completed",
+      "period": "January–April 2024 data; analysis published May 2024",
+      "evidenceFile": "progress reports/work-project-evidence/sialkot-health-data-research.json",
+      "confidence": "supplied-document-and-primary-post",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "press-freedom-journalist-protection",
+      "title": "Press Freedom and Journalist Protection",
+      "fields": [
+        "Research and Advocacy",
+        "Access to Justice",
+        "Education and Awareness"
+      ],
+      "lastDocumentedStatus": "Ongoing",
+      "period": "Journalist-safety advocacy recorded in 2024–2026",
+      "evidenceFile": "progress reports/work-project-evidence/press-freedom-journalist-protection.json",
+      "confidence": "supplied-document-and-primary-post",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "flood-relief-access-accountability",
+      "title": "Flood Relief Access and Accountability",
+      "fields": [
+        "Refugees and Migrants",
+        "Community Development",
+        "Research and Advocacy"
+      ],
+      "lastDocumentedStatus": "Ongoing",
+      "period": "Flood-response advocacy recorded in 2025",
+      "evidenceFile": "progress reports/work-project-evidence/flood-relief-access-accountability.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "education-access-research",
+      "title": "Education Access and Public Awareness",
+      "fields": [
+        "Children's Rights",
+        "Education and Awareness",
+        "Research and Advocacy"
+      ],
+      "lastDocumentedStatus": "Completed",
+      "period": "Education analysis published in 2025",
+      "evidenceFile": "progress reports/work-project-evidence/education-access-research.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "smart-school-student-support",
+      "title": "Student Support at The Smart School",
+      "fields": [
+        "Children's Rights",
+        "Education and Awareness"
+      ],
+      "lastDocumentedStatus": "Completed",
+      "period": "School ceremony and contribution recorded in 2024",
+      "evidenceFile": "progress reports/work-project-evidence/smart-school-student-support.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "canal-bank-road-safety",
+      "title": "Canal Bank and Road Safety Advocacy",
+      "fields": [
+        "Community Development",
+        "Access to Justice"
+      ],
+      "lastDocumentedStatus": "Ongoing",
+      "period": "Repair directions recorded in 2024",
+      "evidenceFile": "progress reports/work-project-evidence/canal-bank-road-safety.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "road-drainage-waterlogging-advocacy",
+      "title": "Road Drainage and Waterlogging Advocacy",
+      "fields": [
+        "Community Development",
+        "Access to Justice"
+      ],
+      "lastDocumentedStatus": "Ongoing",
+      "period": "Complaint and Ombudsman follow-up recorded in May 2026",
+      "evidenceFile": "progress reports/work-project-evidence/road-drainage-waterlogging-advocacy.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "electricity-connection-fairness",
+      "title": "Fair Electricity Connection Charges",
+      "fields": [
+        "Community Development",
+        "Access to Justice",
+        "Research and Advocacy"
+      ],
+      "lastDocumentedStatus": "Ongoing",
+      "period": "Regulatory inquiry recorded in 2025",
+      "evidenceFile": "progress reports/work-project-evidence/electricity-connection-fairness.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "sukkur-community-peace-walk",
+      "title": "Community Peace Walk in Sukkur",
+      "fields": [
+        "Community Development",
+        "Education and Awareness"
+      ],
+      "lastDocumentedStatus": "Completed",
+      "period": "Peace walk recorded in 2024",
+      "evidenceFile": "progress reports/work-project-evidence/sukkur-community-peace-walk.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "mandi-bahauddin-peace-petition",
+      "title": "Community Peace Advocacy in Mandi Bahauddin",
+      "fields": [
+        "Community Development",
+        "Education and Awareness",
+        "Research and Advocacy"
+      ],
+      "lastDocumentedStatus": "Ongoing",
+      "period": "Public petition launched in September 2026",
+      "evidenceFile": "progress reports/work-project-evidence/mandi-bahauddin-peace-petition.json",
+      "confidence": "primary-post",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "public-safety-information-research",
+      "title": "Public Safety Research and Institutional Accountability",
+      "fields": [
+        "Research and Advocacy",
+        "Access to Justice",
+        "Community Development"
+      ],
+      "lastDocumentedStatus": "Completed",
+      "period": "District crime analysis prepared in 2024",
+      "evidenceFile": "progress reports/work-project-evidence/public-safety-information-research.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "road-visibility-public-safety",
+      "title": "Road Visibility and Public Safety Advocacy",
+      "fields": [
+        "Community Development",
+        "Research and Advocacy"
+      ],
+      "lastDocumentedStatus": "Ongoing",
+      "period": "Road-safety representations recorded in 2024",
+      "evidenceFile": "progress reports/work-project-evidence/road-visibility-public-safety.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "roadside-electrical-hazard-removal",
+      "title": "Roadside Electrical Hazard Removal",
+      "fields": [
+        "Community Development",
+        "Access to Justice"
+      ],
+      "lastDocumentedStatus": "Completed",
+      "period": "Pole replacement recorded in 2024",
+      "evidenceFile": "progress reports/work-project-evidence/roadside-electrical-hazard-removal.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "union-council-building-advocacy",
+      "title": "Union Council Building Advocacy",
+      "fields": [
+        "Community Development",
+        "Access to Justice"
+      ],
+      "lastDocumentedStatus": "Ongoing",
+      "period": "Building-condition complaint recorded in May 2026",
+      "evidenceFile": "progress reports/work-project-evidence/union-council-building-advocacy.json",
+      "confidence": "supplied-document",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    },
+    {
+      "slug": "national-minorities-day-awareness",
+      "title": "National Minorities Day Awareness",
+      "fields": [
+        "Minority Rights",
+        "Education and Awareness"
+      ],
+      "lastDocumentedStatus": "Completed",
+      "period": "Public statement dated 11 August 2026",
+      "evidenceFile": "progress reports/work-project-evidence/national-minorities-day-awareness.json",
+      "confidence": "corroborated-secondary",
+      "publication": "eligible",
+      "image": "Reviewed HRPF report cover; not an event photograph"
+    }
+  ],
+  "existingProjectsNotDuplicated": [
+    "shelter-dignity-advocacy",
+    "mianwal-ranjha-sanitation",
+    "childhood-vaccination-access"
+  ],
+  "reviewCandidates": [
+    {
+      "title": "Myanmar Muslim minority protection petition",
+      "url": "https://www.change.org/p/human-rights-protection-foundation-pakistan-united-nations-bound-barma-government-to-stop-killing-muslim-community",
+      "date": "2017-09-03",
+      "reason": "Same organisation name but predates profile’s operational-since-2020 statement; starter profile access blocked. Identity/history needs reconciliation. Not automatically imported."
+    },
+    {
+      "title": "2018 journalist-protection petition",
+      "url": "https://www.change.org/p/chief-minister-government-of-punjab-pakistan-amjad-bhatti-journalist-is-being-victimised-by-local-mpa-in-pakistan",
+      "reason": "Earlier activity date and identity need reconciliation; later press-freedom work already documented."
+    },
+    {
+      "title": "Mauritania migration-route family advocacy, August 2026",
+      "url": "https://www.findglocal.com/PK/Mianwal/1500163953642649/Human-Rights-Protection-Foundation-Pakistan.",
+      "reason": "Secondary archive lead; obtain original dated correspondence before adding case-specific records. Covered thematically by trafficking-awareness project."
+    }
+  ]
+}

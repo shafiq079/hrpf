@@ -463,7 +463,7 @@ export default function ProjectEditor({
                   onChange={(event) => patch({ slug: event.target.value })}
                 />
               </Field>
-              <Field label="Focus area">
+              <Field label="Focus area" hint="Use the work-page names. Separate related fields with commas, for example Children's Rights, Education and Awareness.">
                 <input
                   required
                   maxLength={150}

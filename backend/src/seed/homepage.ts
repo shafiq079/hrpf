@@ -40,7 +40,7 @@ async function publishable(manifest: Manifest, record: SeedRecord, session?: mon
   return row;
 }
 export type HomepageResult = SeedResult | { key: string; status: 'published' | 'admin-preserved' };
-export async function publishHomepageRecord(manifest: Manifest, record: SeedRecord, actorId: string, assetId: string) {
+export async function publishHomepageRecord(manifest: Manifest, record: SeedRecord, actorId: string, assetId: string, publicationAction: 'homepage.seed-published' | 'work-project.seed-published' = 'homepage.seed-published') {
   const session = await mongoose.startSession();
   try {
     return await session.withTransaction(async () => {
@@ -60,12 +60,12 @@ export async function publishHomepageRecord(manifest: Manifest, record: SeedReco
       await row.validate();
       const result = await mongoose.model(record.kind).replaceOne({ _id: row._id, __v: 0, status: 'draft' }, row.toObject(), { session });
       if (!result.matchedCount) throw new Error('Homepage record changed concurrently.');
-      await AuditLog.create([{ actorId, action: 'homepage.seed-published', entityType: record.kind, entityId: row.id, outcome: 'success', changedFields: ['publication', 'cover'] }], { session });
+      await AuditLog.create([{ actorId, action: publicationAction, entityType: record.kind, entityId: row.id, outcome: 'success', changedFields: ['publication', 'cover'] }], { session });
       return { key: record.key, status: 'published' } as const;
     });
   } finally { await session.endSession(); }
 }
-export async function applyHomepageSeed(options: { manifest: Manifest; files: Map<string, Buffer>; actorId: string; namespace: string; provider: UploadProvider; report?: (result: HomepageResult) => void }) {
+export async function applyHomepageSeed(options: { manifest: Manifest; files: Map<string, Buffer>; actorId: string; namespace: string; provider: UploadProvider; report?: (result: HomepageResult) => void; publicationAction?: 'homepage.seed-published' | 'work-project.seed-published' }) {
   const { manifest, files, actorId, namespace, provider } = options;
   if (namespace !== 'hrpf/dev') throw new Error('Homepage setup is limited to hrpf/dev.');
   if (manifest.records.some(record => !['Project', 'BlogPost'].includes(record.kind))) throw new Error('Only homepage projects and news may be imported.');
@@ -94,7 +94,7 @@ export async function applyHomepageSeed(options: { manifest: Manifest; files: Ma
       try { asset = await Asset.create({ ...stored, sha256: source.sha256, ownerId: actorId, purpose: 'content', visibility: 'restricted', scanStatus: 'type_checked', entityType: record.kind, entityId: seedId(record.key), stagingExpiresAt: new Date(Date.now() + 86400000) }); }
       catch (error) { await provider.remove(stored).catch(() => {}); throw error; }
     }
-    const result = await publishHomepageRecord(manifest, record, actorId, asset.id);
+    const result = await publishHomepageRecord(manifest, record, actorId, asset.id, options.publicationAction);
     results.push(result); options.report?.(result);
   }
   return results;

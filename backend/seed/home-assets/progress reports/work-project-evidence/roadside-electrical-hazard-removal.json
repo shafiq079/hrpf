@@ -1,0 +1,20 @@
+{
+  "project": "roadside-electrical-hazard-removal",
+  "reviewedAt": "2026-10-08",
+  "sources": [
+    {
+      "label": "Supplied HRPF Progress Report 2024 Revised",
+      "originalFile": "PROGRESS REPORT 2024 Revised.docx",
+      "sha256": "5d9067ae4c149423dea1d4558cfd5368b692a186b57ccf03251d409cb7d4cc2f",
+      "bytes": 10890607,
+      "type": "supplied-document",
+      "locator": "section Removal of dangerous HT electric pole on the road"
+    }
+  ],
+  "verificationNotes": "A distinct completed safety complaint; not the broader distribution-improvement project. Replacement was performed by GEPCO.",
+  "fields": [
+    "Community Development",
+    "Access to Justice"
+  ],
+  "statusMeaning": "Completed describes the specific recorded action, not resolution of all underlying needs."
+}

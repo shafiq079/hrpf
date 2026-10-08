@@ -1,0 +1,20 @@
+{
+  "project": "road-visibility-public-safety",
+  "reviewedAt": "2026-10-08",
+  "sources": [
+    {
+      "label": "Supplied HRPF Progress Report 2024 Revised",
+      "originalFile": "PROGRESS REPORT 2024 Revised.docx",
+      "sha256": "5d9067ae4c149423dea1d4558cfd5368b692a186b57ccf03251d409cb7d4cc2f",
+      "bytes": 10890607,
+      "type": "supplied-document",
+      "locator": "section Rescue-worker death and reflector lights on trailers"
+    }
+  ],
+  "verificationNotes": "No victim names, unverified blame, enforcement success or road-accident reduction figures.",
+  "fields": [
+    "Community Development",
+    "Research and Advocacy"
+  ],
+  "statusMeaning": "Last documented stage; an Ongoing label does not assert continuous operation today."
+}

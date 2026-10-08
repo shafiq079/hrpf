@@ -4,7 +4,7 @@ import {spawn} from 'node:child_process';
 import {once} from 'node:events';
 import {checkNavigation, checkEmptyNavigation, checkOfflineNavigation} from './check-navigation.mjs';
 let revision=1,empty=false,richBlog=true;const requests=[];
-const workPages=[["childrens-rights", "Children's Rights"], ["access-to-justice", "Access to Justice"], ["minority-rights", "Minority Rights"], ["education-and-awareness", "Education and Awareness"], ["research-and-advocacy", "Research and Advocacy"]];
+const workPages=[["childrens-rights", "Children's Rights"], ["access-to-justice", "Access to Justice"], ["minority-rights", "Minority Rights"], ["education-and-awareness", "Education and Awareness"], ["research-and-advocacy", "Research and Advocacy"], ["refugees-and-migrants", "Refugees and Migrants"], ["community-development", "Community Development"]];
 const api=createServer((req,res)=>{
  requests.push({path:req.url,cookie:req.headers.cookie});res.setHeader('Content-Type','application/json');
  const project={title:`Managed project ${revision}`,slug:'real-project',summary:'Synthetic project summary',focusArea:'Women’s Rights',status:'Ongoing',location:'Pakistan',startYear:2026,image:null,blocks:[{type:'paragraph',text:'Managed project body'}],details:{overview:'Project overview text',challenge:'Documented challenge',approach:'Community approach',period:'March–September 2026',targetCommunity:'Local families',objectives:['Improved access'],activities:['Community sessions'],outcomes:['Documented result'],milestones:[{period:'June 2026',title:'First milestone'}],metrics:[{value:'12',label:'Sessions',source:'Project report'}],partners:['Verified partner'],sections:[{heading:'Lessons learned',body:'Project lessons'}]},gallery:[{image:'/api/public-assets/012345678901234567890123',alt:'Community session',caption:'Reviewed caption'},{image:'/api/public-assets/012345678901234567890124',alt:'Project activity'}],documents:[{file:'/api/public-assets/012345678901234567890125',label:'Project report PDF'}]};
@@ -15,7 +15,8 @@ const api=createServer((req,res)=>{
   const field=new URL(req.url,'http://localhost').searchParams.get('focusArea');
   const area=workPages.find(([,title])=>title===field);
   const row=path.endsWith('projects')?(area?{...project,title:`Field project: ${area[0]} ${revision}`,focusArea:field}:project):{...news,...(page===2?{title:'Second page blog',slug:'second-page-blog'}:{})};
-  res.end(JSON.stringify({data:empty?[]:[row,...(path.endsWith('blogs')&&page===1?[{...news,title:'Related published blog',slug:'related-blog'}]:[])],meta:{page,pages:empty?0:2}}));
+  const extraProjects = path.endsWith('projects') && !field && new URL(req.url,'http://localhost').searchParams.get('limit')==='48' ? [{...project,title:'Cross-field child education project',slug:'cross-field',focusArea:"Children’s Rights, Education and Awareness",summary:'Multi-field project summary'}] : [];
+  res.end(JSON.stringify({data:empty?[]:[row,...extraProjects,...(path.endsWith('blogs')&&page===1?[{...news,title:'Related published blog',slug:'related-blog'}]:[])],meta:{page,pages:empty?0:2}}));
  }
  else if(!empty&&(path==='/api/projects/real-project'||path==='/api/blogs/real-news'))res.end(JSON.stringify({data:path.includes('projects')?project:news}));
  else if(path==='/api/reports')res.end(JSON.stringify({data:empty?[]:[{id:'012345678901234567890125',title:'Published progress report',summary:'Report summary',edition:'public-edition',releaseNote:'Reviewed public edition; case annexes omitted.',pages:26,format:'pdf',bytes:650000,view:'/api/documents/reports/012345678901234567890125/view',year:2025,slug:'progress-report',file:'/api/public-assets/012345678901234567890125',download:'/api/reports/012345678901234567890125/download'}],meta:{pages:empty?0:1}}));
@@ -59,11 +60,15 @@ try{
  for(const [slug,title] of workPages){
   const field=await read('/our-work/'+slug);assert.equal(field.status,200);
   assert.equal((field.html.match(/<h1[ >]/g)||[]).length,1,slug+' has one H1');
-  for(const text of ['Projects in this field',`Field project: ${slug} 1`,`${slug}-archive.webp`,'/projects/real-project','/file-a-complaint','/contact'])assert.ok(field.html.includes(text),slug+': '+text);
+  for(const text of ['Projects in this field',`Field project: ${slug} 1`,(slug === "refugees-and-migrants" ? "home-programme-information.webp" : slug === "community-development" ? "home-programme-water.webp" : `${slug}-archive.webp`),'/projects/real-project','/file-a-complaint','/contact'])assert.ok(field.html.includes(text),slug+': '+text);
   for(const text of ['(sample)','Illustrative indicators','Community Member','Legal Awareness Clinics','Referral Network','Digital Literacy Corps','Source: HRPF','AI restored','event date not recorded'])assert.ok(!field.html.includes(text),slug+' removed: '+text);
   assert.ok(requests.some(r=>new URL(r.path,'http://localhost').searchParams.get('focusArea')===title),slug+' requests its focus label');
  }
- console.log('All six work pages passed: distinct general content/photos, managed field projects, canonical links and no prototype/source notes.');
+ const filteredProjects=await read("/projects?focusArea="+encodeURIComponent("Children's Rights"));
+ const filteredBody=filteredProjects.html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g,'');
+ assert.ok(filteredBody.includes('Cross-field child education project')&&!filteredBody.includes('Managed project 1'),'Field link selects a related field rather than a combined label');
+ assert.ok(filteredBody.includes('Education and Awareness'),'Explorer offers individual related fields');
+ console.log('All eight work pages passed: distinct general content/photos, managed field projects, canonical links and no prototype/source notes.');
  for(const route of ['privacy-policy','terms-of-use','accessibility','safeguarding-policy']){
   const policy=await read('/'+route);assert.equal(policy.status,200);
   assert.equal((policy.html.match(/<h1[ >]/g)||[]).length,1,route+' has one H1');

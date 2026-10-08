@@ -94,3 +94,13 @@ Project enrichment verification adds seven real MongoDB tests for publication,
 idempotency, admin/deletion preservation, corrupted/unsafe files, interrupted
 upload recovery, actor revocation, concurrent edits and source-change detection.
 The complete seed suite now has 22 passing tests.
+
+## Expanded work project catalog
+
+The additional sourced catalog and one-command import are documented in
+[WORK_PROJECT_RESEARCH.md](WORK_PROJECT_RESEARCH.md). It adds 28 projects without
+replacing the original three or later administrator edits. Run
+`npm --prefix backend run seed:work-projects -- --apply` from the repository root
+with the existing private development configuration. This command is independent
+of the original three-project detail enrichment. Related fields use comma-separated
+work-page labels and are selectable individually in the public project explorer.

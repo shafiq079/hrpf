@@ -1,0 +1,27 @@
+{
+  "project": "safe-classrooms-mianwal-ranjha",
+  "reviewedAt": "2026-10-08",
+  "sources": [
+    {
+      "label": "Supplied HRPF Annual Performance Report 2025",
+      "originalFile": "2025 Progress Report.pdf",
+      "sha256": "cfbff888af513ea5cf0af087361e586fa358f2f7b8ec693a485cb89d71ec04f1",
+      "bytes": 6400878,
+      "type": "supplied-document",
+      "locator": "pages 13 and 16; Government Primary School Mianwal Ranjha"
+    },
+    {
+      "type": "primary-public-post",
+      "url": "https://www.linkedin.com/posts/human-rights-protection-foundation-hrpf-3b545677_hrpf-performance-report-government-primary-activity-7429422386921443328-9hOp",
+      "retrievedAt": "2026-10-08",
+      "supportedAction": "HRPF sought action on an unsafe primary-school building through education officials and the Provincial Ombudsman, securing a decision for new classrooms subject to funding approval."
+    }
+  ],
+  "verificationNotes": "Repeated on pages 13 and 16 and in a LinkedIn update: one intervention, not three projects.",
+  "fields": [
+    "Children's Rights",
+    "Education and Awareness",
+    "Access to Justice"
+  ],
+  "statusMeaning": "Last documented stage; an Ongoing label does not assert continuous operation today."
+}
