@@ -34,7 +34,7 @@ checks, not verification of account ownership or transfer availability.
 - Donors transfer through their own bank or JazzCash. This page collects no donor
   data, initiates no payment, verifies no transfer and issues no automatic receipt.
 - Email questions directly to the supplied HRPF contacts, with transaction reference
-  if relevant. Avoid relying on the simulated general Contact form.
+  if relevant. The general Contact form is now connected; direct email remains available.
 - Only donation FAQs are updated; unrelated FAQ groups remain a later task.
 
 ## Verification

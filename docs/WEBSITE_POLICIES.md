@@ -29,9 +29,10 @@ not a formally adopted operational policy.
 - Complaint implementation and `COMPLAINTS.md`: real connected intake, encrypted
   database CNIC, private files, complete copies emailed to sender/designated admins,
   saved receipt and separate outbox delivery states.
-- `ContactForm.tsx`, `ComplaintForm.tsx` and `NewsletterForm.tsx`: current general
-  Contact, feedback-about-HRPF and newsletter confirmations are simulated; no
-  transmission or subscription. The pages disclose this and direct users to email.
+- `ContactForm.tsx`, `ComplaintForm.tsx` and `NewsletterForm.tsx`: general
+  Contact now stores enquiries and queues complete sender/admin copies through
+  verified tickets and the outbox (see CONTACT.md). Feedback-about-HRPF and newsletter
+  confirmations remain simulated; the policies disclose those remaining limits.
 - Translation implementation and `TEXT_TRANSLATION.md`: lazy GTranslate public-text
   translation, saved language, English restoration, RTL and private exclusions.
 - Membership route: the supplied Google Forms destination is an external service.
@@ -72,8 +73,8 @@ no application cache configuration changed.
 
 ## Follow-up organisation decisions
 
-- Connect or replace the simulated Contact/feedback/newsletter forms before users
-  can rely on their confirmations; this content update does not wire those forms.
+- Connect or replace the simulated feedback/newsletter forms before users can
+  rely on their confirmations. Contact was connected in the subsequent Contact task.
 - Establish retention/review rules and an independent safeguarding escalation route,
   then update the notice to reflect the adopted arrangements.
 - Arrange a fuller accessibility assessment and prioritise accessible alternatives

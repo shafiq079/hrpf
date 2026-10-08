@@ -603,7 +603,7 @@
     "/api/complaints": {
       "post": {
         "summary": "Persist validated form and email outbox atomically",
-        "description": "Use the original ticket and UUID submissionKey for retries. Unsubmitted tickets expire after 15 minutes; saved submissions can be confirmed while the consumed ticket is retained (about 24 hours). Same key with different data returns 409. Received confirms storage, not email delivery or approval. Complaints queue complete user/admin form copies with all five-or-fewer private files (15 MB combined), and require ADMIN_NOTIFY_EMAILS. Membership requires an enabled policy.",
+        "description": "Use the original ticket and UUID submissionKey for retries. Unsubmitted tickets expire after 15 minutes; saved submissions can be confirmed while the consumed ticket is retained (about 24 hours). Same key with different data returns 409. Received confirms storage, not email delivery or approval. Complaints queue complete user/admin form copies with all five-or-fewer private files (15 MB combined), and require ADMIN_NOTIFY_EMAILS. Contact enquiries return an HRPF-MSG reference, queue complete sender/admin message copies and require ADMIN_NOTIFY_EMAILS. Optional organization and enquiry type are included. Membership requires an enabled policy.",
         "security": [],
         "requestBody": {
           "required": true,
@@ -662,7 +662,7 @@
     "/api/membership-applications": {
       "post": {
         "summary": "Persist validated form and email outbox atomically",
-        "description": "Use the original ticket and UUID submissionKey for retries. Unsubmitted tickets expire after 15 minutes; saved submissions can be confirmed while the consumed ticket is retained (about 24 hours). Same key with different data returns 409. Received confirms storage, not email delivery or approval. Complaints queue complete user/admin form copies with all five-or-fewer private files (15 MB combined), and require ADMIN_NOTIFY_EMAILS. Membership requires an enabled policy.",
+        "description": "Use the original ticket and UUID submissionKey for retries. Unsubmitted tickets expire after 15 minutes; saved submissions can be confirmed while the consumed ticket is retained (about 24 hours). Same key with different data returns 409. Received confirms storage, not email delivery or approval. Complaints queue complete user/admin form copies with all five-or-fewer private files (15 MB combined), and require ADMIN_NOTIFY_EMAILS. Contact enquiries return an HRPF-MSG reference, queue complete sender/admin message copies and require ADMIN_NOTIFY_EMAILS. Optional organization and enquiry type are included. Membership requires an enabled policy.",
         "security": [],
         "requestBody": {
           "required": true,
@@ -721,7 +721,7 @@
     "/api/contact-messages": {
       "post": {
         "summary": "Persist validated form and email outbox atomically",
-        "description": "Use the original ticket and UUID submissionKey for retries. Unsubmitted tickets expire after 15 minutes; saved submissions can be confirmed while the consumed ticket is retained (about 24 hours). Same key with different data returns 409. Received confirms storage, not email delivery or approval. Complaints queue complete user/admin form copies with all five-or-fewer private files (15 MB combined), and require ADMIN_NOTIFY_EMAILS. Membership requires an enabled policy.",
+        "description": "Use the original ticket and UUID submissionKey for retries. Unsubmitted tickets expire after 15 minutes; saved submissions can be confirmed while the consumed ticket is retained (about 24 hours). Same key with different data returns 409. Received confirms storage, not email delivery or approval. Complaints queue complete user/admin form copies with all five-or-fewer private files (15 MB combined), and require ADMIN_NOTIFY_EMAILS. Contact enquiries return an HRPF-MSG reference, queue complete sender/admin message copies and require ADMIN_NOTIFY_EMAILS. Optional organization and enquiry type are included. Membership requires an enabled policy.",
         "security": [],
         "requestBody": {
           "required": true,
@@ -11492,6 +11492,22 @@
           "phone": {
             "type": "string",
             "pattern": "^\\+?[0-9 ()-]{7,30}$"
+          },
+          "organization": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "inquiryType": {
+            "default": "General",
+            "type": "string",
+            "enum": [
+              "General",
+              "Partnership",
+              "Media",
+              "Membership",
+              "Donation",
+              "Technical"
+            ]
           },
           "subject": {
             "type": "string",

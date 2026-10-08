@@ -1,5 +1,18 @@
 # HRPF Progress
 
+## Contact page and real enquiries — 2026-10-08
+
+- Owner supplied the office map and requested sourced Contact details and a working
+  form. Added emails, phone, office/postcode, map and real social destinations.
+- Replace simulated submission with verified Contact tickets, real storage,
+  stable references and complete sender/admin emails; include enquiry type and
+  optional organization, safe HTML and admin Reply-To.
+- Preserve exact retries after lost responses, keep inputs on errors and state
+  receipt versus delivery clearly. No hours or response-time promises.
+- Update related policies and source docs; Contact is connected, feedback and
+  newsletter remain unconnected. See `CONTACT.md`; development / PR #9.
+
+
 ## Donation information — 2026-10-08
 
 - Owner requested payment details only; replace `/donate` prototype checkout with

@@ -202,9 +202,15 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
   });
   it('contact submission stays saved after email failure; leases and retries do not send successful entries twice', async () => {
     const ticket = await form('contact');
-    const body = { ticket, submissionKey: randomUUID(), consent: true, consentVersion: 'test-v1', name: 'Test', email: 'test@example.org', subject: 'Test', message: 'Sensitive test message' };
-    await request(app).post('/api/contact-messages').send(body).expect(201);
+    const body = { ticket, submissionKey: randomUUID(), consent: true, consentVersion: 'test-v1', name: 'Test', email: 'test@example.org', subject: 'Test', message: 'Sensitive test message <script>alert(1)</script>', organization: 'Synthetic organization', inquiryType: 'Partnership' };
+    const receipt = await request(app).post('/api/contact-messages').send(body).expect(201);
+    assert.match(receipt.body.data.reference, /^HRPF-MSG-[a-f0-9]{24}$/);
+    const retry = await request(app).post('/api/contact-messages').send(body).expect(201);
+    assert.equal(retry.body.data.reference, receipt.body.data.reference);
+    await request(app).post('/api/contact-messages').send({ ...body, message: 'Changed' }).expect(409);
     assert.equal(await ContactMessage.countDocuments(), 1);
+    assert.equal((await ContactMessage.findOne())!.organization, body.organization);
+    assert.equal(await EmailOutbox.countDocuments(), 2);
     const entries = await EmailOutbox.find(); const first = entries[0]!;
     await assert.rejects(createOutbox(env, async () => { throw new Error('private SMTP diagnostic'); }).deliver(first.id));
     assert.equal((await EmailOutbox.findById(first._id))!.errorCode, 'DELIVERY_UNAVAILABLE');
@@ -212,8 +218,41 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     const sender = createOutbox(env, async mail => { sent.push(mail); return 'test-provider-id'; });
     await EmailOutbox.updateOne({ _id: first._id }, { $set: { nextAttemptAt: new Date(0) } });
     await Promise.all([sender.deliver(first.id), sender.deliver(first.id)]);
-    await sender.deliver(first.id); assert.equal(sent.length, 1); assert.ok(!sent[0]!.text.includes(body.message));
+    await sender.deliver(first.id); assert.equal(sent.length, 1); assert.ok(sent[0]!.text.includes(body.message)); assert.ok(sent[0]!.text.includes(body.organization)); assert.ok(sent[0]!.html!.includes('&lt;script&gt;')); assert.ok(!sent[0]!.html!.includes('<script>'));
     assert.equal((await EmailOutbox.findById(first._id))!.status, 'sent');
+    for (const entry of entries) await sender.deliver(entry.id);
+    assert.equal(sent.length, 2);
+    assert.equal(sent.find(mail => mail.to === env.ADMIN_NOTIFY_EMAILS[0])!.replyTo, body.email);
+    assert.ok(sent.every(mail => mail.text.includes(body.message)));
+  });
+  it('frontend contact helper reaches API storage and complete queued mail; lost response retry is unique', async () => {
+    const { submitContact, newContactAttempt } = await import(new URL('../../frontend/lib/contact-submission.ts', import.meta.url).href);
+    const data = { name: 'Synthetic sender', email: 'sender@example.org', phone: '', organization: '', inquiryType: 'General', subject: 'Synthetic subject', message: 'Original synthetic enquiry', consent: true };
+    let loseReply = true;
+    const fetcher = async (path: string, options: RequestInit) => {
+      const result = await request(app).post(path).send(JSON.parse(String(options.body)));
+      if (path === '/api/contact-messages' && result.status === 201 && loseReply) { loseReply = false; throw new Error('Synthetic lost response'); }
+      return Response.json(result.body, { status: result.status });
+    };
+    const attempt = newContactAttempt();
+    await assert.rejects(submitContact(data, attempt, 'verified-test-token', fetcher), /Retry this same/);
+    const receipt = await submitContact({ ...data, message: 'Changed after loss' }, attempt, '', fetcher);
+    assert.match(receipt.reference, /^HRPF-MSG-[a-f0-9]{24}$/);
+    assert.equal(await ContactMessage.countDocuments(), 1); assert.equal(await EmailOutbox.countDocuments(), 2);
+    const sent: Mail[] = [];
+    const outbox = createOutbox(env, async mail => { sent.push(mail); return 'synthetic-mail'; });
+    for (const entry of await EmailOutbox.find()) await outbox.deliver(entry.id);
+    assert.equal(sent.length, 2);
+    assert.ok(sent.every(mail => mail.text.includes(data.message) && !mail.text.includes('Changed after loss')));
+  });
+  it('contact rejects invalid optional fields and missing admin routing before saving', async () => {
+    const ticket = await form('contact');
+    const body = { ticket, submissionKey: randomUUID(), consent: true, consentVersion: 'test-v1', name: 'Test', email: 'test@example.org', subject: 'Test', message: 'Test' };
+    await request(app).post('/api/contact-messages').send({ ...body, inquiryType: 'Invented' }).expect(400);
+    await request(app).post('/api/contact-messages').send({ ...body, organization: 'x'.repeat(151) }).expect(400);
+    const unavailableApp = createApp({ ...env, ADMIN_NOTIFY_EMAILS: [] }, async () => ({ mongo: true, redis: true }), { redis: services, bot, provider });
+    await request(unavailableApp).post('/api/contact-messages').send(body).expect(503);
+    assert.equal(await ContactMessage.countDocuments(), 0); assert.equal(await EmailOutbox.countDocuments(), 0);
   });
   it('BullMQ worker drains persisted pending entries using only outbox IDs', async () => {
     const entry = await EmailOutbox.create({ dedupeKey: 'queue-test', template: 'acknowledgement', entityType: 'Complaint', entityId: new Types.ObjectId().toString(), recipient: 'test@example.org', reference: 'TEST-ONLY' });

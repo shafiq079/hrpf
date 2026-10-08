@@ -1,4 +1,17 @@
-# Current handoff: Policy and donation pages on development
+# Current handoff: Contact page and real enquiries on development
+
+## Contact milestone — 2026-10-08
+
+The owner supplied the office map and requested a complete Contact update with
+real submissions. Added sourced emails/phone/address/postcode/social links and the
+exact map link; removed placeholders, office-hours and response-time claims.
+Connected the form to the purpose-bound verified Contact API, durable storage,
+stable HRPF-MSG receipt and complete sender/admin emails with admin Reply-To.
+Retries keep the exact original submission and do not create duplicate enquiries;
+email failure does not lose the saved record. Updated policies to describe the
+connected Contact form. See `CONTACT.md` for sources, configuration and tests.
+This continuation stays on development / PR #9. Feedback and newsletter remain
+unconnected. Production inbox delivery depends on the existing private mail setup.
 
 ## Donation information milestone — 2026-10-08
 
@@ -23,8 +36,8 @@ no dead PDF control or prototype publication notes.
 Accessibility states a WCAG 2.2 AA target and known limits without claiming full
 conformance. Safeguarding is a commitment and reporting guide without an invented
 independent contact, procedure or deadline. Both published organisation email
-addresses are supported by supplied documents. The simulated Contact, feedback and
-newsletter forms are explicitly disclosed; connecting them is separate work.
+addresses are supported by supplied documents. The feedback and newsletter forms remain unconnected; Contact was subsequently
+connected in the milestone above.
 Formal retention rules and independent safeguarding arrangements remain organisation
 decisions. See `WEBSITE_POLICIES.md` for sources, implementation and verification.
 This policy task stays on development; main contains the prior Our Work milestone.

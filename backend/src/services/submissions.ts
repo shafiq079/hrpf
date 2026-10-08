@@ -94,10 +94,11 @@ export function createSubmissions(env: Environment, forms: FormsService) {
       }
     },
     async contact(body: unknown) {
+      if (!env.ADMIN_NOTIFY_EMAILS.length) throw unavailable();
       const input = validate(contactInput, body), hash = payloadHash(input);
       const existing = await ContactMessage.findOne({ submissionKey: input.submissionKey });
       await checkRetry(input.ticket, 'contact', input.submissionKey, hash, existing);
-      if (existing) return { status: 'received' };
+      if (existing) return { status: 'received', reference: `HRPF-MSG-${existing.id}` };
       try {
         await mongoose.connection.transaction(async tx => {
           await claimTicket(input.ticket, 'contact', input.submissionKey, tx);
@@ -107,7 +108,9 @@ export function createSubmissions(env: Environment, forms: FormsService) {
           await emails('ContactMessage', id.toString(), input.email, id.toString(), tx);
         });
       } catch (error) { const retry = await ContactMessage.findOne({ submissionKey: input.submissionKey }); if (retry?.payloadHash !== hash) throw error; await checkRetry(input.ticket, 'contact', input.submissionKey, hash, retry); }
-      return { status: 'received' };
+      const saved = await ContactMessage.findOne({ submissionKey: input.submissionKey });
+      if (!saved) throw unavailable();
+      return { status: 'received', reference: `HRPF-MSG-${saved.id}` };
     },
   };
 }
