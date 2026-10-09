@@ -16,6 +16,7 @@ import { uploadQuery } from './contracts.js';
 import { createForms, turnstileVerifier, type BotVerifier } from '../services/forms.js';
 import { cloudinaryProvider, createUploads, type UploadProvider } from '../services/uploads.js';
 import { createSubmissions } from '../services/submissions.js';
+import { createNewsletter } from '../services/newsletter.js';
 export type BusinessAdapters = { ready?: () => boolean; redis: RedisServices; bot?: BotVerifier; provider?: UploadProvider };
 export function createBusiness(env: Environment, adapters: BusinessAdapters) {
   const router = Router(), { redis } = adapters;
@@ -23,6 +24,7 @@ export function createBusiness(env: Environment, adapters: BusinessAdapters) {
   const auth = createAuth(env), forms = createForms(redis, adapters.bot ?? turnstileVerifier(env));
   const uploads = createUploads(env, forms, adapters.provider ?? cloudinaryProvider(env));
   const submissions = createSubmissions(env, forms);
+  const newsletter = createNewsletter(env, forms);
   router.use(publicRouter(adapters.provider ?? cloudinaryProvider(env), redis, env.PUBLIC_CACHE_TTL_SECONDS));
   const account = (body: unknown) => body && typeof body === 'object' && 'email' in body && typeof body.email === 'string' ? body.email.trim().toLowerCase().slice(0, 254) : 'invalid';
   router.use('/auth', redis.limit('auth', 120, 60000));
@@ -45,5 +47,7 @@ export function createBusiness(env: Environment, adapters: BusinessAdapters) {
   router.post('/complaints', submitLimit, async (req, res) => res.status(201).json({ data: await submissions.complaint(req.body) }));
   router.post('/membership-applications', submitLimit, async (req, res) => res.status(201).json({ data: await submissions.membership(req.body) }));
   router.post('/contact-messages', submitLimit, async (req, res) => res.status(201).json({ data: await submissions.contact(req.body) }));
+  router.post('/newsletter/subscriptions', submitLimit, redis.limit('newsletter-email', 3, 3600000, account), async (req, res) => res.status(202).json({ data: await newsletter.subscribe(req.body) }));
+  router.post('/newsletter/action', redis.limit('newsletter-action', 20, 60000), async (req, res) => res.json({ data: await newsletter.action(req.body) }));
   return { router, uploads };
 }

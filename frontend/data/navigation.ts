@@ -26,6 +26,8 @@ export const mainNavigation: NavItem[] = [
         label: "Research and Advocacy",
         href: "/our-work/research-and-advocacy",
       },
+      { label: "Refugees and Migrants", href: "/our-work/refugees-and-migrants" },
+      { label: "Community Development", href: "/our-work/community-development" },
     ],
   },
   { label: "Projects", href: "/projects" },
@@ -38,15 +40,8 @@ export const mainNavigation: NavItem[] = [
       { label: "TV Interviews", href: "/gallery/tv-interviews" },
     ],
   },
-  {
-    label: "Get Involved",
-    href: "/get-involved",
-    children: [
-      { label: "Become a Member", href: "/become-a-member" },
-      { label: "Campaigns", href: "/campaigns" },
-      { label: "Careers", href: "/careers" },
-    ],
-  },
+  { label: "Become a Member", href: "/become-a-member" },
+  { label: "Contact", href: "/contact" },
   {
     label: "About Us",
     href: "/about",
@@ -65,18 +60,18 @@ export const mainNavigation: NavItem[] = [
 
 // Footer: main institutional links.
 export const footerFoundationLinks: NavLink[] = [
+  { label: "Our Impact", href: "/impact" },
   { label: "About Us", href: "/about" },
   { label: "Board of Directors", href: "/about/board-of-directors" },
   { label: "Our Team", href: "/about/our-team" },
-  { label: "Careers", href: "/careers" },
   { label: "Blogs", href: "/blogs" },
   { label: "Gallery", href: "/gallery" },
 ];
 
 // Footer: support & engagement links.
 export const footerSupportLinks: NavLink[] = [
+  { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
-  { label: "Get Help", href: "/get-help" },
   { label: "Partner With Us", href: "/partner-with-us" },
   { label: "File a Complaint", href: "/file-a-complaint" },
   { label: "Become a Member", href: "/become-a-member" },
@@ -86,6 +81,7 @@ export const footerSupportLinks: NavLink[] = [
 // Accessibility remains at /accessibility but is temporarily hidden from public navigation.
 // Footer: policy links.
 export const footerResourceLinks: NavLink[] = [
+  { label: "FAQ", href: "/faq" },
   { label: "Privacy Policy", href: "/privacy-policy" },
   { label: "Terms of Use", href: "/terms-of-use" },
   { label: "Safeguarding", href: "/safeguarding-policy" },

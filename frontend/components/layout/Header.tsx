@@ -65,8 +65,8 @@ export default function Header() {
           </Link>
 
           {/* Center navigation (desktop) */}
-          <nav ref={navRef} aria-label="Primary" className="hidden lg:block">
-            <ul className="flex items-center gap-4 xl:gap-6">
+          <nav ref={navRef} aria-label="Primary" className="hidden xl:block">
+            <ul className="flex items-center gap-4">
               {mainNavigation.map((item, index) =>
                 item.children ? (
                   <li
@@ -132,7 +132,7 @@ export default function Header() {
           </nav>
 
           {/* Actions (desktop) */}
-          <div className="hidden items-center gap-2.5 lg:flex">
+          <div className="hidden items-center gap-2.5 xl:flex">
             <PrimaryButton
               href="/file-a-complaint"
               variant="red"
@@ -147,7 +147,7 @@ export default function Header() {
           </div>
 
           {/* Actions (mobile) */}
-          <div className="flex items-center gap-2 lg:hidden">
+          <div className="flex items-center gap-2 xl:hidden">
             <PrimaryButton href="/donate" variant="gold" size="md">
               <TranslationText>Donate
             </TranslationText></PrimaryButton>

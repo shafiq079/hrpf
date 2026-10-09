@@ -565,7 +565,8 @@
                           "enum": [
                             "complaint",
                             "membership",
-                            "contact"
+                            "contact",
+                            "newsletter"
                           ]
                         },
                         "expiresIn": {
@@ -750,6 +751,121 @@
                         "status": {
                           "type": "string",
                           "const": "received"
+                        }
+                      },
+                      "required": [
+                        "status"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/newsletter/subscriptions": {
+      "post": {
+        "summary": "Record consent and queue a private confirmation email",
+        "description": "Turnstile newsletter ticket and exact UUID retries required. Response does not disclose whether an address is active. New subscriptions stay pending until confirmation; confirmation expires after 24 hours. Repeat requests within an hour do not send another email. Requires FRONTEND_URL and configured mail credentials.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewsletterInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "const": "accepted"
+                        }
+                      },
+                      "required": [
+                        "status"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/newsletter/action": {
+      "post": {
+        "summary": "Explicitly confirm a subscription or unsubscribe using an emailed bearer token",
+        "description": "Tokens are passed by POST after an explicit user action. Link fragments are not server query strings; no GET activates a subscription.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewsletterActionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "confirmed",
+                            "unsubscribed"
+                          ]
                         }
                       },
                       "required": [
@@ -11275,6 +11391,64 @@
   },
   "components": {
     "schemas": {
+      "NewsletterInput": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email",
+            "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+          },
+          "consent": {
+            "type": "boolean",
+            "const": true
+          },
+          "consentVersion": {
+            "type": "string",
+            "const": "newsletter-v1"
+          },
+          "ticket": {
+            "type": "string",
+            "minLength": 43,
+            "maxLength": 100
+          },
+          "submissionKey": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "email",
+          "consent",
+          "consentVersion",
+          "ticket",
+          "submissionKey"
+        ],
+        "additionalProperties": false
+      },
+      "NewsletterActionInput": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{43}$"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "confirm",
+              "unsubscribe"
+            ]
+          }
+        },
+        "required": [
+          "token",
+          "action"
+        ],
+        "additionalProperties": false
+      },
       "PublicationInput": {
         "type": "object",
         "properties": {
@@ -11612,6 +11786,7 @@
             "enum": [
               "General",
               "Partnership",
+              "Feedback",
               "Media",
               "Membership",
               "Donation",
@@ -11670,7 +11845,8 @@
             "enum": [
               "complaint",
               "membership",
-              "contact"
+              "contact",
+              "newsletter"
             ]
           },
           "botToken": {

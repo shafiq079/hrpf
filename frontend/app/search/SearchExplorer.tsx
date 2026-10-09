@@ -9,34 +9,26 @@ import FilterSelect from "@/components/shared/FilterSelect";
 import FilterBar from "@/components/shared/FilterBar";
 import EmptyState from "@/components/shared/EmptyState";
 import { mainNavigation } from "@/data/navigation";
-import { campaigns } from "@/data/campaigns";
-import { events } from "@/data/events";
 
-export type EntryType = "Pages" | "Projects" | "Blogs" | "Progress Reports" | "Campaigns" | "Events";
+export type EntryType = "Pages" | "Projects" | "Blogs" | "Progress Reports";
 export interface IndexEntry {
   type: EntryType;
   title: string;
   description: string;
   href: string;
 }
-const entryTypes: EntryType[] = ["Pages", "Projects", "Blogs", "Progress Reports", "Campaigns", "Events"];
+const entryTypes: EntryType[] = ["Pages", "Projects", "Blogs", "Progress Reports"];
 const pageEntries: IndexEntry[] = [
   ...mainNavigation.flatMap(item => [item, ...(item.children ?? [])]).map(item => ({
     type: "Pages" as const, title: item.label, description: `Explore ${item.label} at HRPF Pakistan.`, href: item.href,
   })),
   { type: "Pages", title: "File a Complaint", description: "Provide information about a human-rights concern.", href: "/file-a-complaint" },
   { type: "Pages", title: "Donate", description: "Support the Foundation’s work.", href: "/donate" },
-  { type: "Pages", title: "Contact", description: "Get in touch with HRPF.", href: "/contact" },
-  { type: "Pages", title: "Get Help", description: "Request information or guidance.", href: "/get-help" },
+  { type: "Pages", title: "Our Impact", description: "Documented areas of action and progress at HRPF.", href: "/impact" },
   { type: "Pages", title: "FAQ", description: "Answers to common questions about HRPF.", href: "/faq" },
   { type: "Pages", title: "Partner With Us", description: "Explore partnerships with the Foundation.", href: "/partner-with-us" },
   { type: "Pages", title: "Feedback about HRPF", description: "Share feedback about the Foundation’s work.", href: "/complaints" },
 ];
-const otherEntries: IndexEntry[] = [
-  ...campaigns.map(row => ({ type: "Campaigns" as const, title: row.title, description: row.description, href: row.href })),
-  ...events.map(row => ({ type: "Events" as const, title: row.title, description: row.description, href: row.href })),
-];
-
 const popularPages = pageEntries.slice(0, 6);
 
 export default function SearchExplorer({ entries }: { entries: IndexEntry[] }) {
@@ -47,7 +39,7 @@ export default function SearchExplorer({ entries }: { entries: IndexEntry[] }) {
 
   const results = useMemo(() => {
     if (!trimmedQuery) return [];
-    return [...pageEntries, ...entries, ...otherEntries].filter((entry) => {
+    return [...pageEntries, ...entries].filter((entry) => {
       const matchesType = !type || entry.type === type;
       if (!matchesType) return false;
       const haystack = `${entry.title} ${entry.description}`.toLowerCase();

@@ -18,7 +18,7 @@ export default function ComplaintVerification({
 }: {
   onToken: (token: string) => void;
   onError: (message: string) => void;
-  purpose?: "complaint" | "contact";
+  purpose?: "complaint" | "contact" | "newsletter";
 }) {
   const element = useRef<HTMLDivElement>(null),
     widget = useRef<string | null>(null);
@@ -34,6 +34,7 @@ export default function ComplaintVerification({
     widget.current = window.turnstile.render(element.current, {
       sitekey,
       action: purpose,
+      size: purpose === "newsletter" ? "compact" : "normal",
       callback: onToken,
       "expired-callback": () => onToken(""),
       "error-callback": () => {
@@ -54,7 +55,7 @@ export default function ComplaintVerification({
   if (!sitekey)
     return (
       <p role="status" className="text-sm text-muted">
-        <TranslationText>{purpose === "contact" ? "Online message submission is temporarily unavailable. Please use the email or phone details on this page." : "Online complaint submission is temporarily unavailable. Please use the contact details on our Contact page."}</TranslationText></p>
+        <TranslationText>{purpose === "newsletter" ? "Newsletter signup is temporarily unavailable. Please contact HRPF." : purpose === "contact" ? "Online message submission is temporarily unavailable. Please use the email or phone details on this page." : "Online complaint submission is temporarily unavailable. Please use the contact details on our Contact page."}</TranslationText></p>
     );
   return (
     <>

@@ -20,7 +20,7 @@ export const complaintInput = z.object({
   if (ids.length > 5 || new Set(ids).size !== ids.length) ctx.addIssue({ code: 'custom', path: ['attachmentIds'], message: 'At most five distinct files are allowed.' });
 });
 export const membershipInput = z.object({ ...personal, ...submission, membershipType: line(100), paymentReference: line(200), paymentProofId: id }).strict();
-export const contactInput = z.object({ ...submission, name: line(), email: personal.email, phone: personal.phone.optional(), organization: z.string().trim().max(150).optional(), inquiryType: z.enum(['General', 'Partnership', 'Media', 'Membership', 'Donation', 'Technical']).default('General'), subject: line(200), message: line(5000) }).strict();
+export const contactInput = z.object({ ...submission, name: line(), email: personal.email, phone: personal.phone.optional(), organization: z.string().trim().max(150).optional(), inquiryType: z.enum(['General', 'Partnership', 'Feedback', 'Media', 'Membership', 'Donation', 'Technical']).default('General'), subject: line(200), message: line(5000) }).strict();
 export const uploadQuery = z.object({ purpose: z.enum(['complaint', 'membership']) }).strict();
 export const adminUploadQuery = z.object({ purpose: z.enum(['content', 'certificate']) }).strict();
 export const objectId = id;

@@ -4,6 +4,7 @@ const publicPaths = ['/blogs', '/about/progress-reports', '/about/registration-a
 
 export async function checkNavigation(read, port) {
   const migrations = [
+    ['/get-involved', '/become-a-member'], ['/get-help', '/contact'],
     ['/news', '/blogs'], ['/news/real-news?from=old', '/blogs/real-news?from=old'],
     ['/updates/real-news', '/blogs/real-news'], ['/updates', '/blogs'],
     ['/reports', '/about/progress-reports'], ['/team', '/about/board-of-directors'],
@@ -16,10 +17,10 @@ export async function checkNavigation(read, port) {
   }
   let page = await read();
   const header = page.html.match(/<header[\s\S]*?<\/header>/)[0];
-  for (const label of ['Our Work','Projects','Blogs','Gallery','Media Coverage','TV Interviews','Get Involved','About Us','Who We Are','Mission and Vision','Aims and Objectives','Message of CEO','Board of Directors','Our Team','Registration and Certificates','Progress Reports','Become a Member','File a Complaint']) {
+  for (const label of ['Our Work','Projects','Blogs','Gallery','Media Coverage','TV Interviews','Contact','About Us','Who We Are','Mission and Vision','Aims and Objectives','Message of CEO','Board of Directors','Our Team','Registration and Certificates','Progress Reports','Become a Member','File a Complaint']) {
     assert.ok(header.includes(label), `Menu item: ${label}`);
   }
-  for (const label of ['Impact','News','Reports','Internships','Our People','Governance','Volunteer']) {
+  for (const label of ['Impact','News','Reports','Internships','Our People','Governance','Volunteer','Get Involved','Get Help','Campaigns','Events','Careers']) {
     assert.ok(!header.includes(`>${label}<`), `Removed menu item: ${label}`);
   }
   const headerPaths = [...new Set([...header.matchAll(/href="([^"?#]+)"/g)].map(match => match[1]))].filter(path => path.startsWith('/'));
@@ -92,8 +93,22 @@ export async function checkNavigation(read, port) {
   page = await read('/become-a-member');
   assert.ok(page.html.includes('1FAIpQLSfaG3tm0xiiFQrMX9yGSxKW5rSSa4ILvIZrmaLiNSDa86IK5w'));
   assert.ok(!(await read('/get-involved')).html.includes('Volunteer Application'), 'Membership replaces volunteer form');
+  for (const path of ['/campaigns', '/campaigns/old-campaign', '/events', '/events/old-event', '/careers']) assert.equal((await read(path)).status, 404, 'Permanently retired: '+path);
+  const work = (await read('/our-work')).html;
+  for (const field of ['womens-rights','childrens-rights','access-to-justice','minority-rights','education-and-awareness','research-and-advocacy','refugees-and-migrants','community-development']) assert.ok(work.includes('/our-work/'+field));
+  const impact = (await read('/impact')).html;
+  assert.ok(impact.includes('Documented Action') && impact.includes('Right to Information'));
+  for (const old of ['5,000+', 'Illustrative indicators', 'Focus Area Progress']) assert.ok(!impact.includes(old));
+  assert.ok((await read('/faq')).html.includes('Confirm subscription'));
+  for (const path of ['/partner-with-us', '/complaints']) {
+    const enquiry = (await read(path)).html;
+    for (const field of ['contact-name','contact-email','contact-message','contact-consent']) assert.ok(enquiry.includes(field), path+' has connected enquiry fields');
+    assert.ok(!enquiry.includes('simulateSubmission') && !enquiry.includes('demonstration only'));
+  }
+  assert.ok((await read('/newsletter')).html.includes('Newsletter Subscription'));
   page = await read('/search');
   assert.ok(page.html.includes('/blogs/real-news') && page.html.includes('Progress Reports') && !page.html.includes('Building Safer Digital Spaces'));
+  for (const path of ['/campaigns','/events','/careers','/get-help','/get-involved']) assert.ok(!page.html.includes('href=\"'+path), 'Search removes '+path);
   console.log('Navigation checks passed: menu destinations, canonical Blogs, 308 redirects, pagination, public media/documents/board and membership.');
 }
 

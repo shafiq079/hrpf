@@ -162,7 +162,7 @@ export const Certificate = mongoose.model('Certificate', new Schema({
   summary: localized, releaseNote: localized, original: assetRefSchema, publicFile: assetRefSchema, sortOrder: { type: Number, default: 0 }, publishedAt: Date, releaseReview: review,
 }, options));
 export const ContactMessage = mongoose.model('ContactMessage', new Schema({
-  name: requiredText(150), email: { ...requiredText(254), lowercase: true }, phone: text(30), organization: text(150), inquiryType: { type: String, enum: ['General', 'Partnership', 'Media', 'Membership', 'Donation', 'Technical'], default: 'General' }, subject: requiredText(200), message: requiredText(5000),
+  name: requiredText(150), email: { ...requiredText(254), lowercase: true }, phone: text(30), organization: text(150), inquiryType: { type: String, enum: ['General', 'Partnership', 'Feedback', 'Media', 'Membership', 'Donation', 'Technical'], default: 'General' }, subject: requiredText(200), message: requiredText(5000),
   submissionKey: { ...requiredText(64), unique: true }, payloadHash: requiredText(64), consent: { type: consent, required: true },
   status: { type: String, enum: ['new', 'in_progress', 'replied', 'closed', 'spam'], default: 'new' }, assigneeId: oid('User'), notes: [note],
 }, options));
@@ -193,8 +193,8 @@ Asset.schema.index({ claimStatus: 1, stagingExpiresAt: 1 });
 Asset.schema.index({ ticketHash: 1, uploadKey: 1 }, { unique: true, partialFilterExpression: { ticketHash: { $type: 'string' }, uploadKey: { $type: 'string' } } });
 export const FormTicket = mongoose.model('FormTicket', new Schema({
   tokenHash: { type: String, required: true, unique: true, select: false },
-  purpose: { type: String, enum: ['complaint', 'membership', 'contact'], required: true },
-  expiresAt: { type: Date, required: true }, consumedAt: Date, submissionKey: text(64), uploadCount: { type: Number, default: 0 }, uploadBytes: { type: Number, default: 0 },
+  purpose: { type: String, enum: ['complaint', 'membership', 'contact', 'newsletter'], required: true },
+  expiresAt: { type: Date, required: true }, consumedAt: Date, submissionKey: text(64), payloadHash: text(64), uploadCount: { type: Number, default: 0 }, uploadBytes: { type: Number, default: 0 },
 }, options).index({ expiresAt: 1 }, { expireAfterSeconds: 86400 }));
 export const Counter = mongoose.model('Counter', new Schema({ key: { ...requiredText(100), unique: true }, sequence: { type: Number, default: 0, min: 0 } }, options));
 // A checkpoint is committed in the same transaction as its draft. Reruns never
@@ -206,13 +206,20 @@ export const SourceImport = mongoose.model('SourceImport', new Schema({
   reviewTasks: [String],
 }, { timestamps: { createdAt: true, updatedAt: false }, strict: 'throw' }));
 export const EmailOutbox = mongoose.model('EmailOutbox', new Schema({
-  dedupeKey: { ...requiredText(200), unique: true }, template: { type: String, enum: ['acknowledgement', 'admin-notification', 'password-reset', 'complaint-copy', 'complaint-admin-copy'], required: true },
+  dedupeKey: { ...requiredText(200), unique: true }, template: { type: String, enum: ['acknowledgement', 'admin-notification', 'password-reset', 'complaint-copy', 'complaint-admin-copy', 'newsletter-confirmation'], required: true },
   entityType: requiredText(100), entityId: text(100), recipient: { ...requiredText(254), select: false },
   reference: text(100), encryptedToken: { type: String, select: false },
   status: { type: String, enum: ['pending', 'sending', 'sent', 'failed'], default: 'pending' },
   attempts: { type: Number, default: 0 }, nextAttemptAt: { type: Date, default: Date.now }, leaseUntil: Date, leaseToken: text(100),
   providerId: text(300), errorCode: text(100), sentAt: Date,
 }, options).index({ status: 1, nextAttemptAt: 1 }));
+export const NewsletterSubscription = mongoose.model('NewsletterSubscription', new Schema({
+  email: { ...requiredText(254), lowercase: true, unique: true, select: false },
+  status: { type: String, enum: ['pending', 'active', 'unsubscribed'], default: 'pending' },
+  confirmationHash: { ...text(64), select: false }, confirmationExpiresAt: Date,
+  unsubscribeHash: { ...text(64), select: false }, requestedAt: Date, confirmedAt: Date, unsubscribedAt: Date,
+  consent: { type: consent, required: true },
+}, options));
 BoardMember.schema.index({ isActive: 1, rank: 1 });
 BlogPost.schema.index({ status: 1, reviewStatus: 1, publishedAt: -1 });
 GalleryItem.schema.index({ category: 1, reviewStatus: 1, sortOrder: 1 });

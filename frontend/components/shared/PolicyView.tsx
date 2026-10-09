@@ -21,7 +21,7 @@ export default function PolicyView({ policy }: { policy: WebsitePolicy }) {
             </nav>
           </aside>
           <div className="min-w-0 max-w-3xl">
-            <p className="text-sm text-muted">Last updated: <time dateTime="2026-10-08">8 October 2026</time></p>
+            <p className="text-sm text-muted">Last updated: <time dateTime="2026-10-09">9 October 2026</time></p>
             <Prose className="mt-6">
               <p>{policy.introduction}</p>
               {policy.sections.map(section => <section key={section.id} id={section.id} className="scroll-mt-24">
