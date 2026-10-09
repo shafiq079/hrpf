@@ -2,6 +2,7 @@ import type mongoose from 'mongoose';
 import type { Request } from 'express';
 import type { RedisServices } from '../infrastructure/redis-services.js';
 import { createPublicReadCache } from '../services/public-cache.js';
+import { publicPortraitReplacement } from '../services/public-portraits.js';
 import { Router } from 'express';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
@@ -179,14 +180,22 @@ export function publicRouter(provider: UploadProvider, redis?: RedisServices, tt
     const types: Record<string, string> = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', pdf: 'application/pdf' };
     if (!types[asset.format]) throw missing();
     if (variant && (asset.resourceType !== 'image' || asset.format === 'pdf')) throw new ApiError(400, 'INVALID_IMAGE_VARIANT', 'Only released images support thumbnails.');
+    const portrait = asset.format !== 'pdf' ? await publicPortraitReplacement(asset.sha256, variant) : null;
     // Validation comes AFTER current asset and entity release checks. Even a matching
     // ETag cannot authorize withdrawn media. Private caches must revalidate every use.
     if (!documentKind && asset.format !== 'pdf') {
-      const etag = `W/"${asset.sha256}-${variant ?? 'original'}-webp82-v1"`;
+      const etag = `W/"${portrait?.sha256 ?? asset.sha256}-${variant ?? 'original'}-${portrait ? 'face-redacted-v1' : 'webp82-v1'}"`;
       res.setHeader('Cache-Control', 'private, no-cache, must-revalidate');
       res.setHeader('ETag', etag);
       const candidates = req.get('If-None-Match')?.split(',').map(value => value.trim().replace(/^W\//, '')) ?? [];
       if (candidates.includes('*') || candidates.includes(etag.replace(/^W\//, ''))) { res.status(304).end(); return; }
+    }
+    if (portrait) {
+      res.setHeader('Content-Type', 'image/webp');
+      res.setHeader('Content-Disposition', `inline; filename="hrpf-${value}-blurred.webp"`);
+      res.setHeader('Content-Length', String(portrait.bytes.length));
+      if (req.method === 'HEAD') { res.end(); return; }
+      res.end(portrait.bytes); return;
     }
     const response = await provider.read(asset, variant ? { width: Number(variant) as 480 | 960 | 1440 } : undefined);
     if (!response.ok || !response.body) throw unavailable();
