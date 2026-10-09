@@ -29,15 +29,13 @@ export default function HeroSection() {
 
       <Container className="relative z-10 py-20 lg:py-28">
         <div className="max-w-2xl">
-          <p className="eyebrow text-teal">
-            Human Rights Protection Foundation Pakistan
-          </p>
-          <h1 className="mt-4 font-serif text-[38px] font-semibold leading-[1.1] text-white sm:text-5xl lg:text-[60px]">
-            Protecting Dignity.
-            <br />
-            Defending Rights.
-            <br />
-            Empowering Communities.
+          <h1
+            lang="ur"
+            dir="rtl"
+            translate="no"
+            className="notranslate font-[family-name:var(--font-arabic)] text-[clamp(2.125rem,5vw,4.5rem)] font-bold leading-[1.6] tracking-normal text-white"
+          >
+            ہیومن رائٹس پروٹیکشن فاؤنڈیشن پاکستان
           </h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-white/85 sm:text-[17px]">
             {home.hero}

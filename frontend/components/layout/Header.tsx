@@ -2,6 +2,7 @@
 import TranslationText from "@/components/translation/TranslationText";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import Link from "@/components/translation/TranslationLink";
 import { AlertTriangle, ChevronDown, Menu } from "lucide-react";
 import { mainNavigation } from "@/data/navigation";
@@ -12,6 +13,8 @@ import MobileNavigation from "./MobileNavigation";
 
 /** Slim sticky site header with center navigation, dropdowns and primary actions. */
 export default function Header() {
+  const pathname = usePathname();
+  const current = (href: string) => pathname === href ? "page" : pathname.startsWith(`${href}/`) ? "location" : undefined;
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -45,7 +48,7 @@ export default function Header() {
   }, []);
 
   const linkClasses =
-    "relative text-sm font-medium text-text transition-colors duration-150 hover:text-teal-dark after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-0 after:bg-teal after:transition-all after:duration-200 hover:after:w-full";
+    "relative text-sm font-medium text-text transition-colors duration-150 hover:text-teal-dark after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-0 after:bg-teal after:transition-all after:duration-200 hover:after:w-full aria-[current=page]:text-teal-dark aria-[current=location]:text-teal-dark aria-[current=page]:after:w-full aria-[current=location]:after:w-full";
 
   return (
     <header
@@ -76,7 +79,7 @@ export default function Header() {
                     onMouseLeave={() => setOpenIndex(null)}
                   >
                     <span className="flex items-center gap-0.5">
-                      <Link href={item.href} className={linkClasses} onClick={() => setOpenIndex(null)}>
+                      <Link href={item.href} aria-current={current(item.href)} className={linkClasses} onClick={() => setOpenIndex(null)}>
                         <TranslationText>{item.label}</TranslationText>
                       </Link>
                       <button
@@ -110,8 +113,9 @@ export default function Header() {
                           <li key={`${child.label}-${child.href}`}>
                             <Link
                               href={child.href}
+                              aria-current={current(child.href)}
                               onClick={() => setOpenIndex(null)}
-                              className="block rounded px-3 py-2 text-sm text-text transition-colors hover:bg-soft-gray hover:text-teal-dark"
+                              className="block rounded px-3 py-2 text-sm text-text transition-colors hover:bg-soft-gray hover:text-teal-dark aria-[current=page]:bg-soft-gray aria-[current=page]:text-teal-dark"
                             >
                               <TranslationText>{child.label}</TranslationText>
                             </Link>
@@ -122,7 +126,7 @@ export default function Header() {
                   </li>
                 ) : (
                   <li key={item.label}>
-                    <Link href={item.href} className={linkClasses} onClick={() => setOpenIndex(null)}>
+                    <Link href={item.href} aria-current={current(item.href)} className={linkClasses} onClick={() => setOpenIndex(null)}>
                       <TranslationText>{item.label}</TranslationText>
                     </Link>
                   </li>

@@ -128,7 +128,22 @@ If using `EMAIL_DELIVERY_MODE=worker`, a third terminal runs
 
 Frontend lint/types/production build, 12 client tests and public SSR route checks;
 backend types/build, 27 unit tests, OpenAPI regeneration/parity and the expanded
-58-test isolated Mongo replica-set/Redis integration suite cover persistence and mocked
+59-test isolated Mongo replica-set/Redis integration suite cover persistence and mocked
 email delivery. Live Turnstile, sender authorization, inbox placement and client
 Cloudinary policy must be verified in the configured client environment. No real
 email, bulk mailing or production deployment is performed during these checks.
+
+## Approved navigation and Urdu homepage identity
+
+Primary navigation follows About Us → Our Work → Projects → Blogs → Gallery →
+Become a Member → Contact on desktop and mobile. Current pages/sections are marked
+with `aria-current` and a brand-blue highlight. Complaint and Donate retain their
+separate action buttons. The mobile drawer shares the header's `xl` breakpoint.
+
+The homepage's primary heading is **ہیومن رائٹس پروٹیکشن فاؤنڈیشن پاکستان**,
+using the existing self-hosted Arabic-script font, Urdu language metadata, RTL
+reading direction and responsive 34–72px type. It replaces the English name and
+large three-line slogan; the supporting description no longer repeats the name.
+The Urdu brand heading is excluded from automatic translation so its approved
+wording remains intact. Check the homepage and mobile menu after pulling and
+restarting the frontend; no seed import or database change is required.
