@@ -141,8 +141,10 @@ with `aria-current` and a brand-blue highlight. Complaint and Donate retain thei
 separate action buttons. The mobile drawer shares the header's `xl` breakpoint.
 
 The homepage's primary heading is **ہیومن رائٹس پروٹیکشن فاؤنڈیشن پاکستان**,
-using the existing self-hosted Arabic-script font, Urdu language metadata, RTL
-reading direction and responsive 34–72px type. It replaces the English name and
+using self-hosted Noto Nastaliq Urdu (weight 500), verified from the existing
+hrpf.org font stylesheet, Urdu language metadata, RTL reading direction,
+responsive 34–72px type and spacious Nastaliq line spacing. This font is scoped
+to the homepage. The heading replaces the English name and
 large three-line slogan; the supporting description no longer repeats the name.
 The Urdu brand heading is excluded from automatic translation so its approved
 wording remains intact. Check the homepage and mobile menu after pulling and

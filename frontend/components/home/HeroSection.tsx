@@ -1,8 +1,17 @@
 import home from "@/data/homepage.json";
+import { Noto_Nastaliq_Urdu } from "next/font/google";
 import { AlertTriangle, ArrowRight } from "lucide-react";
 import Container from "@/components/shared/Container";
 import PrimaryButton from "@/components/shared/PrimaryButton";
 import AppImage from "@/components/shared/AppImage";
+
+// Match the Urdu typeface and 500 weight used by the existing hrpf.org site.
+// Loading it here keeps the self-hosted font/preload scoped to the homepage.
+const urdu = Noto_Nastaliq_Urdu({
+  weight: "500",
+  subsets: ["arabic"],
+  display: "swap",
+});
 
 /** Full-width hero with documentary imagery and a navy overlay. */
 export default function HeroSection() {
@@ -33,7 +42,7 @@ export default function HeroSection() {
             lang="ur"
             dir="rtl"
             translate="no"
-            className="notranslate font-[family-name:var(--font-arabic)] text-[clamp(2.125rem,5vw,4.5rem)] font-bold leading-[1.6] tracking-normal text-white"
+            className={`${urdu.className} notranslate text-[clamp(2.125rem,5vw,4.5rem)] font-medium leading-[2] tracking-normal text-white`}
           >
             ہیومن رائٹس پروٹیکشن فاؤنڈیشن پاکستان
           </h1>
