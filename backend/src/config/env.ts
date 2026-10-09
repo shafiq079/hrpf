@@ -31,6 +31,7 @@ const schema = z.object({
   CLOUDINARY_NAMESPACE: z.enum(['hrpf/dev', 'hrpf/prod']).default('hrpf/dev'),
   TURNSTILE_SECRET_KEY: z.string().optional(),
   TURNSTILE_HOSTNAMES: z.array(z.string().regex(/^[a-zA-Z0-9.-]+$/)).default([]),
+  PUBLIC_CACHE_TTL_SECONDS: z.coerce.number().int().min(1).max(3600).default(300),
   EMAIL_PROVIDER: z.enum(['smtp', 'resend']).default('smtp'),
   EMAIL_DELIVERY_MODE: z.enum(['worker', 'embedded']).default('worker'),
   RESEND_API_KEY: z.string().optional(),

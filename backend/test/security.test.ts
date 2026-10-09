@@ -5,7 +5,7 @@ import { parseEnv } from '../src/config/env.js';
 import { createAuth, cookieNames } from '../src/security/auth.js';
 import { can } from '../src/security/permissions.js';
 import { decrypt, digest, encrypt, hashPassword, keyedHash, verifyPassword } from '../src/security/crypto.js';
-import { inspectUpload } from '../src/services/uploads.js';
+import { cloudinaryProvider, inspectUpload } from '../src/services/uploads.js';
 import { complaintInput } from '../src/http/contracts.js';
 import { createRedisServices } from '../src/infrastructure/redis-services.js';
 import { turnstileVerifier } from '../src/services/forms.js';
@@ -83,4 +83,23 @@ test('Turnstile has no development bypass; encryption keys and JWT secrets are v
   assert.throws(() => parseEnv({ JWT_ACCESS_SECRET: 'a'.repeat(64), JWT_REFRESH_SECRET: 'a'.repeat(64) }), /distinct/);
   assert.throws(() => parseEnv({ TRUST_PROXY_CIDRS: 'true' }), /TRUST_PROXY_CIDRS/);
   assert.equal(digest('test').length, 64);
+});
+
+test('managed thumbnails sign bounded, versioned Cloudinary transformations while original reads stay unchanged', async () => {
+  const configured = parseEnv({ NODE_ENV: 'test', CLOUDINARY_CLOUD_NAME: 'synthetic', CLOUDINARY_API_KEY: '123', CLOUDINARY_API_SECRET: 'synthetic-secret' });
+  const provider = cloudinaryProvider(configured), originalFetch = globalThis.fetch;
+  const urls: string[] = [];
+  globalThis.fetch = async input => { urls.push(String(input)); return new Response('synthetic bytes'); };
+  try {
+    const asset = { publicId: 'hrpf/dev/content/synthetic-image', resourceType: 'image' as const, version: 123 };
+    for (const width of [480, 960, 1440] as const) await provider.read(asset, { width });
+    await provider.read(asset);
+    for (let i = 0; i < 3; i++) {
+      assert.match(urls[i]!, /\/image\/authenticated\/s--[^/]+--\//);
+      assert.ok(urls[i]!.includes(`w_${[480, 960, 1440][i]}`));
+      assert.ok(urls[i]!.includes('c_limit') && urls[i]!.includes('f_webp') && urls[i]!.includes('q_82'));
+      assert.ok(urls[i]!.includes('/v123/'));
+    }
+    assert.ok(!urls[3]!.includes('w_') && !urls[3]!.includes('f_webp'));
+  } finally { globalThis.fetch = originalFetch; }
 });

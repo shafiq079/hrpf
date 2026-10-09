@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { canonicalVideoPattern } from '../services/video-links.js';
+import { workAreaSlugs } from './work-areas.js';
 
 const options = { timestamps: true, strict: 'throw' as const, optimisticConcurrency: true };
 const text = (max = 200) => ({ type: String, trim: true, maxlength: max });
@@ -108,6 +109,8 @@ const projectDetails = new Schema({
 export const Project = mongoose.model('Project', new Schema({
   title: { type: localized, required: true }, slug: { ...requiredText(100), unique: true }, locale: { type: String, enum: ['en', 'ur'], default: 'en' },
   summary: localized, blocks: [block], focusArea: requiredText(150), location: requiredText(150),
+  workAreas: { type: [{ type: String, enum: workAreaSlugs }], default: undefined,
+    validate: { validator: (values: string[]) => values.length <= 8 && new Set(values).size === values.length, message: 'Select distinct work pages.' } },
   projectStatus: { type: String, enum: ['Ongoing', 'Completed', 'Proposed', 'Emergency Response'], default: 'Proposed' },
   startYear: { type: Number, min: 1900, max: 2200 }, cover: assetRefSchema, coverAlt: text(300), details: projectDetails,
   gallery: [new Schema({ asset: { type: assetRefSchema, required: true }, alt: requiredText(300), caption: text(500) }, { _id: false, strict: 'throw' })],
@@ -116,6 +119,7 @@ export const Project = mongoose.model('Project', new Schema({
   status: { type: String, enum: ['draft', 'published'], default: 'draft' }, reviewStatus: review, publishedAt: Date,
 }, options));
 Project.schema.index({ locale: 1, status: 1, publishedAt: -1 });
+Project.schema.index({ workAreas: 1, locale: 1, status: 1, publishedAt: -1 });
 const gallery = new Schema({
   category: { type: String, enum: ['media-coverage', 'in-action'], required: true }, title: localized, alt: localized, caption: localized,
   // Source imports can prepare an unpublished draft before a reviewed file exists.

@@ -23,7 +23,7 @@ export function createBusiness(env: Environment, adapters: BusinessAdapters) {
   const auth = createAuth(env), forms = createForms(redis, adapters.bot ?? turnstileVerifier(env));
   const uploads = createUploads(env, forms, adapters.provider ?? cloudinaryProvider(env));
   const submissions = createSubmissions(env, forms);
-  router.use(publicRouter(adapters.provider ?? cloudinaryProvider(env)));
+  router.use(publicRouter(adapters.provider ?? cloudinaryProvider(env), redis, env.PUBLIC_CACHE_TTL_SECONDS));
   const account = (body: unknown) => body && typeof body === 'object' && 'email' in body && typeof body.email === 'string' ? body.email.trim().toLowerCase().slice(0, 254) : 'invalid';
   router.use('/auth', redis.limit('auth', 120, 60000));
   router.use(['/auth/login', '/auth/forgot-password', '/auth/reset-password'], redis.limit('login', 10, 15 * 60000, account));

@@ -1,0 +1,26 @@
+{
+  "project": "national-minorities-day-awareness",
+  "reviewedAt": "2026-10-08",
+  "sources": [
+    {
+      "label": "Supplied HRPF Profile, May 2026",
+      "originalFile": "PROFILE HRPF.docx",
+      "sha256": "99cf62f12b7e57cb1e0101b92aec721a7c90704a202a013d0d4266fc2d8b6236",
+      "bytes": 17281586,
+      "type": "supplied-document",
+      "locator": "Programme focus 10; interfaith harmony and social cohesion"
+    },
+    {
+      "type": "secondary-social-archive",
+      "url": "https://www.findglocal.com/PK/Mianwal/1500163953642649/Human-Rights-Protection-Foundation-Pakistan.",
+      "retrievedAt": "2026-10-08",
+      "supportedAction": "HRPF shared a National Minorities Day message advocating equality, freedom of belief and fair access to public services."
+    }
+  ],
+  "verificationNotes": "Dated statement reproduced by FindGlocal, with matching chairman, phone, website and PCC registration; corroborated by supplied profile goals. Secondary archive, not direct Facebook verification. Completed means publication of the statement, not delivery of the requested protections.",
+  "fields": [
+    "Minority Rights",
+    "Education and Awareness"
+  ],
+  "statusMeaning": "Completed describes the specific recorded action, not resolution of all underlying needs."
+}

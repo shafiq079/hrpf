@@ -1,0 +1,19 @@
+{
+  "project": "mandi-bahauddin-peace-petition",
+  "reviewedAt": "2026-10-08",
+  "sources": [
+    {
+      "type": "primary-public-post",
+      "url": "https://www.change.org/p/promote-peace-in-district-mandi-baha-ud-din",
+      "retrievedAt": "2026-10-08",
+      "supportedAction": "HRPF launched a public petition calling for peace in Mandi Bahauddin, proposing community dialogue, conflict-resolution education and constructive opportunities for local people."
+    }
+  ],
+  "verificationNotes": "Petition starter identifies the same Punjab Charity Commission registration. Do not seed live signature counts as fixed impact figures.",
+  "fields": [
+    "Community Development",
+    "Education and Awareness",
+    "Research and Advocacy"
+  ],
+  "statusMeaning": "Last documented stage; an Ongoing label does not assert continuous operation today."
+}

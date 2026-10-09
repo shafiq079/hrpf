@@ -1,3 +1,4 @@
+import { bumpPublicRevision } from '../services/public-cache.js';
 import { Router } from "express";
 import mongoose from "mongoose";
 import { z } from "zod";
@@ -15,6 +16,7 @@ import { ApiError, validate } from "./errors.js";
 import { projectDetailsInput, projectMediaInput } from "./project-details.js";
 import { bindProjectMedia } from "../services/project-media.js";
 import { blogDetailsInput, blogMediaInput } from "./blog-details.js";
+import { projectWorkAreas, workAreaSlugs } from "../domain/work-areas.js";
 const localized = z
   .object({
     en: z.string().trim().min(1).max(10000),
@@ -53,6 +55,7 @@ export const projectInput = z
     details: projectDetailsInput.optional(),
     ...projectMediaInput,
     focusArea: z.string().trim().min(1).max(150),
+    workAreas: z.array(z.enum(workAreaSlugs)).max(8).refine(values => new Set(values).size === values.length, "Select each work page once").optional(),
     location: z.string().trim().min(1).max(150),
     projectStatus: z.enum([
       "Ongoing",
@@ -93,13 +96,14 @@ export function managedContentRouter(auth: ReturnType<typeof createAuth>) {
         .sort({ _id: 1 })
         .skip((page - 1) * 20)
         .limit(20)
-        .select(kind === "projects" ? "__v title slug summary projectStatus status focusArea location locale" : "__v title slug excerpt status locale details.category")
+        .select(kind === "projects" ? "__v title slug summary projectStatus status focusArea workAreas location locale" : "__v title slug excerpt status locale details.category")
         .lean();
       res.json({
         data: rows.map(({ _id, __v, ...r }: any) => ({
           id: String(_id),
           version: __v,
           ...r,
+          ...(kind === "projects" ? { workAreas: projectWorkAreas(r) } : {}),
         })),
         meta: { page, limit: 20 },
       });
@@ -110,6 +114,7 @@ export function managedContentRouter(auth: ReturnType<typeof createAuth>) {
       const { _id, __v, cover, gallery, documents, sourceReferences: _sources, ...fields } = row;
       const safeFields = kind === "projects" ? fields : Object.fromEntries(["title", "slug", "locale", "excerpt", "blocks", "details", "tags", "coverAlt", "status", "publishedAt"].map(key => [key, row[key]]));
       res.json({ data: { id: String(_id), version: __v, ...safeFields,
+        ...(kind === "projects" ? { workAreas: projectWorkAreas(row) } : {}),
         coverAssetId: cover?.assetId?.toString() ?? null,
         gallery: (gallery ?? []).map((item: any) => ({ assetId: String(item.asset.assetId), alt: item.alt, caption: item.caption ?? "" })),
         documents: (documents ?? []).map((item: any) => ({ assetId: String(item.asset.assetId), label: item.label })),
@@ -134,6 +139,7 @@ export function managedContentRouter(auth: ReturnType<typeof createAuth>) {
           ) as Record<string, any>;
           const principal = res.locals.principal as Principal;
           const result = await mongoose.connection.transaction(async (tx) => {
+            await bumpPublicRevision(tx);
             await Counter.findOneAndUpdate(
               { key: "security:user-governance" },
               { $inc: { sequence: 1 } },
@@ -152,7 +158,7 @@ export function managedContentRouter(auth: ReturnType<typeof createAuth>) {
             const { version, coverAssetId, gallery, documents, ...fields } = input;
             let row =
               method === "post"
-                ? new model(fields)
+                ? new model({ ...fields, ...(kind === "projects" ? { workAreas: fields.workAreas ?? [] } : {}) })
                 : await model.findOne({ _id: value, __v: version }).session(tx);
             if (!row)
               throw new ApiError(

@@ -1,7 +1,9 @@
 "use client";
 
 import { useRef, useState, type FormEvent } from "react";
+import { ImagePlus, Trash2 } from "lucide-react";
 import { AdminField as Field, ManualUrduNote } from "@/components/admin/AdminField";
+import AppImage from "@/components/shared/AppImage";
 import { adminRequest } from "@/lib/admin-api";
 import { videoLink } from "@/lib/video-links";
 import MediaGrid from "@/components/gallery/MediaGrid";
@@ -77,10 +79,12 @@ export default function GalleryEditor({
   const [busy, setBusy] = useState(false),
     [uploading, setUploading] = useState(false),
     [error, setError] = useState(""),
+    [imageNotice, setImageNotice] = useState(""),
     [reviewed, setReviewed] = useState(false);
   const preview = useRef<HTMLDialogElement>(null),
     staged = useRef<string | null>(null),
-    form = useRef<HTMLFormElement>(null);
+    form = useRef<HTMLFormElement>(null),
+    fileInput = useRef<HTMLInputElement>(null);
   const isImage = kind === "gallery";
   function update<K extends keyof MediaRecord>(key: K, value: MediaRecord[K]) {
     setRecord(current => ({
@@ -102,6 +106,7 @@ export default function GalleryEditor({
   async function upload(file?: File) {
     if (!file) return;
     setError("");
+    setImageNotice("");
     if (file.size > 5 * 1024 * 1024 || !["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
       setError("Choose a JPG, PNG or WebP image up to 5 MB.");
       return;
@@ -119,12 +124,31 @@ export default function GalleryEditor({
       const previous = staged.current;
       staged.current = uploaded.assetId;
       update("assetId", uploaded.assetId);
+      if (isImage) update("treatment", "ORIGINAL");
+      setImageNotice(`${file.name} uploaded. Save the record to keep this image.`);
       if (previous) await adminRequest(`/admin/assets/${previous}`, {
         method: "DELETE",
         body: "{}"
       }).catch(() => {});
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : "Upload failed.");
+    } finally {
+      setUploading(false);
+    }
+  }
+  async function deleteImage() {
+    if (busy || uploading) return;
+    setError("");
+    setUploading(true);
+    try {
+      if (staged.current && staged.current === record.assetId) {
+        await adminRequest(`/admin/assets/${staged.current}`, { method: "DELETE", body: "{}" });
+        staged.current = null;
+      }
+      update("assetId", null);
+      setImageNotice("Image deleted from this form. Save your changes to apply the deletion.");
+    } catch (failure) {
+      setError(failure instanceof Error ? failure.message : "The image could not be deleted.");
     } finally {
       setUploading(false);
     }
@@ -212,17 +236,36 @@ export default function GalleryEditor({
           <Field label="Collection"><select className={inputClass} value={record.category} onChange={e => update("category", e.target.value as MediaRecord["category"])}><option value="media-coverage">Press coverage</option><option value="in-action">HRPF photographs</option></select></Field>
           <Field label="Image type"><select className={inputClass} value={record.mediaType} onChange={e => update("mediaType", e.target.value as MediaRecord["mediaType"])}><option value="newspaper">Newspaper cutting</option><option value="photo">Photograph</option><option value="graphic">Graphic</option></select></Field>
           <Field label="Original coverage link (optional)"><input className={inputClass} type="url" maxLength={2000} placeholder="https://…" value={record.sourceUrl} onChange={e => update("sourceUrl", e.target.value)} /></Field>
-          <Field label="Image treatment"><select className={inputClass} value={record.treatment} onChange={e => update("treatment", e.target.value as MediaRecord["treatment"])}><option value="ORIGINAL">Original / standard cleanup</option><option value="AI_RESTORATION">AI restoration — show a public label</option></select></Field>
           <div className="sm:col-span-2"><Field label="Caption and context"><textarea className={inputClass} rows={5} maxLength={2000} value={record.caption.en} onChange={e => text("caption", e.target.value)} /></Field></div>
         </> : <>
           <div className="sm:col-span-2"><Field label="Individual video link"><input className={inputClass} required type="url" maxLength={2000} placeholder="https://www.youtube.com/watch?v=…" value={record.videoUrl} onChange={e => update("videoUrl", e.target.value)} /><span className="mt-2 block text-xs font-normal text-muted">Use a public YouTube or Vimeo interview link. Channel links and embed HTML are not accepted.</span></Field></div>
           <div className="sm:col-span-2"><Field label="Interview introduction and topics"><textarea className={inputClass} rows={6} maxLength={6000} value={record.description.en} onChange={e => text("description", e.target.value)} /></Field></div>
         </>}
       </fieldset>
-      <fieldset disabled={busy || uploading} className="rounded-lg border border-border bg-white p-5 sm:p-7"><legend className="px-2 text-lg font-semibold">{isImage ? "Archive image" : "Thumbnail (optional)"}</legend><label className="block text-sm font-semibold">Upload a JPG, PNG or WebP (up to 5 MB)<input type="file" accept="image/jpeg,image/png,image/webp" className="mt-3 block w-full text-sm font-normal" onChange={e => {
-            void upload(e.target.files?.[0]);
-            e.target.value = "";
-          }} /></label>{uploading && <p role="status" className="mt-3 text-sm">Uploading and checking image…</p>}{record.assetId && <p className="mt-4 text-sm text-teal-dark">An image is attached. Open Preview to inspect it. <button type="button" onClick={() => update("assetId", null)} className="ml-3 underline">Remove image</button></p>}<div className="mt-5"><Field label={isImage ? "Image description (alt text)" : "Thumbnail description (alt text)"}><input className={inputClass} required={isImage || !!record.assetId} maxLength={300} value={isImage ? record.alt.en : record.thumbnailAlt} onChange={e => isImage ? text("alt", e.target.value) : update("thumbnailAlt", e.target.value)} /></Field></div></fieldset>
+      <fieldset disabled={busy || uploading} className="rounded-lg border border-border bg-white p-5 sm:p-7">
+        <legend className="px-2 text-lg font-semibold">{isImage ? "Archive image" : "Thumbnail (optional)"}</legend>
+        <div className="grid gap-6 md:grid-cols-2 md:items-start">
+          <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded border border-border bg-soft-gray">
+            {file ? <AppImage src={file} alt={(isImage ? record.alt.en : record.thumbnailAlt) || record.title.en || "Attached image"} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-contain p-3" /> : <div className="px-6 text-center text-muted"><ImagePlus className="mx-auto mb-3 h-9 w-9" aria-hidden="true" /><p className="text-sm font-medium">No image attached</p><p className="mt-2 text-sm">Choose an image to display it here.</p></div>}
+          </div>
+          <div>
+            <p className="text-base font-semibold text-navy">{file ? "Change attached image" : "Add an image"}</p>
+            <p id="gallery-upload-help" className="mt-2 text-sm leading-relaxed text-muted">Choose a JPG, PNG or WebP file up to 5 MB. The image appears here after uploading.</p>
+            <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp" aria-label="Choose image file" aria-describedby="gallery-upload-help" className="hidden" onChange={e => {
+              void upload(e.target.files?.[0]);
+              e.target.value = "";
+            }} />
+            <div className="mt-5 flex flex-wrap gap-3">
+              <button type="button" onClick={() => fileInput.current?.click()} aria-describedby="gallery-upload-help" className="inline-flex cursor-pointer items-center gap-2 rounded border border-teal-dark bg-teal-dark px-5 py-3 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-dark disabled:cursor-not-allowed disabled:opacity-40"><ImagePlus size={18} aria-hidden="true" />{file ? "Replace image" : "Choose image"}</button>
+              {file && <button type="button" onClick={() => void deleteImage()} className="inline-flex cursor-pointer items-center gap-2 rounded border border-red/30 bg-white px-5 py-3 text-sm font-semibold text-red hover:bg-red/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red disabled:cursor-not-allowed disabled:opacity-40"><Trash2 size={18} aria-hidden="true" />Delete image</button>}
+            </div>
+            {uploading && <p role="status" className="mt-4 text-sm text-muted">Updating image…</p>}
+            {imageNotice && <p role="status" className="mt-4 break-words text-sm leading-relaxed text-teal-dark">{imageNotice}</p>}
+            {file && <a href={file} target="_blank" rel="noopener noreferrer" className="mt-5 inline-block text-sm font-semibold text-teal-dark underline underline-offset-4">Open full-size image</a>}
+          </div>
+        </div>
+        <div className="mt-6"><Field label={isImage ? "Image description (alt text)" : "Thumbnail description (alt text)"}><input className={inputClass} required={isImage || !!record.assetId} maxLength={300} value={isImage ? record.alt.en : record.thumbnailAlt} onChange={e => isImage ? text("alt", e.target.value) : update("thumbnailAlt", e.target.value)} /></Field></div>
+      </fieldset>
       <details className="rounded-lg border border-border bg-white p-5 sm:p-7"><summary className="cursor-pointer text-sm font-semibold">Manual Urdu content (optional)</summary><ManualUrduNote /><fieldset disabled={busy || uploading} className="mt-5 grid gap-5"><Field label="Urdu title"><input className={inputClass} dir="rtl" lang="ur" maxLength={200} value={record.title.ur ?? ""} onChange={e => text("title", e.target.value, "ur")} /></Field>{isImage && <Field label="Urdu image description"><input className={inputClass} dir="rtl" lang="ur" maxLength={300} value={record.alt.ur ?? ""} onChange={e => text("alt", e.target.value, "ur")} /></Field>}<Field label={isImage ? "Urdu caption" : "Urdu introduction"}><textarea className={inputClass} dir="rtl" lang="ur" rows={5} maxLength={isImage ? 2000 : 6000} value={(isImage ? record.caption : record.description).ur ?? ""} onChange={e => text(isImage ? "caption" : "description", e.target.value, "ur")} /></Field></fieldset></details>
       <div className="rounded-lg border border-border bg-white p-5 sm:p-7"><label className="flex items-start gap-3 text-sm leading-relaxed"><input type="checkbox" checked={reviewed} disabled={busy || uploading} onChange={e => setReviewed(e.target.checked)} className="mt-1" />I have reviewed the text and media and approve this record for public display.</label><div className="mt-6 flex flex-wrap gap-3"><button type="button" disabled={busy || uploading} onClick={() => preview.current?.showModal()} className="border border-border px-5 py-3 text-sm font-semibold">Preview</button><button disabled={busy || uploading} className="bg-navy px-5 py-3 text-sm font-semibold text-white disabled:opacity-40">{busy ? "Saving…" : "Save draft"}</button><button type="button" disabled={busy || uploading || !reviewed || !!record.duplicate} onClick={() => void save(true)} className="bg-teal-dark px-5 py-3 text-sm font-semibold text-white disabled:opacity-40">Save and publish</button></div></div>
     </form>

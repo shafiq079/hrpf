@@ -3,7 +3,7 @@
   "info": {
     "title": "HRPF API",
     "version": "0.4.0",
-    "description": "Backend foundations, managed public content and atomic publication controls. Fixed NGO page copy is bundled in the frontend and needs no publication approval. Operational member/case review workflows remain later milestones. Public reads are no-store and withdrawals take effect immediately. Browser clients use the frontend same-origin /api rewrite and credentials. All mutating auth/admin requests require the exact configured Origin and X-CSRF-Token. Production cookies use Secure, HttpOnly, SameSite=Lax, Path=/, no Domain; development names omit __Host-."
+    "description": "Backend foundations, managed public content and atomic publication controls. Fixed NGO page copy is bundled in the frontend and needs no publication approval. Operational member/case review workflows remain later milestones. Projected public JSON uses a bounded revision-keyed Redis cache; browser JSON and documents are no-store. Public raster images use private conditional validation; withdrawals are checked before streaming or a 304 response. Browser clients use the frontend same-origin /api rewrite and credentials. All mutating auth/admin requests require the exact configured Origin and X-CSRF-Token. Production cookies use Secure, HttpOnly, SameSite=Lax, Path=/, no Domain; development names omit __Host-."
   },
   "paths": {
     "/api/health/live": {
@@ -3264,11 +3264,31 @@
               "type": "string",
               "pattern": "^[a-fA-F0-9]{24}$"
             }
+          },
+          {
+            "name": "w",
+            "in": "query",
+            "description": "Optional bounded WebP thumbnail width for raster images; omit for original bytes.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "480",
+                "960",
+                "1440"
+              ]
+            }
+          },
+          {
+            "name": "If-None-Match",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "No-store reviewed file; PDF attachment or inline raster image. Report downloads increment after successful GET, never HEAD.",
+            "description": "Reviewed file. Public raster images allow private conditional caching after current release checks; documents stay no-store. Report downloads increment after successful GET, never HEAD.",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -3277,6 +3297,9 @@
                 }
               }
             }
+          },
+          "304": {
+            "description": "Unchanged public image; no body. Current asset and entity release are checked before responding."
           },
           "default": {
             "description": "Redacted validation, authorization, conflict, limit or dependency error.",
@@ -3308,7 +3331,7 @@
         ],
         "responses": {
           "200": {
-            "description": "No-store reviewed file; PDF attachment or inline raster image. Report downloads increment after successful GET, never HEAD.",
+            "description": "Reviewed file. Public raster images allow private conditional caching after current release checks; documents stay no-store. Report downloads increment after successful GET, never HEAD.",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -4601,9 +4624,27 @@
             }
           },
           {
+            "name": "workArea",
+            "in": "query",
+            "description": "Filter by explicitly selected Our Work page.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "womens-rights",
+                "childrens-rights",
+                "access-to-justice",
+                "minority-rights",
+                "education-and-awareness",
+                "research-and-advocacy",
+                "refugees-and-migrants",
+                "community-development"
+              ]
+            }
+          },
+          {
             "name": "focusArea",
             "in": "query",
-            "description": "Filter by the editor focus-area label; case and apostrophe variants are matched.",
+            "description": "Legacy label alias; explicit work-page selections take precedence.",
             "schema": {
               "type": "string",
               "minLength": 1,
@@ -4636,6 +4677,22 @@
                           "focusArea": {
                             "type": "string"
                           },
+                          "workAreas": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "womens-rights",
+                                "childrens-rights",
+                                "access-to-justice",
+                                "minority-rights",
+                                "education-and-awareness",
+                                "research-and-advocacy",
+                                "refugees-and-migrants",
+                                "community-development"
+                              ]
+                            }
+                          },
                           "location": {
                             "type": "string"
                           },
@@ -4666,6 +4723,7 @@
                           "slug",
                           "summary",
                           "focusArea",
+                          "workAreas",
                           "location",
                           "status",
                           "imageAlt",
@@ -4806,6 +4864,22 @@
                         },
                         "focusArea": {
                           "type": "string"
+                        },
+                        "workAreas": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "womens-rights",
+                              "childrens-rights",
+                              "access-to-justice",
+                              "minority-rights",
+                              "education-and-awareness",
+                              "research-and-advocacy",
+                              "refugees-and-migrants",
+                              "community-development"
+                            ]
+                          }
                         },
                         "location": {
                           "type": "string"
@@ -5054,6 +5128,7 @@
                         "slug",
                         "summary",
                         "focusArea",
+                        "workAreas",
                         "location",
                         "status",
                         "imageAlt",
@@ -5490,6 +5565,23 @@
                     "minLength": 1,
                     "maxLength": 150
                   },
+                  "workAreas": {
+                    "maxItems": 8,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "womens-rights",
+                        "childrens-rights",
+                        "access-to-justice",
+                        "minority-rights",
+                        "education-and-awareness",
+                        "research-and-advocacy",
+                        "refugees-and-migrants",
+                        "community-development"
+                      ]
+                    }
+                  },
                   "location": {
                     "type": "string",
                     "minLength": 1,
@@ -5902,6 +5994,23 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 150
+                  },
+                  "workAreas": {
+                    "maxItems": 8,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "womens-rights",
+                        "childrens-rights",
+                        "access-to-justice",
+                        "minority-rights",
+                        "education-and-awareness",
+                        "research-and-advocacy",
+                        "refugees-and-migrants",
+                        "community-development"
+                      ]
+                    }
                   },
                   "location": {
                     "type": "string",

@@ -17,7 +17,7 @@ const statusStyles: Record<Project["status"], string> = {
   "Emergency Response": "bg-red text-white",
 };
 
-/** Project card with image, status badge, focus area, location and summary. */
+/** Every card has the same image area; an empty cover uses one shared placeholder. */
 export default function ProjectCard({
   project,
   statusLabel,
@@ -37,14 +37,19 @@ export default function ProjectCard({
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-white transition-shadow duration-200 hover:shadow-[0_8px_24px_-14px_rgba(8,47,67,0.28)]">
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-[4/3] overflow-hidden bg-soft-gray">
         <AppImage
-          src={image}
-          alt={imageAlt}
+          src={image || "/images/hrpf/project-placeholder.webp"}
+          alt={image ? imageAlt : ""}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          className="h-full w-full object-contain"
         />
+        {!image && (
+          <p className="absolute inset-x-4 bottom-5 text-center text-xs font-medium text-muted">
+            <TranslationText>Project photo to be added</TranslationText>
+          </p>
+        )}
         <span
           className={`absolute left-3 top-3 z-10 rounded px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${statusStyles[status]}`}
         >

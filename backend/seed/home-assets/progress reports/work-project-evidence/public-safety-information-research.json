@@ -1,0 +1,21 @@
+{
+  "project": "public-safety-information-research",
+  "reviewedAt": "2026-10-08",
+  "sources": [
+    {
+      "label": "Supplied HRPF Progress Report 2024 Revised",
+      "originalFile": "PROGRESS REPORT 2024 Revised.docx",
+      "sha256": "5d9067ae4c149423dea1d4558cfd5368b692a186b57ccf03251d409cb7d4cc2f",
+      "bytes": 10890607,
+      "type": "supplied-document",
+      "locator": "sections Crime analysis and Right to Information requests"
+    }
+  ],
+  "verificationNotes": "Do not equate a published analysis with solved crimes or convictions. Aggregate research excludes personal case details.",
+  "fields": [
+    "Research and Advocacy",
+    "Access to Justice",
+    "Community Development"
+  ],
+  "statusMeaning": "Completed describes the specific recorded action, not resolution of all underlying needs."
+}

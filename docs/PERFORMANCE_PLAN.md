@@ -1,54 +1,27 @@
-# Public website performance requirement
+# Public content caching and image delivery
 
-Owner requirement recorded on 2026-10-07. This is planned work, not an
-implemented cache. Website speed is a product requirement alongside correctness.
-The owner subsequently deferred performance/caching until the end of the
-functional implementation. Continue the earlier page/module plan first.
+Implemented on development on 2026-10-08 following the owner's repeat-gallery-navigation report. The shared pipeline applies to all current and future managed content; it contains no seed IDs or archive-specific filenames.
 
-Caching and image delivery must be reusable features of the application. They
-must apply automatically to current and future managed content, including uploads
-made months or years later. No cache may depend on the current seed IDs, filenames,
-200-entry manifest, sample titles or a manually maintained list of images.
+## Public JSON
 
-MongoDB remains the authoritative content store. Publishing a new item through
-the admin portal must make it available through the same cached public pipeline;
-normal future uploads must not require reseeding, code edits or a rebuild.
+Projected settings, board/team, categories, blogs, projects, gallery, interviews and document lists/details use bounded Redis read-through caching. Keys include a schema version, authoritative Mongo content revision, endpoint and normalized validated query (locale, page, limit, category, search and focus area). Default lifetime is five minutes; configure PUBLIC_CACHE_TTL_SECONDS between 1 and 3600. Cache storage is limited to 256 entries of at most 256 KiB each. Same-process simultaneous fills are coalesced; Redis failures fall back to Mongo.
 
-## Deferred performance task on development
+Every current admin content transaction, publication/withdrawal and source import increments public:content-revision in Counter within the same Mongo transaction. Failed writes roll back their revision. Old keys expire or are evicted, and cannot be reused after a committed update. A revision check after loading protects against a concurrent write during cache fill. Scheduled publication clips cache validity at the earliest future publishedAt boundary, so it becomes visible without an editor write.
 
-Implement reusable public content caching and image delivery, using Gallery as
-the first complete verification flow, with shared components suitable for the
-public projects and blogs. Keep the following responsibilities separate:
+Mongo remains authoritative. Browser JSON keeps no-store so navigation checks the current revision. X-HRPF-Public-Cache reports HIT, MISS or BYPASS. No auth, submission, complaint identity, restricted attachment or image bytes enter this public JSON cache. External database maintenance must increment the same revision within its write transaction; direct manual Mongo updates outside this contract may leave list metadata stale until expiry. All normal existing editors and importers follow the contract automatically.
 
-- Redis: bounded caching of projected public JSON lists, counts and pagination,
-  keyed by collection, category, locale, page, page size, search and content revision.
-  Start with a configurable five-minute expiry, not a hardcoded content snapshot.
-- Browser: conditional image caching using validators so unchanged image bytes
-  are reused after the server confirms that the asset is still publicly released.
-- Image delivery: bounded thumbnail variants for cards; retain the supplied
-  large version for the full-size viewer. Preserve newspaper legibility and
-  AI-restoration disclosure, and keep provider credentials server-side.
-- Navigation: avoid unnecessarily clearing the current grid while loading;
-  prepare adjacent pages when appropriate without downloading the whole archive.
+## Image delivery
 
-Invalidate every affected cache variant after admin create, edit, publish,
-withdraw or delete, and after source imports. Use an authoritative content
-revision/invalidation design that accounts for concurrent writes, cache failures
-and scheduled publication boundaries. Publication/asset checks must precede a
-cached-image validation response; withdrawn files must not regain public access.
-Admin, authentication, submissions and restricted files retain their existing
-private/no-store policies. Image binaries do not belong in the Redis JSON cache.
+AppImage requests signed server-to-server Cloudinary WebP card variants at 480, 960 or 1440 pixels, quality 82 and c_limit (no upscaling). Variant URLs depend on the asset ID and width, so they remain stable on repeat visits. The provider version is retained. Only these three widths are accepted; PDFs and raw files cannot request image variants. Provider credentials and signed URLs stay on the backend.
 
-## Acceptance checks
+The Gallery zoom viewer explicitly requests original bytes. Public raster images use private, no-cache, must-revalidate with a variant-specific weak ETag. A repeat browser request can receive 304 with no image body or provider read, after the backend rechecks the current released file and its owning published entity. A withdrawn, replaced, restricted or deleted asset returns 404 even when the browser sends a previously valid ETag. Documents, admin previews and private evidence keep no-store. Existing copies already downloaded cannot be erased from a visitor's device.
 
-Measure repeated navigation (page 1 -> 2 -> 3 -> 1), transferred image bytes,
-Cloudinary reads, Mongo queries and cache hits before and after implementation.
-Use provider instrumentation and browser network evidence where available;
-do not claim an unmeasured percentage improvement.
+Pagination retains Next client transitions, shows an accessible inline pending message and preserves scroll. It does not prefetch the archive or reuse long-lived public page snapshots. Automatic translated-document navigation continues to use its existing safe full-document path; image validation still works independently. Public metadata can be requested again on each visit, but its costly list query and unchanged image body are reused where valid.
 
-Add a new unseeded image through the normal admin workflow after the cache is
-already warm. Verify that it benefits automatically, appears after publication,
-and updates after caption edits, image replacement, withdrawal and deletion.
-Check both collections, pagination counts, search, locales, concurrent changes
-and failed invalidation/cache reads. No future content-specific configuration
-should be necessary.
+## Verification
+
+Frontend lint, typecheck and production build passed. Seven existing client tests and public SSR/navigation checks passed, including responsive managed thumbnail srcsets. Backend typecheck/build, OpenAPI consistency and 27 unit tests passed. The real isolated Mongo/Redis suite passed all 52 integration tests. All 53 source-import tests passed in an isolated candidate copy, preserving the owner’s unrelated local archive-image edit.
+
+Instrumented gallery evidence: page 1 -> 2 -> 3 -> 4 -> 1 executes four gallery list aggregations. A repeated thumbnail returns 304 with zero image bytes and zero additional synthetic-provider reads. These are server integration measurements, not a claimed live browser speed percentage. Tests add new unseeded images through normal authenticated upload/create/publish after warming the cache, and verify both collections, locale/search/counts, caption edits, replacement, withdrawal, deletion, failed Redis reads/writes, bounded entries, coalescing, concurrent fills, rollback and scheduled release.
+
+Live Cloudinary derivative size/quality and browser disk-cache/timing measurements remain deployment checks. Restart/redeploy the backend and rebuild/restart the frontend to use the new variants. A Render free cold start remains independent of this cache. No reseeding or new service is required.

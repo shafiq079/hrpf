@@ -1,4 +1,9 @@
-# Current handoff: Private admin navigation on development
+# Current handoff: Public caching and managed image delivery on development
+
+## Performance milestone — 2026-10-08
+
+PR #9 was merged to main at the owner's request (bbbe7388788f5222ff93ac83d9326021b9b59933). This subsequent performance task stays on development. Implemented bounded revision-keyed Redis public JSON caching, atomic editor/import invalidation, scheduled release boundaries, reusable managed WebP thumbnails and conditional browser image validation after current release checks. Gallery keeps full-size originals for zoom and pagination reports pending navigation without discarding the current grid. See `PERFORMANCE_PLAN.md` for verification and deployment limits. No new service, paid cache, reseed or content-specific setup is needed.
+
 
 ## Admin navigation and cursor milestone — 2026-10-08
 

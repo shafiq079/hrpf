@@ -1,0 +1,29 @@
+{
+  "project": "trafficking-prevention-migration-awareness",
+  "reviewedAt": "2026-10-08",
+  "sources": [
+    {
+      "label": "Supplied HRPF Progress Report 2024 Revised",
+      "originalFile": "PROGRESS REPORT 2024 Revised.docx",
+      "sha256": "5d9067ae4c149423dea1d4558cfd5368b692a186b57ccf03251d409cb7d4cc2f",
+      "bytes": 10890607,
+      "type": "supplied-document",
+      "locator": "section HRPF’s efforts against human smuggling and trafficking"
+    },
+    {
+      "label": "Supplied HRPF Annual Performance Report 2025",
+      "originalFile": "2025 Progress Report.pdf",
+      "sha256": "cfbff888af513ea5cf0af087361e586fa358f2f7b8ec693a485cb89d71ec04f1",
+      "bytes": 6400878,
+      "type": "supplied-document",
+      "locator": "pages 8–11; human smuggling and trafficking"
+    }
+  ],
+  "verificationNotes": "",
+  "fields": [
+    "Refugees and Migrants",
+    "Education and Awareness",
+    "Research and Advocacy"
+  ],
+  "statusMeaning": "Last documented stage; an Ongoing label does not assert continuous operation today."
+}

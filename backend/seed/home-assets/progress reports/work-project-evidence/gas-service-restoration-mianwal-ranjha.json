@@ -1,0 +1,20 @@
+{
+  "project": "gas-service-restoration-mianwal-ranjha",
+  "reviewedAt": "2026-10-08",
+  "sources": [
+    {
+      "label": "Supplied HRPF Progress Report 2024 Revised",
+      "originalFile": "PROGRESS REPORT 2024 Revised.docx",
+      "sha256": "5d9067ae4c149423dea1d4558cfd5368b692a186b57ccf03251d409cb7d4cc2f",
+      "bytes": 10890607,
+      "type": "supplied-document",
+      "locator": "section HRPF raised its voice about SNGPL services issues"
+    }
+  ],
+  "verificationNotes": "",
+  "fields": [
+    "Community Development",
+    "Access to Justice"
+  ],
+  "statusMeaning": "Completed describes the specific recorded action, not resolution of all underlying needs."
+}

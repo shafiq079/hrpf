@@ -1,0 +1,368 @@
+{
+  "version": "project-presentations-v1",
+  "files": [
+    {
+      "id": "gallery:project-verified:clean-water-feasibility-mianwal-ranjha",
+      "path": "other_images_final/project-photos/clean-water-feasibility-mianwal-ranjha.webp",
+      "sha256": "1673c9d9c86faab137d50f426b94d072571d62711748fcd6b5b381b138ed231c",
+      "bytes": 65970
+    },
+    {
+      "id": "gallery:project-verified:electricity-distribution-mianwal-ranjha",
+      "path": "other_images_final/project-photos/electricity-distribution-mianwal-ranjha.webp",
+      "sha256": "5308d5357770f9f4b1d1e946ddb28df42aebbc146e17d487d8735f24fa3df9ef",
+      "bytes": 57872
+    },
+    {
+      "id": "gallery:project-verified:community-drinking-water-cooler",
+      "path": "other_images_final/project-photos/community-drinking-water-cooler.jpeg",
+      "sha256": "09ec88306746471ca745d84540d66dbbd82b6da37000ee158f951c35da77ddcd",
+      "bytes": 83885
+    },
+    {
+      "id": "gallery:project-verified:smart-school-student-support",
+      "path": "other_images_final/project-photos/smart-school-student-support.jpg",
+      "sha256": "650bf08a1c04be9054e731a651e362c0857eb7ea2c7b22878153630bf5633951",
+      "bytes": 137892
+    },
+    {
+      "id": "gallery:project-verified:sukkur-community-peace-walk",
+      "path": "other_images_final/project-photos/sukkur-community-peace-walk.webp",
+      "sha256": "213bce734d48e9d68c04535c208217bed3ec55f7a35a9d8db54b158b80c0c1b9",
+      "bytes": 119290
+    },
+    {
+      "id": "gallery:project-verified:roadside-electrical-hazard-removal",
+      "path": "other_images_final/project-photos/roadside-electrical-hazard-removal.jpg",
+      "sha256": "64c4991ee4a06b7aa2c70e6bc8579a39dfa016f4346dc2e8020d2a1a941fba84",
+      "bytes": 132923
+    },
+    {
+      "id": "gallery:project-verified:mianwal-ranjha-sanitation",
+      "path": "other_images_final/project-photos/mianwal-ranjha-sanitation.webp",
+      "sha256": "64936b8907acc9b9364bcbd9d03ddc8fef27b1e88d0651ec73374ba16c992af1",
+      "bytes": 270378
+    },
+    {
+      "id": "gallery:project-verified:childhood-vaccination-access",
+      "path": "other_images_final/project-photos/childhood-vaccination-access.webp",
+      "sha256": "11d8ce526462db5d0bb13bf1d09e0ce60042aef5676a70fe7656b4057294d965",
+      "bytes": 103568
+    }
+  ],
+  "projects": [
+    {
+      "key": "work-project:safe-classrooms-mianwal-ranjha",
+      "workAreas": [
+        "childrens-rights",
+        "access-to-justice",
+        "education-and-awareness"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:child-protection-institutional-advocacy",
+      "workAreas": [
+        "childrens-rights",
+        "access-to-justice"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:domestic-violence-emergency-response",
+      "workAreas": [
+        "womens-rights",
+        "access-to-justice",
+        "research-and-advocacy"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:womens-dignity-public-services",
+      "workAreas": [
+        "womens-rights",
+        "access-to-justice",
+        "education-and-awareness"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:prison-healthcare-mandi-bahauddin",
+      "workAreas": [
+        "access-to-justice",
+        "community-development"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:trafficking-prevention-migration-awareness",
+      "workAreas": [
+        "education-and-awareness",
+        "research-and-advocacy",
+        "refugees-and-migrants"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:overseas-travel-document-support",
+      "workAreas": [
+        "access-to-justice",
+        "refugees-and-migrants"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:clean-water-feasibility-mianwal-ranjha",
+      "workAreas": [
+        "access-to-justice",
+        "community-development"
+      ],
+      "cover": {
+        "fileId": "gallery:project-verified:clean-water-feasibility-mianwal-ranjha",
+        "alt": "HRPF presenting appreciation to public-health engineering officials"
+      },
+      "verification": "2022–2023 original report page 7, photograph continues water and sewerage intervention on page 6; archive image 138. Recognition photograph; does not show a completed plant."
+    },
+    {
+      "key": "work-project:canal-water-environmental-accountability",
+      "workAreas": [
+        "access-to-justice",
+        "research-and-advocacy",
+        "community-development"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:gas-service-restoration-mianwal-ranjha",
+      "workAreas": [
+        "access-to-justice",
+        "community-development"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:electricity-distribution-mianwal-ranjha",
+      "workAreas": [
+        "access-to-justice",
+        "community-development"
+      ],
+      "cover": {
+        "fileId": "gallery:project-verified:electricity-distribution-mianwal-ranjha",
+        "alt": "HRPF presenting appreciation to GEPCO officials"
+      },
+      "verification": "2022–2023 original report page 8, beside LT/HT proposal and feeder maintenance section; archive image 154"
+    },
+    {
+      "key": "work-project:community-drinking-water-cooler",
+      "workAreas": [
+        "community-development"
+      ],
+      "cover": {
+        "fileId": "gallery:project-verified:community-drinking-water-cooler",
+        "alt": "The drinking-water cooler installed at the Western Graveyard, Mianwal Ranjha"
+      },
+      "verification": "2025 original report page 32; exact embedded photograph"
+    },
+    {
+      "key": "work-project:right-to-information-public-accountability",
+      "workAreas": [
+        "access-to-justice",
+        "education-and-awareness",
+        "research-and-advocacy"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:sialkot-health-data-research",
+      "workAreas": [
+        "education-and-awareness",
+        "research-and-advocacy",
+        "community-development"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:press-freedom-journalist-protection",
+      "workAreas": [
+        "access-to-justice",
+        "education-and-awareness",
+        "research-and-advocacy"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:flood-relief-access-accountability",
+      "workAreas": [
+        "research-and-advocacy",
+        "refugees-and-migrants",
+        "community-development"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:education-access-research",
+      "workAreas": [
+        "childrens-rights",
+        "education-and-awareness",
+        "research-and-advocacy"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:smart-school-student-support",
+      "workAreas": [
+        "childrens-rights",
+        "education-and-awareness"
+      ],
+      "cover": {
+        "fileId": "gallery:project-verified:smart-school-student-support",
+        "alt": "HRPF representatives visiting student displays at The Smart School"
+      },
+      "verification": "2024 original report: HRPF CHAIRMAN VISITED THE SMART SCHOOL KUTHIYALA SHEIKHAN; exact embedded image28.png, JPEG bytes originally misnamed PNG"
+    },
+    {
+      "key": "work-project:canal-bank-road-safety",
+      "workAreas": [
+        "access-to-justice",
+        "community-development"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:road-drainage-waterlogging-advocacy",
+      "workAreas": [
+        "access-to-justice",
+        "community-development"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:electricity-connection-fairness",
+      "workAreas": [
+        "access-to-justice",
+        "research-and-advocacy",
+        "community-development"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:sukkur-community-peace-walk",
+      "workAreas": [
+        "education-and-awareness",
+        "community-development"
+      ],
+      "cover": {
+        "fileId": "gallery:project-verified:sukkur-community-peace-walk",
+        "alt": "Participants in the HRPF peace walk outside Sukkur Press Club"
+      },
+      "verification": "Exact scene match to 2024 report embedded image57.jpeg under AMAN RALLY IN SUKKUR; archive image 185"
+    },
+    {
+      "key": "work-project:mandi-bahauddin-peace-petition",
+      "workAreas": [
+        "education-and-awareness",
+        "research-and-advocacy",
+        "community-development"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:public-safety-information-research",
+      "workAreas": [
+        "access-to-justice",
+        "research-and-advocacy",
+        "community-development"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:road-visibility-public-safety",
+      "workAreas": [
+        "research-and-advocacy",
+        "community-development"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:roadside-electrical-hazard-removal",
+      "workAreas": [
+        "access-to-justice",
+        "community-development"
+      ],
+      "cover": {
+        "fileId": "gallery:project-verified:roadside-electrical-hazard-removal",
+        "alt": "The roadside electricity pole before and after replacement"
+      },
+      "verification": "2024 original report: REMOVAL OF DANGROUS HT ELECTRIC POLE ON THE ROAD; exact embedded image39.png, JPEG bytes originally misnamed PNG"
+    },
+    {
+      "key": "work-project:union-council-building-advocacy",
+      "workAreas": [
+        "access-to-justice",
+        "community-development"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "work-project:national-minorities-day-awareness",
+      "workAreas": [
+        "minority-rights"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "home-project:shelter-dignity-advocacy",
+      "workAreas": [
+        "womens-rights",
+        "access-to-justice"
+      ],
+      "cover": null,
+      "verification": "No project-specific photograph verified in supplied archive or accessible social posts. Remove generic seed cover and illustrative gallery."
+    },
+    {
+      "key": "home-project:mianwal-ranjha-sanitation",
+      "workAreas": [
+        "community-development"
+      ],
+      "cover": {
+        "fileId": "gallery:project-verified:mianwal-ranjha-sanitation",
+        "alt": "HRPF inspecting drainage works in Mianwal Ranjha"
+      },
+      "verification": "Same location, people, shop frontage and drainage inspection as 2024 original report embedded image20.png under REPAIR AND CLEANING OF SEWERAGE SCHEAM MIANWAL RANJHA; archive image 173"
+    },
+    {
+      "key": "home-project:childhood-vaccination-access",
+      "workAreas": [
+        "childrens-rights",
+        "community-development"
+      ],
+      "cover": {
+        "fileId": "gallery:project-verified:childhood-vaccination-access",
+        "alt": "HRPF presenting appreciation to the Director General of Health"
+      },
+      "verification": "2022–2023 original report page 12, immediately below childhood vaccination intervention; archive image 152. Recognition photograph; does not show vaccinations."
+    }
+  ]
+}

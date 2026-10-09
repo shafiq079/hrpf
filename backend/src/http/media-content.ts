@@ -1,3 +1,4 @@
+import { bumpPublicRevision } from '../services/public-cache.js';
 import { Router } from 'express';
 import mongoose from 'mongoose';
 import { z } from 'zod';
@@ -126,6 +127,7 @@ export function mediaContentRouter(auth: ReturnType<typeof createAuth>) {
       }) : spec.schema, req.body);
       const principal = res.locals.principal as Principal;
       const result = await mongoose.connection.transaction(async tx => {
+        await bumpPublicRevision(tx);
         await Counter.findOneAndUpdate({
           key: 'security:user-governance'
         }, {

@@ -1,0 +1,21 @@
+{
+  "project": "domestic-violence-emergency-response",
+  "reviewedAt": "2026-10-08",
+  "sources": [
+    {
+      "label": "Supplied HRPF Annual Performance Report 2025",
+      "originalFile": "2025 Progress Report.pdf",
+      "sha256": "cfbff888af513ea5cf0af087361e586fa358f2f7b8ec693a485cb89d71ec04f1",
+      "bytes": 6400878,
+      "type": "supplied-document",
+      "locator": "page 40; emergency response and domestic violence"
+    }
+  ],
+  "verificationNotes": "",
+  "fields": [
+    "Women's Rights",
+    "Access to Justice",
+    "Research and Advocacy"
+  ],
+  "statusMeaning": "Last documented stage; an Ongoing label does not assert continuous operation today."
+}

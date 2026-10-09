@@ -44,7 +44,20 @@ export async function checkNavigation(read, port) {
   assert.ok(/rel="canonical"[^>]*blogs\/real-news/.test(page.html));
   assert.equal((await read('/blogs/unknown')).status, 404);
   assert.equal((await read('/about/unknown')).status, 404);
-  assert.ok((await read('/about/who-we-are')).html.includes('public-interest organization'));
+  page = await read('/about/who-we-are');
+  const who = page.html.replace(/<script\b[\s\S]*?<\/script>/g, '');
+  assert.equal((who.match(/<h1[ >]/g)||[]).length,1,'Who We Are has one main heading');
+  for(const text of ['non-profit, non-governmental and humanitarian organization','Transparency and Institutional Accountability','Standing With the Vulnerable','Our Values','Legal Status and Registration','Dignity, Security and Hope','PB-9927416107711230','NPO evaluation standards notified by FBR','/about/mission-and-vision','/about/aims-and-objectives','/about/registration-and-certificates','/contact']) assert.ok(who.includes(text),'Latest client About Us content/link: '+text);
+  for(const id of ['our-purpose','areas-of-work','transparency','standing-with-the-vulnerable','our-values','legal-status','our-commitment']) assert.ok(who.includes(`href="#${id}"`)&&who.includes(`id="${id}"`),'Working About contents link: '+id);
+  for(const value of ['Human Dignity','Justice','Equality','Transparency','Accountability','Compassion','Integrity','Rule of Law','Freedom','Public Service']) assert.ok(who.includes(value),'Client value: '+value);
+  for(const route of ['/about','/about/who-we-are','/about/mission-and-vision','/about/aims-and-objectives']) {
+    const about=(await read(route)).html.replace(/<script\b[\s\S]*?<\/script>/g, '');
+    for(const old of ['Elena Vasquez','Legal registration placeholder','Foundation concept and community consultation','Expansion of volunteer and legal referral network','/images/about/who-we-are.jpg','�']) assert.ok(!about.includes(old),'Removed About prototype/artefact on '+route+': '+old);
+  }
+  const mission=(await read('/about/mission-and-vision')).html;
+  assert.ok(mission.includes('support individuals and communities facing injustice, discrimination, deprivation and vulnerability')&&mission.includes('where no vulnerable person is left without a voice'),'Mission and vision use current client copy');
+  const aims=(await read('/about/aims-and-objectives')).html;
+  for(const text of ['human smuggling','maternal and child healthcare','threats and risks','innocent and vulnerable prisoners'])assert.ok(aims.includes(text),'Full client area retained in objectives: '+text);
   assert.ok((await read('/about/message-of-ceo')).html.includes('Chairman’s Message'), 'Keep supplied author title');
   assert.ok((await read('/about/board-of-directors')).html.includes('Active reviewed director'));
   page = await read('/about/our-team');
@@ -62,10 +75,12 @@ export async function checkNavigation(read, port) {
   assert.ok(!page.html.includes('<iframe'), 'PDF viewer loads only after opening a document');
   assert.ok((await read('/admin/documents')).html.includes('Loading document management'), 'Document administration route');
   page = await read('/about/registration-and-certificates');
+  assert.ok(page.html.includes('NPO evaluation standards notified by FBR')&&page.html.includes('22 January 2026'),'Registration distinguishes PCP certification and dated Charity Commission history');
   assert.ok(page.html.includes('Released registration certificate') && page.html.includes('/api/public-assets/012345678901234567890126'));
   for (const text of ['Validity date passed','15 May 2023','16 May 2022','View document','Historical document; no renewal asserted.']) assert.ok(page.html.includes(text), `Certificate public card: ${text}`);
   page = await read('/gallery/media-coverage');
   assert.ok(page.html.includes('Published media coverage') && page.html.includes('Reviewed media caption'));
+  assert.ok(/srcSet="[^"]*\?w=480[^"]*\?w=960/.test(page.html), 'Managed gallery cards use responsive bounded thumbnails');
   assert.ok(page.html.includes('View full image: Published media coverage') && page.html.includes('<dialog'), 'Gallery viewer entry point and accessible dialog');
   assert.ok(page.html.includes('AI-restored archive image') && page.html.includes('Published newspaper') && page.html.includes('2020-02-29'));
   assert.ok(page.html.includes('category=media-coverage') && page.html.includes('page=2'), 'Gallery pagination retains collection');

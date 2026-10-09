@@ -1,5 +1,5 @@
 {
-  "source": "backend/seed/source-manifest.json; owner-supplied organisation page text",
+  "source": "Owner-supplied organisation text and client About Us copy, received 8 October 2026; registration wording checked against original certificates.",
   "pages": {
     "chairman-message": {
       "title": "Chairman’s Message",
@@ -83,15 +83,15 @@
       "blocks": [
         {
           "type": "paragraph",
-          "text": "Human Rights Protection Foundation Pakistan (HRPF) is a non-governmental, non-political and public-interest organization committed to the promotion, protection and advancement of human rights in Pakistan. The Foundation stands as a voice of hope for oppressed, vulnerable and marginalized communities and works for a society where human dignity, equality, justice, transparency and the rule of law are respected and protected."
+          "text": "Human Rights Protection Foundation Pakistan is a non-profit, non-governmental and humanitarian organization committed to the promotion, protection and advancement of human rights, human dignity, justice, equality, transparency and social welfare in Pakistan."
         },
         {
           "type": "paragraph",
-          "text": "Founded on the principles of human dignity, justice, accountability, transparency and public service, Human Rights Protection Foundation Pakistan seeks to bridge the gap between citizens and institutions by raising legitimate public concerns and advocating for lawful, fair and transparent institutional practices."
+          "text": "Established with a strong commitment to standing with the oppressed, vulnerable and marginalized sections of society, the Foundation works to promote a culture in which every individual can enjoy fundamental rights, dignity, equality and access to justice without discrimination."
         },
         {
           "type": "paragraph",
-          "text": "Our work focuses on identifying human rights violations, supporting vulnerable individuals and communities, promoting access to information, encouraging institutional accountability, and strengthening public awareness about fundamental rights and legal protections."
+          "text": "The Foundation believes that the protection of human rights is not merely a legal responsibility but also a moral and social obligation. Its work is guided by the principles of justice, accountability, transparency, compassion, equality and respect for human dignity."
         }
       ]
     },
@@ -130,27 +130,11 @@
       "blocks": [
         {
           "type": "paragraph",
-          "text": "The mission of the Human Rights Protection Foundation (HRPF) is to uphold and champion human dignity and rights by advocating for transparency, environmental sustainability, and equal access to essential resources and services. We firmly believe that an informed society is an empowered society. Therefore, we actively promote the Right to Information Act, ensuring that communities have access to vital knowledge that enables them to make informed decisions and demand accountability from institutions."
+          "text": "The mission of Human Rights Protection Foundation Pakistan is to promote and protect fundamental human rights and to support individuals and communities facing injustice, discrimination, deprivation and vulnerability."
         },
         {
           "type": "paragraph",
-          "text": "We work diligently to combat pollution and environmental degradation, striving for a cleaner and healthier planet where future generations can flourish. Access to clean drinking water is a fundamental human right, and we are committed to ensuring that underprivileged communities have safe and reliable water sources. Additionally, we focus on improving maternal healthcare services, particularly in marginalized areas, to safeguard the well-being of mothers and infants."
-        },
-        {
-          "type": "paragraph",
-          "text": "One of our core missions is to advocate for the release of innocent individuals who have been unjustly imprisoned. We provide legal aid, raise awareness, and mobilize support to prevent wrongful convictions and ensure fair trials. Furthermore, we actively uphold human rights by offering advocacy and support to those facing injustices, discrimination, or exploitation."
-        },
-        {
-          "type": "paragraph",
-          "text": "In times of crisis, we lead reconstruction and rehabilitation efforts in affected communities, helping them rebuild their lives with dignity and stability. By addressing both immediate needs and long-term solutions, we aim to create a just, equitable, and thriving society where every individual can live freely, safely, and with the full realization of their rights."
-        },
-        {
-          "type": "paragraph",
-          "text": "At HRPF, we remain steadfast in our commitment to human rights, justice, and social equity, working towards a world where every person can live with dignity, freedom, and equal "
-        },
-        {
-          "type": "paragraph",
-          "text": "opportunities."
+          "text": "The Foundation seeks to strengthen public awareness, institutional accountability and access to justice while encouraging constructive engagement between citizens, civil society and public institutions."
         }
       ]
     },
@@ -159,15 +143,7 @@
       "blocks": [
         {
           "type": "paragraph",
-          "text": "At the Human Rights Protection Foundation (HRPF), we envision a world where every individual enjoys their full human rights, regardless of nationality, race, gender, or socioeconomic background. We aspire to create a society where people live in a clean and sustainable environment, free from pollution and environmental hazards, ensuring a healthy and dignified life for all."
-        },
-        {
-          "type": "paragraph",
-          "text": "We believe that access to essential services, such as healthcare, education, clean water, and justice, is a fundamental right of every human being. Our goal is to empower communities, enabling them to thrive independently and contribute positively to society. We are committed to fostering a world that is free from unjust imprisonment, discrimination, and human rights violations."
-        },
-        {
-          "type": "paragraph",
-          "text": "Our vision is deeply rooted in the principles of dignity, freedom, and global solidarity. We strive to build a future where justice prevails, equity is upheld, and prosperity is shared among all people, ensuring a world where human rights are universally respected and protected."
+          "text": "A just, peaceful and equitable society where human rights, dignity, transparency and the rule of law prevail, and where no vulnerable person is left without a voice."
         }
       ]
     },
@@ -175,20 +151,35 @@
       "title": "Aims & Objectives",
       "blocks": [
         {
+          "type": "paragraph",
+          "text": "The Foundation works across a broad range of humanitarian, social and human-rights areas. Its stated priorities include:"
+        },
+        {
           "type": "list",
           "items": [
-            "To advocate for the supremacy of human rights, with particular emphasis on women's rights, children's rights, educational rights, prisoners' rights, and the rights of vulnerable populations.",
-            "To promote institutional transparency and accountability in accordance with the Right to Information (RTI) Act and applicable laws of Pakistan.",
-            "To undertake activities in health, education, poverty alleviation, environmental protection, family planning, reproductive health, and mother-and-child healthcare.",
-            "To document, report, and intervene in cases of human rights violations, police misconduct, and abuse of authority.",
-            "To support freedom of the press and freedom of expression worldwide, and to protect threatened journalists.",
-            "To develop national policy, civil society capacity, and human resources through education, research, and training.",
-            "To promote scientific research, vocational training, and income generation in rural and underserved communities.",
-            "To cooperate with government authorities, international bodies, and civil society organizations in advancing HRPF's humanitarian mandate.",
-            "To provide shelter, rehabilitation, and humanitarian assistance to flood victims, disaster-affected communities, orphans, refugees, and persons deprived of liberty.",
-            "To promote interfaith harmony, cultural preservation, and community cohesion across Pakistan.",
-            "To undertake and execute any other lawful activity incidental or conducive to the attainment of the foregoing objects."
+            "Protection and promotion of fundamental human rights",
+            "Women’s rights and gender equality",
+            "Child rights and protection of children from exploitation and abuse",
+            "Educational rights and access to quality education",
+            "Support and assistance for innocent and vulnerable prisoners",
+            "Right to Information and institutional transparency",
+            "Public accountability and good governance",
+            "Freedom of expression and freedom of the press",
+            "Protection and support for journalists facing threats and risks",
+            "Health, maternal and child healthcare",
+            "Clean drinking water and public health",
+            "Environmental protection and awareness",
+            "Poverty alleviation and support for disadvantaged communities",
+            "Human trafficking and human smuggling awareness and prevention",
+            "Support for victims and affected families",
+            "Emergency humanitarian assistance during floods, earthquakes and other disasters",
+            "Rural development and community welfare",
+            "Awareness, research, advocacy and public-interest initiatives"
           ]
+        },
+        {
+          "type": "paragraph",
+          "text": "The Foundation’s stated objectives also include supporting health, education, poverty alleviation, women’s and children’s rights, environmental protection, rural development, sanitation, clean water, humanitarian welfare, press freedom and other lawful charitable activities."
         }
       ]
     }

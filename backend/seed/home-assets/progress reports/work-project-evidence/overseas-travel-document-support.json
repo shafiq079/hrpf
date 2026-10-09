@@ -1,0 +1,20 @@
+{
+  "project": "overseas-travel-document-support",
+  "reviewedAt": "2026-10-08",
+  "sources": [
+    {
+      "label": "Supplied HRPF Progress Report 2024 Revised",
+      "originalFile": "PROGRESS REPORT 2024 Revised.docx",
+      "sha256": "5d9067ae4c149423dea1d4558cfd5368b692a186b57ccf03251d409cb7d4cc2f",
+      "bytes": 10890607,
+      "type": "supplied-document",
+      "locator": "section Support for overseas Pakistanis released from KSA jail by HRPF efforts"
+    }
+  ],
+  "verificationNotes": "One completed case, anonymised. Do not extend this outcome to other migrants or reproduce the person’s name.",
+  "fields": [
+    "Refugees and Migrants",
+    "Access to Justice"
+  ],
+  "statusMeaning": "Completed describes the specific recorded action, not resolution of all underlying needs."
+}

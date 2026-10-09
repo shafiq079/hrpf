@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import ImagePlaceholder from "./ImagePlaceholder";
+import { isManagedImage, managedImageLoader } from "@/lib/managed-images";
 
 /*
   Real documentary-style photography is stored under `public/images/`.
@@ -17,6 +20,8 @@ interface AppImageProps {
   height?: number;
   sizes?: string;
   priority?: boolean;
+  /** Full-resolution source for zoom/read viewers. */
+  original?: boolean;
   className?: string;
 }
 
@@ -32,6 +37,7 @@ export default function AppImage({
   height,
   sizes,
   priority = false,
+  original = false,
   className = "",
 }: AppImageProps) {
   if (!IMAGES_AVAILABLE) {
@@ -42,7 +48,8 @@ export default function AppImage({
     return (
       <Image
         src={src}
-        unoptimized={src.startsWith("/api/")}
+        loader={isManagedImage(src) && !original ? managedImageLoader : undefined}
+        unoptimized={src.startsWith("/api/") && (!isManagedImage(src) || original)}
         alt={alt}
         fill
         sizes={sizes}
@@ -55,7 +62,8 @@ export default function AppImage({
   return (
     <Image
       src={src}
-      unoptimized={src.startsWith("/api/")}
+      loader={isManagedImage(src) && !original ? managedImageLoader : undefined}
+      unoptimized={src.startsWith("/api/") && (!isManagedImage(src) || original)}
       alt={alt}
       width={width ?? 800}
       height={height ?? 600}

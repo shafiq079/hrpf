@@ -4,18 +4,19 @@ import {spawn} from 'node:child_process';
 import {once} from 'node:events';
 import {checkNavigation, checkEmptyNavigation, checkOfflineNavigation} from './check-navigation.mjs';
 let revision=1,empty=false,richBlog=true;const requests=[];
-const workPages=[["childrens-rights", "Children's Rights"], ["access-to-justice", "Access to Justice"], ["minority-rights", "Minority Rights"], ["education-and-awareness", "Education and Awareness"], ["research-and-advocacy", "Research and Advocacy"]];
+const workPages=[["childrens-rights", "Children's Rights"], ["access-to-justice", "Access to Justice"], ["minority-rights", "Minority Rights"], ["education-and-awareness", "Education and Awareness"], ["research-and-advocacy", "Research and Advocacy"], ["refugees-and-migrants", "Refugees and Migrants"], ["community-development", "Community Development"]];
 const api=createServer((req,res)=>{
  requests.push({path:req.url,cookie:req.headers.cookie});res.setHeader('Content-Type','application/json');
- const project={title:`Managed project ${revision}`,slug:'real-project',summary:'Synthetic project summary',focusArea:'Women’s Rights',status:'Ongoing',location:'Pakistan',startYear:2026,image:null,blocks:[{type:'paragraph',text:'Managed project body'}],details:{overview:'Project overview text',challenge:'Documented challenge',approach:'Community approach',period:'March–September 2026',targetCommunity:'Local families',objectives:['Improved access'],activities:['Community sessions'],outcomes:['Documented result'],milestones:[{period:'June 2026',title:'First milestone'}],metrics:[{value:'12',label:'Sessions',source:'Project report'}],partners:['Verified partner'],sections:[{heading:'Lessons learned',body:'Project lessons'}]},gallery:[{image:'/api/public-assets/012345678901234567890123',alt:'Community session',caption:'Reviewed caption'},{image:'/api/public-assets/012345678901234567890124',alt:'Project activity'}],documents:[{file:'/api/public-assets/012345678901234567890125',label:'Project report PDF'}]};
+ const project={title:`Managed project ${revision}`,slug:'real-project',summary:'Synthetic project summary',focusArea:'Women’s Rights',workAreas:['womens-rights'],status:'Ongoing',location:'Pakistan',startYear:2026,image:null,blocks:[{type:'paragraph',text:'Managed project body'}],details:{overview:'Project overview text',challenge:'Documented challenge',approach:'Community approach',period:'March–September 2026',targetCommunity:'Local families',objectives:['Improved access'],activities:['Community sessions'],outcomes:['Documented result'],milestones:[{period:'June 2026',title:'First milestone'}],metrics:[{value:'12',label:'Sessions',source:'Project report'}],partners:['Verified partner'],sections:[{heading:'Lessons learned',body:'Project lessons'}]},gallery:[{image:'/api/public-assets/012345678901234567890123',alt:'Community session',caption:'Reviewed caption'},{image:'/api/public-assets/012345678901234567890124',alt:'Project activity'}],documents:[{file:'/api/public-assets/012345678901234567890125',label:'Project report PDF'}]};
  const news={title:`Managed news ${revision}`,slug:'real-news',excerpt:'Synthetic news summary',publishedAt:'2026-01-01T00:00:00.000Z',image:'/images/hrpf/home-report-2023.webp',imageAlt:'Reviewed blog cover',category:'Community advocacy',authorName:'HRPF Pakistan',readingMinutes:4,blocks:[{type:'paragraph',text:'Managed news body'}],...(richBlog?{tags:['Accountability'],details:{category:'Community advocacy',authorName:'HRPF Pakistan',authorRole:'Foundation team',intro:'Blog introduction text',coverCaption:'Illustrative archive cover',takeaways:['Important blog takeaway'],sections:[{heading:'Story context',body:'Article section text',bullets:['Supported detail'],quote:'A verified quotation',attribution:'Supplied report'}],conclusion:'Blog closing thoughts',sources:[{label:'Blog source reference',url:'https://example.org/source',note:'Historical source note'}]},gallery:[{image:'/api/public-assets/012345678901234567890128',alt:'Blog archive photograph',caption:'Illustrative article photograph'},{image:'/api/public-assets/012345678901234567890129',alt:'Second archive photograph'}],documents:[{file:'/api/public-assets/012345678901234567890130',label:'Blog source brief PDF'}]}:{})};
  const path=new URL(req.url,'http://localhost').pathname;
  if(path==='/api/projects'||path==='/api/blogs'){
   const page=Number(new URL(req.url,'http://localhost').searchParams.get('page')??1);
-  const field=new URL(req.url,'http://localhost').searchParams.get('focusArea');
-  const area=workPages.find(([,title])=>title===field);
-  const row=path.endsWith('projects')?(area?{...project,title:`Field project: ${area[0]} ${revision}`,focusArea:field}:project):{...news,...(page===2?{title:'Second page blog',slug:'second-page-blog'}:{})};
-  res.end(JSON.stringify({data:empty?[]:[row,...(path.endsWith('blogs')&&page===1?[{...news,title:'Related published blog',slug:'related-blog'}]:[])],meta:{page,pages:empty?0:2}}));
+  const field=new URL(req.url,'http://localhost').searchParams.get('workArea');
+  const area=workPages.find(([slug])=>slug===field);
+  const row=path.endsWith('projects')?(area?{...project,title:`Field project: ${area[0]} ${revision}`,focusArea:area[1],workAreas:[area[0]]}:project):{...news,...(page===2?{title:'Second page blog',slug:'second-page-blog'}:{})};
+  const extraProjects = path.endsWith('projects') && !field && new URL(req.url,'http://localhost').searchParams.get('limit')==='48' ? [{...project,title:'Cross-field child education project',slug:'cross-field',focusArea:"Child education",workAreas:["childrens-rights","education-and-awareness"],summary:'Multi-field project summary',image:'/images/hrpf/home-programme-water.webp',imageAlt:'Verified project cover fixture'}] : [];
+  res.end(JSON.stringify({data:empty?[]:[row,...extraProjects,...(path.endsWith('blogs')&&page===1?[{...news,title:'Related published blog',slug:'related-blog'}]:[])],meta:{page,pages:empty?0:2}}));
  }
  else if(!empty&&(path==='/api/projects/real-project'||path==='/api/blogs/real-news'))res.end(JSON.stringify({data:path.includes('projects')?project:news}));
  else if(path==='/api/reports')res.end(JSON.stringify({data:empty?[]:[{id:'012345678901234567890125',title:'Published progress report',summary:'Report summary',edition:'public-edition',releaseNote:'Reviewed public edition; case annexes omitted.',pages:26,format:'pdf',bytes:650000,view:'/api/documents/reports/012345678901234567890125/view',year:2025,slug:'progress-report',file:'/api/public-assets/012345678901234567890125',download:'/api/reports/012345678901234567890125/download'}],meta:{pages:empty?0:1}}));
@@ -52,18 +53,31 @@ try{
  }
  assert.ok(/<header\b/.test(page.html)&&/<footer\b/.test(page.html),'Public homepage keeps its header and footer');
  const women=await read('/our-work/womens-rights');assert.equal(women.status,200);
+ const womenProjects=women.html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g,'').split('id="related-projects"')[1].split('id="our-approach"')[0];
+ assert.ok(womenProjects.includes('project-placeholder.webp')&&womenProjects.includes('Project photo to be added'),'Missing project photo uses the labelled neutral placeholder');
+ assert.ok(!womenProjects.includes('home-about.webp'),'No unrelated archive photo replaces a missing project photo');
  assert.equal((women.html.match(/<h1[ >]/g)||[]).length,1,'Women rights page has one primary heading');
  for(const text of ['Projects in this field','Managed project 1','/projects/real-project','womens-rights-archive.webp','/file-a-complaint'])assert.ok(women.html.includes(text),`General women rights page: ${text}`);
  for(const text of ['Dar-ul-Aman','Provincial Ombudsman','pages 14–15','AI restored','event date not recorded','1,200+','40+','Leadership Participation','Rights Awareness Workshops','Community Member','Illustrative indicators','/images/work/womens-rights.jpg','womens-community-leadership'])assert.ok(!women.html.includes(text),`Removed women rights case/prototype text: ${text}`);
- assert.ok(requests.some(r=>r.path.startsWith('/api/projects')&&new URL(r.path,'http://localhost').searchParams.get('focusArea')==="Women's Rights"),'Related project request uses focus-area filter');
- for(const [slug,title] of workPages){
+ assert.ok(requests.some(r=>r.path.startsWith('/api/projects')&&new URL(r.path,'http://localhost').searchParams.get('workArea')==='womens-rights'),'Related project request uses focus-area filter');
+ for(const [slug] of workPages){
   const field=await read('/our-work/'+slug);assert.equal(field.status,200);
   assert.equal((field.html.match(/<h1[ >]/g)||[]).length,1,slug+' has one H1');
-  for(const text of ['Projects in this field',`Field project: ${slug} 1`,`${slug}-archive.webp`,'/projects/real-project','/file-a-complaint','/contact'])assert.ok(field.html.includes(text),slug+': '+text);
+  for(const text of ['Projects in this field',`Field project: ${slug} 1`,(slug === "refugees-and-migrants" ? "home-programme-information.webp" : slug === "community-development" ? "home-programme-water.webp" : `${slug}-archive.webp`),'/projects/real-project','/file-a-complaint','/contact'])assert.ok(field.html.includes(text),slug+': '+text);
   for(const text of ['(sample)','Illustrative indicators','Community Member','Legal Awareness Clinics','Referral Network','Digital Literacy Corps','Source: HRPF','AI restored','event date not recorded'])assert.ok(!field.html.includes(text),slug+' removed: '+text);
-  assert.ok(requests.some(r=>new URL(r.path,'http://localhost').searchParams.get('focusArea')===title),slug+' requests its focus label');
+  assert.ok(requests.some(r=>new URL(r.path,'http://localhost').searchParams.get('workArea')===slug),slug+' requests its focus label');
  }
- console.log('All six work pages passed: distinct general content/photos, managed field projects, canonical links and no prototype/source notes.');
+ const filteredProjects=await read("/projects?focusArea="+encodeURIComponent("Children's Rights"));
+ const filteredBody=filteredProjects.html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g,'');
+ assert.ok(filteredBody.includes('Cross-field child education project')&&!filteredBody.includes('Managed project 1'),'Field link selects a related field rather than a combined label');
+ assert.ok(filteredBody.includes('Education and Awareness'),'Explorer offers individual related fields');
+ const allProjects=(await read('/projects')).html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g,'');
+ const projectCards=allProjects.match(/<article\b[\s\S]*?<\/article>/g)??[];
+ assert.equal(projectCards.length,2,'Mixed list includes both missing and supplied covers');
+ assert.ok(projectCards.every(card=>card.includes('aspect-[4/3]')),'Both cover states retain the same image-frame proportions');
+ assert.ok(projectCards[0].includes('project-placeholder.webp')&&projectCards[0].includes('Project photo to be added'),'Empty cover uses the shared placeholder');
+ assert.ok(projectCards[1].includes('home-programme-water.webp')&&projectCards[1].includes('Verified project cover fixture')&&!projectCards[1].includes('project-placeholder.webp')&&!projectCards[1].includes('Project photo to be added'),'Supplying a real cover replaces the placeholder in the same card');
+ console.log('All eight work pages passed: distinct general content/photos, managed field projects, canonical links and no prototype/source notes.');
  for(const route of ['privacy-policy','terms-of-use','accessibility','safeguarding-policy']){
   const policy=await read('/'+route);assert.equal(policy.status,200);
   assert.equal((policy.html.match(/<h1[ >]/g)||[]).length,1,route+' has one H1');

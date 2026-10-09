@@ -107,3 +107,7 @@ loading, empty/unavailable feeds and cookie isolation.
 No owner database or Cloudinary writes were performed from this environment.
 Interactive zoom, focus restoration, mobile layout and external-provider playback
 still need visual acceptance in Codespaces; browser testing was unavailable here.
+
+## Repeat navigation and image delivery — 2026-10-08
+
+Gallery lists use the shared revision-keyed Redis cache. Cards request bounded responsive WebP thumbnails; the full-size viewer retains original bytes. Public raster requests revalidate release eligibility before returning a zero-byte 304 for unchanged images. Normal future uploads and every editor/import publication transaction use the same pipeline. See `PERFORMANCE_PLAN.md` for measured integration results and deployment checks.

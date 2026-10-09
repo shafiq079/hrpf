@@ -41,6 +41,7 @@ export type ProjectRecord = {
   slug: string;
   summary: string;
   focusArea: string;
+  workAreas?: string[];
   status: Project["status"];
   location: string;
   startYear?: number;
@@ -64,14 +65,13 @@ export function projectCard(row: ProjectRecord): HomeProject {
     slug: row.slug,
     summary: row.summary,
     focusArea: row.focusArea,
+    workAreas: row.workAreas,
     status: row.status,
     location: row.location,
     startYear: row.startYear ?? 0,
     startedLabel: row.startYear ? undefined : "HRPF programme",
-    image: row.image ?? "/images/hrpf/home-about.webp",
-    imageAlt: row.image
-      ? (row.imageAlt || row.title)
-      : "HRPF archive photograph illustrating the Foundation’s work",
+    image: row.image ?? null,
+    imageAlt: row.imageAlt || row.title,
     href: `/programmes/${row.slug}`,
     objectives: [],
     activities: [],

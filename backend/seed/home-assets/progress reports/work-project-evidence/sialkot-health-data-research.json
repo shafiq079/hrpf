@@ -1,0 +1,27 @@
+{
+  "project": "sialkot-health-data-research",
+  "reviewedAt": "2026-10-08",
+  "sources": [
+    {
+      "label": "Supplied HRPF Progress Report 2024 Revised",
+      "originalFile": "PROGRESS REPORT 2024 Revised.docx",
+      "sha256": "5d9067ae4c149423dea1d4558cfd5368b692a186b57ccf03251d409cb7d4cc2f",
+      "bytes": 10890607,
+      "type": "supplied-document",
+      "locator": "section Disease survey report in Sialkot"
+    },
+    {
+      "type": "primary-public-post",
+      "url": "https://www.linkedin.com/pulse/health-status-report-sialkot-january-2024-april-hrpf--sbk3f",
+      "retrievedAt": "2026-10-08",
+      "supportedAction": "HRPF obtained district health data through a Right to Information request, analysed disease patterns in Sialkot and published recommendations for public-health action."
+    }
+  ],
+  "verificationNotes": "",
+  "fields": [
+    "Research and Advocacy",
+    "Education and Awareness",
+    "Community Development"
+  ],
+  "statusMeaning": "Completed describes the specific recorded action, not resolution of all underlying needs."
+}

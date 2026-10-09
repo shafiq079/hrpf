@@ -1,3 +1,4 @@
+import { bumpPublicRevision } from '../services/public-cache.js';
 import { Router } from "express";
 import mongoose from "mongoose";
 import { z } from "zod";
@@ -121,6 +122,7 @@ export function boardContentRouter(auth: ReturnType<typeof createAuth>) {
         const principal = res.locals.principal as Principal;
         const result = await mongoose.connection.transaction(
           async (session) => {
+            await bumpPublicRevision(session);
             await Counter.findOneAndUpdate(
               { key: "security:user-governance" },
               { $inc: { sequence: 1 } },
