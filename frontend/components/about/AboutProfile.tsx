@@ -106,7 +106,7 @@ export default function AboutProfile() {
             <div id="standing-with-the-vulnerable" className="scroll-mt-28">
               <SectionHeading eyebrow="Human Dignity" title="Standing With the Vulnerable" />
               <div className="mt-6 space-y-4">{aboutProfile.vulnerable.map(text => <p key={text} className={paragraphClass}><TranslationText>{text}</TranslationText></p>)}</div>
-              <PrimaryButton className="mt-6" href="/get-help" variant="outline" icon={ArrowRight}>Get Help</PrimaryButton>
+              <PrimaryButton className="mt-6" href="/contact" variant="outline" icon={ArrowRight}>Contact HRPF</PrimaryButton>
             </div>
           </div>
         </Container>

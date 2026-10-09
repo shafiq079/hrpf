@@ -2,7 +2,7 @@ import { Queue, Worker } from 'bullmq';
 import { createClient } from 'redis';
 import nodemailer from 'nodemailer';
 import type { Environment } from '../config/env.js';
-import { EmailOutbox, User } from '../domain/models.js';
+import { EmailOutbox, User, NewsletterSubscription } from '../domain/models.js';
 import { decrypt, digest, token } from '../security/crypto.js';
 import { unavailable } from '../http/errors.js';
 import { cloudinaryProvider, type UploadProvider } from './uploads.js';
@@ -78,6 +78,17 @@ export function createOutbox(env: Environment, send: MailSender, provider: Uploa
           }
           subject = 'HRPF: password reset';
           text = `Reset your HRPF administrator password within 30 minutes: ${env.FRONTEND_URL}/admin/reset-password#token=${encodeURIComponent(value)}\nIf you did not request this, ignore the message.`;
+        }
+        if (entry.template === 'newsletter-confirmation') {
+          if (!env.FRONTEND_URL || !env.DATA_ENCRYPTION_KEY || !entry.encryptedToken) throw unavailable();
+          const values = JSON.parse(decrypt(entry.encryptedToken, env.DATA_ENCRYPTION_KEY, `newsletter:${entry.entityId}`)) as { confirm: string; unsubscribe: string };
+          const subscription = await NewsletterSubscription.findOne({ _id: entry.entityId, email: entry.recipient, status: 'pending', confirmationHash: digest(values.confirm), confirmationExpiresAt: { $gt: new Date() } });
+          if (!subscription) {
+            await EmailOutbox.updateOne({ _id: id, leaseToken }, { $set: { status: 'sent', sentAt: new Date(), errorCode: 'NEWSLETTER_SUPERSEDED' }, $unset: { leaseUntil: 1, leaseToken: 1, encryptedToken: 1 } });
+            return;
+          }
+          subject = 'HRPF: confirm your newsletter subscription';
+          text = `Confirm that you want HRPF updates within 24 hours:\n${env.FRONTEND_URL}/newsletter#confirm=${values.confirm}\n\nCancel or unsubscribe:\n${env.FRONTEND_URL}/newsletter#unsubscribe=${values.unsubscribe}\n\nIf you did not request this, ignore the email. You will not be subscribed without confirmation.`;
         }
         const host = env.FRONTEND_URL ? new URL(env.FRONTEND_URL).hostname : 'hrpf.local';
         const complete = ['complaint-copy', 'complaint-admin-copy'].includes(entry.template) ? await complaintMail(env, provider, entry) : entry.entityType === 'ContactMessage' ? await contactMail(entry) : {};

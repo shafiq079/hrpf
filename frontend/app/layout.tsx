@@ -78,7 +78,7 @@ export const metadata: Metadata = {
   },
 };
 
-// Basic Organization structured-data placeholder for search engines.
+// Organization identity; no unsupported founding year.
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "NGO",
@@ -87,7 +87,6 @@ const organizationJsonLd = {
   url: siteUrl,
   description:
     "Human Rights Protection Foundation works to protect vulnerable communities, advance justice and promote human dignity.",
-  foundingDate: "2015",
 };
 
 export default function RootLayout({

@@ -60,8 +60,8 @@ rewrite with INTERNAL_API_URL. Secrets remain outside git. No new provider or li
 credentials are added. No real test enquiry or email is sent to HRPF during checks.
 
 General enquiries are not the private-document complaint route or an independent
-safeguarding channel. Feedback-about-HRPF and newsletter forms remain separate and
-unconnected. Update Privacy, Terms, Accessibility and Safeguarding to reflect that
+safeguarding channel. As of 9 October 2026, Partnership and Feedback reuse this enquiry service;
+Newsletter uses the confirmed-subscription flow in `FINAL_PUBLIC_CLEANUP.md`. Update Privacy, Terms, Accessibility and Safeguarding to reflect that
 Contact is connected, without changing the hidden Accessibility navigation decision.
 Contact records have no automatic deletion period; no retention policy is invented.
 

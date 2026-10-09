@@ -34,7 +34,7 @@ const api=createServer((req,res)=>{
 api.listen(0,'127.0.0.1');await once(api,'listening');
 const reserve=createServer();reserve.listen(0,'127.0.0.1');await once(reserve,'listening');const port=reserve.address().port;await new Promise(r=>reserve.close(r));
 const child=spawn(process.execPath,['node_modules/next/dist/bin/next','start','--hostname','127.0.0.1','--port',String(port)],{cwd:new URL('..',import.meta.url),env:{...process.env,INTERNAL_API_URL:`http://127.0.0.1:${api.address().port}`},stdio:['ignore','pipe','pipe']});let logs='';child.stdout.on('data',x=>logs+=x);child.stderr.on('data',x=>logs+=x);
-const read=async(path='/')=>{const r=await fetch(`http://127.0.0.1:${port}${path}`,{signal:AbortSignal.timeout(15000)});return {status:r.status,html:await r.text()};};
+const read=async(path='/')=>{const r=await fetch(`http://127.0.0.1:${port}${path}`,{cache:'no-store',headers:{'Cache-Control':'no-cache'},signal:AbortSignal.timeout(15000)});return {status:r.status,html:await r.text()};};
 try{
  const deadline=Date.now()+20000;while(true){try{await read();break;}catch{if(Date.now()>deadline||child.exitCode!==null)throw new Error(logs);await new Promise(r=>setTimeout(r,100));}}
  let page=await read();assert.equal(page.status,200);assert.equal((page.html.split('</main>')[0].match(/<section/g)||[]).length,9,'All original homepage sections remain');
@@ -82,9 +82,9 @@ try{
   const policy=await read('/'+route);assert.equal(policy.status,200);
   assert.equal((policy.html.match(/<h1[ >]/g)||[]).length,1,route+' has one H1');
   for(const removed of ['placeholder — update before publication','(placeholder address)','Download PDF','File coming soon','review schedule should be confirmed'])assert.ok(!policy.html.includes(removed),route+' removed '+removed);
-  assert.ok(policy.html.includes('2026-10-08')&&policy.html.includes('mailto:hrpf786@gmail.com'),route+' dated and has source contact');
+  assert.ok(policy.html.includes('2026-10-09')&&policy.html.includes('mailto:hrpf786@gmail.com'),route+' dated and has source contact');
  }
- const privacy=await read('/privacy-policy');for(const text of ['every uploaded file','fixed automatic deletion period','Google Forms','GTranslate','do not transmit entries'])assert.ok(privacy.html.includes(text),'Privacy current feature: '+text);
+ const privacy=await read('/privacy-policy');for(const text of ['every uploaded file','fixed automatic deletion period','Google Forms','GTranslate','confirmation link'])assert.ok(privacy.html.includes(text),'Privacy current feature: '+text);
  const safeguarding=await read('/safeguarding-policy');assert.ok(safeguarding.html.includes('not an anonymous channel')&&safeguarding.html.includes('dedicated independent reporting contact'),'Safeguarding distinguishes actual reporting and its limits');
  const access=await read('/accessibility');assert.ok(access.html.includes('WCAG 2.2 Level AA')&&access.html.includes('do not claim full conformance'),'Accessibility states target rather than unaudited compliance');
  console.log('Policy checks passed: dated pages, sourced contact, actual complaint/email/translation/retention behaviour, honest safeguarding and accessibility limits, no prototype notes or dead PDF controls.');

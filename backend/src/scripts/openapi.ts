@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { complaintInput, contactInput, membershipInput } from '../http/contracts.js';
 import { credentials, newPassword } from '../security/auth.js';
 import { purpose } from '../services/forms.js';
+import { newsletterInput, newsletterAction } from '../services/newsletter.js';
 import { publicationInput } from '../http/publication.js';
 import { publicSettingSchemas } from '../http/public-content.js';
 import { blogDetailsInput } from '../http/blog-details.js';
@@ -18,6 +19,7 @@ const jsonSchema = (value: z.ZodType) => { const { $schema: _schema, ...schema }
 const user = z.object({ id: z.string(), name: z.string(), email: z.email(), role: z.enum(roles) });
 const safeAdminUser = user.extend({ active: z.boolean(), version: z.number().int() });
 const schemas = {
+  NewsletterInput: jsonSchema(newsletterInput), NewsletterActionInput: jsonSchema(newsletterAction),
   PublicationInput: jsonSchema(publicationInput),
   ComplaintReviewInput: jsonSchema(complaintUpdate),
   ComplaintInput: jsonSchema(complaintInput), MembershipInput: jsonSchema(membershipInput), ContactInput: jsonSchema(contactInput),
@@ -54,6 +56,8 @@ operation('/api/forms/session', 'post', 'Issue a 15-minute purpose-bound form ti
 for (const [path, body] of [['complaints', 'ComplaintInput'], ['membership-applications', 'MembershipInput'], ['contact-messages', 'ContactInput']] as const) {
   operation(`/api/${path}`, 'post', 'Persist validated form and email outbox atomically', received, { body, status: '201', description: 'Use the original ticket and UUID submissionKey for retries. Unsubmitted tickets expire after 15 minutes; saved submissions can be confirmed while the consumed ticket is retained (about 24 hours). Same key with different data returns 409. Received confirms storage, not email delivery or approval. Complaints queue complete user/admin form copies with all five-or-fewer private files (15 MB combined), and require ADMIN_NOTIFY_EMAILS. Contact enquiries return an HRPF-MSG reference, queue complete sender/admin message copies and require ADMIN_NOTIFY_EMAILS. Optional organization and enquiry type are included. Membership requires an enabled policy.' });
 }
+operation('/api/newsletter/subscriptions', 'post', 'Record consent and queue a private confirmation email', z.object({ status: z.literal('accepted') }), { body: 'NewsletterInput', status: '202', description: 'Turnstile newsletter ticket and exact UUID retries required. Response does not disclose whether an address is active. New subscriptions stay pending until confirmation; confirmation expires after 24 hours. Repeat requests within an hour do not send another email. Requires FRONTEND_URL and configured mail credentials.' });
+operation('/api/newsletter/action', 'post', 'Explicitly confirm a subscription or unsubscribe using an emailed bearer token', z.object({ status: z.enum(['confirmed', 'unsubscribed']) }), { body: 'NewsletterActionInput', description: 'Tokens are passed by POST after an explicit user action. Link fragments are not server query strings; no GET activates a subscription.' });
 operation('/api/admin/users', 'get', 'List up to 100 users; super_admin only', z.array(safeAdminUser), { security: [adminSecurity] });
 operation('/api/admin/users', 'post', 'Create administrator; super_admin only', safeAdminUser, { body: 'UserCreateInput', status: '201', security: [{ ...csrfSecurity, ...adminSecurity }] });
 operation('/api/admin/users/{id}', 'patch', 'Update current version; preserve last active super_admin', safeAdminUser, { body: 'UserUpdateInput', parameters: [parameter('id')], security: [{ ...csrfSecurity, ...adminSecurity }] });

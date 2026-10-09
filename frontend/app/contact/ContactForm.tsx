@@ -10,11 +10,11 @@ import ComplaintVerification from "@/components/forms/ComplaintVerification";
 import { isValidEmail } from "@/lib/forms";
 import { ContactRequestError, newContactAttempt, submitContact, type ContactData } from "@/lib/contact-submission";
 
-const inquiryTypes = ["General", "Partnership", "Media", "Membership", "Donation", "Technical"];
+const inquiryTypes = ["General", "Partnership", "Feedback", "Media", "Membership", "Donation", "Technical"];
 const initial: ContactData = { name: "", email: "", phone: "", organization: "", inquiryType: "General", subject: "", message: "", consent: false };
 
-export default function ContactForm() {
-  const [data, setData] = useState(initial);
+export default function ContactForm({ defaultInquiryType = "General" }: { defaultInquiryType?: string }) {
+  const [data, setData] = useState({ ...initial, inquiryType: defaultInquiryType });
   const [errors, setErrors] = useState<Partial<Record<keyof ContactData, string>>>({});
   const [busy, setBusy] = useState(false), [locked, setLocked] = useState(false);
   const [error, setError] = useState(""), [reference, setReference] = useState("");
@@ -45,7 +45,7 @@ export default function ContactForm() {
       setReference(result.reference); setData(initial); attempt.current = newContactAttempt();
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : "Your message could not be confirmed. Please try again.");
-      if (!attempt.current.submissionStarted || (failure instanceof ContactRequestError && failure.status === 400 && failure.code === "VALIDATION_ERROR")) {
+      if (!attempt.current.submissionStarted || (failure instanceof ContactRequestError && ["VALIDATION_ERROR", "INVALID_FORM_TICKET"].includes(failure.code || ""))) {
         attempt.current = newContactAttempt(); setLocked(false); setBotToken(""); setVerificationKey(previous => previous + 1);
       }
     } finally { submitting.current = false; setBusy(false); }

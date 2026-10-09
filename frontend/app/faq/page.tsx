@@ -11,7 +11,7 @@ import { ArrowRight, HandHelping } from "lucide-react";
 export const metadata = createMetadata({
   title: "Frequently Asked Questions",
   description:
-    "Answers to common questions about HRPF, reporting, help requests, donations, volunteering, partnerships and privacy. This is general information, not legal advice.",
+    "Answers to common questions about HRPF, complaints, contact, membership, donations, projects, newsletter updates and privacy. This is general information, not legal advice.",
   path: "/faq",
 });
 
@@ -29,7 +29,7 @@ export default function FaqPage() {
       <PageHero
         eyebrow="HELP & FAQ"
         title="Frequently Asked Questions"
-        description="Answers to common questions about HRPF, reporting, help requests, donations, volunteering, partnerships and privacy. This is general information, not legal advice."
+        description="Answers to common questions about HRPF, complaints, contact, membership, donations, projects, newsletter updates and privacy. This is general information, not legal advice."
         breadcrumbs={[{ label: "FAQ" }]}
       />
 
@@ -95,8 +95,8 @@ export default function FaqPage() {
         actions={[
           { label: "Contact Us", href: "/contact", icon: ArrowRight },
           {
-            label: "Get Help",
-            href: "/get-help",
+            label: "Contact HRPF",
+            href: "/contact",
             variant: "outlineDark",
             icon: HandHelping,
             iconPosition: "left",

@@ -1,192 +1,131 @@
-/*
-  FAQ content for /faq (and reused on relevant pages).
-  Answers are general information only and are not legal advice.
-*/
-
-export interface FAQItem {
-  question: string;
-  answer: string;
-}
-
-export interface FAQGroup {
-  category: string;
-  items: FAQItem[];
-}
-
+export interface FAQItem { question: string; answer: string; }
+export interface FAQGroup { category: string; items: FAQItem[]; }
 export const faqGroups: FAQGroup[] = [
   {
-    category: "About HRPF",
-    items: [
+    "category": "About HRPF",
+    "items": [
       {
-        question: "What does HRPF do?",
-        answer:
-          "HRPF promotes awareness, provides general information and guidance, documents concerns responsibly and connects people with appropriate support and referral services.",
+        "question": "What is HRPF Pakistan?",
+        "answer": "Human Rights Protection Foundation Pakistan is a non-profit, non-governmental and humanitarian organization working for human rights, dignity, justice, equality, transparency and social welfare in Pakistan."
       },
       {
-        question: "Is HRPF a government organization?",
-        answer:
-          "No. HRPF is an independent nonprofit organization and is not a government body.",
+        "question": "Where is the Foundation based?",
+        "answer": "HRPF is based in District Mandi Bahauddin, Punjab, Pakistan. The Contact page contains the office map, address, phone and email details."
       },
       {
-        question: "Is HRPF a law firm?",
-        answer:
-          "No. HRPF provides information and referral and does not act as a legal representative.",
+        "question": "What areas does HRPF work in?",
+        "answer": "Our Work covers women’s rights, children’s rights, access to justice, minority rights, education and awareness, research and advocacy, refugees and migrants, and community development. The Foundation’s objectives also include health, clean water, environmental protection and humanitarian welfare."
       },
       {
-        question: "Where does HRPF work?",
-        answer:
-          "HRPF works with communities and institutional partners across multiple locations (sample content).",
-      },
-    ],
+        "question": "Where can I read about registration?",
+        "answer": "Registration and Certificates presents the supplied Societies Registration Act filing, dated Punjab Charity Commission records and Pakistan Centre for Philanthropy certification. Document dates are shown as recorded; historical certificates do not establish a later renewal."
+      }
+    ]
   },
   {
-    category: "Reporting a Violation",
-    items: [
+    "category": "Reporting a Concern",
+    "items": [
       {
-        question: "Can I report anonymously?",
-        answer:
-          "Yes. You can choose to submit a report without providing your identity, though this may limit follow-up.",
+        "question": "How do I file a complaint?",
+        "answer": "Use File a Complaint for a human-rights concern. Provide your contact and identity details, CNIC image, written complaint and relevant documents. Include details of any previous proceedings and review your information before submitting."
       },
       {
-        question: "Does submitting a report guarantee legal representation?",
-        answer:
-          "No. Submitting a report does not create a lawyer-client relationship or guarantee representation or a specific outcome.",
+        "question": "Can I submit File a Complaint anonymously?",
+        "answer": "The File a Complaint form requires identity and contact details, including a CNIC number and image. It does not accept anonymous submissions. For an initial general enquiry, use Contact without attaching identity documents."
       },
       {
-        question: "What happens after I submit a concern?",
-        answer:
-          "Reports are reviewed carefully. HRPF may provide information, guidance or referral to another qualified service where appropriate.",
+        "question": "What does the receipt mean?",
+        "answer": "A successful receipt means the submission has been saved and email copies have been queued for the user and designated HRPF recipients. It does not confirm inbox delivery, review, legal representation or a case outcome."
       },
       {
-        question: "What should I do in an emergency?",
-        answer:
-          "If someone is in immediate danger, contact the relevant local emergency service or a qualified emergency-support organization.",
-      },
-    ],
+        "question": "What should I do in an emergency?",
+        "answer": "This website is not an emergency response service. If someone is in immediate danger, contact the relevant local emergency services."
+      }
+    ]
   },
   {
-    category: "Requesting Help",
-    items: [
+    "category": "Contact and Feedback",
+    "items": [
       {
-        question: "What kind of help can HRPF provide?",
-        answer:
-          "HRPF may provide general rights information, documentation guidance or referral to suitable services, depending on the request and available resources.",
+        "question": "How can I contact HRPF?",
+        "answer": "Use the Contact form or the published email and phone details. The office map is available on Contact. Partnership and feedback forms use the same enquiry service."
       },
       {
-        question: "What can HRPF not provide?",
-        answer:
-          "HRPF does not guarantee legal representation, does not replace emergency services and cannot promise a particular case result.",
+        "question": "How do I raise a concern about HRPF itself?",
+        "answer": "Use Feedback About HRPF for concerns about the Foundation, its communications or activities. This sends an enquiry to routine HRPF recipients and is not an independent safeguarding channel."
       },
       {
-        question: "How are requests reviewed?",
-        answer:
-          "Requests are reviewed against HRPF's mandate and available resources; not all requests can be supported.",
+        "question": "Should I send documents through Contact?",
+        "answer": "Use File a Complaint for a rights concern requiring evidence. Contact and partnership enquiries collect text and contact details; they do not accept attachments."
       },
       {
-        question: "Is my request confidential?",
-        answer:
-          "Information is handled carefully and shared only where necessary and appropriate.",
-      },
-    ],
+        "question": "Is a response time guaranteed?",
+        "answer": "The website does not promise a response time or a particular outcome. Keep your submission reference for follow-up."
+      }
+    ]
   },
   {
-    category: "Donations",
-    items: [
+    "category": "Membership",
+    "items": [
       {
-        question: "How are donations used?",
-        answer:
-          "Contributions help sustain HRPF's work for human dignity, justice, public awareness and responsible documentation.",
+        "question": "How do I become a member?",
+        "answer": "Open Become a Member and select Open Membership Form. Membership applications currently use the Google Form supplied by HRPF."
       },
       {
-        question: "Is online payment available?",
-        answer:
-          "The Donate page lists HRPF's bank account and JazzCash details. Complete your transfer through your bank or JazzCash; the website does not process payments.",
-      },
-      {
-        question: "Will I receive a receipt?",
-        answer:
-          "Keep your transaction reference and email HRPF to request an acknowledgement. The website does not automatically verify transfers or issue receipts.",
-      },
-      {
-        question: "Can I support a specific project?",
-        answer:
-          "Email HRPF before transferring if you would like to discuss support for a specific project.",
-      },
-    ],
+        "question": "Does this website approve membership or collect a membership payment?",
+        "answer": "The website links to HRPF’s Google application form. It does not approve membership or collect a membership payment. Contact the Foundation for membership requirements."
+      }
+    ]
   },
   {
-    category: "Volunteering",
-    items: [
+    "category": "Donations",
+    "items": [
       {
-        question: "Can I volunteer remotely?",
-        answer:
-          "Some opportunities may be available remotely, depending on the role and current needs.",
+        "question": "How can I donate?",
+        "answer": "The Donate page provides HRPF’s supplied bank account and JazzCash details, with instructions for making a transfer."
       },
       {
-        question: "Who can volunteer?",
-        answer:
-          "Eligibility varies by role. General eligibility details are provided on the Get Involved page.",
+        "question": "Is online payment available?",
+        "answer": "Complete your transfer through your bank or JazzCash. The website does not process payments."
       },
       {
-        question: "Do I need previous experience?",
-        answer:
-          "Some roles welcome newcomers, while others require specific skills or experience.",
+        "question": "Will I receive a receipt?",
+        "answer": "Keep your transaction reference and email HRPF to request an acknowledgement. The website does not automatically verify transfers or issue receipts."
       },
       {
-        question: "How do I apply?",
-        answer:
-          "You can apply using the volunteer application form on the Get Involved page.",
-      },
-    ],
+        "question": "Can I support a specific project?",
+        "answer": "Email HRPF before transferring if you would like to discuss support for a specific project."
+      }
+    ]
   },
   {
-    category: "Partnerships",
-    items: [
+    "category": "Projects and Progress",
+    "items": [
       {
-        question: "Can an organization propose a partnership?",
-        answer:
-          "Yes. Organizations can submit a partnership inquiry through the Partner With Us page.",
+        "question": "Where can I see HRPF’s projects?",
+        "answer": "Projects lists published initiatives. Each Our Work category displays published initiatives related to that field."
       },
       {
-        question: "What types of partners does HRPF work with?",
-        answer:
-          "HRPF works with responsible NGOs, institutions, universities, donors and others that share its commitments.",
-      },
-      {
-        question: "Does HRPF conduct due diligence?",
-        answer:
-          "Yes. HRPF follows a compatibility review and due-diligence process before entering partnerships.",
-      },
-      {
-        question: "How long does the process take?",
-        answer:
-          "Timelines vary depending on the nature and scope of the proposed collaboration.",
-      },
-    ],
+        "question": "How can I follow the organization’s impact?",
+        "answer": "Our Impact summarizes documented areas of action. Progress Reports and project pages provide the detailed record. An ongoing matter can require further action; a completed intervention describes the recorded step rather than present-day conditions."
+      }
+    ]
   },
   {
-    category: "Privacy and Confidentiality",
-    items: [
+    "category": "Newsletter and Privacy",
+    "items": [
       {
-        question: "How does HRPF protect personal information?",
-        answer:
-          "HRPF handles personal information carefully, limits access and shares it only where necessary and appropriate.",
+        "question": "How do I receive newsletter updates?",
+        "answer": "Enter your email in the footer, agree to receive updates and complete verification. Open the confirmation link in your email and select Confirm subscription. Your subscription becomes active only after confirmation."
       },
       {
-        question: "Is sensitive information stored securely?",
-        answer:
-          "Secure handling is a priority. This demonstration site does not store submitted form data.",
+        "question": "How do I unsubscribe?",
+        "answer": "Use the unsubscribe link in your newsletter confirmation email. The link opens a page where you select Unsubscribe."
       },
       {
-        question: "Can I request that my information be removed?",
-        answer:
-          "You can contact HRPF to discuss your information; details are provided in the Privacy Policy.",
-      },
-      {
-        question: "Does the website use cookies?",
-        answer:
-          "Cookie use is described in the Privacy Policy; essential cookies support core functionality.",
-      },
-    ],
-  },
+        "question": "How is information handled?",
+        "answer": "Contact enquiries and complaints are stored and email copies are queued to the sender and designated HRPF recipients. Newsletter email addresses and consent are stored for subscription management. The Privacy Policy explains the handling of these records and external services."
+      }
+    ]
+  }
 ];

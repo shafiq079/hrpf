@@ -9,7 +9,7 @@ import request from 'supertest';
 import express from 'express';
 import { createApp } from '../src/app.js';
 import { parseEnv } from '../src/config/env.js';
-import { Asset, AuditLog, Project, BlogPost, BoardMember, GalleryItem, VideoInterview, Report, Certificate, AuthSession, Complaint, ContactMessage, Counter, EmailOutbox, FormTicket, MembershipApplication, Setting, User, ensureIndexes, roles, type Role } from '../src/domain/models.js';
+import { Asset, AuditLog, Project, BlogPost, BoardMember, GalleryItem, VideoInterview, Report, Certificate, AuthSession, Complaint, ContactMessage, NewsletterSubscription, Counter, EmailOutbox, FormTicket, MembershipApplication, Setting, User, ensureIndexes, roles, type Role } from '../src/domain/models.js';
 import { createRedisServices } from '../src/infrastructure/redis-services.js';
 import { digest, hashPassword } from '../src/security/crypto.js';
 import { createOutbox, mailSender, startEmbeddedOutbox, startOutboxWorker, type Mail } from '../src/services/outbox.js';
@@ -41,7 +41,7 @@ async function login(role: Role = 'super_admin') {
   const result = await agent.post('/api/auth/login').set('Origin', 'http://localhost:3000').set('X-CSRF-Token', csrf.body.data.csrfToken).send({ email: user.email, password: 'Test-password-long' }).expect(200);
   return { agent, csrf: result.body.data.csrfToken as string, user, result };
 }
-async function form(purpose: 'complaint' | 'membership' | 'contact' = 'complaint') {
+async function form(purpose: 'complaint' | 'membership' | 'contact' | 'newsletter' = 'complaint') {
   const response = await request(app).post('/api/forms/session').send({ purpose, botToken: 'verified-test-token' }).expect(201);
   return response.body.data.ticket as string;
 }
@@ -257,6 +257,97 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     const unavailableApp = createApp({ ...env, ADMIN_NOTIFY_EMAILS: [] }, async () => ({ mongo: true, redis: true }), { redis: services, bot, provider });
     await request(unavailableApp).post('/api/contact-messages').send(body).expect(503);
     assert.equal(await ContactMessage.countDocuments(), 0); assert.equal(await EmailOutbox.countDocuments(), 0);
+  });
+  it('newsletter saves pending consent once, retries lost replies and confirms/unsubscribes explicitly', async () => {
+    const { submitNewsletter } = await import(new URL('../../frontend/lib/newsletter-submission.ts', import.meta.url).href);
+    const { newContactAttempt } = await import(new URL('../../frontend/lib/contact-submission.ts', import.meta.url).href);
+    let loseReply = true;
+    const fetcher = async (path: string, options: RequestInit) => {
+      const response = await request(app).post(path).send(JSON.parse(String(options.body)));
+      if (path.endsWith('/subscriptions') && response.status === 202 && loseReply) { loseReply = false; throw new Error('Synthetic lost reply'); }
+      return Response.json(response.body, { status: response.status });
+    };
+    const attempt = newContactAttempt();
+    await assert.rejects(submitNewsletter(' NEWS@example.org ', true, attempt, 'verified-test-token', fetcher));
+    attempt.expiresAt = 0;
+    assert.equal((await submitNewsletter('changed@example.org', false, attempt, '', fetcher)).status, 'accepted');
+    assert.equal(await NewsletterSubscription.countDocuments(), 1); assert.equal(await EmailOutbox.countDocuments(), 1);
+    const row = await NewsletterSubscription.findOne().select('+email +confirmationHash +unsubscribeHash');
+    assert.equal(row!.email, 'news@example.org'); assert.equal(row!.status, 'pending'); assert.equal(row!.consent!.version, 'newsletter-v1');
+    const entry = await EmailOutbox.findOne().select('+encryptedToken');
+    assert.ok(entry!.encryptedToken && !entry!.encryptedToken.includes('confirm='));
+    // A queued confirmation survives provider failure and carries the same tokens on retry.
+    await assert.rejects(createOutbox(env, async () => { throw new Error('Synthetic provider down'); }).deliver(entry!.id));
+    assert.equal((await NewsletterSubscription.findById(row!._id))!.status, 'pending');
+    await EmailOutbox.updateOne({ _id: entry!._id }, { $set: { nextAttemptAt: new Date(0) } });
+    const sent: Mail[] = [], outbox = createOutbox(env, async mail => { sent.push(mail); return 'synthetic-newsletter'; });
+    await Promise.all([outbox.deliver(entry!.id), outbox.deliver(entry!.id)]);
+    await outbox.deliver(entry!.id); assert.equal(sent.length, 1);
+    const confirm = sent[0]!.text.match(/#confirm=([A-Za-z0-9_-]{43})/)![1]!;
+    const unsubscribe = sent[0]!.text.match(/#unsubscribe=([A-Za-z0-9_-]{43})/)![1]!;
+    assert.equal(digest(confirm), row!.confirmationHash); assert.equal(digest(unsubscribe), row!.unsubscribeHash);
+    assert.ok(sent[0]!.text.includes(env.FRONTEND_URL!+'/newsletter#'));
+    assert.equal((await EmailOutbox.findById(entry!._id).select('+encryptedToken'))!.encryptedToken, undefined);
+    await request(app).get('/api/newsletter/action?token='+confirm).expect(404);
+    assert.equal((await NewsletterSubscription.findById(row!._id))!.status, 'pending');
+    await request(app).post('/api/newsletter/action').send({ token: confirm, action: 'confirm' }).expect(200);
+    await request(app).post('/api/newsletter/action').send({ token: confirm, action: 'confirm' }).expect(200);
+    assert.equal((await NewsletterSubscription.findById(row!._id))!.status, 'active');
+    await request(app).post('/api/newsletter/action').send({ token: unsubscribe, action: 'unsubscribe' }).expect(200);
+    await request(app).post('/api/newsletter/action').send({ token: unsubscribe, action: 'unsubscribe' }).expect(200);
+    await request(app).post('/api/newsletter/action').send({ token: confirm, action: 'confirm' }).expect(400);
+    assert.equal((await NewsletterSubscription.findById(row!._id))!.status, 'unsubscribed');
+  });
+  it('newsletter rejects consent, ticket purpose, altered retries and missing delivery configuration', async () => {
+    const body = { email: 'subscriber@example.org', consent: true, consentVersion: 'newsletter-v1', ticket: await form('newsletter'), submissionKey: randomUUID() };
+    await request(app).post('/api/newsletter/subscriptions').send({ ...body, consent: false }).expect(400);
+    await request(app).post('/api/newsletter/subscriptions').send({ ...body, ticket: await form('contact') }).expect(403);
+    assert.equal(await NewsletterSubscription.countDocuments(), 0);
+    await redis.flushDb();
+    const unavailableApp = createApp({ ...env, FRONTEND_URL: undefined }, async () => ({ mongo: true, redis: true }), { redis: services, bot, provider });
+    await request(unavailableApp).post('/api/newsletter/subscriptions').send(body).expect(503);
+    assert.equal(await EmailOutbox.countDocuments(), 0);
+    await redis.flushDb(); // Isolate retry contracts from the deliberate per-address abuse limit.
+    await request(app).post('/api/newsletter/subscriptions').send(body).expect(202);
+    await request(app).post('/api/newsletter/subscriptions').send({ ...body, email: 'altered@example.org' }).expect(409);
+    await request(app).post('/api/newsletter/subscriptions').send({ ...body, submissionKey: randomUUID() }).expect(403);
+    assert.equal(await NewsletterSubscription.countDocuments(), 1);
+    await request(app).post('/api/newsletter/action').send({ token: 'x'.repeat(43), action: 'confirm' }).expect(400);
+    await request(app).post('/api/newsletter/action').send({ token: 'x'.repeat(43), action: 'unsubscribe' }).expect(400);
+  });
+  it('newsletter repeated signup is non-enumerating, expiry fails closed and resubscription needs new confirmation', async () => {
+    const submit = async () => request(app).post('/api/newsletter/subscriptions').send({ email: 'repeat@example.org', consent: true, consentVersion: 'newsletter-v1', ticket: await form('newsletter'), submissionKey: randomUUID() }).expect(202);
+    await submit(); await submit();
+    assert.equal(await NewsletterSubscription.countDocuments(), 1); assert.equal(await EmailOutbox.countDocuments(), 1);
+    const sent: Mail[] = [], outbox = createOutbox(env, async mail => { sent.push(mail); return 'synthetic-repeat'; });
+    await outbox.deliver((await EmailOutbox.findOne())!.id);
+    const confirm = sent[0]!.text.match(/#confirm=([A-Za-z0-9_-]{43})/)![1]!;
+    const unsubscribe = sent[0]!.text.match(/#unsubscribe=([A-Za-z0-9_-]{43})/)![1]!;
+    await NewsletterSubscription.updateOne({}, { $set: { confirmationExpiresAt: new Date(0) } });
+    await request(app).post('/api/newsletter/action').send({ token: confirm, action: 'confirm' }).expect(400);
+    await request(app).post('/api/newsletter/action').send({ token: unsubscribe, action: 'unsubscribe' }).expect(200);
+    await submit();
+    assert.equal(await NewsletterSubscription.countDocuments(), 1); assert.equal(await EmailOutbox.countDocuments(), 2);
+    assert.equal((await NewsletterSubscription.findOne())!.status, 'pending');
+    await request(app).post('/api/newsletter/action').send({ token: unsubscribe, action: 'unsubscribe' }).expect(400);
+    await request(app).post('/api/newsletter/action').send({ token: confirm, action: 'confirm' }).expect(400);
+    for (const entry of await EmailOutbox.find()) await outbox.deliver(entry.id);
+    const nextConfirm = sent[1]!.text.match(/#confirm=([A-Za-z0-9_-]{43})/)![1]!;
+    assert.notEqual(nextConfirm, confirm);
+    await request(app).post('/api/newsletter/action').send({ token: nextConfirm, action: 'confirm' }).expect(200);
+    await redis.flushDb(); await submit();
+    assert.equal(await EmailOutbox.countDocuments(), 2); assert.equal((await NewsletterSubscription.findOne())!.status, 'active');
+    assert.deepEqual(await NewsletterSubscription.findOne().select('+email').then(row => row!.email), 'repeat@example.org');
+  });
+  it('Feedback enquiries deliver full sender and HRPF copies through the shared contact service', async () => {
+    const body = { ticket: await form('contact'), submissionKey: randomUUID(), consent: true, consentVersion: 'test-v1', name: 'Synthetic feedback sender', email: 'feedback@example.org', subject: 'Feedback about HRPF', message: 'Synthetic feedback details', inquiryType: 'Feedback' };
+    await request(app).post('/api/contact-messages').send(body).expect(201);
+    assert.equal((await ContactMessage.findOne())!.inquiryType, 'Feedback');
+    const sent: Mail[] = [], outbox = createOutbox(env, async mail => { sent.push(mail); return 'synthetic-feedback'; });
+    for (const entry of await EmailOutbox.find()) await outbox.deliver(entry.id);
+    assert.equal(sent.length, 2);
+    for (const copy of sent) assert.ok(copy.text.includes(body.message) && copy.text.includes('Feedback'));
+    assert.equal(sent.find(mail => mail.to === env.ADMIN_NOTIFY_EMAILS[0])!.replyTo, body.email);
   });
   it('BullMQ worker drains persisted pending entries using only outbox IDs', async () => {
     const entry = await EmailOutbox.create({ dedupeKey: 'queue-test', template: 'acknowledgement', entityType: 'Complaint', entityId: new Types.ObjectId().toString(), recipient: 'test@example.org', reference: 'TEST-ONLY' });

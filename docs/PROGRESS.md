@@ -1,5 +1,21 @@
 # HRPF Progress
 
+## 2026-10-09 — Final public cleanup and form completion
+
+The owner merged PR #10 to main (`77f7e5f`). Development was aligned before this
+change. Replace Get Involved with Become a Member; retain the exact Google Form.
+Remove Campaigns/Events/Careers and Get Help, add Contact to the header, update
+Our Work/FAQ and source-supported qualitative Impact, and remove retired search
+entries/prototype datasets. Partnership and Feedback now reuse real Contact mail
+and receipts. Newsletter has consent, purpose-bound verification, durable pending
+storage, emailed confirmation, explicit activation/unsubscribe and unique retries.
+Policies now describe those connected forms. No new admin inbox/settings/logs,
+no seed import and no gallery recreation. Live configured email/Turnstile and the
+client's Cloudinary PDF-policy check remain before production. See
+`FINAL_PUBLIC_CLEANUP.md` for configuration, commands, source decisions and tests.
+Earlier entries below are historical; their “unconnected newsletter/feedback”
+statements are superseded by this milestone.
+
 ## 2026-10-08 — Repeat gallery visits and reusable public caching
 
 Following the owner's report of repeatedly loading page 1 after pages 3/4, implemented bounded Redis public JSON caching, transactional revision invalidation across current editors/imports, scheduled publication boundaries, managed responsive WebP thumbnails and browser ETag validation after current publication checks. Gallery zoom retains original bytes. Pagination preserves scroll and reports pending navigation. The real Mongo/Redis suite passed 52 tests; an instrumented repeat thumbnail transfers no body and triggers no extra provider read. Frontend checks and public SSR passed; live Cloudinary/browser timing remains a deployment check. PR #9's prior work is already on main; this task stays on development.

@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: codespaceHost ? [codespaceHost] : [],
   async redirects() {
     return [
+      { source: "/get-involved", destination: "/become-a-member", permanent: true },
+      { source: "/get-help", destination: "/contact", permanent: true },
       { source: "/news/:path*", destination: "/blogs/:path*", permanent: true },
       { source: "/updates/:path*", destination: "/blogs/:path*", permanent: true },
       { source: "/reports", destination: "/about/progress-reports", permanent: true },

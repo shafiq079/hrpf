@@ -7,8 +7,8 @@ export const metadata = createMetadata({ title: "Become a Member", description: 
 export default function BecomeMemberPage() {
   return (
     <main id="main-content" className="flex-1">
-      <PageHero eyebrow="GET INVOLVED" title="Become a Member" description="Join HRPF Pakistan in promoting human dignity, access to justice and institutional accountability."
-        breadcrumbs={[{ label: "Get Involved", href: "/get-involved" }, { label: "Become a Member" }]} />
+      <PageHero eyebrow="MEMBERSHIP" title="Become a Member" description="Join HRPF Pakistan in promoting human dignity, access to justice and institutional accountability."
+        breadcrumbs={[{ label: "Become a Member" }]} />
       <section className="bg-off-white py-16 sm:py-20 lg:py-24"><Container>
         <div className="mx-auto max-w-2xl rounded-lg border border-border bg-white p-8 sm:p-10">
           <h2 className="font-serif text-2xl font-semibold text-navy">Apply for Membership</h2>
