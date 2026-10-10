@@ -40,7 +40,7 @@ function FieldShell({
         {required && <span className="sr-only"> (required)</span>}
       </label>
       {children(describedBy, Boolean(error))}
-      {helper && !error && (
+      {helper && (
         <p id={helperId} className="mt-1.5 text-xs text-muted">
           <TranslationText>{helper}</TranslationText>
         </p>

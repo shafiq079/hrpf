@@ -4,7 +4,7 @@ import { FormTicket, Setting } from '../domain/models.js';
 import { ApiError, unavailable, validate } from '../http/errors.js';
 import { digest, token } from '../security/crypto.js';
 import type { RedisServices } from '../infrastructure/redis-services.js';
-export const purpose = z.enum(['complaint', 'membership', 'contact', 'newsletter']);
+export const purpose = z.enum(['complaint', 'membership', 'membership_registration', 'contact', 'newsletter']);
 export type FormPurpose = z.infer<typeof purpose>;
 export const membershipPolicy = z.object({
   enabled: z.boolean(), version: z.string().min(1).max(50), currency: z.literal('PKR'),

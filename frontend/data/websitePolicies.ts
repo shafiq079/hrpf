@@ -1,5 +1,5 @@
 export type WebsitePolicy = {
-  title: string; eyebrow: string; description: string; introduction: string;
+  title: string; eyebrow: string; updatedAt?: string; description: string; introduction: string;
   sections: { id: string; title: string; paragraphs: string[]; links?: { label: string; href: string }[] }[];
 };
 
@@ -9,7 +9,7 @@ const contactLinks = [
 ];
 
 export const privacyPolicy: WebsitePolicy = {
-  title: "Privacy Policy", eyebrow: "YOUR INFORMATION",
+  title: "Privacy Policy", eyebrow: "YOUR INFORMATION", updatedAt: "2026-10-10",
   description: "How HRPF handles website information, complaint details, uploaded documents and optional third-party services.",
   introduction: "Human Rights Protection Foundation Pakistan (HRPF) operates this website. This notice explains the information handled through its current features, how it is used and how to contact the Foundation about it.",
   sections: [
@@ -34,39 +34,39 @@ export const privacyPolicy: WebsitePolicy = {
       "Private form values, complaint review details, uploaded filenames and administration content are excluded from automatic text translation. Images and downloadable documents are not translated. Selecting English clears the saved preference and restores the original website text.",
     ] },
     { id: "external-and-unconnected-forms", title: "Membership and other forms", paragraphs: [
-      "Membership applications open in Google Forms. Information entered there is submitted through that service and may be accessible to HRPF as the form owner. Review the notice and permissions shown by Google before submitting.",
+      "The on-site membership form records your identity and contact details, date of birth, volunteer interests, availability, emergency contact, fee selections, declaration and optional responses. It also collects CNIC images, a photograph, payment evidence and a police character certificate. These documents are stored privately for review by authorized HRPF administrators. Submission receipts and application status updates are sent by email; application documents are reviewed in the admin portal. Payments are made outside the website using the listed bank or JazzCash details.",
       "The Contact page embeds Google Maps to show our office. When the map loads, your browser connects to Google. Google handles that interaction under its own privacy practices.",
       "The Contact form collects your name, email, optional phone and organization, enquiry type, subject, message and consent. It stores the enquiry for follow-up and queues complete message copies to your email address and designated HRPF administrators. The receipt confirms storage, not inbox delivery or a response. General enquiries have no automatic deletion period in this service. Use File a Complaint for a rights concern with documents.",
       "Partnership and feedback-about-HRPF forms use the Contact enquiry service. They store your message and queue complete sender and designated-recipient email copies. Newsletter signup stores your email and consent, queues a confirmation link valid for 24 hours and activates the subscription only after confirmation. The email includes a link to unsubscribe. Subscription state and token hashes are stored for this purpose. Avoid sending unnecessary identity documents in a general enquiry.",
     ], links: contactLinks },
     { id: "cookies-and-browser-storage", title: "Cookies and browser storage", paragraphs: [
-      "Signed-in administration uses session and security cookies. Optional translation stores the selected language in browser storage. Complaint details and upload-session information are held in memory while you complete the form; the form does not save them as a browser-storage draft.",
+      "Signed-in administration uses session and security cookies. Optional translation stores the selected language in browser storage. Complaint and membership details and upload-session information are held in memory while you complete the form; the form does not save them as a browser-storage draft.",
       "You can manage cookies and site storage in your browser. Clearing or blocking them may affect sign-in or saved language preferences. Verification services, embedded media and external websites may use their own cookies or similar technologies when you use them.",
     ] },
     { id: "retention", title: "Keeping information", paragraphs: [
-      "Submitted complaints and their attached evidence do not have a fixed automatic deletion period in this service. Records may remain available for case handling and the Foundation's legal or operational responsibilities. Unfinished temporary uploads expire and are scheduled for cleanup.",
+      "Submitted complaints, membership applications and their attached evidence do not have a fixed automatic deletion period in this service. Records may remain available for case handling and the Foundation's legal or operational responsibilities. Unfinished temporary uploads expire and are scheduled for cleanup.",
       "You can ask HRPF to review information it holds about you, including a request to correct it or remove it where appropriate. Retention in recipient mailboxes, provider systems and backups may differ from retention of the website record.",
     ] },
     { id: "security", title: "Security and technical information", paragraphs: [
-      "Private complaint files require authorised access, and the CNIC number is encrypted in the complaint database. Security checks, access controls and upload validation help protect the service. These measures do not make information completely risk-free, particularly once a copy has been emailed.",
+      "Private complaint and membership files require authorised access, and the CNIC number is encrypted in the complaint database. Security checks, access controls and upload validation help protect the service. These measures do not make information completely risk-free, particularly once a copy has been emailed.",
       "Hosting, verification and security services may process technical information such as connection and request details to operate the website, diagnose failures and reduce abuse.",
     ] },
     { id: "privacy-requests", title: "Privacy questions and requests", paragraphs: [
-      "Contact HRPF if you want to ask about your information, correct a mistake or request a review of retention or sharing. Include a complaint reference if you have one. Do not attach a new CNIC copy to an initial privacy enquiry unless it is needed and requested through an appropriate channel.",
+      "Contact HRPF if you want to ask about your information, correct a mistake or request a review of retention or sharing. Include your complaint or membership application reference if you have one. Do not attach a new CNIC copy to an initial privacy enquiry unless it is needed and requested through an appropriate channel.",
       "The response depends on the information involved, the Foundation's responsibilities and the requirements that apply to the request. This notice may be updated when website features or information handling change.",
     ], links: contactLinks },
   ],
 };
 
 export const termsOfUse: WebsitePolicy = {
-  title: "Terms of Use", eyebrow: "WEBSITE USE",
+  title: "Terms of Use", eyebrow: "WEBSITE USE", updatedAt: "2026-10-10",
   description: "Guidance for using HRPF's website, submitting concerns and accessing published materials and external services.",
   introduction: "These terms explain the intended use of Human Rights Protection Foundation Pakistan's website. Please use it responsibly and read the Privacy Policy before providing personal information.",
   sections: [
     { id: "responsible-use", title: "Responsible use", paragraphs: ["Use the website lawfully and respectfully. Do not attempt to access someone else's account, private complaint or file, disrupt the service, impersonate another person or upload harmful material. Provide information you believe to be accurate and explain any uncertainty."] },
     { id: "information-and-support", title: "Information and support", paragraphs: ["Public pages, projects, blogs and reports provide information about HRPF's work. They are not personal legal, medical or emergency advice. Published accounts may describe historical conditions and do not establish that those conditions remain the same today.", "Contacting HRPF or submitting a complaint does not appoint a lawyer, create a lawyer-client relationship or guarantee assistance, representation or a particular outcome. Any further support depends on the concern and the Foundation's available capacity."] },
     { id: "submissions", title: "Complaint submissions", paragraphs: ["The File a Complaint form is the connected intake route. Review your details, email address and attachments before giving consent. The complete submission and every uploaded file are emailed to you and designated HRPF administrators as described in the Privacy Policy.", "A receipt confirms that the complaint was saved. It does not confirm that an email reached an inbox, that the case has been reviewed or that a resolution has been reached. Do not use the website as an emergency reporting service."], links: [{ label: "File a Complaint", href: "/file-a-complaint" }, { label: "Read the Privacy Policy", href: "/privacy-policy" }] },
-    { id: "other-services", title: "Other forms and external services", paragraphs: ["Membership applications open in Google Forms. External forms, videos, social platforms and other linked services have their own terms and privacy practices. HRPF does not control those services.", "The Contact form records general enquiries and queues email copies for the sender and designated HRPF administrators. Its reference confirms receipt, not email delivery or a response. Partnership and feedback forms use the same enquiry service. Newsletter subscriptions become active after email confirmation and can be cancelled using the unsubscribe link."], links: contactLinks },
+    { id: "other-services", title: "Other forms and external services", paragraphs: ["Membership applications are submitted on this website. HRPF verifies the submitted payment and documents before deciding an application; a reference confirms receipt only. External videos, social platforms and other linked services have their own terms and privacy practices. HRPF does not control those services.", "The Contact form records general enquiries and queues email copies for the sender and designated HRPF administrators. Its reference confirms receipt, not email delivery or a response. Partnership and feedback forms use the same enquiry service. Newsletter subscriptions become active after email confirmation and can be cancelled using the unsubscribe link."], links: contactLinks },
     { id: "translation", title: "Automatic translation", paragraphs: ["Automatic translations are provided for convenience. They may contain errors or change the meaning of important information. English is the original website text. Select English and ask HRPF for clarification if a translated instruction, policy or consent statement is unclear. Images and downloaded documents are not automatically translated."] },
     { id: "materials", title: "Using published materials", paragraphs: ["You may link to HRPF's public pages and quote short extracts with clear attribution. Do not present modified content as an official HRPF statement or suggest an endorsement that has not been given.", "Photographs, newspaper cuttings and other third-party material may have separate rights. Public availability does not give unrestricted permission to reuse them. Contact HRPF before reproducing materials or using its name or logo to represent an affiliation."] },
     { id: "availability", title: "Availability and changes", paragraphs: ["The website and its external services may be interrupted or unavailable. HRPF may correct or update public information and these terms as features change. The date at the top identifies the latest update to this page. Nothing here removes protections that cannot lawfully be excluded."] },

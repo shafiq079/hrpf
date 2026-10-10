@@ -18,7 +18,7 @@ export default function ComplaintVerification({
 }: {
   onToken: (token: string) => void;
   onError: (message: string) => void;
-  purpose?: "complaint" | "contact" | "newsletter";
+  purpose?: "complaint" | "contact" | "newsletter" | "membership_registration";
 }) {
   const element = useRef<HTMLDivElement>(null),
     widget = useRef<string | null>(null);
@@ -55,7 +55,7 @@ export default function ComplaintVerification({
   if (!sitekey)
     return (
       <p role="status" className="text-sm text-muted">
-        <TranslationText>{purpose === "newsletter" ? "Newsletter signup is temporarily unavailable. Please contact HRPF." : purpose === "contact" ? "Online message submission is temporarily unavailable. Please use the email or phone details on this page." : "Online complaint submission is temporarily unavailable. Please use the contact details on our Contact page."}</TranslationText></p>
+        <TranslationText>{purpose === "membership_registration" ? "Online membership submission is temporarily unavailable. Please contact HRPF." : purpose === "newsletter" ? "Newsletter signup is temporarily unavailable. Please contact HRPF." : purpose === "contact" ? "Online message submission is temporarily unavailable. Please use the email or phone details on this page." : "Online complaint submission is temporarily unavailable. Please use the contact details on our Contact page."}</TranslationText></p>
     );
   return (
     <>

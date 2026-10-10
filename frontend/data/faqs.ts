@@ -75,11 +75,11 @@ export const faqGroups: FAQGroup[] = [
     "items": [
       {
         "question": "How do I become a member?",
-        "answer": "Open Become a Member and select Open Membership Form. Membership applications currently use the Google Form supplied by HRPF."
+        "answer": "Open Become a Member and complete the on-site volunteer registration form. Provide the requested details, documents and payment screenshot, then review your answers before submitting. You will receive an application reference and an email confirmation."
       },
       {
         "question": "Does this website approve membership or collect a membership payment?",
-        "answer": "The website links to HRPF’s Google application form. It does not approve membership or collect a membership payment. Contact the Foundation for membership requirements."
+        "answer": "Payments are made outside this website using the bank transfer or JazzCash details listed on Donate. HRPF administrators verify payment and review the application before approval. A submission receipt does not confirm approval. Application status changes are sent by email."
       }
     ]
   },

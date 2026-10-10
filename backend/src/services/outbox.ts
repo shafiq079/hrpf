@@ -66,7 +66,15 @@ export function createOutbox(env: Environment, send: MailSender, provider: Uploa
         let subject = 'HRPF: submission received', text = `HRPF has received your submission. Reference: ${entry.reference}. This confirms receipt only; review is pending.`;
         if (entry.template === 'admin-notification') {
           subject = 'HRPF: new submission for review';
-          text = `A new ${entry.entityType} is ready for review. Reference: ${entry.reference}. Sign in to the HRPF administration area${env.FRONTEND_URL ? ` at ${env.FRONTEND_URL}/admin` : ''}.`;
+          text = `A new ${entry.entityType === 'MembershipRegistration' ? 'membership application' : entry.entityType} is ready for review. Reference: ${entry.reference}. Sign in to the HRPF administration area${env.FRONTEND_URL ? ` at ${env.FRONTEND_URL}/admin${entry.entityType === 'MembershipRegistration' ? '/membership' : ''}` : ''}.`;
+        }
+        if (entry.template === 'membership-receipt') {
+          subject = 'HRPF: membership application received';
+          text = `Thank you for registering with Human Rights Protection Foundation (HRPF). Our team will review your application and contact you soon.\n\nReference: ${entry.reference}. This confirms receipt only; payment verification and approval are pending.`;
+        }
+        if (entry.template === 'membership-status') {
+          subject = 'HRPF: membership application update';
+          text = `Application reference: ${entry.reference}\nStatus: ${entry.notificationStatus?.replaceAll('_', ' ')}\n${entry.notificationReason || ''}\n\nContact HRPF if you have questions.`;
         }
         if (entry.template === 'password-reset') {
           if (!env.DATA_ENCRYPTION_KEY || !entry.encryptedToken || !env.FRONTEND_URL) throw unavailable();

@@ -88,13 +88,14 @@ export function adminRouter(auth: ReturnType<typeof createAuth>, uploads: Upload
     const id = validate(objectId, req.params.id), principal = res.locals.principal as Principal;
     const asset = await Asset.findOne({ _id: id, scanStatus: { $in: ['clean', 'type_checked'] }, claimStatus: { $ne: 'deleting' } });
     if (!asset) throw new ApiError(404, 'NOT_FOUND', 'File not found.');
-    const permission = ['complaint', 'membership'].includes(asset.purpose) ? 'restrictedAssets' : asset.purpose === 'certificate' ? 'certificates' : 'content';
+    const permission = asset.purpose === 'membership_registration' ? 'membershipRegistrations' : ['complaint', 'membership'].includes(asset.purpose) ? 'restrictedAssets' : asset.purpose === 'certificate' ? 'certificates' : 'content';
     if (!can(principal.role, permission)) throw new ApiError(403, 'FORBIDDEN', 'You do not have permission to view this file.');
     await AuditLog.create({ actorId: principal.id, action: 'assets.read', entityType: 'Asset', entityId: asset.id, requestId: res.locals.requestId, outcome: 'success' });
     const source = await uploads.provider.read(asset);
     if (!source.body) throw new ApiError(503, 'SERVICE_UNAVAILABLE', 'The file is temporarily unavailable.');
-    res.setHeader('Content-Type', asset.format === 'pdf' ? 'application/pdf' : `image/${asset.format === 'jpg' ? 'jpeg' : asset.format}`);
-    res.setHeader('Content-Disposition', `${preview ? 'inline' : 'attachment'}; filename="document.${asset.format}"`);
+    const inline = preview && ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'tif', 'tiff', 'pdf'].includes(asset.format);
+    res.setHeader('Content-Type', asset.format === 'pdf' ? 'application/pdf' : ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'tif', 'tiff'].includes(asset.format) ? `image/${asset.format === 'jpg' ? 'jpeg' : ['tif', 'tiff'].includes(asset.format) ? 'tiff' : asset.format}` : 'application/octet-stream');
+    res.setHeader('Content-Disposition', `${inline ? 'inline' : 'attachment'}; filename="document.${asset.format}"`);
     res.setHeader('Content-Length', asset.bytes); res.setHeader('Cache-Control', 'private, no-store');
     await pipeline(Readable.fromWeb(source.body as never), res);
   });

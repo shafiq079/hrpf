@@ -10,12 +10,13 @@ import request from 'supertest';
 import express from 'express';
 import { createApp } from '../src/app.js';
 import { parseEnv } from '../src/config/env.js';
-import { Asset, AuditLog, Project, BlogPost, BoardMember, TeamMember, GalleryItem, VideoInterview, Report, Certificate, AuthSession, Complaint, ContactMessage, NewsletterSubscription, Counter, EmailOutbox, FormTicket, MembershipApplication, Setting, User, ensureIndexes, roles, type Role } from '../src/domain/models.js';
+import { MembershipRegistration, Asset, AuditLog, Project, BlogPost, BoardMember, TeamMember, GalleryItem, VideoInterview, Report, Certificate, AuthSession, Complaint, ContactMessage, NewsletterSubscription, Counter, EmailOutbox, FormTicket, MembershipApplication, Setting, User, ensureIndexes, roles, type Role } from '../src/domain/models.js';
 import { createRedisServices } from '../src/infrastructure/redis-services.js';
 import { digest, hashPassword } from '../src/security/crypto.js';
 import { createOutbox, mailSender, startEmbeddedOutbox, startOutboxWorker, type Mail } from '../src/services/outbox.js';
 import { createForms } from '../src/services/forms.js';
 import { createUploads, MB, type UploadProvider } from '../src/services/uploads.js';
+import { registrationVersion, feeChoices, registrationAmount } from '../src/domain/membership-registration.js';
 import { bumpPublicRevision, createPublicReadCache } from '../src/services/public-cache.js';
 const env = parseEnv({ NODE_ENV: 'test', JWT_ACCESS_SECRET: 'a'.repeat(64), JWT_REFRESH_SECRET: 'b'.repeat(64), DATA_ENCRYPTION_KEY: 'ab'.repeat(32), CNIC_HASH_KEY: 'c'.repeat(64), REDIS_URL: process.env.TEST_REDIS_URL!, ADMIN_NOTIFY_EMAILS: 'admin@example.org', FRONTEND_URL: 'http://localhost:3000', SMTP_HOST: 'test.invalid', MAIL_FROM: 'no-reply@example.org' });
 const redis = createClient({ url: env.REDIS_URL }); redis.on('error', () => {});
@@ -42,7 +43,7 @@ async function login(role: Role = 'super_admin') {
   const result = await agent.post('/api/auth/login').set('Origin', 'http://localhost:3000').set('X-CSRF-Token', csrf.body.data.csrfToken).send({ email: user.email, password: 'Test-password-long' }).expect(200);
   return { agent, csrf: result.body.data.csrfToken as string, user, result };
 }
-async function form(purpose: 'complaint' | 'membership' | 'contact' | 'newsletter' = 'complaint') {
+async function form(purpose: 'complaint' | 'membership' | 'contact' | 'newsletter' | 'membership_registration' = 'complaint') {
   const response = await request(app).post('/api/forms/session').send({ purpose, botToken: 'verified-test-token' }).expect(201);
   return response.body.data.ticket as string;
 }
@@ -1310,6 +1311,124 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     const before = await Counter.findOne({ key: 'public:content-revision' }).lean();
     await assert.rejects(mongoose.connection.transaction(async session => { await bumpPublicRevision(session); throw new Error('Rollback'); }));
     assert.deepEqual(await Counter.findOne({ key: 'public:content-revision' }).lean(), before);
+  });
+
+  async function registration(ticket: string, certification = 'Yes') {
+    const cnic = await upload(ticket, png, 'membership_registration', 'cnic.png');
+    const photo = await upload(ticket, png, 'membership_registration', 'photo.png');
+    const proof = await upload(ticket, png, 'membership_registration', 'payment.png');
+    const police = await upload(ticket, pdf, 'membership_registration', 'police.pdf');
+    return { ticket, submissionKey: randomUUID(), formVersion: registrationVersion,
+      answers: { email: 'APPLICANT@example.org', name: 'Synthetic applicant', fatherName: 'Synthetic parent', gmailId: 'other@example.org', dateOfBirth: '2000-01-02', gender: 'Other', phone: '03001234567 / 03007654321', address: 'Synthetic address, city and district', interests: ['Human Rights Advocacy', 'Other'], availability: ['Other'], availabilityOther: 'Weekends', emergencyContact: 'Synthetic contact / 03009876543', fees: [...feeChoices], paymentMethod: 'JazzCash', importantNote: 'Optional note response', certification, confirmationMessage: 'Optional confirmation response' },
+      cnicImageIds: [cnic], photoId: photo, paymentProofId: proof, policeCertificateIds: [police] };
+  }
+  it('native membership saves every supplied answer, preserves private files and queues both confirmations exactly once', async () => {
+    const ticket = await form('membership_registration'), body = await registration(ticket);
+    const response = await request(app).post('/api/membership-registrations').send(body).expect(201);
+    assert.match(response.body.data.reference, /^HRPF-VR-\d{4}-\d{6}$/);
+    const saved = await MembershipRegistration.findOne().orFail();
+    assert.deepEqual(saved.answers.interests, body.answers.interests);
+    assert.equal(saved.answers.gmailId, body.answers.gmailId);
+    assert.equal(saved.answers.email, 'applicant@example.org');
+    assert.equal(saved.answers.phone, body.answers.phone);
+    assert.equal(saved.answers.availabilityOther, 'Weekends');
+    assert.equal(saved.answers.importantNote, body.answers.importantNote);
+    assert.equal(saved.answers.confirmationMessage, body.answers.confirmationMessage);
+    assert.equal(saved.feeSnapshot.amountPKR, 5000);
+    assert.equal(registrationAmount(feeChoices), 5000);
+    assert.equal(registrationAmount([feeChoices[0]]), 2000);
+    assert.equal(registrationAmount([feeChoices[1]]), 3000);
+    assert.equal(saved.status, 'pending'); assert.equal(saved.paymentStatus, 'unverified');
+    const assets = await Asset.find({ entityId: saved._id });
+    assert.equal(assets.length, 4); assert.ok(assets.every(a => a.visibility === 'restricted' && a.deliveryType === 'authenticated' && a.resourceType === 'raw' && a.claimStatus === 'claimed'));
+    await request(app).post('/api/membership-registrations').send(body).expect(201);
+    assert.equal(await MembershipRegistration.countDocuments(), 1); assert.equal(await EmailOutbox.countDocuments(), 2);
+    await request(app).post('/api/membership-registrations').send({ ...body, answers: { ...body.answers, name: 'Changed' } }).expect(409);
+    const another = await form('membership_registration');
+    await request(app).post('/api/membership-registrations').send({ ...body, ticket: another }).expect(403);
+    const messages: Mail[] = []; const outbox = createOutbox(env, async m => { messages.push(m); return 'synthetic-delivery'; }, provider);
+    for (const entry of await EmailOutbox.find()) await outbox.deliver(entry.id);
+    assert.equal(messages.length, 2); assert.ok(messages.every(m => !m.attachments?.length));
+    const receipt = messages.find(m => m.to === 'applicant@example.org')!;
+    assert.match(receipt.text, /Thank you for registering/); assert.ok(receipt.text.includes(saved.reference));
+    assert.ok(messages.find(m => m.to === 'admin@example.org')!.text.includes('/admin/membership'));
+  });
+  it('native membership enforces document groups, duplicate assets, declared choices and transaction rollback', async () => {
+    const ticket = await form('membership_registration'), body = await registration(ticket);
+    await request(app).post('/api/membership-registrations').send({ ...body, photoId: body.policeCertificateIds[0], policeCertificateIds: [body.photoId] }).expect(400);
+    await request(app).post('/api/membership-registrations').send({ ...body, photoId: body.cnicImageIds[0] }).expect(400);
+    await request(app).post('/api/membership-registrations').send({ ...body, answers: { ...body.answers, availabilityOther: '' } }).expect(400);
+    await request(app).post('/api/membership-registrations').send({ ...body, answers: { ...body.answers, paymentMethod: 'Unsupported provider' } }).expect(400);
+    assert.equal(await MembershipRegistration.countDocuments(), 0); assert.equal(await EmailOutbox.countDocuments(), 0);
+    assert.equal(await Asset.countDocuments({ claimStatus: 'staged' }), 4);
+    assert.equal((await FormTicket.findOne())?.consumedAt, undefined);
+    await request(app).post('/api/membership-registrations').send(body).expect(201);
+  });
+  it('native upload quotas allow twelve files and 10 MB images, maintain exact upload retries and isolate ticket purposes', async () => {
+    const ticket = await form('membership_registration');
+    const large = Buffer.concat([png, Buffer.alloc(6 * MB)]), key = randomUUID();
+    const initial = await request(app).post('/api/form-uploads?purpose=membership_registration').set('X-Form-Ticket', ticket).set('X-Upload-Key', key).attach('file', large, {filename:'cnic.png',contentType:'image/png'}).expect(201);
+    const again = await request(app).post('/api/form-uploads?purpose=membership_registration').set('X-Form-Ticket', ticket).set('X-Upload-Key', key).attach('file', large, {filename:'cnic.png',contentType:'image/png'}).expect(201);
+    assert.equal(initial.body.data.assetId, again.body.data.assetId);
+    for (let i = 0; i < 11; i++) await upload(ticket, png, 'membership_registration');
+    await request(app).post('/api/form-uploads?purpose=membership_registration').set('X-Form-Ticket', ticket).attach('file', png, { filename:'extra.png',contentType:'image/png' }).expect(400);
+    await request(app).post('/api/form-uploads?purpose=complaint').set('X-Form-Ticket', ticket).attach('file', png, {filename:'proof.png',contentType:'image/png'}).expect(403);
+    assert.equal(await Asset.countDocuments(), 12);
+    const another = await form('membership_registration');
+    await request(app).post('/api/form-uploads?purpose=membership_registration').set('X-Form-Ticket', another).attach('file', Buffer.concat([png, Buffer.alloc(10 * MB)]), { filename:'huge.png',contentType:'image/png' }).expect(413);
+  });
+  it('membership review shows all fields and private files, blocks premature approval and snapshots applicant messages separately from internal notes', async () => {
+    const body = await registration(await form('membership_registration'));
+    await request(app).post('/api/membership-registrations').send(body).expect(201);
+    const saved = await MembershipRegistration.findOne().orFail(), admin = await login();
+    await request(app).get('/api/admin/membership-registrations').expect(401);
+    const editor = await login('editor'), manager = await login('case_manager');
+    await editor.agent.get('/api/admin/membership-registrations').expect(403);
+    await manager.agent.get('/api/admin/membership-registrations').expect(403);
+    await manager.agent.get(`/api/admin/assets/${saved.photo.assetId}/content`).expect(403);
+    const result = await admin.agent.get(`/api/admin/membership-registrations/${saved.id}`).expect(200);
+    assert.equal(result.body.data.files.length, 4); assert.equal(result.body.data.answers.confirmationMessage, body.answers.confirmationMessage);
+    assert.ok(!JSON.stringify(result.body.data).includes('publicId'));
+    const file = await admin.agent.get(`/api/admin/assets/${saved.photo.assetId}/content?preview=1`).expect(200);
+    assert.equal(file.headers['cache-control'], 'private, no-store'); assert.equal(file.headers['content-type'], 'image/png');
+    const review = { version: 0, status: 'approved', paymentStatus: 'unverified', note: 'Private internal verification note', applicantMessage: 'Your membership application is approved.' };
+    const patch = (v: object) => admin.agent.patch(`/api/admin/membership-registrations/${saved.id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',admin.csrf).send(v);
+    await patch(review).expect(409);
+    await patch({ ...review, paymentStatus: 'verified', applicantMessage: '' }).expect(400);
+    await patch({ ...review, paymentStatus: 'verified' }).expect(200);
+    await patch({ ...review, paymentStatus: 'verified' }).expect(409);
+    const after = await MembershipRegistration.findById(saved.id).orFail();
+    assert.equal(after.status,'approved'); assert.equal(after.paymentStatus,'verified'); assert.equal(after.history.length,1); assert.equal(after.notes[0]?.body,review.note);
+    const entry = await EmailOutbox.findOne({template:'membership-status'}).orFail();
+    const sent: Mail[] = []; await createOutbox(env, async m => {sent.push(m);return 'test';}, provider).deliver(entry.id);
+    assert.ok(sent[0]!.text.includes(review.applicantMessage)); assert.ok(!sent[0]!.text.includes(review.note)); assert.ok(!sent[0]!.attachments?.length);
+  });
+  it('No declarations are retained verbatim but cannot be approved, and native availability requires configured email', async () => {
+    const body = await registration(await form('membership_registration'),'No');
+    await request(app).post('/api/membership-registrations').send(body).expect(201);
+    const saved = await MembershipRegistration.findOne().orFail(), admin = await login();
+    assert.equal(saved.answers.certification,'No');
+    await admin.agent.patch(`/api/admin/membership-registrations/${saved.id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',admin.csrf).send({version:0,status:'approved',paymentStatus:'verified',note:'Synthetic review',applicantMessage:'Approved'}).expect(409);
+    const unavailableApp = createApp({...env,MAIL_FROM:undefined},async()=>({mongo:true,redis:true}),{redis:services,bot,provider});
+    const config = await request(unavailableApp).get('/api/membership-registration/config').expect(200);
+    assert.equal(config.body.data.available,false); assert.deepEqual(config.body.data.paymentMethods,['Bank transfer','JazzCash']);
+    const next = await registration(await form('membership_registration'));
+    await request(unavailableApp).post('/api/membership-registrations').send(next).expect(503);
+    assert.equal(await MembershipRegistration.countDocuments(),1);
+  });
+
+  it('police certificate accepts a byte-preserved Word document and streams it as a download only', async () => {
+    const ticket = await form('membership_registration');
+    const document = Buffer.from('UEsDBBQAAAAIAJKhSl2sbhJangAAANwAAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbF2PsQ7CMBBDf6XKitqrGBhQ24UdGPiBU3JtI5pLlBwF/p4EpA6Mlu1nubu9A6Xq5RZOvZpFwhEg6ZkcpsYH4uyMPjqULOMEAfUdJ4J92x5AexZiqaUw1NBdVorRGqquGOWMjnoFTx8NGK8fLiebTFPV6Vcry73CEBarUaxnWNn8bdZ+HK2mrV9oIXpNKVme3NJsjkPLu4KHoYPvqeEDUEsDBBQAAAAIAJKhSl16/6ZFgwAAAK8AAAARAAAAd29yZC9kb2N1bWVudC54bWxFzs0NwyAMBeBVUAaoox56QJQlOgEFE5DCj4wjku0T0kMv35Nl68mqS1fsljCz2NOam+zvKTBXCdBswGTao1TM184XSoavkRbohVylYrG1mJe0wnOeX5BMzJNWXX6LO0bWAQ1Yf47MATlaYZE4+mgNo/Bx541QwTgZ0m29/dXA/0V9AlBLAQIUAxQAAAAIAJKhSl2sbhJangAAANwAAAATAAAAAAAAAAAAAACAAQAAAABbQ29udGVudF9UeXBlc10ueG1sUEsBAhQDFAAAAAgAkqFKXXr/pkWDAAAArwAAABEAAAAAAAAAAAAAAIABzwAAAHdvcmQvZG9jdW1lbnQueG1sUEsFBgAAAAACAAIAgAAAAIEBAAAAAA==', 'base64');
+    const result = await request(app).post('/api/form-uploads?purpose=membership_registration').set('X-Form-Ticket', ticket).attach('file', document, { filename:'police.docx',contentType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }).expect(201);
+    const asset = await Asset.findById(result.body.data.assetId).orFail();
+    assert.equal(asset.format,'docx'); assert.equal(asset.resourceType,'raw');
+    assert.deepEqual(storedBytes.get(asset.publicId),document);
+    const admin = await login();
+    const download = await admin.agent.get(`/api/admin/assets/${asset.id}/content?preview=1`).expect(200);
+    assert.equal(download.headers['content-type'],'application/octet-stream');
+    assert.match(download.headers['content-disposition']!,/^attachment;/);
+    assert.equal(download.headers['cache-control'],'private, no-store');
   });
 
 });

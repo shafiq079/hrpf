@@ -10,6 +10,7 @@ const contentLinks = [
   { href: "/admin/documents", label: "Documents" },
   { href: "/admin/board", label: "Board of Directors" },
   { href: "/admin/team", label: "Operational Team" },
+  { href: "/admin/membership", label: "Membership" },
 ];
 const complaintLink = { href: "/admin/complaints", label: "Complaints" };
 

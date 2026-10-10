@@ -6,7 +6,7 @@ const sac: Role[] = [...sa, 'case_manager'];
 const sae: Role[] = [...sa, 'editor'];
 export const permissionRoles = {
   users: ['super_admin'], members: sac, memberExport: sa, membershipReview: sac,
-  board: sa, team: sa, complaints: sac, content: sae, certificates: sa, contacts: sa, settings: sa,
+  membershipRegistrations: sa, board: sa, team: sa, complaints: sac, content: sae, certificates: sa, contacts: sa, settings: sa,
   restrictedAssets: sac, audit: sa, outbox: sa,
 } satisfies Record<string, readonly Role[]>;
 export type Permission = keyof typeof permissionRoles;

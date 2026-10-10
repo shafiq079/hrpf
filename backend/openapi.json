@@ -3,7 +3,7 @@
   "info": {
     "title": "HRPF API",
     "version": "0.4.0",
-    "description": "Backend foundations, managed public content and atomic publication controls. Fixed NGO page copy is bundled in the frontend and needs no publication approval. Operational member/case review workflows remain later milestones. Projected public JSON uses a bounded revision-keyed Redis cache; browser JSON and documents are no-store. Public raster images use private conditional validation; withdrawals are checked before streaming or a 304 response. Browser clients use the frontend same-origin /api rewrite and credentials. All mutating auth/admin requests require the exact configured Origin and X-CSRF-Token. Production cookies use Secure, HttpOnly, SameSite=Lax, Path=/, no Domain; development names omit __Host-."
+    "description": "Backend foundations, managed public content and atomic publication controls. Fixed NGO page copy is bundled in the frontend and needs no publication approval. Native membership and complaint review are available in the admin portal. Projected public JSON uses a bounded revision-keyed Redis cache; browser JSON and documents are no-store. Public raster images use private conditional validation; withdrawals are checked before streaming or a 304 response. Browser clients use the frontend same-origin /api rewrite and credentials. All mutating auth/admin requests require the exact configured Origin and X-CSRF-Token. Production cookies use Secure, HttpOnly, SameSite=Lax, Path=/, no Domain; development names omit __Host-."
   },
   "paths": {
     "/api/health/live": {
@@ -565,6 +565,7 @@
                           "enum": [
                             "complaint",
                             "membership",
+                            "membership_registration",
                             "contact",
                             "newsletter"
                           ]
@@ -1180,7 +1181,8 @@
               "type": "string",
               "enum": [
                 "complaint",
-                "membership"
+                "membership",
+                "membership_registration"
               ]
             }
           },
@@ -11804,6 +11806,789 @@
           }
         }
       }
+    },
+    "/api/membership-registration/config": {
+      "get": {
+        "summary": "Read native registration availability and bank/JazzCash methods",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "available": {
+                          "type": "boolean"
+                        },
+                        "formVersion": {
+                          "type": "string"
+                        },
+                        "paymentMethods": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "available",
+                        "formVersion",
+                        "paymentMethods"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/membership-registrations": {
+      "post": {
+        "summary": "Save the supplied volunteer registration form and queue applicant/admin confirmation",
+        "description": "Turnstile purpose membership_registration. Exact ticket/UUID retries prevent duplicates. Up to 12 private, byte-preserved files, each 10 MB: 1–5 CNIC images, one photograph, one payment image and 1–5 police certificates (image/PDF/Word/ODT). Required dropdown methods are bank transfer and JazzCash. Server snapshots the selected service fees without double-counting the total. Requires mail sender configuration and ADMIN_NOTIFY_EMAILS. Receipt means saved and queued, not approved or delivered.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "reference": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "const": "received"
+                        }
+                      },
+                      "required": [
+                        "status"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/membership-registrations": {
+      "get": {
+        "summary": "List native membership applications; admin/super_admin only",
+        "security": [
+          {
+            "accessCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 1
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "under_review",
+                "needs_info",
+                "approved",
+                "rejected",
+                "withdrawn"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "rows": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "version": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              },
+                              "reference": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "email": {
+                                "type": "string",
+                                "format": "email",
+                                "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": [
+                                  "pending",
+                                  "under_review",
+                                  "needs_info",
+                                  "approved",
+                                  "rejected",
+                                  "withdrawn"
+                                ]
+                              },
+                              "paymentStatus": {
+                                "type": "string",
+                                "enum": [
+                                  "unverified",
+                                  "verified",
+                                  "rejected"
+                                ]
+                              },
+                              "amountPKR": {
+                                "type": "number"
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "version",
+                              "reference",
+                              "name",
+                              "email",
+                              "status",
+                              "paymentStatus",
+                              "amountPKR",
+                              "createdAt"
+                            ]
+                          }
+                        },
+                        "total": {
+                          "type": "number"
+                        },
+                        "page": {
+                          "type": "number"
+                        },
+                        "pages": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "rows",
+                        "total",
+                        "page",
+                        "pages"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/membership-registrations/{id}": {
+      "get": {
+        "summary": "Read all original answers, authorized file IDs, private notes, history and delivery states; admin/super_admin only",
+        "security": [
+          {
+            "accessCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{24}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "version": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "reference": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email",
+                          "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "under_review",
+                            "needs_info",
+                            "approved",
+                            "rejected",
+                            "withdrawn"
+                          ]
+                        },
+                        "paymentStatus": {
+                          "type": "string",
+                          "enum": [
+                            "unverified",
+                            "verified",
+                            "rejected"
+                          ]
+                        },
+                        "amountPKR": {
+                          "type": "number"
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        },
+                        "answers": {
+                          "type": "object",
+                          "properties": {
+                            "email": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 150
+                            },
+                            "fatherName": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 150
+                            },
+                            "gmailId": {
+                              "type": "string"
+                            },
+                            "dateOfBirth": {
+                              "type": "string",
+                              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                            },
+                            "gender": {
+                              "type": "string",
+                              "enum": [
+                                "Male",
+                                "Female",
+                                "Other"
+                              ]
+                            },
+                            "phone": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 200
+                            },
+                            "address": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 1000
+                            },
+                            "interests": {
+                              "minItems": 1,
+                              "maxItems": 10,
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "Human Rights Advocacy",
+                                  "Education Programs",
+                                  "Community Welfare",
+                                  "Women Rights",
+                                  "Child Protection",
+                                  "Fundraising",
+                                  "Social Media & Awareness",
+                                  "Administration",
+                                  "Event Management",
+                                  "Other"
+                                ]
+                              }
+                            },
+                            "availability": {
+                              "minItems": 1,
+                              "maxItems": 3,
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "1 week in a month",
+                                  "Willing to Participate in Field Activities",
+                                  "Other"
+                                ]
+                              }
+                            },
+                            "availabilityOther": {
+                              "type": "string",
+                              "maxLength": 500
+                            },
+                            "emergencyContact": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 300
+                            },
+                            "fees": {
+                              "minItems": 1,
+                              "maxItems": 3,
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "Volunteer Registration Fee: PKR 2,000",
+                                  "Volunteer Card + Official Notification Fee: PKR 3,000",
+                                  "Total Payable Amount (if all services are requested): PKR 5,000"
+                                ]
+                              }
+                            },
+                            "paymentMethod": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 100
+                            },
+                            "importantNote": {
+                              "type": "string",
+                              "maxLength": 1000
+                            },
+                            "certification": {
+                              "type": "string",
+                              "enum": [
+                                "Yes",
+                                "No"
+                              ]
+                            },
+                            "confirmationMessage": {
+                              "type": "string",
+                              "maxLength": 1000
+                            }
+                          },
+                          "required": [
+                            "email",
+                            "name",
+                            "fatherName",
+                            "gmailId",
+                            "dateOfBirth",
+                            "gender",
+                            "phone",
+                            "address",
+                            "interests",
+                            "availability",
+                            "availabilityOther",
+                            "emergencyContact",
+                            "fees",
+                            "paymentMethod",
+                            "importantNote",
+                            "certification",
+                            "confirmationMessage"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "files": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "format": {
+                                "type": "string"
+                              },
+                              "bytes": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "label",
+                              "name",
+                              "format",
+                              "bytes"
+                            ]
+                          }
+                        },
+                        "formVersion": {
+                          "type": "string"
+                        },
+                        "feeSnapshot": {
+                          "type": "object",
+                          "properties": {
+                            "amountPKR": {
+                              "type": "number"
+                            },
+                            "currency": {
+                              "type": "string",
+                              "const": "PKR"
+                            },
+                            "version": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "amountPKR",
+                            "currency",
+                            "version"
+                          ]
+                        },
+                        "notes": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "body": {
+                                "type": "string"
+                              },
+                              "at": {
+                                "type": "string"
+                              },
+                              "reviewer": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "body",
+                              "at",
+                              "reviewer"
+                            ]
+                          }
+                        },
+                        "history": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "from": {
+                                "type": "string"
+                              },
+                              "to": {
+                                "type": "string"
+                              },
+                              "paymentFrom": {
+                                "type": "string"
+                              },
+                              "paymentTo": {
+                                "type": "string"
+                              },
+                              "actorId": {
+                                "type": "string"
+                              },
+                              "at": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "from",
+                              "to",
+                              "paymentFrom",
+                              "paymentTo",
+                              "actorId",
+                              "at"
+                            ]
+                          }
+                        },
+                        "emailDeliveries": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "audience": {
+                                "type": "string",
+                                "enum": [
+                                  "applicant",
+                                  "admin"
+                                ]
+                              },
+                              "status": {
+                                "type": "string"
+                              },
+                              "attempts": {
+                                "type": "number"
+                              },
+                              "errorCode": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "audience",
+                              "status",
+                              "attempts"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "version",
+                        "reference",
+                        "name",
+                        "email",
+                        "status",
+                        "paymentStatus",
+                        "amountPKR",
+                        "createdAt",
+                        "answers",
+                        "files",
+                        "formVersion",
+                        "feeSnapshot",
+                        "notes",
+                        "history",
+                        "emailDeliveries"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Versioned admin review, private note and separate applicant status message; approval requires verified payment and Yes declaration",
+        "description": "Current active administrator role is rechecked inside the transaction. Internal notes stay private. A required applicantMessage on status change is snapshotted in the email outbox; files are never attached to these messages. Stale versions return 409.",
+        "security": [
+          {
+            "csrfHeader": [],
+            "csrfCookie": [],
+            "accessCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{24}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationReviewInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "version": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "reference": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email",
+                          "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "under_review",
+                            "needs_info",
+                            "approved",
+                            "rejected",
+                            "withdrawn"
+                          ]
+                        },
+                        "paymentStatus": {
+                          "type": "string",
+                          "enum": [
+                            "unverified",
+                            "verified",
+                            "rejected"
+                          ]
+                        },
+                        "amountPKR": {
+                          "type": "number"
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "version",
+                        "reference",
+                        "name",
+                        "email",
+                        "status",
+                        "paymentStatus",
+                        "amountPKR",
+                        "createdAt"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -11894,6 +12679,246 @@
           "version",
           "action",
           "releaseReviewed"
+        ],
+        "additionalProperties": false
+      },
+      "RegistrationInput": {
+        "type": "object",
+        "properties": {
+          "answers": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 150
+              },
+              "fatherName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 150
+              },
+              "gmailId": {
+                "type": "string"
+              },
+              "dateOfBirth": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "gender": {
+                "type": "string",
+                "enum": [
+                  "Male",
+                  "Female",
+                  "Other"
+                ]
+              },
+              "phone": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "address": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              },
+              "interests": {
+                "minItems": 1,
+                "maxItems": 10,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "Human Rights Advocacy",
+                    "Education Programs",
+                    "Community Welfare",
+                    "Women Rights",
+                    "Child Protection",
+                    "Fundraising",
+                    "Social Media & Awareness",
+                    "Administration",
+                    "Event Management",
+                    "Other"
+                  ]
+                }
+              },
+              "availability": {
+                "minItems": 1,
+                "maxItems": 3,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "1 week in a month",
+                    "Willing to Participate in Field Activities",
+                    "Other"
+                  ]
+                }
+              },
+              "availabilityOther": {
+                "type": "string",
+                "maxLength": 500
+              },
+              "emergencyContact": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 300
+              },
+              "fees": {
+                "minItems": 1,
+                "maxItems": 3,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "Volunteer Registration Fee: PKR 2,000",
+                    "Volunteer Card + Official Notification Fee: PKR 3,000",
+                    "Total Payable Amount (if all services are requested): PKR 5,000"
+                  ]
+                }
+              },
+              "paymentMethod": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              "importantNote": {
+                "type": "string",
+                "maxLength": 1000
+              },
+              "certification": {
+                "type": "string",
+                "enum": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              "confirmationMessage": {
+                "type": "string",
+                "maxLength": 1000
+              }
+            },
+            "required": [
+              "email",
+              "name",
+              "fatherName",
+              "gmailId",
+              "dateOfBirth",
+              "gender",
+              "phone",
+              "address",
+              "interests",
+              "availability",
+              "availabilityOther",
+              "emergencyContact",
+              "fees",
+              "paymentMethod",
+              "importantNote",
+              "certification",
+              "confirmationMessage"
+            ],
+            "additionalProperties": false
+          },
+          "cnicImageIds": {
+            "minItems": 1,
+            "maxItems": 5,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{24}$"
+            }
+          },
+          "photoId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{24}$"
+          },
+          "paymentProofId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{24}$"
+          },
+          "policeCertificateIds": {
+            "minItems": 1,
+            "maxItems": 5,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{24}$"
+            }
+          },
+          "ticket": {
+            "type": "string",
+            "minLength": 43,
+            "maxLength": 100
+          },
+          "submissionKey": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "formVersion": {
+            "type": "string",
+            "const": "hrpf-volunteer-2026-10-10"
+          }
+        },
+        "required": [
+          "answers",
+          "cnicImageIds",
+          "photoId",
+          "paymentProofId",
+          "policeCertificateIds",
+          "ticket",
+          "submissionKey",
+          "formVersion"
+        ],
+        "additionalProperties": false
+      },
+      "RegistrationReviewInput": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "under_review",
+              "needs_info",
+              "approved",
+              "rejected",
+              "withdrawn"
+            ]
+          },
+          "paymentStatus": {
+            "type": "string",
+            "enum": [
+              "unverified",
+              "verified",
+              "rejected"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "applicantMessage": {
+            "default": "",
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "version",
+          "status",
+          "paymentStatus",
+          "note"
         ],
         "additionalProperties": false
       },
@@ -12262,6 +13287,7 @@
             "enum": [
               "complaint",
               "membership",
+              "membership_registration",
               "contact",
               "newsletter"
             ]

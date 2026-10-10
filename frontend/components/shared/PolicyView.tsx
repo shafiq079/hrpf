@@ -5,6 +5,8 @@ import Prose from "./Prose";
 import type { WebsitePolicy } from "@/data/websitePolicies";
 
 export default function PolicyView({ policy }: { policy: WebsitePolicy }) {
+  const updatedAt = policy.updatedAt || "2026-10-09";
+  const updatedLabel = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${updatedAt}T00:00:00Z`));
   return <main id="main-content" className="flex-1">
     <PageHero eyebrow={policy.eyebrow} title={policy.title} description={policy.description} breadcrumbs={[{ label: policy.title }]} />
     <section className="bg-off-white py-12 sm:py-16 lg:py-20">
@@ -21,7 +23,7 @@ export default function PolicyView({ policy }: { policy: WebsitePolicy }) {
             </nav>
           </aside>
           <div className="min-w-0 max-w-3xl">
-            <p className="text-sm text-muted">Last updated: <time dateTime="2026-10-09">9 October 2026</time></p>
+            <p className="text-sm text-muted">Last updated: <time dateTime={updatedAt}>{updatedLabel}</time></p>
             <Prose className="mt-6">
               <p>{policy.introduction}</p>
               {policy.sections.map(section => <section key={section.id} id={section.id} className="scroll-mt-24">

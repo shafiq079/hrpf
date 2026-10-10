@@ -191,7 +191,7 @@ export const Asset = mongoose.model('Asset', new Schema({
   publicId: { ...requiredText(300), unique: true }, resourceType: { type: String, enum: ['image', 'raw'], required: true },
   deliveryType: { type: String, enum: ['authenticated', 'upload'], required: true }, format: requiredText(20), bytes: { type: Number, min: 1, required: true },
   width: Number, height: Number, version: Number, sha256: requiredText(64), originalName: text(200), ownerId: oid('User'), ticketHash: { type: String, select: false },
-  purpose: { type: String, enum: ['complaint', 'membership', 'content', 'certificate'], required: true },
+  purpose: { type: String, enum: ['complaint', 'membership', 'membership_registration', 'content', 'certificate'], required: true },
   visibility: { type: String, enum: ['public', 'restricted'], default: 'restricted' },
   // Historical field name retained for existing files. New uploads are type_checked, never malware-scanned.
   scanStatus: { type: String, enum: ['clean', 'type_checked', 'quarantined', 'infected'], default: 'quarantined' },
@@ -202,7 +202,7 @@ Asset.schema.index({ claimStatus: 1, stagingExpiresAt: 1 });
 Asset.schema.index({ ticketHash: 1, uploadKey: 1 }, { unique: true, partialFilterExpression: { ticketHash: { $type: 'string' }, uploadKey: { $type: 'string' } } });
 export const FormTicket = mongoose.model('FormTicket', new Schema({
   tokenHash: { type: String, required: true, unique: true, select: false },
-  purpose: { type: String, enum: ['complaint', 'membership', 'contact', 'newsletter'], required: true },
+  purpose: { type: String, enum: ['complaint', 'membership', 'membership_registration', 'contact', 'newsletter'], required: true },
   expiresAt: { type: Date, required: true }, consumedAt: Date, submissionKey: text(64), payloadHash: text(64), uploadCount: { type: Number, default: 0 }, uploadBytes: { type: Number, default: 0 },
 }, options).index({ expiresAt: 1 }, { expireAfterSeconds: 86400 }));
 export const Counter = mongoose.model('Counter', new Schema({ key: { ...requiredText(100), unique: true }, sequence: { type: Number, default: 0, min: 0 } }, options));
@@ -215,9 +215,9 @@ export const SourceImport = mongoose.model('SourceImport', new Schema({
   reviewTasks: [String],
 }, { timestamps: { createdAt: true, updatedAt: false }, strict: 'throw' }));
 export const EmailOutbox = mongoose.model('EmailOutbox', new Schema({
-  dedupeKey: { ...requiredText(200), unique: true }, template: { type: String, enum: ['acknowledgement', 'admin-notification', 'password-reset', 'complaint-copy', 'complaint-admin-copy', 'newsletter-confirmation'], required: true },
+  dedupeKey: { ...requiredText(200), unique: true }, template: { type: String, enum: ['acknowledgement', 'admin-notification', 'password-reset', 'complaint-copy', 'complaint-admin-copy', 'newsletter-confirmation', 'membership-receipt', 'membership-status'], required: true },
   entityType: requiredText(100), entityId: text(100), recipient: { ...requiredText(254), select: false },
-  reference: text(100), encryptedToken: { type: String, select: false },
+  reference: text(100), notificationStatus: text(50), notificationReason: text(2000), encryptedToken: { type: String, select: false },
   status: { type: String, enum: ['pending', 'sending', 'sent', 'failed'], default: 'pending' },
   attempts: { type: Number, default: 0 }, nextAttemptAt: { type: Date, default: Date.now }, leaseUntil: Date, leaseToken: text(100),
   providerId: text(300), errorCode: text(100), sentAt: Date,
@@ -240,3 +240,19 @@ export async function ensureIndexes() {
   // Additive createIndexes only; never drop existing production indexes.
   for (const model of Object.values(mongoose.models)) await model.createIndexes();
 }
+
+// Native volunteer applications preserve the supplied form. They do not borrow
+// the legacy membership type, expiry or province/district requirements.
+export const MembershipRegistration = mongoose.model('MembershipRegistration', new Schema({
+  reference: { ...requiredText(40), unique: true }, submissionKey: { ...requiredText(64), unique: true }, payloadHash: requiredText(64), formVersion: requiredText(50),
+  answers: { type: new Schema({
+    email: requiredText(254), name: requiredText(150), fatherName: requiredText(150), gmailId: requiredText(254), dateOfBirth: requiredText(10), gender: requiredText(20), phone: requiredText(200), address: requiredText(1000),
+    interests: [String], availability: [String], availabilityOther: text(500), emergencyContact: requiredText(300), fees: [String], paymentMethod: requiredText(100), importantNote: text(1000), certification: requiredText(10), confirmationMessage: text(1000),
+  }, { _id: false, strict: 'throw' }), required: true },
+  cnicImages: [assetRefSchema], photo: { type: assetRefSchema, required: true }, paymentProof: { type: assetRefSchema, required: true }, policeCertificates: [assetRefSchema],
+  feeSnapshot: { type: new Schema({ amountPKR: { type: Number, required: true }, currency: { type: String, enum: ['PKR'], required: true }, version: requiredText(50) }, { _id: false, strict: 'throw' }), required: true },
+  status: { type: String, enum: ['pending', 'under_review', 'needs_info', 'approved', 'rejected', 'withdrawn'], default: 'pending' },
+  paymentStatus: { type: String, enum: ['unverified', 'verified', 'rejected'], default: 'unverified' },
+  reviewedAt: Date, reviewerId: oid('User'), notes: [note], history: [new Schema({ from: requiredText(50), to: requiredText(50), paymentFrom: requiredText(50), paymentTo: requiredText(50), actorId: oid('User'), at: { type: Date, default: Date.now } }, { _id: false, strict: 'throw' })],
+}, options));
+MembershipRegistration.schema.index({ status: 1, createdAt: -1, _id: -1 });

@@ -84,9 +84,10 @@ try{
   const policy=await read('/'+route);assert.equal(policy.status,200);
   assert.equal((policy.html.match(/<h1[ >]/g)||[]).length,1,route+' has one H1');
   for(const removed of ['placeholder — update before publication','(placeholder address)','Download PDF','File coming soon','review schedule should be confirmed'])assert.ok(!policy.html.includes(removed),route+' removed '+removed);
-  assert.ok(policy.html.includes('2026-10-09')&&policy.html.includes('mailto:hrpf786@gmail.com'),route+' dated and has source contact');
+  assert.ok(policy.html.includes(['/privacy-policy','/terms-of-use'].includes(route)?'2026-10-10':'2026-10-09')&&policy.html.includes('mailto:hrpf786@gmail.com'),route+' dated and has source contact');
  }
- const privacy=await read('/privacy-policy');for(const text of ['every uploaded file','fixed automatic deletion period','Google Forms','GTranslate','confirmation link'])assert.ok(privacy.html.includes(text),'Privacy current feature: '+text);
+ const membership=await read('/become-a-member'); for(const text of ['Full Name (which register in Nadra Office)','Gmail Id','CNIC no and Picture front and back side','Recent Photograph (File Upload)','Preferred Area of Service (Checkboxes)','REGISTRATION &amp; DOCUMENTATION FEES','Police verification Character certificate','Review application']) assert.ok(membership.html.includes(text),'Native membership form: '+text); assert.ok(!membership.html.includes('docs.google.com/forms'),'No external membership form');
+ const privacy=await read('/privacy-policy');for(const text of ['every uploaded file','fixed automatic deletion period','police character certificate','GTranslate','confirmation link'])assert.ok(privacy.html.includes(text),'Privacy current feature: '+text);
  const safeguarding=await read('/safeguarding-policy');assert.ok(safeguarding.html.includes('not an anonymous channel')&&safeguarding.html.includes('dedicated independent reporting contact'),'Safeguarding distinguishes actual reporting and its limits');
  const access=await read('/accessibility');assert.ok(access.html.includes('WCAG 2.2 Level AA')&&access.html.includes('do not claim full conformance'),'Accessibility states target rather than unaudited compliance');
  console.log('Policy checks passed: dated pages, sourced contact, actual complaint/email/translation/retention behaviour, honest safeguarding and accessibility limits, no prototype notes or dead PDF controls.');
