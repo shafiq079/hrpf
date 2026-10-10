@@ -2,24 +2,14 @@ import home from "@/data/homepage.json";
 import { AlertTriangle, ArrowRight } from "lucide-react";
 import Container from "@/components/shared/Container";
 import PrimaryButton from "@/components/shared/PrimaryButton";
-import AppImage from "@/components/shared/AppImage";
+import HeroVideo from "@/components/home/HeroVideo";
 import TranslationText from "@/components/translation/TranslationText";
 
-/** Full-width hero with documentary imagery and a navy overlay. */
+/** Full-width video hero with a navy overlay for readable copy. */
 export default function HeroSection() {
   return (
     <section className="relative flex min-h-[560px] items-center overflow-hidden lg:min-h-[660px]">
-      {/* Background image */}
-      <div className="absolute inset-0">
-        <AppImage
-          src="/images/hrpf/home-hero.webp"
-          alt="Participants at an HRPF public gathering holding an organisational banner."
-          fill
-          priority
-          sizes="100vw"
-          className="h-full w-full object-cover"
-        />
-      </div>
+      <HeroVideo />
 
       {/* Navy overlay — stronger on the left for readable, left-aligned text */}
       <div aria-hidden="true" className="absolute inset-0 bg-navy/70" />

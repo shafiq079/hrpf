@@ -107,7 +107,7 @@ try{
  console.log('Donation page checks passed: exact sourced bank/JazzCash details, copy controls, no payment form or unsourced wallet.');
  assert.equal((await read('/our-work/unknown-area')).status,404);
  console.log('Women rights checks passed: general content, managed field projects, one H1, archive photo, actions and removal of hardcoded case/source notes.');
- for(const text of ['Managed project 1','Managed news 1','Our Guiding Principles','Muhammad Yousaf Badar','home-hero.webp','home-about.webp','home-chairman.webp'])assert.ok(page.html.includes(text),text);
+ for(const text of ['Managed project 1','Managed news 1','Our Guiding Principles','Muhammad Yousaf Badar','/videos/home-banner/v1/poster.webp','home-about.webp','home-chairman.webp'])assert.ok(page.html.includes(text),text);
  for(const text of ['Ana Ortiz','UNHCR','ICRC','World Bank','5000+','500K','Safe Haven Initiative','since 2015'])assert.ok(!page.html.includes(text),`Unverified claim: ${text}`);
  revision=2;assert.ok((await read('/our-work/womens-rights')).html.includes('Managed project 2'),'Field projects reflect managed updates');page=await read();assert.ok(page.html.includes('Managed project 2')&&page.html.includes('Managed news 2'),'Managed homepage feeds must refresh');
  assert.ok((await read('/programmes')).html.includes('Managed project 2'));

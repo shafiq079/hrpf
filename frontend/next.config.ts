@@ -15,6 +15,9 @@ const nextConfig: NextConfig = {
       // These files are versioned. Use a new directory when replacing them.
       source: "/images/header-flags/v1/:path*",
       headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+    }, {
+      source: "/videos/home-banner/v1/:path*",
+      headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
     }];
   },
   async redirects() {
