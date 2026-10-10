@@ -59,7 +59,9 @@ export async function checkNavigation(read, port) {
   assert.ok(mission.includes('support individuals and communities facing injustice, discrimination, deprivation and vulnerability')&&mission.includes('where no vulnerable person is left without a voice'),'Mission and vision use current client copy');
   const aims=(await read('/about/aims-and-objectives')).html;
   for(const text of ['human smuggling','maternal and child healthcare','threats and risks','innocent and vulnerable prisoners'])assert.ok(aims.includes(text),'Full client area retained in objectives: '+text);
-  assert.ok((await read('/about/message-of-ceo')).html.includes('Chairman’s Message'), 'Keep supplied author title');
+  const leadership=(await read('/about/message-of-ceo')).html.replace(/<script\b[\s\S]*?<\/script>/g,'');
+  assert.ok(leadership.includes('Chairman’s Message'), 'Keep supplied author title');
+  assert.ok(leadership.includes('Reviewed leadership portrait') && leadership.includes('/api/public-assets/012345678901234567890132') && leadership.includes('/about/people/muhammad-yousaf-badar'), 'Leadership message uses its published author portrait and profile link');
   assert.ok((await read('/about/board-of-directors')).html.includes('Active reviewed director'));
   page = await read('/about/our-team');
   assert.ok(page.html.includes('Active reviewed director') && page.html.includes('Our office-bearers and team'));
@@ -117,6 +119,8 @@ export async function checkEmptyNavigation(read) {
   assert.ok(!page.html.includes('Managed news') && !page.html.includes('/blogs/real-news'));
   assert.equal((await read('/blogs/real-news')).status, 404, 'Withdrawn blog must not resolve');
   assert.equal((await read('/about/people/active-director')).status,404);
+  const leadership=(await read('/about/message-of-ceo')).html.replace(/<script\b[\s\S]*?<\/script>/g,'');
+  assert.ok(leadership.includes('It gives me great satisfaction') && !leadership.includes('Reviewed leadership portrait') && !leadership.includes('/api/public-assets/012345678901234567890132'), 'Withdrawn author portrait stays hidden while the supplied message remains readable');
   for (const path of publicPaths.slice(1)) {
     const page = await read(path);
     assert.equal(page.status, 200);

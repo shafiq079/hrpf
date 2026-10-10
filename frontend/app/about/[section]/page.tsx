@@ -12,6 +12,7 @@ import PublicBoard from "@/components/shared/PublicBoard";
 import AboutProfile, { RegistrationSummary } from "@/components/about/AboutProfile";
 import SectionHeading from "@/components/shared/SectionHeading";
 import TranslationText from "@/components/translation/TranslationText";
+import LeadershipMessage from "@/components/about/LeadershipMessage";
 
 export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ section: string }>; searchParams: Promise<{ page?: string | string[] }> };
@@ -40,7 +41,8 @@ export default async function AboutSectionPage({ params, searchParams }: Props) 
              <p className="mt-6 max-w-3xl text-sm leading-relaxed text-muted"><TranslationText>The Charity Commission certificates record validity periods of 16 May 2022–15 May 2023 and 23 January 2024–22 January 2026. Registration history and document validity dates are shown below.</TranslationText></p>
              <div className="mt-10"><PublicDocuments kind="certificates" page={page} /></div>
            </> :
-           section === "board-of-directors" ? <PublicBoard page={page} /> : section === "our-team" ? <PublicBoard kind="team" page={page} /> : (
+           section === "board-of-directors" ? <PublicBoard page={page} /> : section === "our-team" ? <PublicBoard kind="team" page={page} /> :
+           section === "message-of-ceo" ? <LeadershipMessage /> : (
             <div className="mx-auto max-w-3xl">
               {section === "mission-and-vision" ? <>
                 <h2 className="font-serif text-2xl font-semibold text-navy">Our Mission</h2>

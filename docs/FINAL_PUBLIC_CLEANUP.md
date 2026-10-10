@@ -133,19 +133,28 @@ email delivery. Live Turnstile, sender authorization, inbox placement and client
 Cloudinary policy must be verified in the configured client environment. No real
 email, bulk mailing or production deployment is performed during these checks.
 
-## Approved navigation and Urdu homepage identity
+## Approved navigation and homepage identity
 
 Primary navigation follows About Us → Our Work → Projects → Blogs → Gallery →
 Become a Member → Contact on desktop and mobile. Current pages/sections are marked
 with `aria-current` and a brand-blue highlight. Complaint and Donate retain their
 separate action buttons. The mobile drawer shares the header's `xl` breakpoint.
 
-The homepage's primary heading is **ہیومن رائٹس پروٹیکشن فاؤنڈیشن پاکستان**,
-using self-hosted Noto Nastaliq Urdu (weight 500), verified from the existing
-hrpf.org font stylesheet, Urdu language metadata, RTL reading direction,
-responsive 34–72px type and spacious Nastaliq line spacing. This font is scoped
-to the homepage. The heading replaces the English name and
-large three-line slogan; the supporting description no longer repeats the name.
-The Urdu brand heading is excluded from automatic translation so its approved
-wording remains intact. Check the homepage and mobile menu after pulling and
-restarting the frontend; no seed import or database change is required.
+The homepage's primary heading is **Human Rights Protection Foundation Pakistan**,
+in the site's editorial heading font with responsive 34–64px type. Per the owner's
+10 October update, English is the source language and the heading participates
+in the existing language switcher. There is no fixed Urdu text, translation
+exclusion, or fixed language/direction on this heading; translated RTL languages
+inherit the site's existing font and reading-direction rules. The homepage-only
+Nastaliq font import was removed. The name remains the largest banner text and
+the supporting description does not repeat it. After pulling and restarting the
+frontend, check English, a translated language, Urdu/RTL, and restoring English.
+No seed import or database change is required.
+
+The Message of CEO route shows Muhammad Yousaf Badar's published profile portrait,
+with his name, supplied Chairman designation, and full-profile link beside the
+message (stacked on mobile). It reuses the Board portrait component, crop/zoom
+and responsive asset delivery. Future published admin photo changes appear here;
+an unpublished/missing profile or unavailable API leaves the supplied message
+readable without exposing an archived portrait. No duplicate photo upload or
+new seed import is needed.
