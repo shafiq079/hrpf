@@ -958,7 +958,7 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     await User.updateOne({_id:admin.user._id},{$set:{role:'editor'}}); await admin.agent.get('/api/admin/certificates').expect(403);
   });
 
-  it('both approved portrait redactions replace public originals and thumbnails, invalidate old caches and respect withdrawal', async () => {
+  it('both approved portrait placeholders replace public originals and thumbnails, invalidate old caches and respect withdrawal', async () => {
     const hashes = [
       ['dr-sidra-mubashir', 'babe92240436ff3ad2ea10489184c9d663781b633b98126b68ce3f305118f00d'],
       ['dr-iqra-mubashar', 'c0ed9ba4ee9b154f102aa34db9c0160aab6324e99307e007de2da7bb36dac3bb'],
@@ -968,7 +968,7 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
       const asset = await Asset.create({ publicId: 'synthetic/'+slug, resourceType: 'image', deliveryType: 'authenticated', format: 'png', bytes: png.length, sha256: sourceHash, purpose: 'content', visibility: 'public', scanStatus: 'type_checked', claimStatus: 'claimed', entityType: 'BoardMember' });
       const person = await BoardMember.create({ name: 'Synthetic privacy fixture', slug, designation: 'Synthetic role', rank: 3, bio: { en: 'Synthetic biography' }, isActive: true, showOnBoard: true, showOnTeam: true, photo: { assetId: asset._id, publicId: asset.publicId, resourceType: 'image', deliveryType: 'authenticated', format: 'png', bytes: asset.bytes, sha256: sourceHash } });
       await Asset.updateOne({ _id: asset._id }, { $set: { entityId: person._id } });
-      const expected = await readFile(new URL('../assets/portraits/'+slug+'-blurred.webp', import.meta.url));
+      const expected = await readFile(new URL('../assets/portraits/portrait-placeholder.webp', import.meta.url));
       const url = '/api/public-assets/'+asset.id;
       const detail = await request(app).get('/api/board/'+slug).expect(200);
       assert.equal(detail.body.data.photo, url);
@@ -976,12 +976,12 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
       const image = await request(app).get(url).set('If-None-Match', oldETag).expect(200);
       assert.equal(image.headers['content-type'], 'image/webp'); assert.ok(Buffer.isBuffer(image.body));
       assert.deepEqual(image.body, expected); assert.notEqual(image.headers.etag, oldETag);
-      assert.match(image.headers['content-disposition']!, /blurred\.webp/);
+      assert.match(image.headers['content-disposition']!, /portrait-placeholder\.webp/);
       const etag = image.headers.etag!;
       await request(app).get(url).set('If-None-Match', etag).expect(304);
       await request(app).head(url).expect(200);
       for (const width of ['480', '960', '1440']) {
-        const thumbnail = await readFile(new URL('../assets/portraits/'+slug+'-blurred-'+width+'.webp', import.meta.url));
+        const thumbnail = await readFile(new URL('../assets/portraits/portrait-placeholder-'+width+'.webp', import.meta.url));
         assert.deepEqual((await request(app).get(url+'?w='+width).expect(200)).body, thumbnail);
         assert.ok(thumbnail.length < 250000, 'Bounded optimized public thumbnail');
       }

@@ -4,6 +4,8 @@ export const contactDetails = {
   additionalEmail: "info@hrpf.org",
   phone: "+92 322 2670590",
   phoneHref: "tel:+923222670590",
+  landline: "0546598008",
+  landlineHref: "tel:+92546598008",
   address: "Pandowal Road, Mianwal Ranjha, Tehsil and District Mandi Bahauddin, Punjab, Pakistan",
   postalCode: "50490",
   mapUrl: "https://maps.app.goo.gl/RwYYpU2y6po6vNzc6",

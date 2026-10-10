@@ -21,7 +21,7 @@ export async function checkNavigation(read, port) {
   }
   let page = await read();
   const header = page.html.match(/<header[\s\S]*?<\/header>/)[0];
-  for (const label of ['Our Work','Projects','Blogs','Gallery','Media Coverage','TV Interviews','Contact','About Us','Who We Are','Mission and Vision','Aims and Objectives','Message of CEO','Board of Directors','Our Team','Registration and Certificates','Progress Reports','Become a Member','File a Complaint']) {
+  for (const label of ['Our Work','Projects','Blogs','Gallery','Media Coverage','TV Interviews','Contact','About Us','Who We Are','Profile','Mission and Vision','Aims and Objectives','Message of CEO','Board of Directors','Our Team','Registration and Certificates','Progress Reports','Become a Member','File a Complaint']) {
     assert.ok(header.includes(label), `Menu item: ${label}`);
   }
   for (const label of ['Impact','News','Reports','Internships','Our People','Governance','Volunteer','Get Involved','Get Help','Campaigns','Events','Careers']) {
@@ -49,6 +49,23 @@ export async function checkNavigation(read, port) {
   assert.ok(/rel="canonical"[^>]*blogs\/real-news/.test(page.html));
   assert.equal((await read('/blogs/unknown')).status, 404);
   assert.equal((await read('/about/unknown')).status, 404);
+  page = await read('/about/profile');
+  const profile = page.html.match(/<main\b[\s\S]*?<\/main>/)[0];
+  assert.equal(page.status,200);
+  assert.equal((profile.match(/<h1[ >]/g)||[]).length,1);
+  assert.ok(profile.includes('Community welfare') && profile.includes('43 pages'));
+  assert.ok(profile.includes('View profile (PDF)') && profile.includes('download="HRPF-Organizational-Profile.pdf"'));
+  assert.ok(!profile.includes('<iframe'), 'Profile PDF only loads when chosen');
+  const pdf = await fetch(`http://127.0.0.1:${port}/documents/profile/v1/hrpf-organizational-profile.pdf`);
+  assert.equal(pdf.status,200); assert.match(pdf.headers.get('content-type'),/application\/pdf/);
+  assert.match(pdf.headers.get('cache-control'),/max-age=31536000.*immutable/);
+  const bytes = Buffer.from(await pdf.arrayBuffer()); assert.equal(bytes.subarray(0,5).toString(),'%PDF-'); assert.ok(bytes.length>1000000);
+  for (const slug of ['dr-sidra-mubashir','dr-iqra-mubashar']) {
+    const portrait=(await read('/about/people/'+slug)).html.match(/<main\b[\s\S]*?<\/main>/)[0].replace(/%2F/gi,'/');
+    assert.ok(portrait.includes('/images/people/v1/portrait-placeholder.webp'));
+    assert.ok(!portrait.includes('/api/public-assets/01234567890123456789013'), 'Original portrait never rendered');
+    assert.ok(portrait.includes('scale(1)'), 'Placeholder ignores old portrait zoom');
+  }
   page = await read('/about/who-we-are');
   const who = page.html.replace(/<script\b[\s\S]*?<\/script>/g, '');
   assert.equal((who.match(/<h1[ >]/g)||[]).length,1,'Who We Are has one main heading');
@@ -142,7 +159,7 @@ export async function checkNavigation(read, port) {
   }
   assert.ok((await read('/newsletter')).html.includes('Newsletter Subscription'));
   page = await read('/search');
-  assert.ok(page.html.includes('/blogs/real-news') && page.html.includes('Progress Reports') && !page.html.includes('Building Safer Digital Spaces'));
+  assert.ok(page.html.includes('/blogs/real-news') && page.html.includes('Progress Reports') && page.html.includes('/about/profile') && !page.html.includes('Building Safer Digital Spaces'));
   for (const path of ['/campaigns','/events','/careers','/get-help','/get-involved']) assert.ok(!page.html.includes('href=\"'+path), 'Search removes '+path);
   console.log('Navigation checks passed: menu destinations, canonical Blogs, 308 redirects, pagination, public media/documents/board and membership.');
 }
