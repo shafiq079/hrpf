@@ -2,6 +2,7 @@ import { objectivesDescription } from "./aims-and-objectives";
 
 export const aboutSections = [
   { slug: "who-we-are", label: "Who We Are", description: "Our identity, approach and commitment to human rights in Pakistan." },
+  { slug: "profile", label: "Profile", description: "An overview of the Foundation and its complete organizational profile." },
   { slug: "mission-and-vision", label: "Mission and Vision", description: "The purpose that guides our work and the society we strive to build." },
   { slug: "aims-and-objectives", label: "Aims and Objectives", description: objectivesDescription },
   { slug: "message-of-ceo", label: "Message of CEO", description: "Read the supplied leadership message from HRPF’s Chairman." },

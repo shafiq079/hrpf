@@ -73,6 +73,7 @@ export function projectHeroImage(focusArea: string): HeroImageKey {
 
 export const aboutHeroImages = {
   "who-we-are": "about",
+  "profile": "about",
   "mission-and-vision": "vision",
   "aims-and-objectives": "writing",
   "message-of-ceo": "leadership",

@@ -6,6 +6,7 @@ export async function checkHeroes(read, port) {
   const routes = [
     ["/about", "home-about"],
     ["/about/who-we-are", "home-about"],
+    ["/about/profile", "home-about"],
     ["/about/mission-and-vision", "vision"],
     ["/about/aims-and-objectives", "writing"],
     ["/about/message-of-ceo", "home-chairman"],

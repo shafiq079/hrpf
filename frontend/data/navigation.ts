@@ -15,6 +15,7 @@ export const mainNavigation: NavItem[] = [
     href: "/about",
     children: [
       { label: "Who We Are", href: "/about/who-we-are" },
+      { label: "Profile", href: "/about/profile" },
       { label: "Mission and Vision", href: "/about/mission-and-vision" },
       { label: "Aims and Objectives", href: "/about/aims-and-objectives" },
       { label: "Message of CEO", href: "/about/message-of-ceo" },

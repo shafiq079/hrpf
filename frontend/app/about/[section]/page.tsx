@@ -17,6 +17,7 @@ import TranslationText from "@/components/translation/TranslationText";
 import LeadershipMessage from "@/components/about/LeadershipMessage";
 import AimsObjectives from "@/components/about/AimsObjectives";
 import MissionVision from "@/components/about/MissionVision";
+import OrganizationProfile from "@/components/about/OrganizationProfile";
 
 export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ section: string }>; searchParams: Promise<{ page?: string | string[] }> };
@@ -39,6 +40,7 @@ export default async function AboutSectionPage({ params, searchParams }: Props) 
       <section className="bg-off-white py-16 sm:py-20 lg:py-24">
         <Container>
           {section === "progress-reports" ? <PublicDocuments kind="reports" page={page} /> :
+           section === "profile" ? <OrganizationProfile /> :
            section === "registration-and-certificates" ? <>
              <SectionHeading title="Legal Status and Registration" description="The Foundation’s institutional records reflect its commitment to lawful and responsible organizational practices." />
              <div className="mt-8"><RegistrationSummary /></div>

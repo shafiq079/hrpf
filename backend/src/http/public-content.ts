@@ -199,7 +199,7 @@ export function publicRouter(provider: UploadProvider, redis?: RedisServices, tt
     // Validation comes AFTER current asset and entity release checks. Even a matching
     // ETag cannot authorize withdrawn media. Private caches must revalidate every use.
     if (!documentKind && asset.format !== 'pdf') {
-      const etag = `W/"${portrait?.sha256 ?? asset.sha256}-${variant ?? 'original'}-${portrait ? 'face-redacted-v1' : 'webp82-v1'}"`;
+      const etag = `W/"${portrait?.sha256 ?? asset.sha256}-${variant ?? 'original'}-${portrait ? 'portrait-placeholder-v1' : 'webp82-v1'}"`;
       res.setHeader('Cache-Control', 'private, no-cache, must-revalidate');
       res.setHeader('ETag', etag);
       const candidates = req.get('If-None-Match')?.split(',').map(value => value.trim().replace(/^W\//, '')) ?? [];
@@ -207,7 +207,7 @@ export function publicRouter(provider: UploadProvider, redis?: RedisServices, tt
     }
     if (portrait) {
       res.setHeader('Content-Type', 'image/webp');
-      res.setHeader('Content-Disposition', `inline; filename="hrpf-${value}-blurred.webp"`);
+      res.setHeader('Content-Disposition', 'inline; filename="hrpf-portrait-placeholder.webp"');
       res.setHeader('Content-Length', String(portrait.bytes.length));
       if (req.method === 'HEAD') { res.end(); return; }
       res.end(portrait.bytes); return;

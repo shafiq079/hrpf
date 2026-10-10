@@ -30,6 +30,7 @@ export default function ContactPage() {
               <dl className="mt-5 space-y-5">
                 <div><dt className="flex items-center gap-2 text-sm text-muted"><Mail className="h-4 w-4" aria-hidden="true" />Email</dt><dd className="mt-1 flex flex-col items-start">{[details.email,details.additionalEmail].map(email => <Link key={email} href={`mailto:${email}`} className={contactLink}><span dir="ltr" translate="no" className="notranslate">{email}</span></Link>)}</dd></div>
                 <div><dt className="flex items-center gap-2 text-sm text-muted"><Phone className="h-4 w-4" aria-hidden="true" />Phone</dt><dd className="mt-1"><Link href={details.phoneHref} className={contactLink}><span dir="ltr" translate="no" className="notranslate">{details.phone}</span></Link></dd></div>
+                <div><dt className="flex items-center gap-2 text-sm text-muted"><Phone className="h-4 w-4" aria-hidden="true" />Office telephone</dt><dd className="mt-1"><Link href={details.landlineHref} className={contactLink}><span dir="ltr" translate="no" className="notranslate">{details.landline}</span></Link></dd></div>
               </dl>
             </div>
             <article className="rounded-lg border border-border bg-white p-6 sm:p-8" aria-labelledby="office-location">
