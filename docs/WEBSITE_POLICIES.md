@@ -35,7 +35,7 @@ not a formally adopted operational policy.
   confirmations remain simulated; the policies disclose those remaining limits.
 - Translation implementation and `TEXT_TRANSLATION.md`: lazy GTranslate public-text
   translation, saved language, English restoration, RTL and private exclusions.
-- Membership route: the supplied Google Forms destination is an external service.
+- Membership route: native volunteer registration, private document review, payment verification and emailed receipts/status changes (10 October update).
 - Complaint records have no automatic retention expiry. Temporary staged uploads
   expire for cleanup. Auth session cookies differ from complaint retention.
 - Supplied organisation profile and Board of Directors document support both

@@ -30,7 +30,7 @@ export async function readUpload(req: Request): Promise<Upload> {
     parser.on('file', (field, stream, info) => {
       if (field !== 'file') failure = new ApiError(400, 'INVALID_UPLOAD', 'The file field must be named file.');
       const chunks: Buffer[] = [];
-      stream.on('limit', () => { failure = new ApiError(413, 'FILE_TOO_LARGE', 'PDFs are limited to 10 MB and images to 5 MB.'); });
+      stream.on('limit', () => { failure = new ApiError(413, 'FILE_TOO_LARGE', 'The file is larger than the allowed limit.'); });
       stream.on('data', (chunk: Buffer) => { chunks.push(chunk); });
       stream.on('end', () => { upload = { bytes: Buffer.concat(chunks), filename: info.filename, mime: info.mimeType }; });
       stream.on('error', () => { failure = new ApiError(400, 'INVALID_UPLOAD', 'The upload could not be read.'); });
@@ -42,13 +42,17 @@ export async function readUpload(req: Request): Promise<Upload> {
     req.pipe(parser);
   });
 }
-export async function inspectUpload(upload: Upload) {
+export async function inspectUpload(upload: Upload, registration = false) {
   const detected = await fileTypeFromBuffer(upload.bytes).catch(() => undefined);
   const extension = extname(upload.filename).slice(1).toLowerCase();
   const allowed: Record<string, string[]> = { 'image/jpeg': ['jpg', 'jpeg'], 'image/png': ['png'], 'image/webp': ['webp'], 'application/pdf': ['pdf'] };
-  if (!detected || detected.mime !== upload.mime || !allowed[detected.mime]?.includes(extension) || upload.bytes.length === 0) throw new ApiError(400, 'UNSUPPORTED_FILE', 'File contents, type and extension must match a JPG, PNG, WebP or PDF.');
-  if (upload.bytes.length > (detected.mime === 'application/pdf' ? 10 : 5) * MB) throw new ApiError(413, 'FILE_TOO_LARGE', 'PDFs are limited to 10 MB and images to 5 MB.');
-  return detected;
+  if (registration) {
+    Object.assign(allowed, { 'image/gif': ['gif'], 'image/bmp': ['bmp'], 'image/tiff': ['tif', 'tiff'], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['docx'], 'application/vnd.oasis.opendocument.text': ['odt'], 'application/x-cfb': ['doc'] });
+  }
+  const legacyWord = registration && detected?.mime === 'application/x-cfb' && extension === 'doc' && upload.mime === 'application/msword';
+  if (!detected || (!legacyWord && detected.mime !== upload.mime) || !allowed[detected.mime]?.includes(extension) || upload.bytes.length === 0) throw new ApiError(400, 'UNSUPPORTED_FILE', registration ? 'File contents, type and extension must match a supported image, PDF, Word or ODT document.' : 'File contents, type and extension must match a JPG, PNG, WebP or PDF.');
+  if (upload.bytes.length > (registration || detected.mime === 'application/pdf' ? 10 : 5) * MB) throw new ApiError(413, 'FILE_TOO_LARGE', 'The file is larger than the allowed limit.');
+  return { ...detected, ext: legacyWord ? 'doc' : detected.ext };
 }
 export function cloudinaryProvider(env: Environment): UploadProvider {
   const check = () => {
@@ -87,9 +91,9 @@ export function cloudinaryProvider(env: Environment): UploadProvider {
 }
 export function createUploads(env: Environment, forms: FormsService, provider: UploadProvider) {
   return {
-    async form(req: Request, value: string, expected: 'complaint' | 'membership') {
+    async form(req: Request, value: string, expected: 'complaint' | 'membership' | 'membership_registration') {
       const ticket = await forms.check(value, expected);
-      const upload = await readUpload(req), type = await inspectUpload(upload);
+      const upload = await readUpload(req), type = await inspectUpload(upload, expected === 'membership_registration');
       const uploadKey = validate(z.string().uuid().optional(), req.get('X-Upload-Key'));
       const hash = digest(upload.bytes);
       const reused = async () => {
@@ -99,12 +103,12 @@ export function createUploads(env: Environment, forms: FormsService, provider: U
         return row ? { assetId: row.id, format: row.format, bytes: row.bytes, scanStatus: row.scanStatus } : null;
       };
       const cached = await reused(); if (cached) return cached;
-      const maxFiles = expected === 'complaint' ? 5 : 1, maxBytes = expected === 'complaint' ? COMPLAINT_MAX_BYTES : 10 * MB;
+      const maxFiles = expected === 'membership_registration' ? 12 : expected === 'complaint' ? 5 : 1, maxBytes = expected === 'membership_registration' ? 120 * MB : expected === 'complaint' ? COMPLAINT_MAX_BYTES : 10 * MB;
       // Reserve quota atomically before invoking external services; failed uploads release it.
       const reserved = await FormTicket.findOneAndUpdate({ _id: ticket._id, consumedAt: null, expiresAt: { $gt: new Date() }, uploadCount: { $lt: maxFiles }, uploadBytes: { $lte: maxBytes - upload.bytes.length } }, { $inc: { uploadCount: 1, uploadBytes: upload.bytes.length } });
       if (!reserved) throw new ApiError(400, 'UPLOAD_LIMIT', 'The form upload limit has been reached.');
       try {
-        const stored = await provider.store(upload, `${env.CLOUDINARY_NAMESPACE}/${expected === 'complaint' ? 'complaints/attachments' : 'membership/payment-proofs'}`, type.ext, expected === 'complaint');
+        const stored = await provider.store(upload, `${env.CLOUDINARY_NAMESPACE}/${expected === 'membership_registration' ? 'membership/applications' : expected === 'complaint' ? 'complaints/attachments' : 'membership/payment-proofs'}`, type.ext, expected !== 'membership');
         try {
           const asset = await Asset.create({ ...stored, originalName: safeFilename(upload.filename), sha256: hash, ...(uploadKey ? { uploadKey } : {}), ticketHash: digest(value), purpose: expected, visibility: 'restricted', scanStatus: 'type_checked', stagingExpiresAt: ticket.expiresAt });
           return { assetId: asset.id, format: asset.format, bytes: asset.bytes, scanStatus: asset.scanStatus };

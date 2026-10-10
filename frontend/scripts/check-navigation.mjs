@@ -126,7 +126,7 @@ export async function checkNavigation(read, port) {
   assert.ok(!page.html.includes('<iframe'), 'Provider does not load until playback is requested');
   assert.ok((await read('/admin/gallery')).html.includes('Gallery Administration'), 'Gallery admin route metadata');
   page = await read('/become-a-member');
-  assert.ok(page.html.includes('1FAIpQLSfaG3tm0xiiFQrMX9yGSxKW5rSSa4ILvIZrmaLiNSDa86IK5w'));
+  assert.ok(page.html.includes('Apply for Membership')); assert.ok(page.html.includes('Review application')); assert.ok(!page.html.includes('docs.google.com/forms'));
   assert.ok(!(await read('/get-involved')).html.includes('Volunteer Application'), 'Membership replaces volunteer form');
   for (const path of ['/campaigns', '/campaigns/old-campaign', '/events', '/events/old-event', '/careers']) assert.equal((await read(path)).status, 404, 'Permanently retired: '+path);
   const work = (await read('/our-work')).html;

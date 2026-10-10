@@ -1,5 +1,18 @@
 # Current handoff: Final public cleanup and forms on development
 
+## 2026-10-10 — Native membership application and admin review
+
+Replaced the Google Form with the supplied volunteer questions/required fields,
+private CNIC/photo/payment/police uploads, review-before-submit, authoritative
+fee snapshots, reference and applicant/admin email notifications. The owner
+approved Donate's Bank transfer/JazzCash choices. `/admin/membership` shows all
+answers/files and provides payment verification, versioned status decisions,
+private notes, history and applicant status emails. No invented expiry or live
+payment integration. Existing complaint and legacy membership APIs remain
+compatible. Earlier “retain Google Form” instructions are superseded. See
+`MEMBERSHIP_REGISTRATION.md` for commands, configuration and client checks.
+
+
 ## 2026-10-10 — Separate operational team
 
 Our Team now reads published `TeamMember` records, independently of the Board

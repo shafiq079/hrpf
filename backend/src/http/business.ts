@@ -17,6 +17,7 @@ import { uploadQuery } from './contracts.js';
 import { createForms, turnstileVerifier, type BotVerifier } from '../services/forms.js';
 import { cloudinaryProvider, createUploads, type UploadProvider } from '../services/uploads.js';
 import { createSubmissions } from '../services/submissions.js';
+import { membershipRegistrationRouter } from './membership-registration.js';
 import { createNewsletter } from '../services/newsletter.js';
 export type BusinessAdapters = { ready?: () => boolean; redis: RedisServices; bot?: BotVerifier; provider?: UploadProvider };
 export function createBusiness(env: Environment, adapters: BusinessAdapters) {
@@ -45,6 +46,7 @@ export function createBusiness(env: Environment, adapters: BusinessAdapters) {
     const ticket = validate(z.string().min(43).max(100), req.get('X-Form-Ticket'));
     res.status(201).json({ data: await uploads.form(req, ticket, query.purpose) });
   });
+  router.use(membershipRegistrationRouter(auth, env, forms, redis));
   const submitLimit = redis.limit('submission', 10, 15 * 60000);
   router.post('/complaints', submitLimit, async (req, res) => res.status(201).json({ data: await submissions.complaint(req.body) }));
   router.post('/membership-applications', submitLimit, async (req, res) => res.status(201).json({ data: await submissions.membership(req.body) }));
