@@ -9,6 +9,7 @@ import { mainNavigation } from "@/data/navigation";
 import Container from "@/components/shared/Container";
 import PrimaryButton from "@/components/shared/PrimaryButton";
 import BrandLogo from "@/components/shared/BrandLogo";
+import HeaderFlag from "./HeaderFlag";
 import MobileNavigation from "./MobileNavigation";
 
 /** Slim sticky site header with center navigation, dropdowns and primary actions. */
@@ -56,20 +57,21 @@ export default function Header() {
         scrolled ? "shadow-[0_2px_10px_-6px_rgba(11,42,58,0.25)]" : ""
       }`}
     >
-      <Container>
-        <div className="flex h-[72px] items-center justify-between gap-4">
+      <Container className="xl:max-w-[84rem]">
+        <div className="hrpf-header-row" dir="ltr">
+          <HeaderFlag flag="hrpf" />
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center rounded-sm"
+            className="hrpf-header-logo flex items-center rounded-sm"
             aria-label="Human Rights Protection Foundation home"
           >
-            <BrandLogo size={56} />
+            <BrandLogo size={56} className="!h-12 !w-12 xl:!h-14 xl:!w-14" />
           </Link>
 
           {/* Center navigation (desktop) */}
-          <nav ref={navRef} aria-label="Primary" className="hidden xl:block">
-            <ul className="flex items-center gap-4">
+          <nav ref={navRef} aria-label="Primary" dir="auto" className="hrpf-header-nav hidden xl:block">
+            <ul className="flex items-center justify-center gap-3 whitespace-nowrap">
               {mainNavigation.map((item, index) =>
                 item.children ? (
                   <li
@@ -135,37 +137,47 @@ export default function Header() {
             </ul>
           </nav>
 
-          {/* Actions (desktop) */}
-          <div className="hidden items-center gap-2.5 xl:flex">
-            <PrimaryButton
-              href="/file-a-complaint"
-              variant="red"
-              icon={AlertTriangle}
-              iconPosition="left"
-            >
-              <TranslationText>File a Complaint
-            </TranslationText></PrimaryButton>
-            <PrimaryButton href="/donate" variant="gold">
-              <TranslationText>Donate
-            </TranslationText></PrimaryButton>
-          </div>
+          <div className="hrpf-header-actions" dir="auto">
+            {/* Actions (desktop) */}
+            <div className="hidden items-center gap-2.5 whitespace-nowrap xl:flex">
+              <PrimaryButton
+                href="/file-a-complaint"
+                variant="red"
+                icon={AlertTriangle}
+                iconPosition="left"
+              >
+                <TranslationText>File a Complaint</TranslationText>
+              </PrimaryButton>
+              <PrimaryButton href="/donate" variant="gold">
+                <TranslationText>Donate</TranslationText>
+              </PrimaryButton>
+            </div>
 
-          {/* Actions (mobile) */}
-          <div className="flex items-center gap-2 xl:hidden">
-            <PrimaryButton href="/donate" variant="gold" size="md">
-              <TranslationText>Donate
-            </TranslationText></PrimaryButton>
-            <button
-              type="button"
-              onClick={() => setMenuOpen(true)}
-              aria-expanded={menuOpen}
-              aria-controls="mobile-navigation"
-              aria-label="Open menu"
-              className="flex h-10 w-10 items-center justify-center rounded-md border border-border text-navy transition-colors hover:bg-navy/5"
-            >
-              <Menu className="h-5 w-5" aria-hidden="true" />
-            </button>
+            {/* Donate remains in the drawer on narrow phones. */}
+            <div className="flex items-center gap-2 xl:hidden">
+              <div className="hidden sm:block">
+                <PrimaryButton
+                  href="/donate"
+                  variant="gold"
+                  size="md"
+                  className="whitespace-nowrap"
+                >
+                  <TranslationText>Donate</TranslationText>
+                </PrimaryButton>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMenuOpen(true)}
+                aria-expanded={menuOpen}
+                aria-controls="mobile-navigation"
+                aria-label="Open menu"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border text-navy transition-colors hover:bg-navy/5"
+              >
+                <Menu className="h-5 w-5" aria-hidden="true" />
+              </button>
+            </div>
           </div>
+          <HeaderFlag flag="pakistan" />
         </div>
       </Container>
 
