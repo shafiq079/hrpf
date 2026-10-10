@@ -10,7 +10,7 @@ import request from 'supertest';
 import express from 'express';
 import { createApp } from '../src/app.js';
 import { parseEnv } from '../src/config/env.js';
-import { Asset, AuditLog, Project, BlogPost, BoardMember, GalleryItem, VideoInterview, Report, Certificate, AuthSession, Complaint, ContactMessage, NewsletterSubscription, Counter, EmailOutbox, FormTicket, MembershipApplication, Setting, User, ensureIndexes, roles, type Role } from '../src/domain/models.js';
+import { Asset, AuditLog, Project, BlogPost, BoardMember, TeamMember, GalleryItem, VideoInterview, Report, Certificate, AuthSession, Complaint, ContactMessage, NewsletterSubscription, Counter, EmailOutbox, FormTicket, MembershipApplication, Setting, User, ensureIndexes, roles, type Role } from '../src/domain/models.js';
 import { createRedisServices } from '../src/infrastructure/redis-services.js';
 import { digest, hashPassword } from '../src/security/crypto.js';
 import { createOutbox, mailSender, startEmbeddedOutbox, startOutboxWorker, type Mail } from '../src/services/outbox.js';
@@ -996,10 +996,10 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     assert.deepEqual((await request(app).get('/api/public-assets/'+future!.id).expect(200)).body, png);
     assert.equal(providerReads, 1);
   });
-  it('manages future board/team profiles with current permissions, versions, full text, placement, private photos and revocation', async () => {
+  it('manages future board profiles independently from the operational team with current permissions, versions, full text, placement, private photos and revocation', async () => {
     const admin = await login('admin'), editor = await login('editor');
     await editor.agent.get('/api/admin/board').expect(403);
-    const body = { name: 'Future approved person', slug: 'future-approved-person', designation: 'Future role', rank: 12, bio: { en: 'Reviewed introduction' }, sections: [{ heading: { en: 'Professional background' }, body: { en: 'A complete future biography.' } }], showOnBoard: false, showOnTeam: true, photoAlt: 'Future approved person', photoZoom: 1.2 };
+    const body = { name: 'Future approved person', slug: 'future-approved-person', designation: 'Future role', rank: 12, bio: { en: 'Reviewed introduction' }, sections: [{ heading: { en: 'Professional background' }, body: { en: 'A complete future biography.' } }], showOnBoard: true, showOnTeam: true, photoAlt: 'Future approved person', photoZoom: 1.2 };
     await admin.agent.post('/api/admin/board').send(body).expect(403);
     const photo = await admin.agent.post('/api/admin/assets?purpose=content').set('Origin','http://localhost:3000').set('X-CSRF-Token',admin.csrf).attach('file',png,'profile.png').expect(201);
     const assetId = photo.body.data.assetId;
@@ -1008,8 +1008,8 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     const release = (version: number, action = 'publish') => admin.agent.post('/api/admin/publication/board/' + id).set('Origin','http://localhost:3000').set('X-CSRF-Token',admin.csrf).send({ version, action, releaseReviewed:true });
     await request(app).get('/api/board/' + body.slug).expect(404); await request(app).get('/api/public-assets/' + assetId).expect(404);
     await release(0).expect(200);
-    assert.equal((await request(app).get('/api/board').expect(200)).body.meta.total, 0);
-    assert.equal((await request(app).get('/api/team').expect(200)).body.meta.total, 1);
+    assert.equal((await request(app).get('/api/board').expect(200)).body.meta.total, 1);
+    assert.equal((await request(app).get('/api/team').expect(200)).body.meta.total, 0);
     const detail = await request(app).get('/api/board/' + body.slug).expect(200);
     assert.equal(detail.body.data.sections[0].body, 'A complete future biography.'); assert.ok(!JSON.stringify(detail.body).includes('publicId'));
     await request(app).get(detail.body.data.photo).expect(200);
@@ -1040,6 +1040,74 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     const noPlacement = await create({...body,slug:'no-placement',showOnBoard:false,showOnTeam:false}).expect(201); await publish(noPlacement.body.data.id,0).expect(400);
     await User.updateOne({_id:admin.user.id},{$set:{role:'editor'}}); await publish(saved.body.data.id,0).expect(403);
     assert.equal((await BoardMember.findById(saved.body.data.id))!.isActive,false);
+    assert.equal((await Asset.findById(own))!.visibility,'restricted');
+  });
+
+  it('keeps operational staff separate from legacy board placements and revokes team photos on draft, withdrawal and deletion', async () => {
+    const admin = await login('admin'), editor = await login('editor');
+    await BoardMember.create({ name:'Legacy director', slug:'legacy-director', designation:'Director', rank:1, bio:{en:'Board biography'}, showOnBoard:true, showOnTeam:true, isActive:true });
+    assert.equal((await request(app).get('/api/team').expect(200)).body.meta.total,0);
+    await request(app).get('/api/admin/team').expect(401);
+    await editor.agent.get('/api/admin/team').expect(403);
+    const photo=(await admin.agent.post('/api/admin/assets?purpose=content').set('Origin','http://localhost:3000').set('X-CSRF-Token',admin.csrf).attach('file',png,'staff.png').expect(201)).body.data.assetId;
+    const body={name:'Synthetic operational member',designation:'Operations officer',responsibilities:'Coordinate daily work.\nMaintain team schedules.',reportingTo:'Operations lead',assetId:photo,rank:2};
+    const create=() => admin.agent.post('/api/admin/team').set('Origin','http://localhost:3000').set('X-CSRF-Token',admin.csrf).send(body);
+    await admin.agent.post('/api/admin/team').send(body).expect(403);
+    await editor.agent.post('/api/admin/team').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(body).expect(403);
+    const saved=(await create().expect(201)).body.data;
+    assert.equal((await Asset.findById(photo))!.entityType,'TeamMember');
+    const edit=(version:number) => admin.agent.patch('/api/admin/team/'+saved.id).set('Origin','http://localhost:3000').set('X-CSRF-Token',admin.csrf).send({...body,version});
+    const release=(version:number,action='publish') => admin.agent.post('/api/admin/publication/team/'+saved.id).set('Origin','http://localhost:3000').set('X-CSRF-Token',admin.csrf).send({version,action,releaseReviewed:true});
+    await request(app).get('/api/public-assets/'+photo).expect(404);
+    assert.equal((await request(app).get('/api/team').expect(200)).body.meta.total,0);
+    await release(0).expect(200);
+    const publicRow=(await request(app).get('/api/team').expect(200)).body.data[0];
+    assert.deepEqual(Object.keys(publicRow).sort(),['designation','id','name','photo','reportingTo','responsibilities']);
+    assert.equal(publicRow.responsibilities,body.responsibilities); assert.equal(publicRow.reportingTo,body.reportingTo);
+    const portrait=await request(app).get(publicRow.photo).expect(200);
+    const portraitTag=portrait.headers.etag; assert.ok(portraitTag);
+    await request(app).get(publicRow.photo+'?w=480').expect(200);
+    assert.equal((await request(app).get('/api/board').expect(200)).body.meta.total,1);
+    const privateRow=(await admin.agent.get('/api/admin/team/'+saved.id).expect(200)).body.data;
+    assert.equal(privateRow.assetId,photo); assert.equal(privateRow.status,'published'); assert.ok(!JSON.stringify(privateRow).includes('publicId'));
+    await edit(0).expect(409); await edit(1).expect(200);
+    assert.equal((await request(app).get('/api/team').expect(200)).body.meta.total,0);
+    await request(app).get(publicRow.photo).set('If-None-Match',portraitTag).expect(404);
+    await release(2).expect(200); await release(3,'withdraw').expect(200);
+    await request(app).get(publicRow.photo).expect(404);
+    await release(4).expect(200);
+    await admin.agent.delete('/api/admin/team/'+saved.id).set('Origin','http://localhost:3000').set('X-CSRF-Token',admin.csrf).send({version:4}).expect(409);
+    await admin.agent.delete('/api/admin/team/'+saved.id).set('Origin','http://localhost:3000').set('X-CSRF-Token',admin.csrf).send({version:5}).expect(200);
+    await request(app).get(publicRow.photo).expect(404);
+    assert.equal(await TeamMember.countDocuments(),0);
+    assert.equal((await request(app).get('/api/board').expect(200)).body.meta.total,1);
+    await request(app).get('/api/team?page=1001').expect(400);
+  });
+  it('requires all five operational member details and rejects foreign, expired, PDF and already bound photographs', async () => {
+    const admin=await login('admin'), other=await login('admin');
+    const upload=(auth:typeof admin,bytes=png,filename='staff.png') => auth.agent.post('/api/admin/assets?purpose=content').set('Origin','http://localhost:3000').set('X-CSRF-Token',auth.csrf).attach('file',bytes,filename);
+    const own=(await upload(admin).expect(201)).body.data.assetId;
+    const foreign=(await upload(other).expect(201)).body.data.assetId;
+    const document=(await upload(admin,pdf,'staff.pdf').expect(201)).body.data.assetId;
+    const expired=(await upload(admin).expect(201)).body.data.assetId;
+    await Asset.updateOne({_id:expired},{$set:{stagingExpiresAt:new Date(0)}});
+    const body={name:'Synthetic staff',designation:'Officer',responsibilities:'Organize daily operations.',reportingTo:'Supervisor',assetId:own};
+    const create=(fields:object) => admin.agent.post('/api/admin/team').set('Origin','http://localhost:3000').set('X-CSRF-Token',admin.csrf).send(fields);
+    for(const field of ['name','designation','responsibilities','reportingTo','assetId']) {
+      const incomplete:Record<string,unknown>={...body}; delete incomplete[field]; await create(incomplete).expect(400);
+    }
+    for(const assetId of [foreign,document,expired,null])await create({...body,assetId}).expect(400);
+    await create({...body,responsibilities:'  '}).expect(400);
+    assert.equal(await TeamMember.countDocuments(),0);
+    const saved=(await create(body).expect(201)).body.data;
+    await create({...body,name:'Different member'}).expect(400);
+    await admin.agent.post('/api/admin/board').set('Origin','http://localhost:3000').set('X-CSRF-Token',admin.csrf).send({name:'Director',slug:'different-director',designation:'Director',rank:1,bio:{en:'Biography'},photoAlt:'Portrait',assetId:own}).expect(400);
+    const boardPhoto=(await upload(admin).expect(201)).body.data.assetId;
+    await admin.agent.post('/api/admin/board').set('Origin','http://localhost:3000').set('X-CSRF-Token',admin.csrf).send({name:'Director',slug:'director',designation:'Director',rank:1,bio:{en:'Biography'},photoAlt:'Portrait',assetId:boardPhoto}).expect(201);
+    await create({...body,assetId:boardPhoto}).expect(400);
+    await User.updateOne({_id:admin.user.id},{$set:{role:'editor'}});
+    await admin.agent.post('/api/admin/publication/team/'+saved.id).set('Origin','http://localhost:3000').set('X-CSRF-Token',admin.csrf).send({version:0,action:'publish',releaseReviewed:true}).expect(403);
+    assert.equal((await TeamMember.findById(saved.id))!.isActive,false);
     assert.equal((await Asset.findById(own))!.visibility,'restricted');
   });
 

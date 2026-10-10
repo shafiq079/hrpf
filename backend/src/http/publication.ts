@@ -2,20 +2,22 @@ import { bumpPublicRevision } from '../services/public-cache.js';
 import { Router } from 'express';
 import mongoose from 'mongoose';
 import { z } from 'zod';
-import { Asset, AuditLog, BlogPost, BoardMember, Certificate, Counter, GalleryItem, VideoInterview, Report, Setting, User, Project } from '../domain/models.js';
+import { Asset, AuditLog, BlogPost, BoardMember, TeamMember, Certificate, Counter, GalleryItem, VideoInterview, Report, Setting, User, Project } from '../domain/models.js';
 import { type Principal, createAuth } from '../security/auth.js';
 import { can, type Permission } from '../security/permissions.js';
 import { ApiError, validate } from './errors.js';
 import { publicSettingSchemas } from './public-content.js';
 import { bindDocumentFile } from '../services/document-media.js';
 import { bindProjectMedia } from '../services/project-media.js';
-import { bindBoardPhoto } from '../services/board-media.js';
+import { bindBoardPhoto, bindProfilePhoto } from '../services/board-media.js';
 import { reviewBoard } from './board-content.js';
+import { reviewTeam } from './team-content.js';
 export const publicationInput = z.object({ version: z.number().int().nonnegative(), action: z.enum(['publish', 'withdraw']), releaseReviewed: z.literal(true), assetId: z.string().regex(/^[a-fA-F0-9]{24}$/).optional() }).strict();
 const kinds = {
   blog: { model: BlogPost, permission: 'content', entity: 'BlogPost', field: 'cover' },
   project: { model: Project, permission: 'content', entity: 'Project', field: 'cover' },
   board: { model: BoardMember, permission: 'board', entity: 'BoardMember', field: 'photo' },
+  team: { model: TeamMember, permission: 'team', entity: 'TeamMember', field: 'photo' },
   gallery: { model: GalleryItem, permission: 'content', entity: 'GalleryItem', field: 'asset' },
   interview: { model: VideoInterview, permission: 'content', entity: 'VideoInterview', field: 'thumbnail' },
   report: { model: Report, permission: 'content', entity: 'Report', field: 'publicPdf' },
@@ -26,7 +28,7 @@ export function publicationRouter(auth: ReturnType<typeof createAuth>) {
   const router = Router();
   router.use(auth.authenticate);
   router.get('/:kind', async (req, res) => {
-    const kind = validate(z.enum(['blog', 'project', 'board', 'gallery', 'interview', 'report', 'certificate', 'setting']), req.params.kind);
+    const kind = validate(z.enum(['blog', 'project', 'board', 'team', 'gallery', 'interview', 'report', 'certificate', 'setting']), req.params.kind);
     const query = validate(z.object({ page: z.coerce.number().int().min(1).max(1000).default(1) }).strict(), req.query), spec = kinds[kind];
     if (!can((res.locals.principal as Principal).role, spec.permission as Permission)) throw new ApiError(403, 'FORBIDDEN', 'You do not have permission for this action.');
     const model = spec.model as mongoose.Model<any>;
@@ -34,7 +36,7 @@ export function publicationRouter(auth: ReturnType<typeof createAuth>) {
     res.json({ data: rows.map(row => { const { _id, __v, ...fields } = row; if (kind === 'setting') { const parsed = publicSettingSchemas[row.key as keyof typeof publicSettingSchemas]?.safeParse(row.value); fields.value = parsed?.success ? parsed.data : null; } return { id: String(_id), version: __v, ...fields }; }), meta: { page: query.page, limit: 20 } });
   });
   router.post('/:kind/:id', auth.csrf, async (req, res) => {
-    const kind = validate(z.enum(['blog', 'project', 'board', 'gallery', 'interview', 'report', 'certificate', 'setting']), req.params.kind);
+    const kind = validate(z.enum(['blog', 'project', 'board', 'team', 'gallery', 'interview', 'report', 'certificate', 'setting']), req.params.kind);
     const id = validate(z.string().regex(/^[a-fA-F0-9]{24}$/), req.params.id);
     const input = validate(publicationInput, req.body), spec = kinds[kind];
     const principal = res.locals.principal as Principal;
@@ -56,6 +58,7 @@ export function publicationRouter(auth: ReturnType<typeof createAuth>) {
             if (!schema || !schema.safeParse(row.value).success) throw new ApiError(400, 'REVIEW_REQUIRED', 'Only valid approved public settings may be published.');
             row.visibility = 'public'; row.revision += 1;
           } else if (kind === 'board') { reviewBoard(row); row.isActive = true; }
+          else if (kind === 'team') { if (!input.assetId) reviewTeam(row); row.isActive = true; }
           else {
             if (kind === 'interview' && (row.thumbnail || input.assetId) && !row.thumbnailAlt?.trim()) throw new ApiError(400, 'REVIEW_REQUIRED', 'Describe the interview thumbnail before publication.');
             if (kind === 'gallery' && (row.duplicateOf || !row.alt?.en?.trim())) throw new ApiError(400, 'REVIEW_REQUIRED', 'Review the image description and duplicate status first.');
@@ -69,6 +72,9 @@ export function publicationRouter(auth: ReturnType<typeof createAuth>) {
             await bindProjectMedia(row, { coverAssetId: input.assetId }, principal.id, tx, 'public', kind === 'blog' ? 'BlogPost' : 'Project');
           } else if (kind === 'report' || kind === 'certificate') {
             await bindDocumentFile(row, input.assetId, principal.id, tx, 'public', kind === 'report' ? 'Report' : 'Certificate');
+          } else if (kind === 'team') {
+            await bindProfilePhoto(row, input.assetId, principal.id, tx, 'public', 'TeamMember');
+            reviewTeam(row);
           } else if (kind === 'board') {
             await bindBoardPhoto(row, input.assetId, principal.id, tx, 'public');
             reviewBoard(row);
@@ -77,7 +83,7 @@ export function publicationRouter(auth: ReturnType<typeof createAuth>) {
             if (!fileId && !['board', 'blog', 'project', 'interview'].includes(kind)) throw new ApiError(400, 'REVIEW_REQUIRED', 'Upload and review a public release file first.');
             if (fileId) {
               const asset = await Asset.findOne({ _id: fileId, deliveryType: 'authenticated', scanStatus: { $in: ['clean', 'type_checked'] }, purpose: 'content', $or: [{ claimStatus: 'staged', ownerId: principal.id, stagingExpiresAt: { $gt: new Date() } }, { claimStatus: 'claimed', entityType: spec.entity, entityId: row._id }] }).session(tx);
-              if (!asset || (['board', 'gallery', 'blog', 'project', 'interview'].includes(kind) && !['jpg', 'jpeg', 'png', 'webp'].includes(asset.format))) throw new ApiError(400, 'INVALID_ASSET', 'Use your own clean staged file or the file already bound to this record.');
+              if (!asset || (['board', 'team', 'gallery', 'blog', 'project', 'interview'].includes(kind) && !['jpg', 'jpeg', 'png', 'webp'].includes(asset.format))) throw new ApiError(400, 'INVALID_ASSET', 'Use your own clean staged file or the file already bound to this record.');
               await Asset.updateMany({ entityType: spec.entity, entityId: row._id, _id: { $ne: asset._id } }, { $set: { visibility: 'restricted' } }, { session: tx });
               asset.visibility = 'public'; asset.claimStatus = 'claimed'; asset.entityType = spec.entity; asset.entityId = row._id; asset.set('stagingExpiresAt', undefined);
               await asset.save({ session: tx });
@@ -87,7 +93,7 @@ export function publicationRouter(auth: ReturnType<typeof createAuth>) {
         } else {
           if (input.assetId) throw new ApiError(400, 'INVALID_ASSET', 'Withdrawal does not accept a replacement file.');
           if (kind === 'setting') { row.visibility = 'private'; row.revision += 1; }
-          else if (kind === 'board') row.isActive = false;
+          else if (kind === 'board' || kind === 'team') row.isActive = false;
           else { row.publishedAt = undefined; if (['blog', 'project'].includes(kind)) row.status = 'draft'; if (['report', 'certificate'].includes(kind)) row.releaseReview = 'pending'; else row.reviewStatus = 'pending'; }
           await Asset.updateMany({ entityType: spec.entity, entityId: row._id }, { $set: { visibility: 'restricted' } }, { session: tx });
         }

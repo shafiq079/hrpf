@@ -78,6 +78,15 @@ export const BoardMember = mongoose.model('BoardMember', new Schema({
   sections: [new Schema({ heading: { type: localized, required: true }, body: { type: localized, required: true } }, { _id: false, strict: 'throw' })],
   showOnBoard: { type: Boolean, default: true }, showOnTeam: { type: Boolean, default: false }, isActive: { type: Boolean, default: false },
 }, options));
+// Operational staff are independent of the governance/board collection.
+export const TeamMember = mongoose.model('TeamMember', new Schema({
+  name: requiredText(150), designation: requiredText(200),
+  responsibilities: requiredText(5000), reportingTo: requiredText(200),
+  rank: { type: Number, min: 1, max: 100000, default: 1 },
+  photo: { type: assetRefSchema, required: true },
+  isActive: { type: Boolean, default: false },
+}, options));
+TeamMember.schema.index({ isActive: 1, rank: 1, _id: 1 });
 export const BlogCategory = mongoose.model('BlogCategory', new Schema({
   name: { type: localized, required: true }, slug: { ...requiredText(200), unique: true }, sortOrder: { type: Number, default: 0 }, isActive: { type: Boolean, default: true },
 }, options));

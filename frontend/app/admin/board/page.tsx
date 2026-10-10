@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import BoardConsole from "@/components/admin/BoardConsole";
 export const metadata: Metadata = {
-  title: "Board and Team administration",
+  title: "Board of Directors administration",
   robots: { index: false, follow: false },
 };
 export default function Page() {

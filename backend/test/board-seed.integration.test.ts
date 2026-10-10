@@ -102,10 +102,7 @@ describe("Supplied board and team profiles", { timeout: 120000 }, () => {
     const board = await request(app).get("/api/board").expect(200);
     const team = await request(app).get("/api/team").expect(200);
     assert.equal(board.body.meta.total, 7);
-    assert.deepEqual(
-      team.body.data.map((r: any) => r.slug),
-      board.body.data.map((r: any) => r.slug),
-    );
+    assert.deepEqual(team.body.data, [], 'Board imports never create operational staff');
     assert.equal(board.body.data[2].designation, "Joint Chairperson");
     assert.equal(board.body.data[2].slotLabel, undefined);
     const chairman = await request(app)
@@ -163,9 +160,9 @@ describe("Supplied board and team profiles", { timeout: 120000 }, () => {
     );
     assert.equal(
       (await request(app).get("/api/team").expect(200)).body.meta.total,
-      6,
+      0,
     );
-    await request(app).get("/api/board/future-team-member").expect(200);
+    await request(app).get("/api/board/future-team-member").expect(404);
     await request(app).get("/api/board/munawar-ahmad").expect(404);
   });
   it("preserves native slug collisions and even unversioned administrative edits to original drafts", async () => {

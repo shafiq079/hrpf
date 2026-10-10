@@ -35,11 +35,6 @@ export default function PersonProfile({
                 Board of Directors →
               </Link>
             )}
-            {person.showOnTeam && (
-              <Link href="/about/our-team" className="text-teal-dark">
-                Our Team →
-              </Link>
-            )}
           </div>
         </div>
       </div>

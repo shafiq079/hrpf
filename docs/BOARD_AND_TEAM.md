@@ -1,5 +1,12 @@
 # Board of Directors and Our Team
 
+**Superseded team placement, 10 October 2026:** supplied directors now appear
+only on Board of Directors. Our Team uses an independent operational staff
+collection and `/admin/team`; historical `showOnTeam` flags have no public effect.
+The source/import history below remains for board profiles. See
+`OPERATIONAL_TEAM.md` for the current staff workflow; do not run a board seed to
+populate the operational team.
+
 Seven supplied office-bearer profiles are managed records rather than prototype
 staff. `/about/board-of-directors` and `/about/our-team` list approved profiles in
 rank order with pagination. Both link to `/about/people/[slug]`, which displays the

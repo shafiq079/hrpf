@@ -9,6 +9,7 @@ import PageHero from "@/components/shared/PageHero";
 import ContentBlocks from "@/components/shared/ContentBlocks";
 import PublicDocuments from "@/components/shared/PublicDocuments";
 import PublicBoard from "@/components/shared/PublicBoard";
+import PublicTeam from "@/components/shared/PublicTeam";
 import AboutProfile, { RegistrationSummary } from "@/components/about/AboutProfile";
 import SectionHeading from "@/components/shared/SectionHeading";
 import TranslationText from "@/components/translation/TranslationText";
@@ -43,7 +44,7 @@ export default async function AboutSectionPage({ params, searchParams }: Props) 
              <p className="mt-6 max-w-3xl text-sm leading-relaxed text-muted"><TranslationText>The Charity Commission certificates record validity periods of 16 May 2022–15 May 2023 and 23 January 2024–22 January 2026. Registration history and document validity dates are shown below.</TranslationText></p>
              <div className="mt-10"><PublicDocuments kind="certificates" page={page} /></div>
            </> :
-           section === "board-of-directors" ? <PublicBoard page={page} /> : section === "our-team" ? <PublicBoard kind="team" page={page} /> :
+           section === "board-of-directors" ? <PublicBoard page={page} /> : section === "our-team" ? <PublicTeam page={page} /> :
            section === "message-of-ceo" ? <LeadershipMessage /> :
            section === "mission-and-vision" ? <MissionVision /> :
            section === "aims-and-objectives" ? <AimsObjectives /> : (

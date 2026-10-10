@@ -27,7 +27,7 @@ const nextConfig: NextConfig = {
       { source: "/news/:path*", destination: "/blogs/:path*", permanent: true },
       { source: "/updates/:path*", destination: "/blogs/:path*", permanent: true },
       { source: "/reports", destination: "/about/progress-reports", permanent: true },
-      { source: "/team", destination: "/about/board-of-directors", permanent: true },
+      { source: "/team", destination: "/about/our-team", permanent: true },
       { source: "/media", destination: "/gallery", permanent: true },
       { source: "/governance", destination: "/about", permanent: true },
       { source: "/report-a-violation", destination: "/file-a-complaint", permanent: true },
