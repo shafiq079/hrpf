@@ -9435,24 +9435,58 @@
         "title": "Aims & Objectives",
         "blocks": [
           {
+            "type": "paragraph",
+            "text": "The objects for which the Foundation is established are as follows:"
+          },
+          {
             "type": "list",
             "items": [
-              "To advocate for the supremacy of human rights, with particular emphasis on women's rights, children's rights, educational rights, prisoners' rights, and the rights of vulnerable populations.",
-              "To promote institutional transparency and accountability in accordance with the Right to Information (RTI) Act and applicable laws of Pakistan.",
-              "To undertake activities in health, education, poverty alleviation, environmental protection, family planning, reproductive health, and mother-and-child healthcare.",
-              "To document, report, and intervene in cases of human rights violations, police misconduct, and abuse of authority.",
-              "To support freedom of the press and freedom of expression worldwide, and to protect threatened journalists.",
-              "To develop national policy, civil society capacity, and human resources through education, research, and training.",
-              "To promote scientific research, vocational training, and income generation in rural and underserved communities.",
-              "To cooperate with government authorities, international bodies, and civil society organizations in advancing HRPF's humanitarian mandate.",
-              "To provide shelter, rehabilitation, and humanitarian assistance to flood victims, disaster-affected communities, orphans, refugees, and persons deprived of liberty.",
-              "To promote interfaith harmony, cultural preservation, and community cohesion across Pakistan.",
-              "To undertake and execute any other lawful activity incidental or conducive to the attainment of the foregoing objects."
+              "To undertake activities in health, education, poverty alleviation, human rights, women's rights (including but not restricted to gender equality, domestic violence and the empowerment of women, etc.), child rights (child labor, child sexual abuse, etc.), the environment, family planning, reproductive health, mother and child healthcare, income generation, vocational training, etc., and activities for refugees, orphans and children in jails.\n\nTo undertake, support and subsidize measures, programs, plans and schemes for rural uplift, socio-economic welfare and the modernization of rural areas, especially health and family planning outlets; to construct, establish, install, lay out, improve, maintain, work, manage or aid in, contribute or subscribe to the construction, erection, maintenance and improvement of infrastructure leading to the betterment of the health of the rural population, including drinking water canals, watercourses, wells, tanks, stores, shops, markets, warehouses, clubs, schools, colleges, universities, hospitals, dispensaries, reading rooms, parks, gardens, playgrounds, places of amusement and recreation, and plans for the generation and distribution of energy at the domestic and village levels, and other conveniences calculated directly or indirectly to contribute to the improvement of health, human smuggling, better family planning, hygiene, sanitation and the quality of life.",
+              "To undertake, maintain, manage, subsidize and otherwise assist in the completion of projects, plans, schemes and pilot programs for the prevention, treatment, cure and elimination of diseases and sickness of all kinds, particularly those affecting mothers and children, and the provision of medical, clinical and paramedical facilities.",
+              "To process, acquire, buy, sell, market, distribute and otherwise deal in iodized salt and other medicines, drugs, pharmaceutical products and clinical equipment.",
+              "To promote agricultural, horticultural and other scientific research; to establish, maintain, conduct or otherwise subsidize vendors, institutes and facilities for imparting theoretical and practical knowledge, experimentation and training; to undertake and prosecute scientific and technical tests of all kinds; and generally to promote such scientific and technical studies, investigations and research, including the holding of lectures, exhibitions, classes and conferences calculated directly or indirectly to advance the cause of family planning, reproductive health, mother and child care, as well as old homes.",
+              "To establish farm and business information centers and facilities for commerce, trade and business, cottage industry, agriculturally oriented or agriculturally based industry, and the creation of employment opportunities in rural areas; and to undertake measures for, and assist in, the promotion of literacy, the development of education and awareness, and the application of modern scientific and technical skills in order to improve the socio-economic standard of the rural population.",
+              "To take on lease, license or otherwise acquire or obtain possession of property from any person or institution as the Foundation may deem fit for the furtherance or advancement of its objects.",
+              "To provide, endow, furnish and fit out any of its property with all necessary furniture, instruments and other equipment, and manage offices, premises, centers, institutions and other establishments or institutions for the furtherance and advancement of the Foundation.",
+              "To develop national policy, civil society and human resources through education.",
+              "To carry on by establishing, owning, setting up, acquiring, managing and operating various kinds and types of educational institutions, including training in disaster mitigation, for providing all sorts of education and knowledge of sciences as proprietors, owners, managers, controllers, occupiers or allotters, and to undertake and execute any contract or work relating thereto.",
+              "To establish and maintain a faculty of distinction which, by its scholarship, learning and dedication to education, natural and social sciences, research and development, will serve as a source of intellectual, academic and scientific talent.\n\nTo contribute to the rapid assimilation of intellectual endeavor in the country, which would be instrumental in producing an intellectual reservoir of manpower to meet the growing needs of the national and international community.",
+              "To engage researchers, teachers, professors, instructors and experts to impart efficiently and economically up-to-date instruction to pupils and students of the families of the beneficiaries in sciences, research work, intellectual and other useful pursuits.",
+              "To bring out, encourage and develop the inventive research faculties of the beneficiaries and to afford them opportunities for research in art, science, information, technology, communication and industrial undertakings.",
+              "To provide education of the highest possible academic standard and internationally recognized professional excellence in various fields of science.",
+              "To promote, organize, establish, finance, administer, manage and maintain technical and professional colleges, universities, research laboratories and institutions of learning for imparting knowledge and undertaking studies and research for the advancement of the sciences.",
+              "To encourage, promote, support and undertake academic and scientific investigations, innovative research, inventions and developments in various identified fields of science.",
+              "To provide or procure the provision by others, or in ventures with others, of any and every service, need, want or equipment, particularly consultancy, advisory, educational, technical, scientific, managerial and administrative services required by any person, firm, company, corporation or local authority in all or any of the fields connected with or associated with the objects of the Foundation.",
+              "To act as consultants and advisors in health, education, poverty alleviation, human rights, women's rights, child rights, jail prisoners, older people's rights, the environment, family planning, reproductive health, mother and child health, maternity, women, newborn babies and other allied activities.",
+              "To own, license, purchase or otherwise acquire, maintain, work, prospect, gather, open, get in, develop, clear, improve, manage, farm, cultivate, irrigate and harvest lands, estates, buildings, farms, orchards, gardens, forests and fishing rights or properties, whether owned by the Trust or not, in any manner deemed desirable; and to erect, build, install and maintain all works regarding the storage of medicines, pharmaceuticals and agricultural products, sheds, cold storage premises and the preservation of foodstuffs, medicines and pharmaceuticals, dwelling houses and other buildings, works and appliances; and to aid in or subscribe towards, subsidize or promote any such object.",
+              "To preserve, support, subsidize and encourage the development of houses and buildings that represent and reflect the local architecture and heritage, and to promote better utilization of local skills and materials in conjunction with modern techniques.",
+              "To promote tourism, facilitate traveling, provide amenities, facilities and conveniences for travelers, publish maps, act as consultants in the development of tourism and, in connection therewith, encourage and assist in the establishment of hotels, tourist resorts, restaurants, cat motels, holiday camps and recreation centers.",
+              "To purchase, take on lease or in exchange, hire or otherwise acquire any immovable or movable property and any rights or privileges.",
+              "To construct, maintain and alter any buildings or erections, and to provide the same with all proper and necessary fixtures, furniture, fittings, apparatus, appliances, conveniences and accommodation.",
+              "To advance money or give credit, either with or without security, to such persons or companies and on such terms as may seem expedient and, in particular, where this is desirable in the interests of the Foundation, to persons and companies having dealings with the Trust; and to guarantee the performance of any contract or obligation and the payment of money to or by any person or company, and generally to give guarantees and indemnities.",
+              "To borrow or raise money on such terms and with such security, if any, as may be thought fit.",
+              "To open and operate a banking account or banking accounts, and to draw, make, accept, endorse, discount, execute and issue promissory notes, bills of exchange, bills of lading, warrants, drafts, checks, bonds, debentures and other negotiable or transferable instruments.",
+              "To undertake and execute any agencies which may seem directly or indirectly conducive to the objects of the Foundation.",
+              "To print and publish any periodicals, books or leaflets in furtherance of its objects.",
+              "To invest the capital of the Foundation not immediately required in such a manner as the Foundation thinks fit.",
+              "To enter into any arrangements with governments and authorities, supreme, municipal, local or otherwise, or any person or company that may seem conducive to the objects of the Foundation or any of them; and to obtain from any such government, authority, person or company, or any of them, any rights, privileges, charters, contracts, licenses and concessions which the Trust may think it desirable to obtain, and to carry out, exercise and comply therewith.",
+              "To accept grants from any governments, agencies, authorities, public bodies, corporations, companies or persons, in the form of money, movable and immovable property, donations, gifts, subscriptions, devises, bequests and other assistance, with a view to promoting the objects of the Foundation; and, in receiving any gift or property, to take the same either unconditionally or subject to any special condition which may be prescribed by the donor in writing.",
+              "To take such steps, by personal or written appeal or otherwise, as may from time to time be deemed expedient for the purpose of procuring contributions to the funds of the Foundation in the form of donations, annual subscriptions or otherwise; and to promote, assist in the promotion of, or otherwise participate in concerts or any entertainment schemes, programs or things having as their objects, or any of their objects, the raising of money for the Foundation.",
+              "To provide shelter, homes, plots and residential facilities for poor and needy people; to carry out surveys, mapping and collections of data, and complete and publish the data; and to prepare reports of all types.",
+              "To obtain any Federal or Provincial Rule, Order, Statute or other legislative provision or enmeshment to enable the Foundation to carry out its objectives, or for any other purpose which may seem expedient; and to oppose any proceedings or applications which may seem calculated directly or indirectly to prejudice the interests of the Foundation.",
+              "To purchase or otherwise acquire shares of other companies, debenture stock or other securities of companies carrying on similar business or business analogous to the objects of the Foundation, or of any other organization; and to retain, dispose of, deal in or sell the same or any part thereof as may be advantageous to the business or interests of the Foundation, except for investment company functions.",
+              "To appoint agents and managers and constitute branches of the Foundation in Pakistan or in any other country as the Foundation may deem fit.",
+              "To sell, sublet or otherwise dispose of any license, privilege, concession or contract entered into by the Foundation, or to enter into agreements or amalgamate with any other organization in connection with the undertaking and business of the Foundation having objects similar to those of the Foundation.",
+              "To promote a company or companies, body or association, whether corporate or not, for the purpose of acquiring all or any of the property, rights and abilities of the Foundation.",
+              "To take other steps as may be necessary for the promotion of appropriate research and training in identified intellectual, academic and scientific fields by maximizing the use of local resources of men and materials.",
+              "To do all such other lawful and charitable things as are incidental or conducive to the attainment of any or all of the above-mentioned objects of the Foundation.",
+              "To support threatened journalists and make every effort for journalists across the country to try to combat threats and risks.",
+              "To hold training workshops for the eradication of yellow journalism in the country.",
+              "To engage in an effective struggle for press freedom in the country."
             ]
           }
         ],
         "provenance": [
-          "information/PROFILE HRPF.docx",
           "aims and objectives/WhatsApp Image 2026-10-04 at 4.07.14 PM.jpeg",
           "aims and objectives/WhatsApp Image 2026-10-04 at 4.07.15 PM (1).jpeg",
           "aims and objectives/WhatsApp Image 2026-10-04 at 4.07.15 PM (2).jpeg",
@@ -9463,7 +9497,6 @@
         "revision": 0
       },
       "files": [
-        "source:profile",
         "constitutional-scan:1",
         "constitutional-scan:2",
         "constitutional-scan:3",
@@ -9471,7 +9504,7 @@
         "constitutional-scan:5"
       ],
       "reviewTasks": [
-        "Curated 11 points use the fallback profile. Proofread all 42 constitutional objects from the scans before adding the expandable full text."
+        "Full 42 objectives transcribed and proofread from the client screenshots on 10 October 2026; original sequence and substantive terms preserved. Public website uses frontend/data/aims-and-objectives.json; this import record remains a draft."
       ]
     },
     {

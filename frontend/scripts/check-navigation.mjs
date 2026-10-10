@@ -1,4 +1,8 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+
+const suppliedObjectives = JSON.parse(readFileSync(new URL('../data/aims-and-objectives.json', import.meta.url), 'utf8')).objectives;
+const suppliedPurpose = JSON.parse(readFileSync(new URL('../data/about-source.json', import.meta.url), 'utf8')).pages;
 
 const publicPaths = ['/blogs', '/about/progress-reports', '/about/registration-and-certificates', '/about/board-of-directors', '/about/our-team', '/gallery/media-coverage', '/gallery/tv-interviews'];
 
@@ -55,11 +59,40 @@ export async function checkNavigation(read, port) {
     const about=(await read(route)).html.replace(/<script\b[\s\S]*?<\/script>/g, '');
     for(const old of ['Elena Vasquez','Legal registration placeholder','Foundation concept and community consultation','Expansion of volunteer and legal referral network','/images/about/who-we-are.jpg','�']) assert.ok(!about.includes(old),'Removed About prototype/artefact on '+route+': '+old);
   }
-  const mission=(await read('/about/mission-and-vision')).html;
-  assert.ok(mission.includes('support individuals and communities facing injustice, discrimination, deprivation and vulnerability')&&mission.includes('where no vulnerable person is left without a voice'),'Mission and vision use current client copy');
-  const aims=(await read('/about/aims-and-objectives')).html;
-  for(const text of ['human smuggling','maternal and child healthcare','threats and risks','innocent and vulnerable prisoners'])assert.ok(aims.includes(text),'Full client area retained in objectives: '+text);
-  assert.ok((await read('/about/message-of-ceo')).html.includes('Chairman’s Message'), 'Keep supplied author title');
+  const mission=(await read('/about/mission-and-vision')).html.replace(/<script\b[\s\S]*?<\/script>/g,'');
+  const missionText=mission.replace(/<[^>]+>/g,'').replace(/&#x27;|&#39;/g,"'").replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
+  assert.equal((mission.match(/<h1[ >]/g)||[]).length,1,'Mission and Vision has one main heading');
+  assert.equal(suppliedPurpose.vision.blocks.length,3,'Complete client vision has three paragraphs');
+  assert.equal(suppliedPurpose.mission.blocks.length,8,'Complete client mission has eight paragraphs');
+  for(const block of [...suppliedPurpose.vision.blocks,...suppliedPurpose.mission.blocks])assert.ok(missionText.includes(block.text),'Complete client paragraph: '+block.text.slice(0,55));
+  assert.deepEqual([...mission.matchAll(/<li\b[^>]*id="priority-(\d+)"/g)].map(match=>Number(match[1])),[1,2,3,4,5,6],'All six mission priorities are visible in order');
+  for(const priority of suppliedPurpose.mission.priorities)for(const text of [priority.title,priority.text])assert.ok(missionText.includes(text),'Complete priority text: '+text);
+  for(const text of [suppliedPurpose.mission.tagline,...suppliedPurpose.mission.commitment,suppliedPurpose.mission.closing])assert.ok(missionText.includes(text),'Client commitment and slogans: '+text);
+  for(const id of ['our-vision','our-mission','mission-priorities','our-commitment'])assert.ok(mission.includes(`href="#${id}"`)&&mission.includes(`id="${id}"`),'Mission and vision jump link: '+id);
+  for(const route of ['/about','/about/who-we-are']) {
+    const summary=(await read(route)).html.replace(/<script\b[\s\S]*?<\/script>/g,'');
+    assert.ok(summary.includes(suppliedPurpose.mission.blocks[0].text)&&summary.includes(suppliedPurpose.vision.blocks[0].text),'Shared summaries use the latest client wording on '+route);
+  }
+  const homePurpose=(await read()).html.match(/<dl\b[^>]*>[\s\S]*?<\/dl>/)?.[0];
+  assert.ok(homePurpose,'Homepage has a concise mission and vision summary');
+  for(const text of [suppliedPurpose.mission.title,suppliedPurpose.mission.tagline,suppliedPurpose.vision.title,suppliedPurpose.vision.blocks[0].text])assert.ok(homePurpose.includes(text),'Homepage purpose uses current client wording: '+text);
+  assert.ok((await read()).html.includes('href="/about/mission-and-vision"'),'Homepage links to the full Mission and Vision page');
+  const aims=(await read('/about/aims-and-objectives')).html.replace(/<script\b[\s\S]*?<\/script>/g,'');
+  assert.equal(suppliedObjectives.length,42,'All five screenshots contain 42 objectives');
+  assert.deepEqual([...aims.matchAll(/<li\b[^>]*id="objective-(\d+)"/g)].map(match=>Number(match[1])),Array.from({length:42},(_,i)=>i+1),'Every objective is visible in the original order');
+  const aimsText=aims.replace(/<[^>]+>/g,'').replace(/&#x27;|&#39;/g,"'").replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
+  for(const [index,objective] of suppliedObjectives.entries())for(const paragraph of objective.split('\n\n'))assert.ok(aimsText.includes(paragraph),'Complete text retained for objective '+(index+1));
+  for(const start of [1,11,21,31])assert.ok(aims.includes(`href="#objective-${start}"`),'Objective jump link: '+start);
+  assert.ok(aims.includes('Objectives 31–42') && aims.includes('<ol'),'Final range and semantic ordered list');
+  assert.ok(aimsText.includes('jail prisoners') && aimsText.includes('conducive to the objects of the Foundation'),'Cross-image objectives 17 and 26 are joined');
+  const aimsStatistic=[...(await read()).html.matchAll(/<dd>([\s\S]*?)<\/dd>/g)].map(match=>match[1]).find(text=>text.includes('Aims and Objectives'));
+  assert.ok(aimsStatistic && /\b42\b/.test(aimsStatistic.replace(/<[^>]+>/g,' ')),'Homepage count matches all 42 published objectives');
+  assert.ok((await read('/about')).html.includes('42 aims and objectives covering'),'About card and metadata use the full objectives count');
+  assert.ok(who.includes('Read All 42 Aims and Objectives'),'Who We Are points to the complete list');
+  assert.ok((await read('/faq')).html.includes('lists all 42 objectives'),'FAQ reflects the complete list');
+  const leadership=(await read('/about/message-of-ceo')).html.replace(/<script\b[\s\S]*?<\/script>/g,'');
+  assert.ok(leadership.includes('Chairman’s Message'), 'Keep supplied author title');
+  assert.ok(leadership.includes('Reviewed leadership portrait') && leadership.includes('/api/public-assets/012345678901234567890132') && leadership.includes('/about/people/muhammad-yousaf-badar'), 'Leadership message uses its published author portrait and profile link');
   assert.ok((await read('/about/board-of-directors')).html.includes('Active reviewed director'));
   page = await read('/about/our-team');
   assert.ok(page.html.includes('Active reviewed director') && page.html.includes('Our office-bearers and team'));
@@ -117,6 +150,8 @@ export async function checkEmptyNavigation(read) {
   assert.ok(!page.html.includes('Managed news') && !page.html.includes('/blogs/real-news'));
   assert.equal((await read('/blogs/real-news')).status, 404, 'Withdrawn blog must not resolve');
   assert.equal((await read('/about/people/active-director')).status,404);
+  const leadership=(await read('/about/message-of-ceo')).html.replace(/<script\b[\s\S]*?<\/script>/g,'');
+  assert.ok(leadership.includes('It gives me great satisfaction') && !leadership.includes('Reviewed leadership portrait') && !leadership.includes('/api/public-assets/012345678901234567890132'), 'Withdrawn author portrait stays hidden while the supplied message remains readable');
   for (const path of publicPaths.slice(1)) {
     const page = await read(path);
     assert.equal(page.status, 200);

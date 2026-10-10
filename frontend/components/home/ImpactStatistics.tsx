@@ -1,5 +1,6 @@
 import Container from "@/components/shared/Container";
 import home from "@/data/homepage.json";
+import { objectiveCount } from "@/data/aims-and-objectives";
 
 /** Original navy statistics band, displaying verifiable organisation counts. */
 export default function ImpactStatistics() {
@@ -20,7 +21,7 @@ export default function ImpactStatistics() {
               <dt className="sr-only">{stat.label}</dt>
               <dd>
                 <span className="block font-serif text-4xl font-semibold text-teal sm:text-5xl">
-                  {stat.value}
+                  {stat.source === "aims-and-objectives" ? objectiveCount : stat.value}
                 </span>
                 <span className="mt-2 block text-[11px] font-semibold uppercase tracking-[0.14em] text-white/70">
                   {stat.label}

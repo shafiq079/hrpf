@@ -10,6 +10,16 @@ const codespaceHost = process.env.CODESPACE_NAME
   : undefined;
 const nextConfig: NextConfig = {
   allowedDevOrigins: codespaceHost ? [codespaceHost] : [],
+  async headers() {
+    return [{
+      // These files are versioned. Use a new directory when replacing them.
+      source: "/images/header-flags/v1/:path*",
+      headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+    }, {
+      source: "/videos/home-banner/v1/:path*",
+      headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+    }];
+  },
   async redirects() {
     return [
       { source: "/get-involved", destination: "/become-a-member", permanent: true },

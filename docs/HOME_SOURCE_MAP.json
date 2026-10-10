@@ -76,7 +76,7 @@
   "editorialChanges": {
     "testimonial": "Exact excerpt from supplied chairman message; no invented beneficiary",
     "partners": "No substantiated partners in curated supplied material; same strip presents profile core values",
-    "statistics": "Counts of supplied pillars, board positions, reports and curated aims; not impact or donation claims",
+    "statistics": "Counts of supplied pillars, board positions and reports, with all 42 client-supplied aims counted from the published objectives collection; not impact or donation claims",
     "projects": "Admin-controlled projects; no invented project records. Source programme priorities appear if feed has no public records.",
     "news": "Admin-controlled BlogPost/news records share one collection; source report overviews appear if feed has no public records."
   }

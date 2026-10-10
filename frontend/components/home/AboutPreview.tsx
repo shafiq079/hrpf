@@ -1,5 +1,7 @@
 import home from "@/data/homepage.json";
+import source from "@/data/about-source.json";
 import Link from "@/components/translation/TranslationLink";
+import TranslationText from "@/components/translation/TranslationText";
 import { ArrowRight } from "lucide-react";
 import Container from "@/components/shared/Container";
 import AppImage from "@/components/shared/AppImage";
@@ -42,11 +44,21 @@ export default function AboutPreview() {
               <p className="mt-4 text-[15px] leading-relaxed text-muted sm:text-base">
                 {home.aboutParagraphs[1]}
               </p>
+              <dl className="mt-6 space-y-5 border-s-2 border-teal ps-4 sm:ps-5">
+                <div>
+                  <dt className="text-lg font-semibold text-navy"><TranslationText>{source.pages.mission.title}</TranslationText></dt>
+                  <dd className="mt-2 break-words text-start text-[15px] leading-relaxed text-text sm:text-base"><TranslationText>{source.pages.mission.tagline}</TranslationText></dd>
+                </div>
+                <div>
+                  <dt className="text-lg font-semibold text-navy"><TranslationText>{source.pages.vision.title}</TranslationText></dt>
+                  <dd className="mt-2 break-words text-start text-[15px] leading-relaxed text-text sm:text-base"><TranslationText>{source.pages.vision.blocks[0].text}</TranslationText></dd>
+                </div>
+              </dl>
               <Link
-                href="/about"
+                href="/about/mission-and-vision"
                 className="group mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-teal-dark transition-colors hover:text-navy"
               >
-                Learn more about our mission
+                <TranslationText>Read our mission and vision</TranslationText>
                 <ArrowRight
                   className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-0.5"
                   aria-hidden="true"

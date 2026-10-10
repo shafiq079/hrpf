@@ -1,6 +1,7 @@
 # About Us content update
 
-Updated 8 October 2026 from the client copy supplied by the owner in this conversation.
+About Us updated from the client copy supplied on 8 October 2026; Mission and
+Vision replaced with the complete client copy supplied on 10 October 2026.
 The latest copy takes precedence over the earlier profile for mission, vision,
 identity and stated work areas. Stray website citations and the replacement
 character in the pasted copy are removed. No founding year is inferred.
@@ -12,9 +13,18 @@ character in the pasted copy are removed. No founding year is inferred.
   transparency/RTI, standing with vulnerable people, all ten values, institutional
   records, commitment to Pakistan and the closing invitation. In-page contents
   links and existing theme components support navigation and reading on mobile.
-- `/about/mission-and-vision`: the complete new mission and vision statements.
-- `/about/aims-and-objectives`: all work areas from the client copy and the lawful
-  charitable-objectives statement.
+- `/about/mission-and-vision`: all three vision paragraphs, all eight mission
+  paragraphs, the mission tagline, six priorities in order, both commitment
+  paragraphs and the closing slogan. Separate sections, four jump links,
+  readable text widths and numbered priority cards support desktop/mobile reading.
+  The About and Who We Are summaries use the same updated source. All new copy
+  participates in the existing website translation feature.
+- `/`: the existing Who We Are preview includes the client's mission tagline
+  and first vision paragraph as a concise summary, linking directly to the full
+  Mission and Vision page. It uses the same shared source and logical spacing for
+  translated RTL layouts, without adding a separate homepage section.
+- `/about/aims-and-objectives`: the full 42 objectives from the client's five
+  screenshots supplied on 10 October 2026, in their original numbered order.
 - `/about/registration-and-certificates`: institutional summary followed by the
   existing managed document collection, with historical validity periods stated.
 - Leadership message, board, team, reports and document administration retain

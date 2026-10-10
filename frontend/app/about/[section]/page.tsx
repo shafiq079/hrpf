@@ -12,6 +12,9 @@ import PublicBoard from "@/components/shared/PublicBoard";
 import AboutProfile, { RegistrationSummary } from "@/components/about/AboutProfile";
 import SectionHeading from "@/components/shared/SectionHeading";
 import TranslationText from "@/components/translation/TranslationText";
+import LeadershipMessage from "@/components/about/LeadershipMessage";
+import AimsObjectives from "@/components/about/AimsObjectives";
+import MissionVision from "@/components/about/MissionVision";
 
 export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ section: string }>; searchParams: Promise<{ page?: string | string[] }> };
@@ -40,14 +43,12 @@ export default async function AboutSectionPage({ params, searchParams }: Props) 
              <p className="mt-6 max-w-3xl text-sm leading-relaxed text-muted"><TranslationText>The Charity Commission certificates record validity periods of 16 May 2022–15 May 2023 and 23 January 2024–22 January 2026. Registration history and document validity dates are shown below.</TranslationText></p>
              <div className="mt-10"><PublicDocuments kind="certificates" page={page} /></div>
            </> :
-           section === "board-of-directors" ? <PublicBoard page={page} /> : section === "our-team" ? <PublicBoard kind="team" page={page} /> : (
+           section === "board-of-directors" ? <PublicBoard page={page} /> : section === "our-team" ? <PublicBoard kind="team" page={page} /> :
+           section === "message-of-ceo" ? <LeadershipMessage /> :
+           section === "mission-and-vision" ? <MissionVision /> :
+           section === "aims-and-objectives" ? <AimsObjectives /> : (
             <div className="mx-auto max-w-3xl">
-              {section === "mission-and-vision" ? <>
-                <h2 className="font-serif text-2xl font-semibold text-navy">Our Mission</h2>
-                <ContentBlocks blocks={source.pages.mission.blocks} />
-                <h2 className="mt-12 font-serif text-2xl font-semibold text-navy">Our Vision</h2>
-                <ContentBlocks blocks={source.pages.vision.blocks} />
-              </> : <ContentBlocks blocks={section === "who-we-are" ? source.pages["who-we-are"].blocks : section === "aims-and-objectives" ? source.pages["aims-and-objectives"].blocks : source.pages["chairman-message"].blocks} />}
+              <ContentBlocks blocks={source.pages["chairman-message"].blocks} />
             </div>
            )}
           <div className="mt-12 border-t border-border pt-6"><Link href="/about" className="text-sm font-semibold text-teal-dark">Explore About HRPF</Link></div>

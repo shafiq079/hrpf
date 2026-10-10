@@ -28,7 +28,12 @@ describe('M3 source safety and offline preparation', () => {
     assert.equal(m.records.find(r => r.key === 'certificate:punjab-charity-2024')!.payload.expiresAt, '2026-01-22T00:00:00.000Z');
     const fbr = m.records.find(r => r.key === 'certificate:pcp-npo-evaluation')!;
     assert.equal(fbr.payload.reference, undefined); assert.equal(fbr.payload.issuedAt, undefined);
-    assert.equal((m.records.find(r => r.key === 'page:en:aims-and-objectives')!.payload.blocks as { items: string[] }[])[0]!.items.length, 11);
+    const aims = m.records.find(r => r.key === 'page:en:aims-and-objectives')!;
+    const objectives = (aims.payload.blocks as { type: string; items?: string[] }[]).find(block => block.type === 'list')!.items!;
+    const publicObjectives = JSON.parse(await readFile(new URL('../../frontend/data/aims-and-objectives.json', import.meta.url), 'utf8')).objectives;
+    assert.equal(objectives.length, 42);
+    assert.deepEqual(objectives, publicObjectives, 'Public and archived source objectives must agree');
+    assert.equal(aims.payload.reviewStatus, 'pending');
     assert.equal(m.records.find(r => r.key === 'setting:membershipPolicy'), undefined);
     assert.ok(m.records.every(r => !r.payload.publishedAt));
   });

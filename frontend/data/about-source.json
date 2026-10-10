@@ -1,5 +1,5 @@
 {
-  "source": "Owner-supplied organisation text and client About Us copy, received 8 October 2026; registration wording checked against original certificates.",
+  "source": "Owner-supplied organisation text and client About Us copy, received 8 October 2026; Mission and Vision copy received 10 October 2026; registration wording checked against original certificates.",
   "pages": {
     "chairman-message": {
       "title": "Chairman’s Message",
@@ -130,56 +130,84 @@
       "blocks": [
         {
           "type": "paragraph",
-          "text": "The mission of Human Rights Protection Foundation Pakistan is to promote and protect fundamental human rights and to support individuals and communities facing injustice, discrimination, deprivation and vulnerability."
+          "text": "The mission of the Human Rights Protection Foundation Pakistan (HRPF) is to protect, promote, and advance the fundamental human rights of every individual, without discrimination, and to contribute towards building a just, peaceful, transparent, and equitable society where human dignity is respected, the rule of law prevails, and justice is accessible to all."
         },
         {
           "type": "paragraph",
-          "text": "The Foundation seeks to strengthen public awareness, institutional accountability and access to justice while encouraging constructive engagement between citizens, civil society and public institutions."
+          "text": "We are committed to standing with the oppressed, marginalized, disadvantaged, and vulnerable members of society by raising their voices, addressing human rights violations, promoting public awareness, and facilitating access to justice through lawful, peaceful, and constructive means. We believe that human rights are not privileges granted to a few, but fundamental entitlements that must be respected, protected, and upheld for everyone."
+        },
+        {
+          "type": "paragraph",
+          "text": "Our mission is to strengthen the relationship between citizens and public institutions by promoting transparency, accountability, good governance, and the effective implementation of constitutional and legal protections. We strive to encourage responsible institutional conduct, ensure the meaningful exercise of the Right to Information, and support initiatives that safeguard public interest and uphold the principles of fairness, equality, and justice."
+        },
+        {
+          "type": "paragraph",
+          "text": "We are dedicated to supporting individuals and families affected by injustice, unlawful detention, human trafficking, human smuggling, exploitation, discrimination, and other violations of fundamental rights. Through public-interest advocacy, appropriate referrals, lawful follow-up, community engagement, and collaboration with relevant authorities and civil society organizations, we seek to help affected people pursue remedies available under the law."
+        },
+        {
+          "type": "paragraph",
+          "text": "We also recognize that human dignity is inseparable from access to essential services and a safe environment. Therefore, our mission includes advocating for clean drinking water, environmental protection, improved maternal healthcare, access to education, social welfare, and the protection of the rights of women, children, persons with disabilities, minorities, prisoners, and economically disadvantaged communities."
+        },
+        {
+          "type": "paragraph",
+          "text": "The Human Rights Protection Foundation Pakistan is committed to promoting a culture of peace, tolerance, equality, social responsibility, and respect for the law. We seek to empower communities through human rights education, public awareness, responsible civic participation, and cooperation with individuals and institutions that share our commitment to justice and human welfare."
+        },
+        {
+          "type": "paragraph",
+          "text": "Guided by the principles of integrity, impartiality, transparency, accountability, and service to humanity, we aim to ensure that the voices of the voiceless are heard, the concerns of the oppressed receive due attention, and every individual is treated with dignity and respect."
+        },
+        {
+          "type": "paragraph",
+          "text": "Our mission is to transform the principles of human rights into meaningful action, strengthen public trust in institutions, and work towards a Pakistan where no person is deprived of dignity, justice, equality, or fundamental rights."
         }
-      ]
+      ],
+      "tagline": "Protecting Human Dignity, Promoting Justice, and Empowering the Oppressed.",
+      "priorities": [
+        {
+          "title": "Protection of Human Rights and Access to Justice",
+          "text": "To promote fundamental rights, support victims of injustice, and facilitate lawful access to remedies for individuals whose rights have been violated."
+        },
+        {
+          "title": "Transparency and Institutional Accountability",
+          "text": "To promote the Right to Information, good governance, public-sector transparency, and accountability in the public interest."
+        },
+        {
+          "title": "Support for Vulnerable and Oppressed Communities",
+          "text": "To advocate for the rights and welfare of disadvantaged individuals, innocent prisoners, trafficking victims, missing persons' families, and other vulnerable communities."
+        },
+        {
+          "title": "Health, Environment, and Essential Human Needs",
+          "text": "To promote access to clean drinking water, maternal healthcare, education, environmental protection, and essential social services, particularly in underserved areas."
+        },
+        {
+          "title": "Human Rights Education and Public Awareness",
+          "text": "To educate citizens about their fundamental rights, legal protections, civic responsibilities, and lawful channels for reporting and addressing violations."
+        },
+        {
+          "title": "Collaboration, Peace, and Social Justice",
+          "text": "To build constructive partnerships with public institutions, civil society, human rights organizations, professionals, and communities to advance justice and human welfare."
+        }
+      ],
+      "commitment": [
+        "The Human Rights Protection Foundation Pakistan believes that a society can progress meaningfully only when human rights are respected, justice is accessible, institutions act transparently, and vulnerable people are not left behind.",
+        "We remain committed to pursuing our mission through lawful advocacy, responsible engagement, public awareness, and practical initiatives that serve humanity and protect the rights of the people."
+      ],
+      "closing": "Human Rights Are Our Mission. Justice Is Our Commitment. Humanity Is Our Guiding Principle."
     },
     "vision": {
       "title": "Our Vision",
       "blocks": [
         {
           "type": "paragraph",
-          "text": "A just, peaceful and equitable society where human rights, dignity, transparency and the rule of law prevail, and where no vulnerable person is left without a voice."
-        }
-      ]
-    },
-    "aims-and-objectives": {
-      "title": "Aims & Objectives",
-      "blocks": [
-        {
-          "type": "paragraph",
-          "text": "The Foundation works across a broad range of humanitarian, social and human-rights areas. Its stated priorities include:"
-        },
-        {
-          "type": "list",
-          "items": [
-            "Protection and promotion of fundamental human rights",
-            "Women’s rights and gender equality",
-            "Child rights and protection of children from exploitation and abuse",
-            "Educational rights and access to quality education",
-            "Support and assistance for innocent and vulnerable prisoners",
-            "Right to Information and institutional transparency",
-            "Public accountability and good governance",
-            "Freedom of expression and freedom of the press",
-            "Protection and support for journalists facing threats and risks",
-            "Health, maternal and child healthcare",
-            "Clean drinking water and public health",
-            "Environmental protection and awareness",
-            "Poverty alleviation and support for disadvantaged communities",
-            "Human trafficking and human smuggling awareness and prevention",
-            "Support for victims and affected families",
-            "Emergency humanitarian assistance during floods, earthquakes and other disasters",
-            "Rural development and community welfare",
-            "Awareness, research, advocacy and public-interest initiatives"
-          ]
+          "text": "To build a just, peaceful, and inclusive society where human rights are respected, protected, and upheld without discrimination, and where every individual can live with dignity, freedom, equality, and justice."
         },
         {
           "type": "paragraph",
-          "text": "The Foundation’s stated objectives also include supporting health, education, poverty alleviation, women’s and children’s rights, environmental protection, rural development, sanitation, clean water, humanitarian welfare, press freedom and other lawful charitable activities."
+          "text": "Human Rights Protection Foundation Pakistan envisions a society in which public institutions operate with transparency, accountability, and integrity, the rule of law prevails, and the fundamental rights of every citizen are safeguarded. We aspire to empower vulnerable and marginalized communities, protect the rights of oppressed individuals, promote access to justice, and strengthen public trust in institutions."
+        },
+        {
+          "type": "paragraph",
+          "text": "Our vision is to ensure that no individual is deprived of their fundamental rights, that every voice is heard, and that justice, equality, and human dignity become the foundation of a better and more equitable Pakistan."
         }
       ]
     }
