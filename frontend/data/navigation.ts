@@ -11,6 +11,20 @@ export interface NavItem extends NavLink {
 // Primary site navigation with dropdowns where appropriate.
 export const mainNavigation: NavItem[] = [
   {
+    label: "About Us",
+    href: "/about",
+    children: [
+      { label: "Who We Are", href: "/about/who-we-are" },
+      { label: "Mission and Vision", href: "/about/mission-and-vision" },
+      { label: "Aims and Objectives", href: "/about/aims-and-objectives" },
+      { label: "Message of CEO", href: "/about/message-of-ceo" },
+      { label: "Board of Directors", href: "/about/board-of-directors" },
+      { label: "Our Team", href: "/about/our-team" },
+      { label: "Registration and Certificates", href: "/about/registration-and-certificates" },
+      { label: "Progress Reports", href: "/about/progress-reports" },
+    ],
+  },
+  {
     label: "Our Work",
     href: "/our-work",
     children: [
@@ -42,20 +56,7 @@ export const mainNavigation: NavItem[] = [
   },
   { label: "Become a Member", href: "/become-a-member" },
   { label: "Contact", href: "/contact" },
-  {
-    label: "About Us",
-    href: "/about",
-    children: [
-      { label: "Who We Are", href: "/about/who-we-are" },
-      { label: "Mission and Vision", href: "/about/mission-and-vision" },
-      { label: "Aims and Objectives", href: "/about/aims-and-objectives" },
-      { label: "Message of CEO", href: "/about/message-of-ceo" },
-      { label: "Board of Directors", href: "/about/board-of-directors" },
-      { label: "Our Team", href: "/about/our-team" },
-      { label: "Registration and Certificates", href: "/about/registration-and-certificates" },
-      { label: "Progress Reports", href: "/about/progress-reports" },
-    ],
-  },
+
 ];
 
 // Footer: main institutional links.

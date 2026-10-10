@@ -3,6 +3,7 @@ import TranslationText from "@/components/translation/TranslationText";
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { usePathname } from "next/navigation";
 import Link from "@/components/translation/TranslationLink";
 import { AlertTriangle, ChevronDown, X } from "lucide-react";
 import { mainNavigation } from "@/data/navigation";
@@ -22,6 +23,8 @@ export default function MobileNavigation({
   open,
   onClose,
 }: MobileNavigationProps) {
+  const pathname = usePathname();
+  const current = (href: string) => pathname === href ? "page" : pathname.startsWith(`${href}/`) ? "location" : undefined;
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -62,7 +65,7 @@ export default function MobileNavigation({
 
   return createPortal(
     <div
-      className={`lg:hidden ${open ? "" : "pointer-events-none"}`}
+      className={`xl:hidden ${open ? "" : "pointer-events-none"}`}
       aria-hidden={!open}
     >
       {/* Backdrop */}
@@ -105,8 +108,9 @@ export default function MobileNavigation({
                   <div className="flex items-center justify-between">
                     <Link
                       href={item.href}
+                      aria-current={current(item.href)}
                       onClick={onClose}
-                      className="flex-1 py-3 text-base font-medium text-text transition-colors hover:text-teal-dark"
+                      className="flex-1 py-3 text-base font-medium text-text transition-colors hover:text-teal-dark aria-[current=page]:text-teal-dark aria-[current=location]:text-teal-dark"
                     >
                       <TranslationText>{item.label}</TranslationText>
                     </Link>
@@ -134,8 +138,9 @@ export default function MobileNavigation({
                         <li key={`${child.label}-${child.href}`}>
                           <Link
                             href={child.href}
+                            aria-current={current(child.href)}
                             onClick={onClose}
-                            className="block py-2 text-sm text-muted transition-colors hover:text-teal-dark"
+                            className="block py-2 text-sm text-muted transition-colors hover:text-teal-dark aria-[current=page]:text-teal-dark aria-[current=page]:underline"
                           >
                             <TranslationText>{child.label}</TranslationText>
                           </Link>
@@ -148,8 +153,9 @@ export default function MobileNavigation({
                 <li key={item.label}>
                   <Link
                     href={item.href}
+                    aria-current={current(item.href)}
                     onClick={onClose}
-                    className="block border-b border-border/70 py-3 text-base font-medium text-text transition-colors hover:text-teal-dark"
+                    className="block border-b border-border/70 py-3 text-base font-medium text-text transition-colors hover:text-teal-dark aria-[current=page]:text-teal-dark"
                   >
                     <TranslationText>{item.label}</TranslationText>
                   </Link>
