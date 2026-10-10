@@ -19,6 +19,10 @@ character in the pasted copy are removed. No founding year is inferred.
   readable text widths and numbered priority cards support desktop/mobile reading.
   The About and Who We Are summaries use the same updated source. All new copy
   participates in the existing website translation feature.
+- `/`: the existing Who We Are preview includes the client's mission tagline
+  and first vision paragraph as a concise summary, linking directly to the full
+  Mission and Vision page. It uses the same shared source and logical spacing for
+  translated RTL layouts, without adding a separate homepage section.
 - `/about/aims-and-objectives`: the full 42 objectives from the client's five
   screenshots supplied on 10 October 2026, in their original numbered order.
 - `/about/registration-and-certificates`: institutional summary followed by the

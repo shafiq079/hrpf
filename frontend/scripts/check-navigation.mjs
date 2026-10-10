@@ -73,6 +73,10 @@ export async function checkNavigation(read, port) {
     const summary=(await read(route)).html.replace(/<script\b[\s\S]*?<\/script>/g,'');
     assert.ok(summary.includes(suppliedPurpose.mission.blocks[0].text)&&summary.includes(suppliedPurpose.vision.blocks[0].text),'Shared summaries use the latest client wording on '+route);
   }
+  const homePurpose=(await read()).html.match(/<dl\b[^>]*>[\s\S]*?<\/dl>/)?.[0];
+  assert.ok(homePurpose,'Homepage has a concise mission and vision summary');
+  for(const text of [suppliedPurpose.mission.title,suppliedPurpose.mission.tagline,suppliedPurpose.vision.title,suppliedPurpose.vision.blocks[0].text])assert.ok(homePurpose.includes(text),'Homepage purpose uses current client wording: '+text);
+  assert.ok((await read()).html.includes('href="/about/mission-and-vision"'),'Homepage links to the full Mission and Vision page');
   const aims=(await read('/about/aims-and-objectives')).html.replace(/<script\b[\s\S]*?<\/script>/g,'');
   assert.equal(suppliedObjectives.length,42,'All five screenshots contain 42 objectives');
   assert.deepEqual([...aims.matchAll(/<li\b[^>]*id="objective-(\d+)"/g)].map(match=>Number(match[1])),Array.from({length:42},(_,i)=>i+1),'Every objective is visible in the original order');
