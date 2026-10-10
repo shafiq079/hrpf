@@ -21,7 +21,7 @@ export default async function BlogsPage({ searchParams }: { searchParams: Promis
   const featured = page === 1 ? articles[0] : undefined;
   return (
     <main id="main-content" className="flex-1">
-      <PageHero eyebrow="BLOGS" title="Blogs, Stories and Updates" description="Explore HRPF’s published articles, community stories and human-rights advocacy updates." breadcrumbs={[{ label: "Blogs" }]} />
+      <PageHero heroImage="writing" eyebrow="BLOGS" title="Blogs, Stories and Updates" description="Explore HRPF’s published articles, community stories and human-rights advocacy updates." breadcrumbs={[{ label: "Blogs" }]} />
       {featured && (
         <section className="bg-off-white py-16 sm:py-20 lg:py-24">
           <Container>

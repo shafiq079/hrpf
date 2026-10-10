@@ -15,7 +15,7 @@ export const metadata = createMetadata({
 export default function DonatePage() {
   return (
     <main id="main-content" className="flex-1">
-      <PageHero
+      <PageHero heroImage="community"
         eyebrow="SUPPORT OUR WORK"
         title="Support HRPF's Work"
         description="Your contribution helps sustain our work for human dignity, justice and public awareness."

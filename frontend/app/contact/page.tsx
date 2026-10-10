@@ -15,7 +15,7 @@ const contactLink = "inline-flex min-h-11 items-center gap-2 break-all font-semi
 
 export default function ContactPage() {
   return <main id="main-content" className="flex-1">
-    <PageHero eyebrow="GET IN TOUCH" title="Contact HRPF" description="Ask about our work, membership, partnerships, contributions or public information. We welcome your enquiries." breadcrumbs={[{ label: "Contact" }]} />
+    <PageHero heroImage="contact" eyebrow="GET IN TOUCH" title="Contact HRPF" description="Ask about our work, membership, partnerships, contributions or public information. We welcome your enquiries." breadcrumbs={[{ label: "Contact" }]} />
     <section className="bg-off-white py-12 sm:py-16 lg:py-20">
       <Container>
         <div className="grid items-start gap-8 lg:grid-cols-[1.3fr_1fr] lg:gap-12">

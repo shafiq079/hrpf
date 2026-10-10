@@ -2,6 +2,7 @@ import Link from "@/components/translation/TranslationLink";
 import { notFound } from "next/navigation";
 import { createMetadata } from "@/lib/seo";
 import { collectionPage } from "@/lib/public-collections";
+import { aboutHeroImages } from "@/data/hero-images";
 import { aboutSections } from "@/data/about";
 import source from "@/data/about-source.json";
 import Container from "@/components/shared/Container";
@@ -33,7 +34,7 @@ export default async function AboutSectionPage({ params, searchParams }: Props) 
   const title = section === "message-of-ceo" ? source.pages["chairman-message"].title : entry.label;
   return (
     <main id="main-content" className="flex-1">
-      <PageHero eyebrow="ABOUT HRPF" title={title} description={entry.description} breadcrumbs={[{ label: "About Us", href: "/about" }, { label: entry.label }]} />
+      <PageHero heroImage={aboutHeroImages[entry.slug]} eyebrow="ABOUT HRPF" title={title} description={entry.description} breadcrumbs={[{ label: "About Us", href: "/about" }, { label: entry.label }]} />
       {section === "who-we-are" ? <AboutProfile /> : (
       <section className="bg-off-white py-16 sm:py-20 lg:py-24">
         <Container>

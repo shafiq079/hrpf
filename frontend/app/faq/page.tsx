@@ -26,7 +26,7 @@ function toAnchor(label: string): string {
 export default function FaqPage() {
   return (
     <main id="main-content" className="flex-1">
-      <PageHero
+      <PageHero heroImage="writing"
         eyebrow="HELP & FAQ"
         title="Frequently Asked Questions"
         description="Answers to common questions about HRPF, complaints, contact, membership, donations, projects, newsletter updates and privacy. This is general information, not legal advice."

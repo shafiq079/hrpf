@@ -5,16 +5,16 @@ import PrimaryButton from "@/components/shared/PrimaryButton";
 import HeroVideo from "@/components/home/HeroVideo";
 import TranslationText from "@/components/translation/TranslationText";
 
-/** Full-width video hero with a light tint and readable copy. */
+/** Full-width video hero with a visible blue tint and readable copy. */
 export default function HeroSection() {
   return (
     <section className="relative flex min-h-[560px] items-center overflow-hidden lg:min-h-[660px]">
       <HeroVideo />
 
-      {/* A light tint behind the copy leaves the video's colours visible. */}
+      {/* The blue tint is strongest behind copy and lighter over the video. */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-r from-navy-dark/25 via-navy/10 to-transparent"
+        className="hrpf-home-overlay absolute inset-0"
       />
 
       <Container className="relative z-10 py-20 lg:py-28">

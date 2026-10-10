@@ -8,7 +8,7 @@ export default function PolicyView({ policy }: { policy: WebsitePolicy }) {
   const updatedAt = policy.updatedAt || "2026-10-09";
   const updatedLabel = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${updatedAt}T00:00:00Z`));
   return <main id="main-content" className="flex-1">
-    <PageHero eyebrow={policy.eyebrow} title={policy.title} description={policy.description} breadcrumbs={[{ label: policy.title }]} />
+    <PageHero heroImage={policy.heroImage} eyebrow={policy.eyebrow} title={policy.title} description={policy.description} breadcrumbs={[{ label: policy.title }]} />
     <section className="bg-off-white py-12 sm:py-16 lg:py-20">
       <Container>
         <div className="lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-12">

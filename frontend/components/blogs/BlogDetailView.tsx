@@ -47,6 +47,8 @@ export default function BlogDetailView({
   return (
     <>
       <PageHero
+        heroImage="writing"
+        backgroundImage={blog.image || undefined}
         eyebrow={category}
         title={blog.title}
         description={blog.excerpt}

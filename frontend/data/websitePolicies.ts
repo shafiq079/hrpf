@@ -1,5 +1,7 @@
+import type { HeroImageKey } from "./hero-images";
+
 export type WebsitePolicy = {
-  title: string; eyebrow: string; updatedAt?: string; description: string; introduction: string;
+  title: string; heroImage: HeroImageKey; eyebrow: string; updatedAt?: string; description: string; introduction: string;
   sections: { id: string; title: string; paragraphs: string[]; links?: { label: string; href: string }[] }[];
 };
 
@@ -9,7 +11,7 @@ const contactLinks = [
 ];
 
 export const privacyPolicy: WebsitePolicy = {
-  title: "Privacy Policy", eyebrow: "YOUR INFORMATION", updatedAt: "2026-10-10",
+  title: "Privacy Policy", heroImage: "documents", eyebrow: "YOUR INFORMATION", updatedAt: "2026-10-10",
   description: "How HRPF handles website information, complaint details, uploaded documents and optional third-party services.",
   introduction: "Human Rights Protection Foundation Pakistan (HRPF) operates this website. This notice explains the information handled through its current features, how it is used and how to contact the Foundation about it.",
   sections: [
@@ -59,7 +61,7 @@ export const privacyPolicy: WebsitePolicy = {
 };
 
 export const termsOfUse: WebsitePolicy = {
-  title: "Terms of Use", eyebrow: "WEBSITE USE", updatedAt: "2026-10-10",
+  title: "Terms of Use", heroImage: "justice", eyebrow: "WEBSITE USE", updatedAt: "2026-10-10",
   description: "Guidance for using HRPF's website, submitting concerns and accessing published materials and external services.",
   introduction: "These terms explain the intended use of Human Rights Protection Foundation Pakistan's website. Please use it responsibly and read the Privacy Policy before providing personal information.",
   sections: [
@@ -75,7 +77,7 @@ export const termsOfUse: WebsitePolicy = {
 };
 
 export const accessibilityStatement: WebsitePolicy = {
-  title: "Accessibility Statement", eyebrow: "ACCESSIBILITY",
+  title: "Accessibility Statement", heroImage: "writing", eyebrow: "ACCESSIBILITY",
   description: "Accessibility features, known limitations and ways to report a barrier or request help using HRPF's website.",
   introduction: "HRPF aims to make this website usable for people with different access needs. This statement describes the current approach and known limitations. It is not a claim that every page or document fully meets an accessibility standard.",
   sections: [
@@ -89,7 +91,7 @@ export const accessibilityStatement: WebsitePolicy = {
 };
 
 export const safeguardingCommitment: WebsitePolicy = {
-  title: "Safeguarding", eyebrow: "DIGNITY AND SAFETY",
+  title: "Safeguarding", heroImage: "teamwork", eyebrow: "DIGNITY AND SAFETY",
   description: "HRPF's commitment to respectful conduct and practical guidance for raising concerns about harm, abuse or exploitation.",
   introduction: "HRPF's human-rights work is grounded in dignity and respect, particularly for children and people in vulnerable situations. This page explains its safeguarding commitment and the current ways to raise a concern. It does not describe an independent investigation service.",
   sections: [

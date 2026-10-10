@@ -4,7 +4,8 @@ import type { LucideProps } from "lucide-react";
 import Container from "./Container";
 import PrimaryButton from "./PrimaryButton";
 import Breadcrumbs, { type Crumb } from "./Breadcrumbs";
-import AppImage from "./AppImage";
+import HeroBackdrop from "./HeroBackdrop";
+import type { HeroImageKey } from "@/data/hero-images";
 import type { ButtonVariant } from "./PrimaryButton";
 
 export interface PageHeroAction {
@@ -20,72 +21,59 @@ interface PageHeroProps {
   title: string;
   description?: string;
   breadcrumbs?: Crumb[];
-  /** Optional documentary background image path. */
+  heroImage: HeroImageKey;
+  /** Optional published cover, with topic imagery used when it is absent. */
   backgroundImage?: string;
-  imageAlt?: string;
   actions?: PageHeroAction[];
   align?: "left" | "center";
 }
 
 /**
- * Shorter internal-page hero. Uses a deep navy background, optionally layered
- * over a documentary image with a navy overlay for readable, accessible text.
+ * Internal-page photo hero. The navy overlay protects text contrast while
+ * leaving the topic photograph visible. Full page content remains below it.
  */
 export default function PageHero({
   eyebrow,
   title,
   description,
   breadcrumbs,
+  heroImage,
   backgroundImage,
-  imageAlt = "",
   actions,
   align = "left",
 }: PageHeroProps) {
   const isCenter = align === "center";
 
   return (
-    <section className="relative overflow-hidden bg-navy">
-      {backgroundImage && (
-        <>
-          <div className="absolute inset-0">
-            <AppImage
-              src={backgroundImage}
-              alt={imageAlt}
-              fill
-              priority
-              sizes="100vw"
-              className="h-full w-full object-cover"
-            />
-          </div>
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-navy/80"
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-r from-navy-dark/90 to-navy/50"
-          />
-        </>
-      )}
+    <section className="hrpf-page-hero relative flex min-h-[340px] items-center overflow-hidden bg-navy sm:min-h-[380px]">
+      <HeroBackdrop
+        image={heroImage}
+        backgroundImage={backgroundImage}
+        centered={isCenter}
+      />
 
       <Container className="relative z-10 py-14 sm:py-16 lg:py-20">
-        <div className={isCenter ? "mx-auto max-w-3xl text-center" : "max-w-3xl"}>
+        <div
+          className={isCenter ? "mx-auto max-w-3xl text-center" : "max-w-3xl"}
+        >
           {breadcrumbs && breadcrumbs.length > 0 && (
             <Breadcrumbs
               items={breadcrumbs}
               tone="light"
-              className={isCenter ? "flex justify-center" : ""}
+              className={`[&_ol]:text-white/95 ${isCenter ? "flex justify-center" : ""}`}
             />
           )}
           {eyebrow && (
-            <p className="eyebrow mt-4 text-teal"><TranslationText>{eyebrow}</TranslationText></p>
+            <p className="eyebrow mt-4 text-white/90">
+              <TranslationText>{eyebrow}</TranslationText>
+            </p>
           )}
           <h1 className="mt-3 font-serif text-[30px] font-semibold leading-tight text-white sm:text-[38px] lg:text-[44px]">
             <TranslationText>{title}</TranslationText>
           </h1>
           {description && (
             <p
-              className={`mt-4 text-[15px] leading-relaxed text-white/80 sm:text-base ${
+              className={`mt-4 text-[15px] leading-relaxed text-white/95 sm:text-base ${
                 isCenter ? "mx-auto max-w-2xl" : "max-w-2xl"
               }`}
             >

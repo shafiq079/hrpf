@@ -17,7 +17,7 @@ export const metadata = createMetadata({
 export default function AboutPage() {
   return (
     <main id="main-content" className="flex-1">
-      <PageHero eyebrow="ABOUT HRPF" title="Human Rights Protection Foundation Pakistan" description="Standing with the oppressed, vulnerable and marginalized through lawful action, public awareness and responsible advocacy." breadcrumbs={[{ label: "About Us" }]} actions={[{ label: "Who We Are", href: "/about/who-we-are", variant: "navy" }, { label: "Contact HRPF", href: "/contact", variant: "outlineDark" }]} />
+      <PageHero heroImage="about" eyebrow="ABOUT HRPF" title="Human Rights Protection Foundation Pakistan" description="Standing with the oppressed, vulnerable and marginalized through lawful action, public awareness and responsible advocacy." breadcrumbs={[{ label: "About Us" }]} actions={[{ label: "Who We Are", href: "/about/who-we-are", variant: "navy" }, { label: "Contact HRPF", href: "/contact", variant: "outlineDark" }]} />
       <AboutIntroduction />
       <MissionVisionSummary />
       <section className="bg-off-white py-12 sm:py-16 lg:py-20">

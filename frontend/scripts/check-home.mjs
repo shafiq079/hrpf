@@ -3,6 +3,7 @@ import {createServer} from 'node:http';
 import {spawn} from 'node:child_process';
 import {once} from 'node:events';
 import {checkNavigation, checkEmptyNavigation, checkOfflineNavigation} from './check-navigation.mjs';
+import {checkHeroes} from './check-heroes.mjs';
 let revision=1,empty=false,richBlog=true;const requests=[];
 const workPages=[["childrens-rights", "Children's Rights"], ["access-to-justice", "Access to Justice"], ["minority-rights", "Minority Rights"], ["education-and-awareness", "Education and Awareness"], ["research-and-advocacy", "Research and Advocacy"], ["refugees-and-migrants", "Refugees and Migrants"], ["community-development", "Community Development"]];
 const api=createServer((req,res)=>{
@@ -84,7 +85,7 @@ try{
   const policy=await read('/'+route);assert.equal(policy.status,200);
   assert.equal((policy.html.match(/<h1[ >]/g)||[]).length,1,route+' has one H1');
   for(const removed of ['placeholder — update before publication','(placeholder address)','Download PDF','File coming soon','review schedule should be confirmed'])assert.ok(!policy.html.includes(removed),route+' removed '+removed);
-  assert.ok(policy.html.includes(['/privacy-policy','/terms-of-use'].includes(route)?'2026-10-10':'2026-10-09')&&policy.html.includes('mailto:hrpf786@gmail.com'),route+' dated and has source contact');
+  assert.ok(policy.html.includes(['privacy-policy','terms-of-use'].includes(route)?'2026-10-10':'2026-10-09')&&policy.html.includes('mailto:hrpf786@gmail.com'),route+' dated and has source contact');
  }
  const membership=await read('/become-a-member'); for(const text of ['Full Name (which register in Nadra Office)','Gmail Id','CNIC no and Picture front and back side','Recent Photograph (File Upload)','Preferred Area of Service (Checkboxes)','REGISTRATION &amp; DOCUMENTATION FEES','Police verification Character certificate','Review application']) assert.ok(membership.html.includes(text),'Native membership form: '+text); assert.ok(!membership.html.includes('docs.google.com/forms'),'No external membership form');
  const privacy=await read('/privacy-policy');for(const text of ['every uploaded file','fixed automatic deletion period','police character certificate','GTranslate','confirmation link'])assert.ok(privacy.html.includes(text),'Privacy current feature: '+text);
@@ -119,6 +120,7 @@ try{
  assert.ok((await read('/projects')).html.includes('Managed project 2'),'Project listing must use managed records');assert.equal((await read('/projects/unknown')).status,404);
  assert.ok((await read('/admin/projects')).html.includes('Loading project management'),'Project admin route must render');
  await checkNavigation(read,port);
+ await checkHeroes(read,port);
  const richPage=await read('/blogs/real-news');
  for(const content of ['Key takeaways','Important blog takeaway','Story context','Article section text','Supported detail','A verified quotation','Supplied report','Blog closing thoughts','Blog photographs','Sources and references','Historical source note','Blog source brief PDF','Illustrative archive cover','Article contents','Share this blog','Copy link','Related published blog','4','min read']) assert.ok(richPage.html.includes(content),`Blog detail: ${content}`);
  assert.ok(richPage.html.includes('article:published_time'),'Article SEO metadata');
