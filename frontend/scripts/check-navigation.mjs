@@ -11,7 +11,7 @@ export async function checkNavigation(read, port) {
     ['/get-involved', '/become-a-member'], ['/get-help', '/contact'],
     ['/news', '/blogs'], ['/news/real-news?from=old', '/blogs/real-news?from=old'],
     ['/updates/real-news', '/blogs/real-news'], ['/updates', '/blogs'],
-    ['/reports', '/about/progress-reports'], ['/team', '/about/board-of-directors'],
+    ['/reports', '/about/progress-reports'], ['/team', '/about/our-team'],
     ['/media', '/gallery'], ['/governance', '/about'], ['/report-a-violation', '/file-a-complaint'],
   ];
   for (const [oldPath, target] of migrations) {
@@ -95,8 +95,10 @@ export async function checkNavigation(read, port) {
   assert.ok(leadership.includes('Reviewed leadership portrait') && leadership.includes('/api/public-assets/012345678901234567890132') && leadership.includes('/about/people/muhammad-yousaf-badar'), 'Leadership message uses its published author portrait and profile link');
   assert.ok((await read('/about/board-of-directors')).html.includes('Active reviewed director'));
   page = await read('/about/our-team');
-  assert.ok(page.html.includes('Active reviewed director') && page.html.includes('Our office-bearers and team'));
-  assert.ok(page.html.includes('/about/people/active-director') && page.html.includes('Read full profile'));
+  const operational=page.html.replace(/<script\b[\s\S]*?<\/script>/g,'').match(/<main[\s\S]*?<\/main>/)[0];
+  for(const text of ['Our Operational Team','Synthetic operational member','Operations officer','Coordinate daily work.','Maintain team schedules.','Reporting to','Operations lead'])assert.ok(operational.includes(text),'Complete operational card: '+text);
+  for(const text of ['Active reviewed director','Our office-bearers and team','office-bearers who also serve','/about/people/active-director'])assert.ok(!operational.includes(text),'No board content in team cards: '+text);
+  assert.ok((await read('/admin/team')).html.includes('Loading operational team management'),'Dedicated operational team administration route');
   page = await read('/about/people/active-director');
   for(const text of ['Journalism and public service','Complete reviewed profile text.','Additional profile paragraph.','Profile contents','Reviewed director portrait']) assert.ok(page.html.includes(text), 'Full person profile: '+text);
   assert.ok(/rel="canonical"[^>]*about\/people\/active-director/.test(page.html));
@@ -146,6 +148,8 @@ export async function checkNavigation(read, port) {
 }
 
 export async function checkEmptyNavigation(read) {
+  const team=(await read('/about/our-team')).html.replace(/<script\b[\s\S]*?<\/script>/g,'');
+  assert.ok(team.includes('Nothing to show here')&&!team.includes('Synthetic operational member')&&!team.includes('Active reviewed director'),'Empty operational team stays empty');
   const page = await read('/blogs');
   assert.ok(!page.html.includes('Managed news') && !page.html.includes('/blogs/real-news'));
   assert.equal((await read('/blogs/real-news')).status, 404, 'Withdrawn blog must not resolve');

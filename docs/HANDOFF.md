@@ -1,5 +1,15 @@
 # Current handoff: Final public cleanup and forms on development
 
+## 2026-10-10 — Separate operational team
+
+Our Team now reads published `TeamMember` records, independently of the Board
+of Directors. `/admin/team` provides required picture/name/designation/
+responsibilities/reporting-to fields, photo/card previews, drafts, publishing,
+withdrawal and deletion. Existing directors remain on the board page; legacy
+team placement flags are ignored and removed from board editing. No operational
+members are seeded. Empty staff listings show **Nothing to show here**. See
+`OPERATIONAL_TEAM.md` for commands and checks. Main remains unchanged.
+
 ## 2026-10-09 — Final public cleanup and form completion
 
 The owner merged PR #10 to main (`77f7e5f`). Development was aligned before this

@@ -7,7 +7,7 @@ import { Router } from 'express';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { z } from 'zod';
-import { Asset, BlogCategory, BlogPost, BoardMember, Certificate, GalleryItem, VideoInterview, Report, Setting, Project } from '../domain/models.js';
+import { Asset, BlogCategory, BlogPost, BoardMember, TeamMember, Certificate, GalleryItem, VideoInterview, Report, Setting, Project } from '../domain/models.js';
 import type { UploadProvider } from '../services/uploads.js';
 import { ApiError, unavailable, validate } from './errors.js';
 import { canonicalVideoPattern, videoLink } from '../services/video-links.js';
@@ -61,19 +61,33 @@ export function publicRouter(provider: UploadProvider, redis?: RedisServices, tt
   const personView = async (row: any, locale: 'en' | 'ur', detailed = false) => ({
     name: row.name, slug: row.slug, designation: row.designation, rank: row.rank,
     bio: row.bio?.[locale] ?? '', photoAlt: row.photoAlt || row.name, photoZoom: row.photoZoom ?? 1,
-    showOnBoard: row.showOnBoard !== false, showOnTeam: row.showOnTeam === true,
+    showOnBoard: row.showOnBoard !== false, showOnTeam: false,
     photo: await releasedAsset(row.photo?.assetId, 'BoardMember', row._id) ? `/api/public-assets/${row.photo.assetId}` : null,
     ...(detailed ? { sections: (row.sections ?? []).map((section: any) => ({ heading: section.heading?.[locale] ?? '', body: section.body?.[locale] ?? '' })).filter((section: any) => section.heading && section.body) } : {}),
   });
-  for (const kind of ['board', 'team'] as const) cachedGet('/' + kind, publicQuery, [], async req => {
+  cachedGet('/board', publicQuery, [], async req => {
     const { locale, page, limit } = validate(publicQuery, req.query);
-    const filter = { isActive: true, ...(kind === 'board' ? { showOnBoard: { $ne: false } } : { showOnTeam: true }) };
+    const filter = { isActive: true, showOnBoard: { $ne: false } };
     const [rows, total] = await Promise.all([BoardMember.find(filter).sort({ rank: 1, _id: 1 }).skip((page - 1) * limit).limit(limit).select('name slug designation rank bio photo photoAlt photoZoom showOnBoard showOnTeam').lean(), BoardMember.countDocuments(filter)]);
     return ({ data: await Promise.all(rows.map(row => personView(row, locale))), meta: { page, limit, total, pages: Math.ceil(total / limit) } });
   });
+  cachedGet('/team', publicQuery, [], async req => {
+    const { page, limit } = validate(publicQuery, req.query);
+    const filter = { isActive: true };
+    const [rows, total] = await Promise.all([
+      TeamMember.find(filter).sort({ rank: 1, _id: 1 }).skip((page - 1) * limit).limit(limit).select('name designation responsibilities reportingTo rank photo').lean(),
+      TeamMember.countDocuments(filter),
+    ]);
+    const data = await Promise.all(rows.map(async row => ({
+      id: String(row._id), name: row.name, designation: row.designation,
+      responsibilities: row.responsibilities, reportingTo: row.reportingTo,
+      photo: await releasedAsset(row.photo?.assetId, 'TeamMember', row._id) ? `/api/public-assets/${row.photo!.assetId}` : null,
+    })));
+    return { data, meta: { page, limit, total, pages: Math.ceil(total / limit) } };
+  });
   cachedGet('/board/:slug', publicQuery, [], async req => {
     const { locale } = validate(publicQuery, req.query);
-    const row = await BoardMember.findOne({ slug: validate(slug, req.params.slug), isActive: true, $or: [{ showOnBoard: { $ne: false } }, { showOnTeam: true }] }).select('name slug designation rank bio photo photoAlt photoZoom showOnBoard showOnTeam sections').lean();
+    const row = await BoardMember.findOne({ slug: validate(slug, req.params.slug), isActive: true, showOnBoard: { $ne: false } }).select('name slug designation rank bio photo photoAlt photoZoom showOnBoard showOnTeam sections').lean();
     if (!row) throw missing();
     return ({ data: await personView(row, locale, true) });
   });
@@ -170,7 +184,8 @@ export function publicRouter(provider: UploadProvider, redis?: RedisServices, tt
     switch (asset.entityType) {
       case 'Project': released = !!await Project.exists({_id:asset.entityId,status:'published',reviewStatus:'approved',$or:[{'cover.assetId':asset._id},{'gallery.asset.assetId':asset._id},{'documents.asset.assetId':asset._id}],...publicationFilter()}); break;
       case 'BlogPost': released = !!await BlogPost.exists({_id:asset.entityId,status:'published',reviewStatus:'approved',$or:[{'cover.assetId':asset._id},{'gallery.asset.assetId':asset._id},{'documents.asset.assetId':asset._id}],...publicationFilter()}); break;
-      case 'BoardMember': released = !!await BoardMember.exists({ _id: asset.entityId, isActive: true, 'photo.assetId': asset._id, $or: [{ showOnBoard: { $ne: false } }, { showOnTeam: true }] }); break;
+      case 'BoardMember': released = !!await BoardMember.exists({ _id: asset.entityId, isActive: true, 'photo.assetId': asset._id, showOnBoard: { $ne: false } }); break;
+      case 'TeamMember': released = !!await TeamMember.exists({ _id: asset.entityId, isActive: true, 'photo.assetId': asset._id }); break;
       case 'GalleryItem': released = !!await GalleryItem.exists({ _id: asset.entityId, reviewStatus: 'approved', duplicateOf: null, 'asset.assetId': asset._id, ...publicationFilter() }); break;
       case 'VideoInterview': released = !!await VideoInterview.exists({ _id: asset.entityId, reviewStatus: 'approved', videoUrl: canonicalVideoPattern, 'thumbnail.assetId': asset._id, ...publicationFilter() }); break;
       case 'Report': released = !!await Report.exists({ _id: asset.entityId, releaseReview: 'approved', 'publicPdf.assetId': asset._id, $expr: { $ne: [{ $ifNull: ['$restrictedOriginal.assetId', null] }, asset._id] }, ...publicationFilter() }); break;

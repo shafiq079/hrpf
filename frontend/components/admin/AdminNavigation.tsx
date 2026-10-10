@@ -8,7 +8,8 @@ const contentLinks = [
   { href: "/admin/blogs", label: "Blogs" },
   { href: "/admin/gallery", label: "Gallery" },
   { href: "/admin/documents", label: "Documents" },
-  { href: "/admin/board", label: "Board and Team" },
+  { href: "/admin/board", label: "Board of Directors" },
+  { href: "/admin/team", label: "Operational Team" },
 ];
 const complaintLink = { href: "/admin/complaints", label: "Complaints" };
 

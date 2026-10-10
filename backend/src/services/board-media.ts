@@ -2,12 +2,13 @@ import mongoose from "mongoose";
 import { Asset } from "../domain/models.js";
 import { ApiError } from "../http/errors.js";
 
-export async function bindBoardPhoto(
+export async function bindProfilePhoto(
   row: any,
   assetId: string | null | undefined,
   actorId: string,
   session: mongoose.ClientSession,
   visibility: "public" | "restricted",
+  entityType: "BoardMember" | "TeamMember" = "BoardMember",
 ) {
   const value =
     assetId === undefined ? row.photo?.assetId?.toString() : assetId;
@@ -28,7 +29,7 @@ export async function bindBoardPhoto(
         },
         {
           claimStatus: "claimed",
-          entityType: "BoardMember",
+          entityType,
           entityId: row._id,
         },
       ],
@@ -42,7 +43,7 @@ export async function bindBoardPhoto(
     asset.set({
       visibility,
       claimStatus: "claimed",
-      entityType: "BoardMember",
+      entityType,
       entityId: row._id,
       stagingExpiresAt: undefined,
     });
@@ -62,7 +63,7 @@ export async function bindBoardPhoto(
   }
   await Asset.updateMany(
     {
-      entityType: "BoardMember",
+      entityType,
       entityId: row._id,
       ...(value ? { _id: { $ne: value } } : {}),
     },
@@ -71,3 +72,6 @@ export async function bindBoardPhoto(
   );
   row.photo = ref;
 }
+
+// Existing board imports retain their default binding identity.
+export const bindBoardPhoto = bindProfilePhoto;

@@ -129,14 +129,10 @@ export default function BoardEditor({
       setError("Review the profile before publication.");
       return;
     }
-    if (!record.showOnBoard && !record.showOnTeam) {
-      setError("Choose at least one page for this profile.");
-      return;
-    }
     setBusy(true);
     setError("");
     const { id, version, ...fields } = record;
-    const payload = { ...fields } as Partial<BoardRecord>;
+    const payload = { ...fields, showOnBoard: true, showOnTeam: false } as Partial<BoardRecord>;
     delete payload.status;
     try {
       const saved = await adminRequest<{ id: string; version: number }>(
@@ -204,7 +200,7 @@ export default function BoardEditor({
       </h1>
       <p className="mt-3 text-sm leading-relaxed text-muted">
         Saving changes creates a private draft. Publish after reviewing the
-        biography, page placement and photograph.
+        biography and photograph.
       </p>
       {error && (
         <p
@@ -292,28 +288,6 @@ export default function BoardEditor({
                 <span className="mt-1 block text-xs font-normal text-muted">
                   Lower numbers appear first.
                 </span>
-              </label>
-            </div>
-            <div className="mt-6 flex flex-wrap gap-6 text-sm">
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={record.showOnBoard}
-                  onChange={(event) =>
-                    change({ showOnBoard: event.target.checked })
-                  }
-                />
-                Board of Directors
-              </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={record.showOnTeam}
-                  onChange={(event) =>
-                    change({ showOnTeam: event.target.checked })
-                  }
-                />
-                Our Team
               </label>
             </div>
           </section>

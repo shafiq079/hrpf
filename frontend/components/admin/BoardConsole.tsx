@@ -8,13 +8,16 @@ import Container from "@/components/shared/Container";
 import { adminRequest } from "@/lib/admin-api";
 import BoardEditor, { newProfile, type BoardRecord } from "./BoardEditor";
 
+import TeamEditor, { newTeamMember, type TeamRecord } from "./TeamEditor";
+
 type User = { name: string; email: string; role: string };
-type MediaRow = BoardRecord & { id: string };
-export default function BoardConsole() {
+type MediaRow = { id: string; version: number; status: "draft" | "published"; name: string; designation: string; slug?: string };
+export default function BoardConsole({ kind = "board" }: { kind?: "board" | "team" }) {
+  const team = kind === "team";
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<MediaRow[]>([]);
-  const [editor, setEditor] = useState<BoardRecord | null>(null);
+  const [editor, setEditor] = useState<BoardRecord | TeamRecord | null>(null);
   const [page, setPage] = useState(1);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -36,7 +39,7 @@ export default function BoardConsole() {
   }, []);
   const loadMedia = useCallback(async () => {
     try {
-      setRows(await adminRequest<MediaRow[]>(`/admin/board?page=${page}`));
+      setRows(await adminRequest<MediaRow[]>(`/admin/${kind}?page=${page}`));
     } catch (failure) {
       setError(
         failure instanceof Error
@@ -46,11 +49,11 @@ export default function BoardConsole() {
     } finally {
       setBusy(false);
     }
-  }, [page]);
+  }, [kind, page]);
   useEffect(() => {
     if (!allowed || editor) return;
     let active = true;
-    adminRequest<MediaRow[]>(`/admin/board?page=${page}`)
+    adminRequest<MediaRow[]>(`/admin/${kind}?page=${page}`)
       .then((result) => {
         if (active) setRows(result);
       })
@@ -68,7 +71,7 @@ export default function BoardConsole() {
     return () => {
       active = false;
     };
-  }, [allowed, editor, page]);
+  }, [allowed, editor, kind, page]);
   async function login(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
@@ -109,7 +112,7 @@ export default function BoardConsole() {
     setError("");
     setNotice("");
     try {
-      setEditor(await adminRequest<BoardRecord>(`/admin/board/${id}`));
+      setEditor(await adminRequest<BoardRecord | TeamRecord>(`/admin/${kind}/${id}`));
     } catch (failure) {
       setError(
         failure instanceof Error
@@ -135,8 +138,8 @@ export default function BoardConsole() {
     try {
       await adminRequest(
         action === "delete"
-          ? `/admin/board/${row.id}`
-          : `/admin/publication/board/${row.id}`,
+          ? `/admin/${kind}/${row.id}`
+          : `/admin/publication/${kind}/${row.id}`,
         {
           method: action === "delete" ? "DELETE" : "POST",
           body: JSON.stringify(
@@ -167,7 +170,7 @@ export default function BoardConsole() {
   if (loading)
     return (
       <Container className="py-16">
-        <p role="status">Loading profile management…</p>
+        <p role="status">{team ? "Loading operational team management…" : "Loading profile management…"}</p>
       </Container>
     );
   return (
@@ -213,7 +216,7 @@ export default function BoardConsole() {
           <p className="eyebrow">HRPF administration</p>
           <h1 className="mt-3 text-3xl">Sign in</h1>
           <p className="mt-3 text-sm text-muted">
-            Use your administrator account to manage Board and Team profiles.
+            Use your administrator account to manage {team ? "operational team members" : "Board of Directors profiles"}.
           </p>
           <label className="mt-6 block text-sm font-semibold">
             Email
@@ -251,38 +254,37 @@ export default function BoardConsole() {
           </p>
         </div>
       ) : editor ? (
-        <BoardEditor
-          initial={editor}
+        team ? <TeamEditor
+          initial={editor as TeamRecord}
           onCancel={() => setEditor(null)}
-          onSaved={(message) => {
-            setEditor(null);
-            setNotice(message);
-            setError("");
-          }}
+          onSaved={(message) => { setEditor(null); setNotice(message); setError(""); }}
+        /> : <BoardEditor
+          initial={editor as BoardRecord}
+          onCancel={() => setEditor(null)}
+          onSaved={(message) => { setEditor(null); setNotice(message); setError(""); }}
         />
       ) : (
         <>
           <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="eyebrow">Content management</p>
-              <h1 className="mt-2 text-3xl">Board and Team</h1>
+              <h1 className="mt-2 text-3xl">{team ? "Operational Team" : "Board of Directors"}</h1>
               <p className="mt-3 text-sm text-muted">
-                Manage Board of Directors and Our Team profiles, photographs and
-                full biographies.
+                {team ? "Manage operational team members, photographs, responsibilities and reporting lines." : "Manage Board of Directors profiles, photographs and full biographies."}
               </p>
             </div>
             <button
               type="button"
               disabled={busy}
               onClick={() => {
-                setEditor(newProfile());
+                setEditor(team ? newTeamMember() : newProfile());
                 setNotice("");
                 setError("");
               }}
               className="inline-flex items-center gap-2 bg-navy px-5 py-3 text-sm font-semibold text-white hover:bg-teal-dark disabled:opacity-50"
             >
               <Plus size={18} aria-hidden="true" />
-              Add profile
+              {team ? "Add team member" : "Add profile"}
             </button>
           </div>
           <div className="space-y-4">
@@ -313,7 +315,7 @@ export default function BoardConsole() {
                   {row.status === "published" && (
                     <>
                       <Link
-                        href={"/about/people/" + row.slug}
+                        href={team ? "/about/our-team" : "/about/people/" + row.slug}
                         target="_blank"
                         rel="noopener"
                         className="inline-flex items-center gap-2 text-sm font-semibold text-navy"
