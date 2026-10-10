@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+
+const suppliedObjectives = JSON.parse(readFileSync(new URL('../data/aims-and-objectives.json', import.meta.url), 'utf8')).objectives;
 
 const publicPaths = ['/blogs', '/about/progress-reports', '/about/registration-and-certificates', '/about/board-of-directors', '/about/our-team', '/gallery/media-coverage', '/gallery/tv-interviews'];
 
@@ -57,8 +60,19 @@ export async function checkNavigation(read, port) {
   }
   const mission=(await read('/about/mission-and-vision')).html;
   assert.ok(mission.includes('support individuals and communities facing injustice, discrimination, deprivation and vulnerability')&&mission.includes('where no vulnerable person is left without a voice'),'Mission and vision use current client copy');
-  const aims=(await read('/about/aims-and-objectives')).html;
-  for(const text of ['human smuggling','maternal and child healthcare','threats and risks','innocent and vulnerable prisoners'])assert.ok(aims.includes(text),'Full client area retained in objectives: '+text);
+  const aims=(await read('/about/aims-and-objectives')).html.replace(/<script\b[\s\S]*?<\/script>/g,'');
+  assert.equal(suppliedObjectives.length,42,'All five screenshots contain 42 objectives');
+  assert.deepEqual([...aims.matchAll(/<li\b[^>]*id="objective-(\d+)"/g)].map(match=>Number(match[1])),Array.from({length:42},(_,i)=>i+1),'Every objective is visible in the original order');
+  const aimsText=aims.replace(/<[^>]+>/g,'').replace(/&#x27;|&#39;/g,"'").replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
+  for(const [index,objective] of suppliedObjectives.entries())for(const paragraph of objective.split('\n\n'))assert.ok(aimsText.includes(paragraph),'Complete text retained for objective '+(index+1));
+  for(const start of [1,11,21,31])assert.ok(aims.includes(`href="#objective-${start}"`),'Objective jump link: '+start);
+  assert.ok(aims.includes('Objectives 31–42') && aims.includes('<ol'),'Final range and semantic ordered list');
+  assert.ok(aimsText.includes('jail prisoners') && aimsText.includes('conducive to the objects of the Foundation'),'Cross-image objectives 17 and 26 are joined');
+  const aimsStatistic=[...(await read()).html.matchAll(/<dd>([\s\S]*?)<\/dd>/g)].map(match=>match[1]).find(text=>text.includes('Aims and Objectives'));
+  assert.ok(aimsStatistic && /\b42\b/.test(aimsStatistic.replace(/<[^>]+>/g,' ')),'Homepage count matches all 42 published objectives');
+  assert.ok((await read('/about')).html.includes('42 aims and objectives covering'),'About card and metadata use the full objectives count');
+  assert.ok(who.includes('Read All 42 Aims and Objectives'),'Who We Are points to the complete list');
+  assert.ok((await read('/faq')).html.includes('lists all 42 objectives'),'FAQ reflects the complete list');
   const leadership=(await read('/about/message-of-ceo')).html.replace(/<script\b[\s\S]*?<\/script>/g,'');
   assert.ok(leadership.includes('Chairman’s Message'), 'Keep supplied author title');
   assert.ok(leadership.includes('Reviewed leadership portrait') && leadership.includes('/api/public-assets/012345678901234567890132') && leadership.includes('/about/people/muhammad-yousaf-badar'), 'Leadership message uses its published author portrait and profile link');

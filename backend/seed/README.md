@@ -91,10 +91,12 @@ reviewed asset or while a duplicate link remains; do not publish by direct updat
   Neutral titles/alt text await accurate descriptive admin copy.
 - Charity certificates remain historical and expired (2022–2023 and 2024–2026).
   FBR/PCP number/date remain unset; no renewal is inferred.
-- Only 11 curated aims are seeded. Proofread all 42 constitutional objects from
-  scans before adding full text; no OCR Markdown was supplied in this pack.
+- All 42 aims and objectives were proofread from the owner's five screenshots
+  on 10 October 2026. The corresponding draft matches the full public list at
+  `frontend/data/aims-and-objectives.json`; reimporting is not required to update
+  the public page and does not overwrite existing administrator records.
 - Current individual sources take priority. The profile supplies only fallback
-  values, curated aims and thematic pillars; its people table is ignored. Urdu
+  values and thematic pillars; its people table is ignored. Urdu
   translation, exact Threads URL and office spelling remain pending.
 
 `npm run test:seed` exercises real isolated MongoDB preservation, interruptions,

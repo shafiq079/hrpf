@@ -146,42 +146,6 @@
           "text": "A just, peaceful and equitable society where human rights, dignity, transparency and the rule of law prevail, and where no vulnerable person is left without a voice."
         }
       ]
-    },
-    "aims-and-objectives": {
-      "title": "Aims & Objectives",
-      "blocks": [
-        {
-          "type": "paragraph",
-          "text": "The Foundation works across a broad range of humanitarian, social and human-rights areas. Its stated priorities include:"
-        },
-        {
-          "type": "list",
-          "items": [
-            "Protection and promotion of fundamental human rights",
-            "Women’s rights and gender equality",
-            "Child rights and protection of children from exploitation and abuse",
-            "Educational rights and access to quality education",
-            "Support and assistance for innocent and vulnerable prisoners",
-            "Right to Information and institutional transparency",
-            "Public accountability and good governance",
-            "Freedom of expression and freedom of the press",
-            "Protection and support for journalists facing threats and risks",
-            "Health, maternal and child healthcare",
-            "Clean drinking water and public health",
-            "Environmental protection and awareness",
-            "Poverty alleviation and support for disadvantaged communities",
-            "Human trafficking and human smuggling awareness and prevention",
-            "Support for victims and affected families",
-            "Emergency humanitarian assistance during floods, earthquakes and other disasters",
-            "Rural development and community welfare",
-            "Awareness, research, advocacy and public-interest initiatives"
-          ]
-        },
-        {
-          "type": "paragraph",
-          "text": "The Foundation’s stated objectives also include supporting health, education, poverty alleviation, women’s and children’s rights, environmental protection, rural development, sanitation, clean water, humanitarian welfare, press freedom and other lawful charitable activities."
-        }
-      ]
     }
   }
 }

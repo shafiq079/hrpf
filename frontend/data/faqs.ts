@@ -1,3 +1,5 @@
+import { objectiveCount } from "./aims-and-objectives";
+
 export interface FAQItem { question: string; answer: string; }
 export interface FAQGroup { category: string; items: FAQItem[]; }
 export const faqGroups: FAQGroup[] = [
@@ -15,6 +17,10 @@ export const faqGroups: FAQGroup[] = [
       {
         "question": "What areas does HRPF work in?",
         "answer": "Our Work covers women’s rights, children’s rights, access to justice, minority rights, education and awareness, research and advocacy, refugees and migrants, and community development. The Foundation’s objectives also include health, clean water, environmental protection and humanitarian welfare."
+      },
+      {
+        "question": "Where can I read the Foundation's aims and objectives?",
+        "answer": `The Aims and Objectives page lists all ${objectiveCount} objectives. They cover human rights, health, education, rural and community welfare, research, press freedom and the Foundation's institutional development.`
       },
       {
         "question": "Where can I read about registration?",

@@ -3,6 +3,7 @@ import TranslationText from "@/components/translation/TranslationText";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import source from "@/data/about-source.json";
 import { aboutProfile } from "@/data/about-profile";
+import { objectiveCount } from "@/data/aims-and-objectives";
 import Container from "@/components/shared/Container";
 import SectionHeading from "@/components/shared/SectionHeading";
 import AppImage from "@/components/shared/AppImage";
@@ -92,7 +93,7 @@ export default function AboutProfile() {
               </div>
             ))}
           </div>
-          <PrimaryButton className="mt-6" href="/about/aims-and-objectives" variant="outline" icon={ArrowRight}>Read Our Aims and Objectives</PrimaryButton>
+          <PrimaryButton className="mt-6" href="/about/aims-and-objectives" variant="outline" icon={ArrowRight}><TranslationText>{`Read All ${objectiveCount} Aims and Objectives`}</TranslationText></PrimaryButton>
         </Container>
       </section>
       <section className={`${sectionClass} bg-soft-gray`}>

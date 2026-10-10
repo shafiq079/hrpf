@@ -13,8 +13,8 @@ character in the pasted copy are removed. No founding year is inferred.
   records, commitment to Pakistan and the closing invitation. In-page contents
   links and existing theme components support navigation and reading on mobile.
 - `/about/mission-and-vision`: the complete new mission and vision statements.
-- `/about/aims-and-objectives`: all work areas from the client copy and the lawful
-  charitable-objectives statement.
+- `/about/aims-and-objectives`: the full 42 objectives from the client's five
+  screenshots supplied on 10 October 2026, in their original numbered order.
 - `/about/registration-and-certificates`: institutional summary followed by the
   existing managed document collection, with historical validity periods stated.
 - Leadership message, board, team, reports and document administration retain

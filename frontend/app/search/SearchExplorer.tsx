@@ -9,6 +9,7 @@ import FilterSelect from "@/components/shared/FilterSelect";
 import FilterBar from "@/components/shared/FilterBar";
 import EmptyState from "@/components/shared/EmptyState";
 import { mainNavigation } from "@/data/navigation";
+import { objectivesDescription } from "@/data/aims-and-objectives";
 
 export type EntryType = "Pages" | "Projects" | "Blogs" | "Progress Reports";
 export interface IndexEntry {
@@ -20,7 +21,7 @@ export interface IndexEntry {
 const entryTypes: EntryType[] = ["Pages", "Projects", "Blogs", "Progress Reports"];
 const pageEntries: IndexEntry[] = [
   ...mainNavigation.flatMap(item => [item, ...(item.children ?? [])]).map(item => ({
-    type: "Pages" as const, title: item.label, description: `Explore ${item.label} at HRPF Pakistan.`, href: item.href,
+    type: "Pages" as const, title: item.label, description: item.href === "/about/aims-and-objectives" ? objectivesDescription : `Explore ${item.label} at HRPF Pakistan.`, href: item.href,
   })),
   { type: "Pages", title: "File a Complaint", description: "Provide information about a human-rights concern.", href: "/file-a-complaint" },
   { type: "Pages", title: "Donate", description: "Support the Foundation’s work.", href: "/donate" },
