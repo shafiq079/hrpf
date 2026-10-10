@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const suppliedObjectives = JSON.parse(readFileSync(new URL('../data/aims-and-objectives.json', import.meta.url), 'utf8')).objectives;
+const suppliedPurpose = JSON.parse(readFileSync(new URL('../data/about-source.json', import.meta.url), 'utf8')).pages;
 
 const publicPaths = ['/blogs', '/about/progress-reports', '/about/registration-and-certificates', '/about/board-of-directors', '/about/our-team', '/gallery/media-coverage', '/gallery/tv-interviews'];
 
@@ -58,8 +59,20 @@ export async function checkNavigation(read, port) {
     const about=(await read(route)).html.replace(/<script\b[\s\S]*?<\/script>/g, '');
     for(const old of ['Elena Vasquez','Legal registration placeholder','Foundation concept and community consultation','Expansion of volunteer and legal referral network','/images/about/who-we-are.jpg','�']) assert.ok(!about.includes(old),'Removed About prototype/artefact on '+route+': '+old);
   }
-  const mission=(await read('/about/mission-and-vision')).html;
-  assert.ok(mission.includes('support individuals and communities facing injustice, discrimination, deprivation and vulnerability')&&mission.includes('where no vulnerable person is left without a voice'),'Mission and vision use current client copy');
+  const mission=(await read('/about/mission-and-vision')).html.replace(/<script\b[\s\S]*?<\/script>/g,'');
+  const missionText=mission.replace(/<[^>]+>/g,'').replace(/&#x27;|&#39;/g,"'").replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
+  assert.equal((mission.match(/<h1[ >]/g)||[]).length,1,'Mission and Vision has one main heading');
+  assert.equal(suppliedPurpose.vision.blocks.length,3,'Complete client vision has three paragraphs');
+  assert.equal(suppliedPurpose.mission.blocks.length,8,'Complete client mission has eight paragraphs');
+  for(const block of [...suppliedPurpose.vision.blocks,...suppliedPurpose.mission.blocks])assert.ok(missionText.includes(block.text),'Complete client paragraph: '+block.text.slice(0,55));
+  assert.deepEqual([...mission.matchAll(/<li\b[^>]*id="priority-(\d+)"/g)].map(match=>Number(match[1])),[1,2,3,4,5,6],'All six mission priorities are visible in order');
+  for(const priority of suppliedPurpose.mission.priorities)for(const text of [priority.title,priority.text])assert.ok(missionText.includes(text),'Complete priority text: '+text);
+  for(const text of [suppliedPurpose.mission.tagline,...suppliedPurpose.mission.commitment,suppliedPurpose.mission.closing])assert.ok(missionText.includes(text),'Client commitment and slogans: '+text);
+  for(const id of ['our-vision','our-mission','mission-priorities','our-commitment'])assert.ok(mission.includes(`href="#${id}"`)&&mission.includes(`id="${id}"`),'Mission and vision jump link: '+id);
+  for(const route of ['/about','/about/who-we-are']) {
+    const summary=(await read(route)).html.replace(/<script\b[\s\S]*?<\/script>/g,'');
+    assert.ok(summary.includes(suppliedPurpose.mission.blocks[0].text)&&summary.includes(suppliedPurpose.vision.blocks[0].text),'Shared summaries use the latest client wording on '+route);
+  }
   const aims=(await read('/about/aims-and-objectives')).html.replace(/<script\b[\s\S]*?<\/script>/g,'');
   assert.equal(suppliedObjectives.length,42,'All five screenshots contain 42 objectives');
   assert.deepEqual([...aims.matchAll(/<li\b[^>]*id="objective-(\d+)"/g)].map(match=>Number(match[1])),Array.from({length:42},(_,i)=>i+1),'Every objective is visible in the original order');

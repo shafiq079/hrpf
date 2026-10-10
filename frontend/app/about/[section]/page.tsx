@@ -14,6 +14,7 @@ import SectionHeading from "@/components/shared/SectionHeading";
 import TranslationText from "@/components/translation/TranslationText";
 import LeadershipMessage from "@/components/about/LeadershipMessage";
 import AimsObjectives from "@/components/about/AimsObjectives";
+import MissionVision from "@/components/about/MissionVision";
 
 export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ section: string }>; searchParams: Promise<{ page?: string | string[] }> };
@@ -44,14 +45,10 @@ export default async function AboutSectionPage({ params, searchParams }: Props) 
            </> :
            section === "board-of-directors" ? <PublicBoard page={page} /> : section === "our-team" ? <PublicBoard kind="team" page={page} /> :
            section === "message-of-ceo" ? <LeadershipMessage /> :
+           section === "mission-and-vision" ? <MissionVision /> :
            section === "aims-and-objectives" ? <AimsObjectives /> : (
             <div className="mx-auto max-w-3xl">
-              {section === "mission-and-vision" ? <>
-                <h2 className="font-serif text-2xl font-semibold text-navy">Our Mission</h2>
-                <ContentBlocks blocks={source.pages.mission.blocks} />
-                <h2 className="mt-12 font-serif text-2xl font-semibold text-navy">Our Vision</h2>
-                <ContentBlocks blocks={source.pages.vision.blocks} />
-              </> : <ContentBlocks blocks={source.pages["chairman-message"].blocks} />}
+              <ContentBlocks blocks={source.pages["chairman-message"].blocks} />
             </div>
            )}
           <div className="mt-12 border-t border-border pt-6"><Link href="/about" className="text-sm font-semibold text-teal-dark">Explore About HRPF</Link></div>
