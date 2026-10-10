@@ -45,7 +45,7 @@ export default function PageHero({
   const isCenter = align === "center";
 
   return (
-    <section className="hrpf-page-hero relative flex min-h-[340px] items-center overflow-hidden bg-navy sm:min-h-[380px]">
+    <section className="hrpf-page-hero relative flex min-h-[var(--hero-min-height,340px)] items-center overflow-hidden bg-navy sm:min-h-[var(--hero-min-height,380px)]">
       <HeroBackdrop
         image={heroImage}
         backgroundImage={backgroundImage}

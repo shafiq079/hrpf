@@ -26,8 +26,39 @@ beneficiaries, offices, documents, payments or particular projects.
 The downloaded images were resized to a maximum dimension of 1800 pixels,
 converted to WebP, and stripped of metadata. They are hosted locally rather
 than hotlinked. Next.js serves responsive sizes through the existing AppImage
-component. The versioned source directory has an immutable one-year cache;
-use `v2` when replacing assets, and update the catalog to avoid stale images.
+component for organization photos and uploaded covers. Original stock files
+remain in `v1` as references. The active stock hero pairs live in `v2`.
+Versioned source directories have an immutable one-year cache; use a new
+version when replacing assets, and update the catalog to avoid stale images.
+
+## Desktop and mobile compositions (v2)
+
+Each of the eight stock topics has two files in
+`frontend/public/images/heroes/v2/`: `<topic>-desktop.webp` and
+`<topic>-mobile.webp` (16 assets). The mobile file preserves the downloaded
+original exactly. Desktop images were recomposed from those references using
+the built-in `image_gen` editing tool, then encoded as WebP with metadata
+removed. They are AI-assisted decorative compositions, not unmodified stock
+photos or evidence of an HRPF activity. No staff portraits or organization
+photographs were generated or edited.
+
+The final prompt set is [HERO_IMAGE_PROMPTS.json](HERO_IMAGE_PROMPTS.json).
+Desktop sources are approximately 2172 × 724 pixels (3:1), with the main
+subject on the right and negative space beside the heading. The writing
+source is 2161 × 728 and microphone source 2170 × 725 pixels.
+
+`HeroBackdrop` uses Next.js `getImageProps` inside a native `<picture>`:
+the desktop source is selected from 1024px, and the mobile composition below
+1024px. Both have optimized width candidates and `sizes="100vw"`; only the
+selected composition is fetched. Eager loading and high fetch priority replace
+a mobile-only preload, which could otherwise download both versions.
+
+Stock heroes have a minimum height of 380px on desktop and a maximum width to
+height ratio of 4:1, so ultrawide screens do not slice away the main subject.
+Long titles and descriptions can grow the hero further. Mobile height remains
+content-driven. Desktop decorative stock compositions mirror for RTL copy,
+placing the subject opposite the title; actual HRPF photos and uploaded covers
+are never mirrored. Original mobile focal points remain independently set.
 
 ## Existing organization photographs
 

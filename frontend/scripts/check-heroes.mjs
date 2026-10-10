@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 
 /** Real production responses: every formerly plain hero has a loadable photo. */
 export async function checkHeroes(read, port) {
+  const stockPhotos = ["vision", "writing", "teamwork", "contact", "justice", "microphone", "camera", "documents"];
   const routes = [
     ["/about", "home-about"],
     ["/about/who-we-are", "home-about"],
@@ -52,7 +53,15 @@ export async function checkHeroes(read, port) {
       hero?.includes("hrpf-hero-overlay"),
       `Photo hero rendered on ${route}`,
     );
-    assert.ok(hero.includes(`${photo}.webp`), `Relevant photo on ${route}`);
+    if (stockPhotos.includes(photo)) {
+      assert.ok(hero.includes(`${photo}-desktop.webp`) && hero.includes(`${photo}-mobile.webp`), `Separate compositions on ${route}`);
+      assert.match(hero, /<picture><source media="\(min-width: 1024px\)"/, `Desktop source on ${route}`);
+      assert.ok(hero.includes('fetchPriority="high"'), `Selected hero receives fetch priority on ${route}`);
+      assert.ok(!hero.includes('rel="preload"'), `No fallback-only preload on ${route}`);
+    } else {
+      assert.ok(hero.includes(`${photo}.webp`), `Relevant photo on ${route}`);
+      assert.ok(!hero.includes("<picture>"), `Actual cover retained on ${route}`);
+    }
     assert.ok(
       /<img\b[^>]*alt=""/.test(hero) && hero.includes('aria-hidden="true"'),
       `Decorative image on ${route}`,
@@ -67,18 +76,9 @@ export async function checkHeroes(read, port) {
       `One page heading on ${route}`,
     );
   }
-  for (const file of [
-    "vision",
-    "writing",
-    "teamwork",
-    "contact",
-    "justice",
-    "microphone",
-    "camera",
-    "documents",
-  ]) {
+  for (const file of stockPhotos.flatMap((photo) => [`${photo}-desktop`, `${photo}-mobile`])) {
     const response = await fetch(
-      `http://127.0.0.1:${port}/images/heroes/v1/${file}.webp`,
+      `http://127.0.0.1:${port}/images/heroes/v2/${file}.webp`,
     );
     assert.equal(response.status, 200, file);
     assert.match(response.headers.get("content-type"), /image\/webp/);

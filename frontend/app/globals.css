@@ -117,6 +117,25 @@
     object-position: var(--hero-mobile-position, 50% 50%);
   }
 
+  /* Match the picture source breakpoint, including tablets below 1024px. */
+  .hrpf-hero-image.hrpf-hero-art-directed {
+    object-position: var(--hero-mobile-position, 50% 50%);
+  }
+
+  @media (min-width: 1024px) {
+    .hrpf-hero-image.hrpf-hero-art-directed {
+      object-position: var(--hero-position, 50% 50%);
+    }
+    /* Keep the shallowest banner at 4:1 so full subjects survive ultrawide crops. */
+    .hrpf-page-hero:has(.hrpf-hero-art-directed) {
+      --hero-min-height: max(380px, 25vw);
+      min-height: var(--hero-min-height);
+    }
+    html[dir="rtl"] .hrpf-hero-art-directed {
+      transform: scaleX(-1);
+    }
+  }
+
   /* A stronger scrim across small screens keeps multiline copy readable.
      On wide screens the photograph opens up beyond the text column. */
   .hrpf-hero-overlay {

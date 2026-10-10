@@ -5,7 +5,36 @@ export type HeroImage = {
   src: string;
   position: string;
   mobilePosition?: string;
+  variants?: {
+    desktop: { src: string; width: number; height: number };
+    mobile: { src: string; width: number; height: number };
+  };
 };
+
+/** Separate compositions; widths in srcSet still use the Next.js optimizer. */
+function stockHero(
+  name: string,
+  mobileWidth: number,
+  mobileHeight: number,
+  mobilePosition: string,
+  desktopWidth = 2172,
+  desktopHeight = 724,
+): HeroImage {
+  const src = `/images/heroes/v2/${name}-desktop.webp`;
+  return {
+    src,
+    position: "50% 50%",
+    mobilePosition,
+    variants: {
+      desktop: { src, width: desktopWidth, height: desktopHeight },
+      mobile: {
+        src: `/images/heroes/v2/${name}-mobile.webp`,
+        width: mobileWidth,
+        height: mobileHeight,
+      },
+    },
+  };
+}
 
 export const heroImages = {
   about: { src: "/images/hrpf/home-about.webp", position: "55% 28%" },
@@ -20,26 +49,14 @@ export const heroImages = {
   },
   leadership: { src: "/images/hrpf/home-chairman.webp", position: "65% 50%" },
   reports: { src: "/images/hrpf/home-report-2024.webp", position: "55% 45%" },
-  vision: { src: "/images/heroes/v1/vision.webp", position: "50% 58%" },
-  writing: {
-    src: "/images/heroes/v1/writing.webp",
-    position: "50% 55%",
-    mobilePosition: "50% 60%",
-  },
-  teamwork: { src: "/images/heroes/v1/teamwork.webp", position: "55% 50%" },
-  contact: { src: "/images/heroes/v1/contact.webp", position: "50% 45%" },
-  justice: {
-    src: "/images/heroes/v1/justice.webp",
-    position: "50% 40%",
-    mobilePosition: "68% 40%",
-  },
-  microphone: { src: "/images/heroes/v1/microphone.webp", position: "50% 45%" },
-  camera: {
-    src: "/images/heroes/v1/camera.webp",
-    position: "50% 61%",
-    mobilePosition: "50% 55%",
-  },
-  documents: { src: "/images/heroes/v1/documents.webp", position: "50% 50%" },
+  vision: stockHero("vision", 1800, 1200, "50% 58%"),
+  writing: stockHero("writing", 1200, 1800, "50% 60%", 2161, 728),
+  teamwork: stockHero("teamwork", 1800, 1200, "55% 50%"),
+  contact: stockHero("contact", 1350, 1800, "50% 45%"),
+  justice: stockHero("justice", 1800, 1200, "68% 40%"),
+  microphone: stockHero("microphone", 1800, 1200, "50% 45%", 2170, 725),
+  camera: stockHero("camera", 1331, 1800, "50% 55%"),
+  documents: stockHero("documents", 1800, 1200, "50% 50%"),
 } satisfies Record<string, HeroImage>;
 
 export type HeroImageKey = keyof typeof heroImages;

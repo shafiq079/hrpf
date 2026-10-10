@@ -109,7 +109,7 @@ export default function ProjectDetailView({
   const headingClass = "mb-5 text-2xl sm:text-3xl";
   return (
     <article>
-      <section className="relative overflow-hidden bg-navy py-12 sm:py-16">
+      <section className="hrpf-page-hero relative overflow-hidden bg-navy py-12 sm:py-16">
         <HeroBackdrop image={projectHeroImage(project.focusArea)} backgroundImage={project.image && !project.image.includes("project-placeholder") ? project.image : undefined} />
         <Container className="relative">
           <Link
