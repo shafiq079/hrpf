@@ -36,8 +36,31 @@ function stockHero(
   };
 }
 
+/** Topic-specific compositions, with a centered subject for phone/tablet banners. */
+function topicHero(name: string, mobilePosition = "50% 65%"): HeroImage {
+  const src = `/images/heroes/v3/${name}-desktop.webp`;
+  return {
+    src,
+    position: "50% 50%",
+    mobilePosition,
+    variants: {
+      desktop: { src, width: 2172, height: 724 },
+      mobile: { src: `/images/heroes/v3/${name}-mobile.webp`, width: 1374, height: 1145 },
+    },
+  };
+}
+
 export const heroImages = {
-  about: { src: "/images/hrpf/home-about.webp", position: "55% 28%" },
+  about: { src: "/images/hrpf/home-about.webp", position: "55% 28%", mobilePosition: "90% 28%" },
+  whoWeAre: {
+    src: "/images/hrpf/education-and-awareness-archive.webp",
+    position: "60% 64%",
+    mobilePosition: "60% 50%",
+  },
+  profile: topicHero("profile"),
+  mission: topicHero("mission", "60% 55%"),
+  reportDocuments: topicHero("reports"),
+  projects: topicHero("projects"),
   community: {
     src: "/images/hrpf/home-hero.webp",
     position: "65% 42%",
@@ -72,13 +95,13 @@ export function projectHeroImage(focusArea: string): HeroImageKey {
 }
 
 export const aboutHeroImages = {
-  "who-we-are": "about",
-  "profile": "about",
-  "mission-and-vision": "vision",
+  "who-we-are": "whoWeAre",
+  "profile": "profile",
+  "mission-and-vision": "mission",
   "aims-and-objectives": "writing",
   "message-of-ceo": "leadership",
   "board-of-directors": "teamwork",
   "our-team": "teamwork",
   "registration-and-certificates": "documents",
-  "progress-reports": "reports",
+  "progress-reports": "reportDocuments",
 } satisfies Record<string, HeroImageKey>;
