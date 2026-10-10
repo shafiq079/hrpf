@@ -15,7 +15,7 @@ export const metadata = createMetadata({
 export default function ReportViolationPage() {
   return (
     <main id="main-content" className="flex-1">
-      <PageHero
+      <PageHero heroImage="justice"
         eyebrow="Report a Concern"
         title="File a Complaint"
         description="Use this form to provide information about a possible human-rights concern. Reports are reviewed carefully, but submitting a report does not guarantee investigation, representation or a specific outcome."

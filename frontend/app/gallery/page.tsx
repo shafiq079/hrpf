@@ -12,7 +12,7 @@ const categories = [
 export default function GalleryPage() {
   return (
     <main id="main-content" className="flex-1">
-      <PageHero eyebrow="GALLERY" title="HRPF in the Media" description="Explore media coverage and interviews connected with the Foundation’s work."
+      <PageHero heroImage="camera" eyebrow="GALLERY" title="HRPF in the Media" description="Explore media coverage and interviews connected with the Foundation’s work."
         breadcrumbs={[{ label: "Gallery" }]} />
       <section className="bg-off-white py-16 sm:py-20 lg:py-24">
         <Container><ul className="grid gap-6 md:grid-cols-2">

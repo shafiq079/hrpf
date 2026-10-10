@@ -27,7 +27,7 @@ export default async function SearchPage() {
   ];
   return (
     <main id="main-content" className="flex-1">
-      <PageHero
+      <PageHero heroImage="documents"
         eyebrow="SEARCH"
         title="Search"
         description="Search pages and the latest published projects, blogs and progress reports."

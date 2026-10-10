@@ -27,7 +27,7 @@ export default async function MediaCoveragePage({
     category = params.category === "in-action" ? "in-action" : "media-coverage",
     q = typeof params.q === "string" ? params.q.trim().slice(0, 80) : "";
   const result = await readPublicCollection<PublicGalleryImage>("gallery", page, category, 12, "en", q);
-  return <main id="main-content" className="flex-1"><PageHero eyebrow="GALLERY" title="Media Coverage" description="Explore our press archive and photographs. Open an image to read a cutting, zoom in or browse the collection." breadcrumbs={[{
+  return <main id="main-content" className="flex-1"><PageHero heroImage="camera" eyebrow="GALLERY" title="Media Coverage" description="Explore our press archive and photographs. Open an image to read a cutting, zoom in or browse the collection." breadcrumbs={[{
       label: "Gallery",
       href: "/gallery"
     }, {

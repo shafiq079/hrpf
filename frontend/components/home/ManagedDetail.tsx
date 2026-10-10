@@ -16,6 +16,8 @@ export default async function ManagedDetail({
   return (
     <main id="main-content">
       <PageHero
+        heroImage={kind === "projects" ? "teamwork" : "writing"}
+        backgroundImage={row.image && !row.image.includes("project-placeholder") ? row.image : undefined}
         eyebrow="HRPF Pakistan"
         title={row.title}
         description={row.summary ?? row.excerpt}

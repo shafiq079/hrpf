@@ -18,6 +18,12 @@ const nextConfig: NextConfig = {
     }, {
       source: "/videos/home-banner/v1/:path*",
       headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+    }, {
+      source: "/images/heroes/v1/:path*",
+      headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+    }, {
+      source: "/images/heroes/v2/:path*",
+      headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
     }];
   },
   async redirects() {

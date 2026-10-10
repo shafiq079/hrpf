@@ -13,7 +13,7 @@ const areas = [
 ];
 export default function ImpactPage() {
   return <main id="main-content" className="flex-1">
-    <PageHero eyebrow="OUR IMPACT" title="Documented Action for Dignity and Justice" description="HRPF’s work is reflected in the concerns it documents, the institutions it engages and the responses recorded in its projects and progress reports." breadcrumbs={[{ label: "Our Work", href: "/our-work" }, { label: "Our Impact" }]} />
+    <PageHero heroImage="community" eyebrow="OUR IMPACT" title="Documented Action for Dignity and Justice" description="HRPF’s work is reflected in the concerns it documents, the institutions it engages and the responses recorded in its projects and progress reports." breadcrumbs={[{ label: "Our Work", href: "/our-work" }, { label: "Our Impact" }]} />
     <section className="bg-off-white py-14 sm:py-20"><Container>
       <SectionHeading title="Where Our Work Makes a Difference" description="These areas reflect work recorded in HRPF’s progress reports and organizational profile." />
       <div className="mt-8 grid gap-6 md:grid-cols-2">{areas.map(area => <article key={area.title} className="border border-border bg-white p-6 sm:p-8"><h2 className="text-2xl"><TranslationText>{area.title}</TranslationText></h2><p className="mt-4 text-base leading-relaxed text-muted"><TranslationText>{area.text}</TranslationText></p></article>)}</div>

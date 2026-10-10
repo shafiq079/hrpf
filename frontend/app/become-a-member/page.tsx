@@ -12,7 +12,7 @@ export const metadata = createMetadata({
 export default function BecomeMemberPage() {
   return (
     <main id="main-content" className="flex-1">
-      <PageHero
+      <PageHero heroImage="teamwork"
         eyebrow="MEMBERSHIP"
         title="Become a Member"
         description="Join HRPF Pakistan in promoting human dignity, access to justice and institutional accountability."

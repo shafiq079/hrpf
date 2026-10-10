@@ -11,7 +11,7 @@ import source from "@/data/about-source.json";
 export const metadata = createMetadata({ title: "Our Work", description: "HRPF Pakistan promotes human rights through awareness, documentation, lawful advocacy and institutional engagement.", path: "/our-work" });
 export default function OurWorkPage() {
   return <main id="main-content" className="flex-1">
-    <PageHero eyebrow="OUR WORK" title="Human Dignity. Rights. Public Accountability." description="HRPF Pakistan stands with vulnerable communities through public awareness, responsible documentation, lawful advocacy and constructive engagement with institutions." breadcrumbs={[{ label: "Our Work" }]} />
+    <PageHero heroImage="community" eyebrow="OUR WORK" title="Human Dignity. Rights. Public Accountability." description="HRPF Pakistan stands with vulnerable communities through public awareness, responsible documentation, lawful advocacy and constructive engagement with institutions." breadcrumbs={[{ label: "Our Work" }]} />
     <section className="bg-off-white py-14 sm:py-20"><Container>
       <SectionHeading title="Our Areas of Work" description="Explore our approach and related published projects in each field." />
       <div className="mt-10 grid gap-6 md:grid-cols-2">

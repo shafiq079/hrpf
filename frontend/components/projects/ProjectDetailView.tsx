@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import Container from "@/components/shared/Container";
 import Prose from "@/components/shared/Prose";
+import HeroBackdrop from "@/components/shared/HeroBackdrop";
+import { projectHeroImage } from "@/data/hero-images";
 import ProjectGallery from "./ProjectGallery";
 import type { ProjectDetail, TextBlock } from "@/lib/project-details";
 
@@ -107,12 +109,12 @@ export default function ProjectDetailView({
   const headingClass = "mb-5 text-2xl sm:text-3xl";
   return (
     <article>
-      <section className="relative overflow-hidden bg-navy py-12 sm:py-16">
-        <div className="pointer-events-none absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-teal/15 to-transparent" />
+      <section className="hrpf-page-hero relative overflow-hidden bg-navy py-12 sm:py-16">
+        <HeroBackdrop image={projectHeroImage(project.focusArea)} backgroundImage={project.image && !project.image.includes("project-placeholder") ? project.image : undefined} />
         <Container className="relative">
           <Link
             href="/programmes"
-            className="mb-8 inline-flex items-center gap-2 text-sm text-white/75 hover:text-white"
+            className="mb-8 inline-flex items-center gap-2 text-sm text-white/95 hover:text-white"
           >
             <ArrowLeft size={16} aria-hidden="true" /> All projects
           </Link>
@@ -127,10 +129,10 @@ export default function ProjectDetailView({
           <h1 className="mt-5 max-w-4xl text-3xl leading-tight text-white sm:text-5xl">
             {project.title}
           </h1>
-          <p className="mt-5 max-w-3xl text-base leading-relaxed text-white/80 sm:text-lg">
+          <p className="mt-5 max-w-3xl text-base leading-relaxed text-white/95 sm:text-lg">
             {project.summary}
           </p>
-          <div className="mt-7 flex flex-wrap gap-x-6 gap-y-3 text-sm text-white/75">
+          <div className="mt-7 flex flex-wrap gap-x-6 gap-y-3 text-sm text-white/95">
             <span className="inline-flex items-center gap-2">
               <MapPin size={16} aria-hidden="true" />
               {project.location}
