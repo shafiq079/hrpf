@@ -6,7 +6,7 @@ import PageHero from "@/components/shared/PageHero";
 
 export const metadata = createMetadata({ title: "Gallery", description: "Explore HRPF’s media coverage and TV interviews.", path: "/gallery" });
 const categories = [
-  { label: "Media Coverage", href: "/gallery/media-coverage", icon: Camera, description: "Browse published press coverage and media images documenting HRPF’s work." },
+  { label: "Media Coverage", href: "/gallery/media-coverage", icon: Camera, description: "Browse published press coverage, photographs and videos documenting HRPF’s work." },
   { label: "TV Interviews", href: "/gallery/tv-interviews", icon: Tv, description: "Find television interviews and conversations about HRPF’s human-rights advocacy." },
 ];
 export default function GalleryPage() {

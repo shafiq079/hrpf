@@ -155,8 +155,13 @@ export async function checkNavigation(read, port) {
   assert.ok(page.html.includes('category=media-coverage') && page.html.includes('page=2'), 'Gallery pagination retains collection');
   assert.ok((await read('/gallery/media-coverage?category=in-action&q=HRPF')).html.includes('Published HRPF photograph'));
   page = await read('/gallery/tv-interviews');
-  assert.ok(page.html.includes('Published TV interview') && page.html.includes('Reviewed interview introduction') && page.html.includes('Watch interview: Published TV interview'));
+  assert.ok(page.html.includes('Published TV interview') && page.html.includes('Reviewed interview introduction') && page.html.includes('Watch video: Published TV interview'));
   assert.ok(!page.html.includes('<iframe'), 'Provider does not load until playback is requested');
+  assert.ok(page.html.includes('translate="no"') && page.html.includes('i.ytimg.com'), 'YouTube original title and thumbnail');
+  page = await read('/gallery/media-coverage?category=videos');
+  assert.ok(page.html.includes('Published video coverage') && !page.html.includes('Published TV interview'), 'Coverage category is requested separately');
+  assert.ok(page.html.includes('Watch video: Published video coverage') && !page.html.includes('<iframe'), 'Coverage video is also click-to-play');
+  assert.ok(page.html.includes('category=videos') && page.html.includes('page=2'), 'Video pagination retains the tab');
   assert.ok((await read('/admin/gallery')).html.includes('Gallery Administration'), 'Gallery admin route metadata');
   page = await read('/become-a-member');
   assert.ok(page.html.includes('Apply for Membership')); assert.ok(page.html.includes('Review application')); assert.ok(!page.html.includes('docs.google.com/forms'));

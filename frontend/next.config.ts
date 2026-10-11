@@ -9,6 +9,7 @@ const codespaceHost = process.env.CODESPACE_NAME
   ? `${process.env.CODESPACE_NAME}-3000.${process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN ?? "app.github.dev"}`
   : undefined;
 const nextConfig: NextConfig = {
+  images: { remotePatterns: [{ protocol: "https", hostname: "i.ytimg.com", pathname: "/vi/**" }, { protocol: "https", hostname: "i.ytimg.com", pathname: "/vi_webp/**" }] },
   allowedDevOrigins: codespaceHost ? [codespaceHost] : [],
   async headers() {
     return [{

@@ -22,7 +22,8 @@ export type MediaRecord = {
   eventDate?: string;
   sortOrder: number;
   assetId: string | null;
-  category: "media-coverage" | "in-action";
+  category: "media-coverage" | "in-action" | "tv-interviews";
+  youtubeThumbnailUrl?: string;
   mediaType: "newspaper" | "photo" | "graphic";
   alt: Localized;
   caption: Localized;
@@ -86,10 +87,31 @@ export default function GalleryEditor({
     form = useRef<HTMLFormElement>(null),
     fileInput = useRef<HTMLInputElement>(null);
   const isImage = kind === "gallery";
+  const isYouTube = !isImage && videoLink(record.videoUrl)?.provider === "youtube";
+  async function loadVideoInfo() {
+    if (busy || uploading) return;
+    setBusy(true);
+    setError("");
+    setReviewed(false);
+    try {
+      const metadata = await adminRequest<{ title: string; sourceName: string; thumbnailUrl: string }>(`/admin/interviews/metadata?videoUrl=${encodeURIComponent(record.videoUrl)}`);
+      setRecord(current => ({
+        ...current,
+        title: { en: metadata.title },
+        sourceName: metadata.sourceName,
+        youtubeThumbnailUrl: metadata.thumbnailUrl
+      }));
+    } catch (failure) {
+      setError(failure instanceof Error ? failure.message : "YouTube information could not be loaded.");
+    } finally {
+      setBusy(false);
+    }
+  }
   function update<K extends keyof MediaRecord>(key: K, value: MediaRecord[K]) {
     setRecord(current => ({
       ...current,
-      [key]: value
+      [key]: value,
+      ...(key === "videoUrl" ? { title: { en: "" }, youtubeThumbnailUrl: "", sourceName: "" } : {})
     }));
     setReviewed(false);
   }
@@ -155,7 +177,7 @@ export default function GalleryEditor({
   }
   async function save(publish: boolean) {
     if (busy || uploading || !form.current?.reportValidity()) return;
-    if (publish && (!reviewed || isImage && !record.assetId || record.duplicate || !isImage && record.assetId && !record.thumbnailAlt.trim())) {
+    if (publish && (!reviewed || isImage && !record.assetId || record.duplicate || !isImage && !isYouTube && record.assetId && !record.thumbnailAlt.trim())) {
       setError("Review the record and its image description before publishing. Duplicate archive records cannot be published.");
       return;
     }
@@ -167,7 +189,7 @@ export default function GalleryEditor({
         sourceName: record.sourceName,
         eventDate: record.eventDate || undefined,
         sortOrder: record.sortOrder,
-        assetId: record.assetId
+        assetId: isYouTube ? null : record.assetId
       };
       const input = isImage ? {
         ...common,
@@ -179,6 +201,7 @@ export default function GalleryEditor({
         sourceUrl: record.sourceUrl
       } : {
         ...common,
+        category: record.category === "media-coverage" ? "media-coverage" : "tv-interviews",
         description: record.description,
         videoUrl: record.videoUrl,
         thumbnailAlt: record.thumbnailAlt
@@ -223,13 +246,13 @@ export default function GalleryEditor({
   const file = record.assetId ? `/api/admin/assets/${record.assetId}/content` : null,
     video = videoLink(record.videoUrl);
   return <>
-    <div className="mb-7 flex flex-wrap items-center justify-between gap-4"><div><p className="eyebrow">Gallery management</p><h1 className="mt-2 text-3xl">{record.id ? "Edit" : "Add"} {isImage ? "archive image" : "TV interview"}</h1><p className="mt-3 text-sm text-muted">Saving an edit returns the record to a private draft. Publish after reviewing your changes.</p></div><button type="button" disabled={busy || uploading} onClick={onCancel} className="border border-border px-4 py-2 text-sm">Back to Gallery</button></div>
+    <div className="mb-7 flex flex-wrap items-center justify-between gap-4"><div><p className="eyebrow">Gallery management</p><h1 className="mt-2 text-3xl">{record.id ? "Edit" : "Add"} {isImage ? "archive image" : "video"}</h1><p className="mt-3 text-sm text-muted">Saving an edit returns the record to a private draft. Publish after reviewing your changes.</p></div><button type="button" disabled={busy || uploading} onClick={onCancel} className="border border-border px-4 py-2 text-sm">Back to Gallery</button></div>
     {error && <p role="alert" className="mb-5 border-l-4 border-red bg-red/5 p-4 text-sm">{error}</p>}
     {record.duplicate && <p className="mb-5 border-l-4 border-gold bg-gold/10 p-4 text-sm">This source record is marked as a duplicate. Its archive status is preserved; use the primary record for publication.</p>}
     <form ref={form} onSubmit={submit} className="space-y-7">
       <fieldset disabled={busy || uploading} className="grid gap-5 rounded-lg border border-border bg-white p-5 sm:grid-cols-2 sm:p-7"><legend className="px-2 text-lg font-semibold">Story and context</legend>
-        <Field label="Title"><input className={inputClass} required maxLength={200} value={record.title.en} onChange={e => text("title", e.target.value)} /></Field>
-        <Field label="Publication or TV channel (optional)"><input className={inputClass} maxLength={200} value={record.sourceName} onChange={e => update("sourceName", e.target.value)} /></Field>
+        <Field label={isYouTube ? "YouTube title (loaded automatically)" : "Title"}><input className={inputClass} readOnly={isYouTube} required={!isYouTube} maxLength={200} value={record.title.en} onChange={e => text("title", e.target.value)} /></Field>
+        <Field label="Publication or TV channel (optional)"><input className={inputClass} maxLength={200} readOnly={isYouTube} value={record.sourceName} onChange={e => update("sourceName", e.target.value)} /></Field>
         <Field label="Coverage or event date (optional)"><input className={inputClass} type="date" value={record.eventDate ?? ""} onChange={e => update("eventDate", e.target.value)} /><span className="mt-2 block text-xs font-normal text-muted">Leave blank when the original date is unknown.</span></Field>
         <Field label="Display order"><input className={inputClass} type="number" required min={0} max={100000} step={1} value={record.sortOrder} onChange={e => update("sortOrder", Number(e.target.value))} /><span className="mt-2 block text-xs font-normal text-muted">Lower numbers appear first.</span></Field>
         {isImage ? <>
@@ -238,11 +261,12 @@ export default function GalleryEditor({
           <Field label="Original coverage link (optional)"><input className={inputClass} type="url" maxLength={2000} placeholder="https://…" value={record.sourceUrl} onChange={e => update("sourceUrl", e.target.value)} /></Field>
           <div className="sm:col-span-2"><Field label="Caption and context"><textarea className={inputClass} rows={5} maxLength={2000} value={record.caption.en} onChange={e => text("caption", e.target.value)} /></Field></div>
         </> : <>
-          <div className="sm:col-span-2"><Field label="Individual video link"><input className={inputClass} required type="url" maxLength={2000} placeholder="https://www.youtube.com/watch?v=…" value={record.videoUrl} onChange={e => update("videoUrl", e.target.value)} /><span className="mt-2 block text-xs font-normal text-muted">Use a public YouTube or Vimeo interview link. Channel links and embed HTML are not accepted.</span></Field></div>
-          <div className="sm:col-span-2"><Field label="Interview introduction and topics"><textarea className={inputClass} rows={6} maxLength={6000} value={record.description.en} onChange={e => text("description", e.target.value)} /></Field></div>
+          <Field label="Website page"><select className={inputClass} value={record.category === "media-coverage" ? "media-coverage" : "tv-interviews"} onChange={e => update("category", e.target.value as MediaRecord["category"])}><option value="tv-interviews">TV Interviews</option><option value="media-coverage">Media Coverage</option></select></Field>
+          <div className="sm:col-span-2"><Field label="Individual video link"><input className={inputClass} required type="url" maxLength={2000} placeholder="https://www.youtube.com/watch?v=…" value={record.videoUrl} onChange={e => update("videoUrl", e.target.value)} /><span className="mt-2 block text-xs font-normal text-muted">Paste a public YouTube link. Its original title and thumbnail are loaded automatically when saved. Existing Vimeo videos are also supported.</span></Field>{isYouTube && <button type="button" className="mt-3 text-sm font-semibold text-teal-dark" onClick={() => void loadVideoInfo()}>Load YouTube title and thumbnail</button>}</div>
+          <div className="sm:col-span-2"><Field label="Introduction (optional)"><textarea className={inputClass} rows={6} maxLength={6000} value={record.description.en} onChange={e => text("description", e.target.value)} /></Field></div>
         </>}
       </fieldset>
-      <fieldset disabled={busy || uploading} className="rounded-lg border border-border bg-white p-5 sm:p-7">
+      {isYouTube ? <div className="rounded-lg border border-border bg-white p-5"><p className="text-sm text-muted">YouTube thumbnail</p>{record.youtubeThumbnailUrl ? <div className="relative mt-3 aspect-video max-w-lg"><AppImage src={record.youtubeThumbnailUrl} alt={record.title.en} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-contain" /></div> : <p className="mt-3 text-sm">Load the YouTube information to preview its title and thumbnail.</p>}</div> : <fieldset disabled={busy || uploading} className="rounded-lg border border-border bg-white p-5 sm:p-7">
         <legend className="px-2 text-lg font-semibold">{isImage ? "Archive image" : "Thumbnail (optional)"}</legend>
         <div className="grid gap-6 md:grid-cols-2 md:items-start">
           <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded border border-border bg-soft-gray">
@@ -265,12 +289,13 @@ export default function GalleryEditor({
           </div>
         </div>
         <div className="mt-6"><Field label={isImage ? "Image description (alt text)" : "Thumbnail description (alt text)"}><input className={inputClass} required={isImage || !!record.assetId} maxLength={300} value={isImage ? record.alt.en : record.thumbnailAlt} onChange={e => isImage ? text("alt", e.target.value) : update("thumbnailAlt", e.target.value)} /></Field></div>
-      </fieldset>
-      <details className="rounded-lg border border-border bg-white p-5 sm:p-7"><summary className="cursor-pointer text-sm font-semibold">Manual Urdu content (optional)</summary><ManualUrduNote /><fieldset disabled={busy || uploading} className="mt-5 grid gap-5"><Field label="Urdu title"><input className={inputClass} dir="rtl" lang="ur" maxLength={200} value={record.title.ur ?? ""} onChange={e => text("title", e.target.value, "ur")} /></Field>{isImage && <Field label="Urdu image description"><input className={inputClass} dir="rtl" lang="ur" maxLength={300} value={record.alt.ur ?? ""} onChange={e => text("alt", e.target.value, "ur")} /></Field>}<Field label={isImage ? "Urdu caption" : "Urdu introduction"}><textarea className={inputClass} dir="rtl" lang="ur" rows={5} maxLength={isImage ? 2000 : 6000} value={(isImage ? record.caption : record.description).ur ?? ""} onChange={e => text(isImage ? "caption" : "description", e.target.value, "ur")} /></Field></fieldset></details>
+      </fieldset>}
+      {!isYouTube && <details className="rounded-lg border border-border bg-white p-5 sm:p-7"><summary className="cursor-pointer text-sm font-semibold">Manual Urdu content (optional)</summary><ManualUrduNote /><fieldset disabled={busy || uploading} className="mt-5 grid gap-5"><Field label="Urdu title"><input className={inputClass} dir="rtl" lang="ur" maxLength={200} value={record.title.ur ?? ""} onChange={e => text("title", e.target.value, "ur")} /></Field>{isImage && <Field label="Urdu image description"><input className={inputClass} dir="rtl" lang="ur" maxLength={300} value={record.alt.ur ?? ""} onChange={e => text("alt", e.target.value, "ur")} /></Field>}<Field label={isImage ? "Urdu caption" : "Urdu introduction"}><textarea className={inputClass} dir="rtl" lang="ur" rows={5} maxLength={isImage ? 2000 : 6000} value={(isImage ? record.caption : record.description).ur ?? ""} onChange={e => text(isImage ? "caption" : "description", e.target.value, "ur")} /></Field></fieldset></details>}
       <div className="rounded-lg border border-border bg-white p-5 sm:p-7"><label className="flex items-start gap-3 text-sm leading-relaxed"><input type="checkbox" checked={reviewed} disabled={busy || uploading} onChange={e => setReviewed(e.target.checked)} className="mt-1" />I have reviewed the text and media and approve this record for public display.</label><div className="mt-6 flex flex-wrap gap-3"><button type="button" disabled={busy || uploading} onClick={() => preview.current?.showModal()} className="border border-border px-5 py-3 text-sm font-semibold">Preview</button><button disabled={busy || uploading} className="bg-navy px-5 py-3 text-sm font-semibold text-white disabled:opacity-40">{busy ? "Saving…" : "Save draft"}</button><button type="button" disabled={busy || uploading || !reviewed || !!record.duplicate} onClick={() => void save(true)} className="bg-teal-dark px-5 py-3 text-sm font-semibold text-white disabled:opacity-40">Save and publish</button></div></div>
     </form>
     <dialog data-public-preview ref={preview} className="m-auto max-h-[90dvh] w-[95vw] max-w-4xl overflow-auto rounded-lg bg-off-white p-5 backdrop:bg-navy/80 sm:p-8" aria-label="Gallery preview"><div className="mb-6 flex items-center justify-between gap-3"><h2 className="text-2xl">Gallery preview</h2><button type="button" onClick={() => preview.current?.close()} className="border border-border bg-white px-4 py-2 text-sm">Close preview</button></div>{isImage ? file ? <MediaGrid items={[{
         ...record,
+        category: record.category === "in-action" ? "in-action" : "media-coverage",
         id: record.id ?? "preview",
         title: record.title.en || "Untitled image",
         file,
@@ -278,10 +303,11 @@ export default function GalleryEditor({
         caption: record.caption.en
       }]} /> : <p>Attach an image to see its preview.</p> : video ? <InterviewGrid items={[{
         ...video,
+        category: record.category === "media-coverage" ? "media-coverage" : "tv-interviews",
         id: record.id ?? "preview",
         title: record.title.en || "Untitled interview",
         description: record.description.en,
-        thumbnail: file,
+        thumbnail: isYouTube ? record.youtubeThumbnailUrl || null : file,
         thumbnailAlt: record.thumbnailAlt,
         sourceName: record.sourceName,
         eventDate: record.eventDate

@@ -3049,9 +3049,10 @@
             "schema": {
               "type": "string",
               "enum": [
-                "media-coverage",
-                "in-action"
-              ]
+                "tv-interviews",
+                "media-coverage"
+              ],
+              "default": "tv-interviews"
             }
           }
         ],
@@ -3068,6 +3069,13 @@
                       "items": {
                         "type": "object",
                         "properties": {
+                          "category": {
+                            "type": "string",
+                            "enum": [
+                              "tv-interviews",
+                              "media-coverage"
+                            ]
+                          },
                           "id": {
                             "type": "string"
                           },
@@ -3107,6 +3115,7 @@
                           }
                         },
                         "required": [
+                          "category",
                           "id",
                           "title",
                           "description",
@@ -9018,6 +9027,73 @@
         }
       }
     },
+    "/api/admin/interviews/metadata": {
+      "get": {
+        "summary": "Load original YouTube title, channel and thumbnail from a public individual link",
+        "security": [
+          {
+            "accessCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "videoUrl",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 2000
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "sourceName": {
+                          "type": "string"
+                        },
+                        "thumbnailUrl": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "title",
+                        "sourceName",
+                        "thumbnailUrl"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Redacted validation, authorization, conflict, limit or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admin/gallery": {
       "get": {
         "summary": "List 20 media editor records with versions; content role",
@@ -9694,11 +9770,14 @@
                 "type": "object",
                 "properties": {
                   "title": {
+                    "default": {
+                      "en": ""
+                    },
                     "type": "object",
                     "properties": {
                       "en": {
+                        "default": "",
                         "type": "string",
-                        "minLength": 1,
                         "maxLength": 200
                       },
                       "ur": {
@@ -9706,9 +9785,6 @@
                         "maxLength": 200
                       }
                     },
-                    "required": [
-                      "en"
-                    ],
                     "additionalProperties": false
                   },
                   "sourceName": {
@@ -9725,6 +9801,14 @@
                     "type": "integer",
                     "minimum": 0,
                     "maximum": 100000
+                  },
+                  "category": {
+                    "default": "tv-interviews",
+                    "type": "string",
+                    "enum": [
+                      "tv-interviews",
+                      "media-coverage"
+                    ]
                   },
                   "description": {
                     "type": "object",
@@ -9763,7 +9847,6 @@
                   }
                 },
                 "required": [
-                  "title",
                   "description",
                   "videoUrl"
                 ],
@@ -9900,11 +9983,14 @@
                 "type": "object",
                 "properties": {
                   "title": {
+                    "default": {
+                      "en": ""
+                    },
                     "type": "object",
                     "properties": {
                       "en": {
+                        "default": "",
                         "type": "string",
-                        "minLength": 1,
                         "maxLength": 200
                       },
                       "ur": {
@@ -9912,9 +9998,6 @@
                         "maxLength": 200
                       }
                     },
-                    "required": [
-                      "en"
-                    ],
                     "additionalProperties": false
                   },
                   "sourceName": {
@@ -9931,6 +10014,14 @@
                     "type": "integer",
                     "minimum": 0,
                     "maximum": 100000
+                  },
+                  "category": {
+                    "default": "tv-interviews",
+                    "type": "string",
+                    "enum": [
+                      "tv-interviews",
+                      "media-coverage"
+                    ]
                   },
                   "description": {
                     "type": "object",
@@ -9974,7 +10065,6 @@
                   }
                 },
                 "required": [
-                  "title",
                   "description",
                   "videoUrl",
                   "version"

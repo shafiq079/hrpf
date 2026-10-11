@@ -1,0 +1,145 @@
+{
+  "version": "hrpf-youtube-v1",
+  "videos": [
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=f1ZNo-4YzzE",
+      "category": "tv-interviews",
+      "sortOrder": 0
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=IbrCvA5g7us",
+      "category": "tv-interviews",
+      "sortOrder": 10
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=eVRgSxd9i78",
+      "category": "tv-interviews",
+      "sortOrder": 20
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=XeOyTRGyO94",
+      "category": "tv-interviews",
+      "sortOrder": 30
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=OiOh7cSUTWo",
+      "category": "tv-interviews",
+      "sortOrder": 40
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=h07bmcNhq9M",
+      "category": "media-coverage",
+      "sortOrder": 0
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=nbdRmPxwrwE",
+      "category": "media-coverage",
+      "sortOrder": 10
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=EIYbsx7rm-I",
+      "category": "media-coverage",
+      "sortOrder": 20
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=HGhjoEhMDIo",
+      "category": "media-coverage",
+      "sortOrder": 30
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=EKGYi_oNdMI",
+      "category": "media-coverage",
+      "sortOrder": 40
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=AuadJ71ms40",
+      "category": "media-coverage",
+      "sortOrder": 50
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=QSFMf0VY1Nc",
+      "category": "media-coverage",
+      "sortOrder": 60
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=F5dDourwBs4",
+      "category": "media-coverage",
+      "sortOrder": 70
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=IT7PzBH9eG4",
+      "category": "media-coverage",
+      "sortOrder": 80
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=wCweyOAdiKc",
+      "category": "media-coverage",
+      "sortOrder": 90
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=97qQ8bsc2R0",
+      "category": "media-coverage",
+      "sortOrder": 100
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=zfjqczhUKXg",
+      "category": "media-coverage",
+      "sortOrder": 110
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=-YVWdktME7E",
+      "category": "media-coverage",
+      "sortOrder": 120
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=4mKzgq3zE4U",
+      "category": "media-coverage",
+      "sortOrder": 130
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=Xy-TCACYdxE",
+      "category": "media-coverage",
+      "sortOrder": 140
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=1htLCfLc16Y",
+      "category": "media-coverage",
+      "sortOrder": 150
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=VIUfdtk4-PE",
+      "category": "media-coverage",
+      "sortOrder": 160
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=P-as2_yGwKw",
+      "category": "media-coverage",
+      "sortOrder": 170
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=2cwQ1CPEOXw",
+      "category": "media-coverage",
+      "sortOrder": 180
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=UXuGSkJ6cxk",
+      "category": "media-coverage",
+      "sortOrder": 190
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=MmIaAQQ6sPw",
+      "category": "media-coverage",
+      "sortOrder": 200
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=R2trDfvoCd0",
+      "category": "media-coverage",
+      "sortOrder": 210
+    },
+    {
+      "videoUrl": "https://www.youtube.com/watch?v=FJGl68vav9g",
+      "category": "media-coverage",
+      "sortOrder": 220
+    }
+  ]
+}

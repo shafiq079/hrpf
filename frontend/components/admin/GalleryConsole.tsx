@@ -270,14 +270,14 @@ export default function GalleryConsole() {
               <p className="eyebrow">Content management</p>
               <h1 className="mt-2 text-3xl">Gallery</h1>
               <p className="mt-3 text-sm text-muted">
-                Manage newspaper cuttings, HRPF photographs and television interviews.
+                Manage newspaper cuttings, HRPF photographs and YouTube videos for both website pages.
               </p>
             </div>
             <button
               type="button"
               disabled={busy}
               onClick={() => {
-                setEditor(newMedia());
+                setEditor({ ...newMedia(), category: kind === "interviews" ? "tv-interviews" : "media-coverage" });
                 setNotice("");
                 setError("");
               }}
@@ -287,7 +287,7 @@ export default function GalleryConsole() {
               Add media
             </button>
           </div>
-          <nav aria-label="Media management" className="mb-6 flex gap-3">{(["gallery", "interviews"] as MediaKind[]).map(value => <button type="button" key={value} disabled={busy} aria-pressed={kind === value} onClick={() => { setKind(value); setPage(1); setRows([]); setError(""); setNotice(""); }} className={`border border-border px-5 py-3 text-sm font-semibold ${kind === value ? "bg-navy text-white" : "bg-white text-navy"}`}>{value === "gallery" ? "Images and cuttings" : "TV interviews"}</button>)}</nav>
+          <nav aria-label="Media management" className="mb-6 flex gap-3">{(["gallery", "interviews"] as MediaKind[]).map(value => <button type="button" key={value} disabled={busy} aria-pressed={kind === value} onClick={() => { setKind(value); setPage(1); setRows([]); setError(""); setNotice(""); }} className={`border border-border px-5 py-3 text-sm font-semibold ${kind === value ? "bg-navy text-white" : "bg-white text-navy"}`}>{value === "gallery" ? "Images and cuttings" : "Videos"}</button>)}</nav>
           <div className="space-y-4">
             {rows.map((row) => (
               <article
@@ -304,7 +304,7 @@ export default function GalleryConsole() {
                     {row.title.en}
                   </h2>
                   <p className="mt-2 text-sm text-muted">
-                    {row.sourceName || (kind === "gallery" ? row.category : "TV interview")}
+                    {kind === "gallery" ? row.category === "in-action" ? "HRPF photographs" : "Press coverage" : row.category === "media-coverage" ? "Media Coverage" : "TV Interviews"}{row.sourceName ? ` · ${row.sourceName}` : ""} · Order {row.sortOrder}
                   </p>
                 </div>
                 <div className="flex shrink-0 flex-wrap gap-x-5 gap-y-3">
@@ -320,7 +320,7 @@ export default function GalleryConsole() {
                   {row.status === "published" && (
                     <>
                       <Link
-                        href={kind === "gallery" ? `/gallery/media-coverage?category=${row.category}` : "/gallery/tv-interviews"}
+                        href={kind === "gallery" ? `/gallery/media-coverage?category=${row.category}` : row.category === "media-coverage" ? "/gallery/media-coverage?category=videos" : "/gallery/tv-interviews"}
                         target="_blank"
                         rel="noopener"
                         className="inline-flex items-center gap-2 text-sm font-semibold text-navy"
@@ -334,7 +334,7 @@ export default function GalleryConsole() {
                         onClick={() => void act(row, "withdraw")}
                         className="text-sm font-semibold text-navy"
                       >
-                        Withdraw
+                        Hide
                       </button>
                     </>
                   )}

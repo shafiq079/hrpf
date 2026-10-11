@@ -8,6 +8,7 @@ import { can, permit } from '../security/permissions.js';
 import { ApiError, validate } from './errors.js';
 import { bindContentMedia } from '../services/project-media.js';
 import { videoLink } from '../services/video-links.js';
+import { fetchYouTubeMetadata, type YouTubeMetadataReader } from '../services/youtube-metadata.js';
 const localized = (max: number, required = false) => z.object({
   en: required ? z.string().trim().min(1).max(max) : z.string().trim().max(max).default(''),
   ur: z.string().trim().max(max).optional()
@@ -40,6 +41,8 @@ export const galleryInput = z.object({
 }).strict();
 export const interviewInput = z.object({
   ...common,
+  title: localized(200).default({ en: '' }),
+  category: z.enum(['tv-interviews', 'media-coverage']).default('tv-interviews'),
   description: localized(6000),
   videoUrl: z.string().trim().max(2000).refine(v => !!videoLink(v), 'Use an individual public YouTube or Vimeo video link'),
   thumbnailAlt: z.string().trim().max(300).default(''),
@@ -59,9 +62,15 @@ const specs = {
     field: 'thumbnail'
   }
 };
-export function mediaContentRouter(auth: ReturnType<typeof createAuth>) {
+export function mediaContentRouter(auth: ReturnType<typeof createAuth>, readMetadata: YouTubeMetadataReader = fetchYouTubeMetadata) {
   const router = Router();
   router.use(['/gallery', '/interviews'], auth.authenticate, permit('content'));
+  router.get('/interviews/metadata', async (req, res) => {
+    const { videoUrl } = validate(z.object({ videoUrl: interviewInput.shape.videoUrl }).strict(), req.query);
+    const link = videoLink(videoUrl)!;
+    if (link.provider !== 'youtube') throw new ApiError(400, 'INVALID_VIDEO', 'Enter an individual YouTube video link.');
+    res.json({ data: await readMetadata(link.watchUrl) });
+  });
   for (const [kind, spec] of Object.entries(specs)) {
     const model = spec.model as mongoose.Model<any>;
     const view = (row: any) => ({
@@ -89,6 +98,8 @@ export function mediaContentRouter(auth: ReturnType<typeof createAuth>) {
         description: row.description ?? {
           en: ''
         },
+        category: row.category ?? 'tv-interviews',
+        youtubeThumbnailUrl: row.youtubeThumbnailUrl ?? '',
         videoUrl: row.videoUrl,
         thumbnailAlt: row.thumbnailAlt ?? ''
       })
@@ -125,6 +136,19 @@ export function mediaContentRouter(auth: ReturnType<typeof createAuth>) {
       }).strict() : method === 'patch' ? spec.schema.extend({
         version: z.number().int().nonnegative()
       }) : spec.schema, req.body);
+      if (kind === 'interviews' && method !== 'delete') {
+        const link = videoLink(input.videoUrl)!;
+        input.videoUrl = link.watchUrl;
+        if (link.provider === 'youtube') {
+          const metadata = await readMetadata(link.watchUrl);
+          input.title = { en: metadata.title };
+          input.sourceName = metadata.sourceName;
+          input.youtubeThumbnailUrl = metadata.thumbnailUrl;
+        } else {
+          if (!input.title.en.trim()) throw new ApiError(400, 'VALIDATION_ERROR', 'Enter a title for this Vimeo video.');
+          input.youtubeThumbnailUrl = undefined;
+        }
+      }
       const principal = res.locals.principal as Principal;
       const result = await mongoose.connection.transaction(async tx => {
         await bumpPublicRevision(tx);
@@ -148,7 +172,9 @@ export function mediaContentRouter(auth: ReturnType<typeof createAuth>) {
           assetId,
           ...fields
         } = input;
-        if (kind === 'interviews' && method !== 'delete') fields.videoUrl = videoLink(fields.videoUrl)!.watchUrl;
+        if (kind === 'interviews' && method !== 'delete' && await model.exists({ videoUrl: fields.videoUrl, ...(value ? { _id: { $ne: value } } : {}) }).session(tx)) {
+          throw new ApiError(409, 'DUPLICATE_VIDEO', 'This video is already in the Gallery. Edit the existing record to change its page or order.');
+        }
         const row = method === 'post' ? new model(fields) : await model.findOne({
           _id: value,
           __v: version

@@ -10,6 +10,7 @@ import { documentContentRouter } from './document-content.js';
 import { boardContentRouter } from './board-content.js';
 import { teamContentRouter } from './team-content.js';
 import { complaintContentRouter } from './complaint-content.js';
+import type { YouTubeMetadataReader } from '../services/youtube-metadata.js';
 import { mediaContentRouter } from './media-content.js';
 import { adminRouter } from './admin.js';
 import { unavailable, validate } from './errors.js';
@@ -19,7 +20,7 @@ import { cloudinaryProvider, createUploads, type UploadProvider } from '../servi
 import { createSubmissions } from '../services/submissions.js';
 import { membershipRegistrationRouter } from './membership-registration.js';
 import { createNewsletter } from '../services/newsletter.js';
-export type BusinessAdapters = { ready?: () => boolean; redis: RedisServices; bot?: BotVerifier; provider?: UploadProvider };
+export type BusinessAdapters = { ready?: () => boolean; redis: RedisServices; bot?: BotVerifier; provider?: UploadProvider; videoMetadata?: YouTubeMetadataReader };
 export function createBusiness(env: Environment, adapters: BusinessAdapters) {
   const router = Router(), { redis } = adapters;
   router.use((_req, _res, next) => { if (adapters.ready && !adapters.ready()) throw unavailable(); next(); });
@@ -34,7 +35,7 @@ export function createBusiness(env: Environment, adapters: BusinessAdapters) {
   router.use('/auth', auth.router);
   router.use('/admin/publication', redis.limit('publication', 60, 60000), publicationRouter(auth));
   router.use('/admin', redis.limit('managed-content', 120, 60000), managedContentRouter(auth));
-  router.use('/admin', redis.limit('media-content', 120, 60000), mediaContentRouter(auth));
+  router.use('/admin', redis.limit('media-content', 120, 60000), mediaContentRouter(auth, adapters.videoMetadata));
   router.use('/admin', redis.limit('document-content', 120, 60000), documentContentRouter(auth));
   router.use('/admin', redis.limit('board-content', 120, 60000), boardContentRouter(auth));
   router.use('/admin', redis.limit('team-content', 120, 60000), teamContentRouter(auth));

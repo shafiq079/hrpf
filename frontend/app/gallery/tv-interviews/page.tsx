@@ -23,7 +23,7 @@ export default async function TVInterviewsPage({
   const params = await searchParams,
     page = collectionPage(params.page),
     q = typeof params.q === "string" ? params.q.trim().slice(0, 80) : "";
-  const result = await readPublicCollection<PublicInterview>("interviews", page, undefined, 12, "en", q);
+  const result = await readPublicCollection<PublicInterview>("interviews", page, "tv-interviews", 12, "en", q);
   return <main id="main-content" className="flex-1"><PageHero heroImage="microphone" eyebrow="GALLERY" title="TV Interviews" description="Television conversations about human rights and the Foundation’s work." breadcrumbs={[{
       label: "Gallery",
       href: "/gallery"

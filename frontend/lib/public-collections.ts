@@ -7,7 +7,7 @@ export function collectionPage(value: string | string[] | undefined): number {
   return Number.isInteger(page) && page >= 1 && page <= 1000 ? page : 1;
 }
 /** Only public endpoints; never forward session cookies. */
-export async function readPublicCollection<T>(kind: CollectionKind, page = 1, category?: "media-coverage" | "in-action", limit = 12, locale: "en" | "ur" = "en", q = "", workArea?: string): Promise<PublicCollection<T>> {
+export async function readPublicCollection<T>(kind: CollectionKind, page = 1, category?: "media-coverage" | "in-action" | "tv-interviews", limit = 12, locale: "en" | "ur" = "en", q = "", workArea?: string): Promise<PublicCollection<T>> {
   try {
     const base = new URL(process.env.INTERNAL_API_URL ?? "http://127.0.0.1:5000");
     if (!["http:", "https:"].includes(base.protocol) || base.username || base.password || base.pathname !== "/" || base.search || base.hash) throw new Error("Invalid API origin");
@@ -29,6 +29,6 @@ export type PublicDocument = { id: string; title: string; summary: string; relea
 export type PublicReport = PublicDocument & { year?: number; slug: string; pages?: number; edition?: "complete" | "public-edition"; coverageStart?: string; coverageEnd?: string };
 export type PublicCertificate = PublicDocument & { issuer?: string; reference?: string; issuedAt?: string; validFrom?: string; expiresAt?: string };
 export type PublicGalleryImage = { id: string; title: string; file: string; alt: string; caption: string; category: "media-coverage" | "in-action"; treatment?: "ORIGINAL" | "AI_RESTORATION"; mediaType?: "newspaper" | "photo" | "graphic"; sourceName?: string; sourceUrl?: string; eventDate?: string; width?: number; height?: number };
-export type PublicInterview = { id: string; title: string; description: string; provider: "youtube" | "vimeo"; watchUrl: string; embedUrl: string; thumbnail: string | null; thumbnailAlt: string; sourceName?: string; eventDate?: string };
+export type PublicInterview = { category?: "tv-interviews" | "media-coverage"; id: string; title: string; description: string; provider: "youtube" | "vimeo"; watchUrl: string; embedUrl: string; thumbnail: string | null; thumbnailAlt: string; sourceName?: string; eventDate?: string };
 export type PublicBoardMember = { name: string; slug: string; designation: string; rank?: number; bio: string; photo: string | null; photoAlt?: string; photoZoom?: number; showOnBoard?: boolean; showOnTeam?: boolean; sections?: { heading: string; body: string }[] };
 export type PublicTeamMember = { id: string; name: string; designation: string; responsibilities: string; reportingTo: string; photo: string | null };

@@ -23,6 +23,7 @@ export const publicSettingSchemas = {
   donations: z.object({ accountTitle: short, bank: short, branch: short, accountNumber: short, iban: short, jazzCash: short }),
 };
 export const publicQuery = z.object({ locale: z.enum(['en', 'ur']).default('en'), page: z.coerce.number().int().min(1).max(1000).default(1), limit: z.coerce.number().int().min(1).max(48).default(12), category: z.enum(['media-coverage', 'in-action']).optional(), q: z.string().trim().max(80).default('') }).strict();
+export const interviewQuery = publicQuery.extend({ category: z.enum(['tv-interviews', 'media-coverage']).default('tv-interviews') });
 const projectQuery = publicQuery.extend({ focusArea: z.string().trim().min(1).max(150).optional(), workArea: z.enum(workAreaSlugs).optional() });
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(100);
 const id = z.string().regex(/^[a-fA-F0-9]{24}$/);
@@ -162,11 +163,11 @@ export function publicRouter(provider: UploadProvider, redis?: RedisServices, tt
       return ({ data, meta: { page, limit, total, pages: Math.ceil(total / limit) } });
     });
   }
-  cachedGet('/interviews', publicQuery, [VideoInterview], async req => {
-    const { locale, page, limit, q } = validate(publicQuery, req.query);
-    const filter = { reviewStatus: 'approved', ...publicationFilter(), videoUrl: canonicalVideoPattern, ...(q ? { [`title.${locale}`]: { $regex: q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' } } : {}) };
+  cachedGet('/interviews', interviewQuery, [VideoInterview], async req => {
+    const { locale, page, limit, q, category } = validate(interviewQuery, req.query);
+    const filter = { ...(category === 'tv-interviews' ? { $or: [{ category }, { category: { $exists: false } }] } : { category }), reviewStatus: 'approved', ...publicationFilter(), videoUrl: canonicalVideoPattern, ...(q ? { [`title.${locale}`]: { $regex: q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' } } : {}) };
     const [rows, total] = await Promise.all([VideoInterview.find(filter).sort({ sortOrder: 1, _id: 1 }).skip((page-1)*limit).limit(limit).lean(), VideoInterview.countDocuments(filter)]);
-    const data = await Promise.all(rows.map(async row => ({ id: String(row._id), title: row.title?.[locale] ?? '', description: row.description?.[locale] ?? '', ...videoLink(row.videoUrl)!, sourceName: row.sourceName ?? '', eventDate: row.eventDate?.toISOString().slice(0,10), thumbnailAlt: row.thumbnailAlt ?? '', thumbnail: await releasedAsset(row.thumbnail?.assetId, 'VideoInterview', row._id) ? `/api/public-assets/${row.thumbnail!.assetId}` : null })));
+    const data = await Promise.all(rows.map(async row => ({ id: String(row._id), category: row.category ?? 'tv-interviews', title: videoLink(row.videoUrl)?.provider === 'youtube' ? row.title?.en ?? '' : row.title?.[locale] ?? '', description: row.description?.[locale] ?? '', ...videoLink(row.videoUrl)!, sourceName: row.sourceName ?? '', eventDate: row.eventDate?.toISOString().slice(0,10), thumbnailAlt: row.thumbnailAlt ?? '', thumbnail: videoLink(row.videoUrl)?.provider === 'youtube' && /^https:\/\/i\.ytimg\.com\/vi(?:_webp)?\/[A-Za-z0-9_-]{11}\//.test(row.youtubeThumbnailUrl ?? '') ? row.youtubeThumbnailUrl! : await releasedAsset(row.thumbnail?.assetId, 'VideoInterview', row._id) ? `/api/public-assets/${row.thumbnail!.assetId}` : null })));
     return ({ data, meta: { page, limit, total, pages: Math.ceil(total/limit) } });
   });
   const stream: import('express').RequestHandler = async (req, res) => {
