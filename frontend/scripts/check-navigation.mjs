@@ -6,6 +6,22 @@ const suppliedPurpose = JSON.parse(readFileSync(new URL('../data/about-source.js
 
 const publicPaths = ['/blogs', '/about/progress-reports', '/about/registration-and-certificates', '/about/board-of-directors', '/about/our-team', '/gallery/media-coverage', '/gallery/tv-interviews'];
 
+function checkDocumentCard(html, { id, title, summary, issuer, view, download }) {
+  const card = html.match(new RegExp(`<li\\b[^>]*id="document-${id}"[\\s\\S]*?<\\/li>`))?.[0];
+  assert.ok(card, `Document card: ${title}`);
+  for (const text of [title, summary, issuer].filter(Boolean)) assert.ok(card.includes(text), `Important document detail: ${text}`);
+  assert.equal((card.match(/<a\b/g) || []).length, 2, 'Only View and Download actions');
+  const viewAnchor = card.match(/<a\b[^>]*>[\s\S]*?View document[\s\S]*?<\/a>/)?.[0];
+  assert.ok(viewAnchor?.includes(`href="${view}"`), 'View uses the inline document endpoint');
+  assert.ok(viewAnchor.includes('target="_blank"') && viewAnchor.includes('rel="noopener noreferrer"'), 'View opens a safe new browser tab');
+  assert.ok(viewAnchor.includes('(opens in a new tab)'), 'New-tab behavior is announced to assistive technology');
+  assert.ok(card.includes(`href="${download}"`) && card.includes('Download'), 'Download retained');
+  for (const text of ['Validity', 'Valid from:', 'Valid until:', 'Issued:', 'Reference:', 'Reporting period:', 'File details', 'PDF', 'JPG', 'KB', 'MB', '26 pages', 'Public edition', 'Complete report', 'About this public copy', 'Reviewed public edition; case annexes omitted.', 'Historical document; no renewal asserted.', '15 May 2023', '16 May 2022']) {
+    assert.ok(!card.includes(text), `Removed document-card detail: ${text}`);
+  }
+  for (const tag of ['<details', '<dialog', '<iframe', '<button']) assert.ok(!html.includes(tag), `No document dropdown or modal: ${tag}`);
+}
+
 export async function checkNavigation(read, port) {
   const migrations = [
     ['/get-involved', '/become-a-member'], ['/get-help', '/contact'],
@@ -123,14 +139,14 @@ export async function checkNavigation(read, port) {
   assert.ok((await read('/admin/board')).html.includes('Loading profile management'));
 
   page = await read('/about/progress-reports');
-  assert.ok(page.html.includes('Published progress report') && page.html.includes('/api/reports/012345678901234567890125/download'));
-  for (const text of ['View document','Public edition','Reviewed public edition; case annexes omitted.','26 pages']) assert.ok(page.html.includes(text), `Report public card: ${text}`);
-  assert.ok(!page.html.includes('<iframe'), 'PDF viewer loads only after opening a document');
+  const reportContent = page.html.match(/<main\b[\s\S]*?<\/main>/)[0];
+  checkDocumentCard(reportContent, { id: '012345678901234567890125', title: 'Published progress report', summary: 'Report summary', view: '/api/documents/reports/012345678901234567890125/view', download: '/api/reports/012345678901234567890125/download' });
   assert.ok((await read('/admin/documents')).html.includes('Loading document management'), 'Document administration route');
   page = await read('/about/registration-and-certificates');
-  assert.ok(page.html.includes('NPO evaluation standards notified by FBR')&&page.html.includes('22 January 2026'),'Registration distinguishes PCP certification and dated Charity Commission history');
-  assert.ok(page.html.includes('Released registration certificate') && page.html.includes('/api/public-assets/012345678901234567890126'));
-  for (const text of ['Validity date passed','15 May 2023','16 May 2022','View document','Historical document; no renewal asserted.']) assert.ok(page.html.includes(text), `Certificate public card: ${text}`);
+  assert.ok(page.html.includes('NPO evaluation standards notified by FBR'), 'Registration retains PCP certification context');
+  assert.ok(!page.html.includes('Registration history and document validity dates are shown below.'), 'Archive introduction does not promise hidden validity details');
+  const certificateContent = page.html.match(/<main\b[\s\S]*?<\/main>/)[0];
+  checkDocumentCard(certificateContent, { id: '012345678901234567890126', title: 'Released registration certificate', issuer: 'Test issuer', summary: 'Historical registration document', view: '/api/documents/certificates/012345678901234567890126/view', download: '/api/documents/certificates/012345678901234567890126/download' });
   page = await read('/gallery/media-coverage');
   assert.ok(page.html.includes('Published media coverage') && page.html.includes('Reviewed media caption'));
   assert.ok(/srcSet="[^"]*\?w=480[^"]*\?w=960/.test(page.html), 'Managed gallery cards use responsive bounded thumbnails');

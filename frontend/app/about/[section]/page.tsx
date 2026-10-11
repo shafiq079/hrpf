@@ -13,7 +13,6 @@ import PublicBoard from "@/components/shared/PublicBoard";
 import PublicTeam from "@/components/shared/PublicTeam";
 import AboutProfile, { RegistrationSummary } from "@/components/about/AboutProfile";
 import SectionHeading from "@/components/shared/SectionHeading";
-import TranslationText from "@/components/translation/TranslationText";
 import LeadershipMessage from "@/components/about/LeadershipMessage";
 import AimsObjectives from "@/components/about/AimsObjectives";
 import MissionVision from "@/components/about/MissionVision";
@@ -44,7 +43,6 @@ export default async function AboutSectionPage({ params, searchParams }: Props) 
            section === "registration-and-certificates" ? <>
              <SectionHeading title="Legal Status and Registration" description="The Foundation’s institutional records reflect its commitment to lawful and responsible organizational practices." />
              <div className="mt-8"><RegistrationSummary /></div>
-             <p className="mt-6 max-w-3xl text-sm leading-relaxed text-muted"><TranslationText>The Charity Commission certificates record validity periods of 16 May 2022–15 May 2023 and 23 January 2024–22 January 2026. Registration history and document validity dates are shown below.</TranslationText></p>
              <div className="mt-10"><PublicDocuments kind="certificates" page={page} /></div>
            </> :
            section === "board-of-directors" ? <PublicBoard page={page} /> : section === "our-team" ? <PublicTeam page={page} /> :
