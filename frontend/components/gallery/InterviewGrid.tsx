@@ -2,7 +2,7 @@
 import TranslationText from "@/components/translation/TranslationText";
 
 import { useState } from "react";
-import { Play, Tv, ExternalLink, X } from "lucide-react";
+import { Play, Tv } from "lucide-react";
 import AppImage from "@/components/shared/AppImage";
 import type { PublicInterview } from "@/lib/public-collections";
 export default function InterviewGrid({
@@ -19,9 +19,16 @@ function InterviewCard({
 }) {
   const [playing, setPlaying] = useState(false);
   return <article className="overflow-hidden rounded-xl border border-border bg-white shadow-sm">
-    {playing ? <div><div className="relative aspect-video bg-navy"><iframe src={item.embedUrl} title={item.title} className="absolute inset-0 h-full w-full" allow="encrypted-media; picture-in-picture; fullscreen" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" /></div><button type="button" onClick={() => setPlaying(false)} className="flex items-center gap-2 px-5 py-3 text-sm font-semibold text-teal-dark"><X size={16} /><TranslationText>Close player</TranslationText></button></div> : <button type="button" aria-label={`Watch video: ${item.title}`} className="relative flex aspect-video w-full items-center justify-center overflow-hidden bg-navy focus-visible:outline-4 focus-visible:outline-teal" onClick={() => setPlaying(true)}>
+    {playing ? <div className="relative aspect-video bg-navy"><iframe src={item.embedUrl} title={item.title} className="absolute inset-0 h-full w-full" allow="encrypted-media; picture-in-picture; fullscreen" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" /></div> : <button type="button" aria-label={`Watch video: ${item.title}`} className="relative flex aspect-video w-full items-center justify-center overflow-hidden bg-navy focus-visible:outline-4 focus-visible:outline-teal" onClick={() => setPlaying(true)}>
       {item.thumbnail ? <AppImage src={item.thumbnail} alt={item.thumbnailAlt || item.title} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover opacity-75" /> : <Tv size={76} className="text-white/20" aria-hidden="true" />}<span className="absolute flex size-16 items-center justify-center rounded-full bg-teal text-white shadow-lg"><Play size={26} aria-hidden="true" /></span>
     </button>}
-    <div className="p-6"><p className="eyebrow text-teal-dark"><TranslationText>{item.category === "media-coverage" ? "Media coverage" : "TV interviews"}</TranslationText></p><h2 className="mt-2 text-2xl"><span className={item.provider === "youtube" ? "notranslate" : undefined} translate={item.provider === "youtube" ? "no" : undefined}>{item.title}</span></h2>{(item.sourceName || item.eventDate) && <p className="mt-2 text-xs text-muted"><TranslationText>{[item.sourceName, item.eventDate].filter(Boolean).join(" · ")}</TranslationText></p>}{item.description && <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-muted"><TranslationText>{item.description}</TranslationText></p>}<a href={item.watchUrl} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-teal-dark"><TranslationText>Watch on </TranslationText><TranslationText>{item.provider === "youtube" ? "YouTube" : "Vimeo"}</TranslationText><ExternalLink size={14} /></a><p className="mt-3 text-xs leading-relaxed text-muted"><TranslationText>The video provider loads when you open the player.</TranslationText></p></div>
+    <div className="p-6">
+      <p className="eyebrow text-teal-dark"><TranslationText>{item.category === "media-coverage" ? "Media coverage" : "TV interviews"}</TranslationText></p>
+      <h2 className="mt-2 line-clamp-2 break-words text-2xl" title={item.title}>
+        <span className={item.provider === "youtube" ? "notranslate" : undefined} translate={item.provider === "youtube" ? "no" : undefined}>{item.title}</span>
+      </h2>
+      {(item.sourceName || item.eventDate) && <p className="mt-2 text-xs text-muted"><TranslationText>{[item.sourceName, item.eventDate].filter(Boolean).join(" · ")}</TranslationText></p>}
+      {item.description && <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-muted"><TranslationText>{item.description}</TranslationText></p>}
+    </div>
   </article>;
 }
