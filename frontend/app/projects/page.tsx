@@ -19,7 +19,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
   const result = await readHomeFeed<ProjectRecord>("projects", 48);
   return (
     <main id="main-content" className="flex-1">
-      <PageHero heroImage="advocacy"
+      <PageHero heroImage="projects"
         eyebrow="ACTIVE MISSIONS"
         title="Projects and Programmes"
         description="Explore our current, completed and proposed initiatives supporting human-rights awareness, community protection, access to justice and institutional development."

@@ -3,20 +3,22 @@ import assert from "node:assert/strict";
 /** Real production responses: every formerly plain hero has a loadable photo. */
 export async function checkHeroes(read, port) {
   const stockPhotos = ["vision", "writing", "teamwork", "contact", "justice", "microphone", "camera", "documents"];
+  const topicPhotos = ["profile", "mission", "reports", "projects"];
+  const pairedPhotos = [...stockPhotos, ...topicPhotos];
   const routes = [
     ["/about", "home-about"],
-    ["/about/who-we-are", "home-about"],
-    ["/about/profile", "home-about"],
-    ["/about/mission-and-vision", "vision"],
+    ["/about/who-we-are", "education-and-awareness-archive"],
+    ["/about/profile", "profile"],
+    ["/about/mission-and-vision", "mission"],
     ["/about/aims-and-objectives", "writing"],
     ["/about/message-of-ceo", "home-chairman"],
     ["/about/board-of-directors", "teamwork"],
     ["/about/our-team", "teamwork"],
     ["/about/registration-and-certificates", "documents"],
-    ["/about/progress-reports", "home-report-2024"],
+    ["/about/progress-reports", "reports"],
     ["/our-work", "home-hero"],
-    ["/projects", "research-and-advocacy-archive"],
-    ["/programmes", "research-and-advocacy-archive"],
+    ["/projects", "projects"],
+    ["/programmes", "projects"],
     ["/projects/real-project", "teamwork"],
     ["/blogs", "writing"],
     ["/blogs/real-news", "home-report-2023"],
@@ -54,7 +56,8 @@ export async function checkHeroes(read, port) {
       hero?.includes("hrpf-hero-overlay"),
       `Photo hero rendered on ${route}`,
     );
-    if (stockPhotos.includes(photo)) {
+    if (pairedPhotos.includes(photo)) {
+      assert.ok(hero.includes(topicPhotos.includes(photo) ? "heroes%2Fv3" : "heroes%2Fv2"), `Correct asset version on ${route}`);
       assert.ok(hero.includes(`${photo}-desktop.webp`) && hero.includes(`${photo}-mobile.webp`), `Separate compositions on ${route}`);
       assert.match(hero, /<picture><source media="\(min-width: 1024px\)"/, `Desktop source on ${route}`);
       assert.ok(hero.includes('fetchPriority="high"'), `Selected hero receives fetch priority on ${route}`);
@@ -77,9 +80,9 @@ export async function checkHeroes(read, port) {
       `One page heading on ${route}`,
     );
   }
-  for (const file of stockPhotos.flatMap((photo) => [`${photo}-desktop`, `${photo}-mobile`])) {
+  for (const [version, file] of [["v2", stockPhotos], ["v3", topicPhotos]].flatMap(([version, photos]) => photos.flatMap(photo => [[version, `${photo}-desktop`], [version, `${photo}-mobile`]]))) {
     const response = await fetch(
-      `http://127.0.0.1:${port}/images/heroes/v2/${file}.webp`,
+      `http://127.0.0.1:${port}/images/heroes/${version}/${file}.webp`,
     );
     assert.equal(response.status, 200, file);
     assert.match(response.headers.get("content-type"), /image\/webp/);

@@ -1,0 +1,64 @@
+{
+  "mode": "Built-in image_gen generation and mobile editing",
+  "purpose": "Decorative conceptual topic images; not HRPF staff, events, office or actual published documents",
+  "assets": [
+    {
+      "name": "profile",
+      "variant": "desktop",
+      "destination": "frontend/public/images/heroes/v3/profile-desktop.webp"
+    },
+    {
+      "name": "profile",
+      "variant": "mobile",
+      "destination": "frontend/public/images/heroes/v3/profile-mobile.webp"
+    },
+    {
+      "name": "mission",
+      "variant": "desktop",
+      "destination": "frontend/public/images/heroes/v3/mission-desktop.webp"
+    },
+    {
+      "name": "mission",
+      "variant": "mobile",
+      "destination": "frontend/public/images/heroes/v3/mission-mobile.webp"
+    },
+    {
+      "name": "reports",
+      "variant": "desktop",
+      "destination": "frontend/public/images/heroes/v3/reports-desktop.webp"
+    },
+    {
+      "name": "reports",
+      "variant": "mobile",
+      "destination": "frontend/public/images/heroes/v3/reports-mobile.webp"
+    },
+    {
+      "name": "projects",
+      "variant": "desktop",
+      "destination": "frontend/public/images/heroes/v3/projects-desktop.webp"
+    },
+    {
+      "name": "projects",
+      "variant": "mobile",
+      "destination": "frontend/public/images/heroes/v3/projects-mobile.webp"
+    }
+  ],
+  "prompts": {
+    "profile": {
+      "desktop": "Use case: photorealistic-natural. Asset type: HRPF human-rights NGO website decorative desktop hero background. Generate one polished realistic editorial photograph. Extremely wide horizontal 3:1 panorama, target 2400x800. A closed elegant unbranded dark navy organizational profile folder with cream paper edges, a fountain pen and one small unmarked business-card holder, on a professionally organized warm light stone desk; restrained soft-focus bookshelf beyond. Clear institutional identity, governance and organizational background, not financial reporting. Composition: the COMPLETE subject cluster is relatively SMALL, contained on the right third around x=75%, within y=35% to 65%, so it survives a shallow 5:1 center banner crop. Left 60% uncluttered naturally lit negative space for real HTML heading. Natural warm daylight and restrained navy/cream accents, dignified professional international nonprofit tone. No text overlay, captions, blue filter, watermarks, emblems, seals, fake HRPF branding or identifiable people. No collage, panels, UI or diagram. One seamless finished photograph, not a website screenshot.",
+      "mobile": "Use case: precise-object-edit. Edit target: the referenced profile desktop decorative NGO hero photograph. Make ONE separate MOBILE and TABLET website hero photograph, near-square landscape 6:5 composition, target 1536x1280. Preserve the same closed unbranded navy organizational folder, pen and card holder, matching warm daylight, photographic material realism and dignified cream/navy palette. Recompose the subject around x=50% and y=50%, not at the extreme right. Show the complete key subject within x=25% to 75% and y=30% to 70% with quiet natural background around it. It must remain recognizable when cropped to a 320x380 phone hero or a 768x380 tablet hero. No faces, new people, landmarks, readable writing/numbers, logos, seal, text overlay, blue filter, watermark, collage or UI. Simplify peripheral furniture rather than putting crucial objects outside the central safe area. ONE seamless realistic photo, not a desktop/mobile pair or mockup."
+    },
+    "mission": {
+      "desktop": "Use case: photorealistic-natural. Asset type: HRPF human-rights NGO website decorative desktop hero background. Generate one polished realistic editorial photograph. Extremely wide horizontal 3:1 panorama, target 2400x800. Four to five adult hands with diverse natural South Asian skin tones, emerging from simple cream, navy and muted olive shirt sleeves, gently joined together in a cooperative circle at a table. No faces, no head or body visible. Anatomically accurate hands with natural fingers, optimistic human dignity, solidarity, inclusion and shared purpose. Warm soft daylight; quiet subtle office backdrop. Composition: the COMPLETE subject cluster is relatively SMALL, contained on the right third around x=75%, within y=35% to 65%, so it survives a shallow 5:1 center banner crop. Left 60% uncluttered naturally lit negative space for real HTML heading. Natural warm daylight and restrained navy/cream accents, dignified professional international nonprofit tone. No text overlay, captions, blue filter, watermarks, emblems, seals, fake HRPF branding or identifiable people. No collage, panels, UI or diagram. One seamless finished photograph, not a website screenshot.",
+      "mobile": "Use case: precise-object-edit. Edit target: the referenced mission desktop decorative NGO hero photograph. Make ONE separate MOBILE and TABLET website hero photograph, near-square landscape 6:5 composition, target 1536x1280. Preserve the same anatomically correct adult joined hands and natural sleeves, matching warm daylight, photographic material realism and dignified cream/navy palette. Recompose the subject around x=50% and y=50%, not at the extreme right. Show the complete key subject within x=25% to 75% and y=30% to 70% with quiet natural background around it. It must remain recognizable when cropped to a 320x380 phone hero or a 768x380 tablet hero. No faces, new people, landmarks, readable writing/numbers, logos, seal, text overlay, blue filter, watermark, collage or UI. Simplify peripheral furniture rather than putting crucial objects outside the central safe area. ONE seamless realistic photo, not a desktop/mobile pair or mockup."
+    },
+    "reports": {
+      "desktop": "Use case: photorealistic-natural. Asset type: HRPF human-rights NGO website decorative desktop hero background. Generate one polished realistic editorial photograph. Extremely wide horizontal 3:1 panorama, target 2400x800. An open professionally bound annual progress report with cream pages, a few small clean muted-blue bar charts and understated pale gray paragraph marks, beside two neat closed reports and a pen on a desk. The actual writing and numerical marks must be intentionally indistinct, no readable words, percentages, statistics or logos. Communicates published reporting and transparency. Composition: the COMPLETE subject cluster is relatively SMALL, contained on the right third around x=75%, within y=35% to 65%, so it survives a shallow 5:1 center banner crop. Left 60% uncluttered naturally lit negative space for real HTML heading. Natural warm daylight and restrained navy/cream accents, dignified professional international nonprofit tone. No text overlay, captions, blue filter, watermarks, emblems, seals, fake HRPF branding or identifiable people. No collage, panels, UI or diagram. One seamless finished photograph, not a website screenshot.",
+      "mobile": "Use case: precise-object-edit. Edit target: the referenced reports desktop decorative NGO hero photograph. Make ONE separate MOBILE and TABLET website hero photograph, near-square landscape 6:5 composition, target 1536x1280. Preserve the same open annual report, chart shapes, closed reports and pen, matching warm daylight, photographic material realism and dignified cream/navy palette. Recompose the subject around x=50% and y=50%, not at the extreme right. Show the complete key subject within x=25% to 75% and y=30% to 70% with quiet natural background around it. It must remain recognizable when cropped to a 320x380 phone hero or a 768x380 tablet hero. No faces, new people, landmarks, readable writing/numbers, logos, seal, text overlay, blue filter, watermark, collage or UI. Simplify peripheral furniture rather than putting crucial objects outside the central safe area. ONE seamless realistic photo, not a desktop/mobile pair or mockup."
+    },
+    "projects": {
+      "desktop": "Use case: photorealistic-natural. Asset type: HRPF human-rights NGO website decorative desktop hero background. Generate one polished realistic editorial photograph. Extremely wide horizontal 3:1 panorama, target 2400x800. Project coordination flat-lay viewed at a gentle angle, an adult hand with a pen reviewing a tidy project planning sheet on a clipboard, several muted blue and warm ochre planning cards arranged in a simple timeline, a few small neutral sticky notes and a closed laptop edge on a large light wood table. No money, no staged beneficiaries, no legible text, dates, numbers, logos or invented organization documents. Practical planning and community work coordination. Composition: the COMPLETE subject cluster is relatively SMALL, contained on the right third around x=75%, within y=35% to 65%, so it survives a shallow 5:1 center banner crop. Left 60% uncluttered naturally lit negative space for real HTML heading. Natural warm daylight and restrained navy/cream accents, dignified professional international nonprofit tone. No text overlay, captions, blue filter, watermarks, emblems, seals, fake HRPF branding or identifiable people. No collage, panels, UI or diagram. One seamless finished photograph, not a website screenshot.",
+      "mobile": "Use case: precise-object-edit. Edit target: the referenced projects desktop decorative NGO hero photograph. Make ONE separate MOBILE and TABLET website hero photograph, near-square landscape 6:5 composition, target 1536x1280. Preserve the same planning clipboard, reviewing hand, pen and neutral planning materials, matching warm daylight, photographic material realism and dignified cream/navy palette. Recompose the subject around x=50% and y=50%, not at the extreme right. Show the complete key subject within x=25% to 75% and y=30% to 70% with quiet natural background around it. It must remain recognizable when cropped to a 320x380 phone hero or a 768x380 tablet hero. No faces, new people, landmarks, readable writing/numbers, logos, seal, text overlay, blue filter, watermark, collage or UI. Simplify peripheral furniture rather than putting crucial objects outside the central safe area. ONE seamless realistic photo, not a desktop/mobile pair or mockup."
+    }
+  }
+}

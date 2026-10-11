@@ -62,10 +62,10 @@ are never mirrored. Original mobile focal points remain independently set.
 
 ## Existing organization photographs
 
-The About, leadership, work, project listing, impact, donation and report heroes
+The About, Who We Are, leadership, work, impact and donation heroes
 reuse existing photographs supplied for HRPF and already used on the website:
 `home-about.webp`, `home-chairman.webp`, `home-hero.webp`,
-`research-and-advocacy-archive.webp` and `home-report-2024.webp` in
+`education-and-awareness-archive.webp` in
 `frontend/public/images/hrpf/`. They illustrate the organization generally;
 they do not assert a new event date, participant role or project association.
 The published CEO portrait remains in the message content below its hero.
@@ -86,3 +86,31 @@ Mobile framing can differ from desktop using the catalog's `mobilePosition`.
 The text shading is stronger on mobile and beside desktop copy, lighter on the
 opposite edge, and reversed for RTL languages. The home video uses its own
 lighter blue gradient and retains its existing reduced-motion/mobile behavior.
+
+## Topic replacements (v3) — 11 October 2026
+
+The affected routes now have distinct relevant images:
+
+| Route | Image and purpose | Mobile framing |
+| --- | --- | --- |
+| `/about` | Existing HRPF meeting, introducing the organization | Independent focal point on the discussion |
+| `/about/who-we-are` | Supplied community audience (`education-and-awareness-archive.webp`), reflecting public engagement | Centers participants rather than empty room |
+| `/about/profile` | Closed organizational profile folder | Separate near-square composition |
+| `/about/mission-and-vision` | Joined hands, representing solidarity and inclusion | Separate near-square composition |
+| `/about/progress-reports` | Open annual reports, representing reporting and accountability | Separate near-square composition |
+| `/projects` and legacy `/programmes` | Planning clipboard and reviewing hand, representing project coordination | Separate near-square composition |
+
+The four conceptual pairs are original built-in image_gen creations, stored in
+`frontend/public/images/heroes/v3/`. They contain no identifiable staff or
+beneficiaries, HRPF branding, readable statistics, or claims about a particular
+project or document. They are decorative topic illustrations. HRPF photographs
+are preserved, without generated or mirrored people. The previous meadow remains
+only in other existing topic fallbacks; Mission and Vision no longer uses it.
+
+Desktop sources are 2172 × 724; mobile sources are 1374 × 1145. Each mobile
+composition was edited separately from its desktop reference, then both were
+encoded as WebP with metadata removed. The existing native picture selects one
+optimized image at the 1024px breakpoint. New v3 URLs avoid stale immutable v2
+caches. The catalog includes independent mobile focal points for tablet crops.
+The complete prompt set and final asset paths are in
+[HERO_TOPIC_IMAGES_V3.json](HERO_TOPIC_IMAGES_V3.json).
