@@ -104,3 +104,7 @@ replacing the original three or later administrator edits. Run
 with the existing private development configuration. This command is independent
 of the original three-project detail enrichment. Related fields use comma-separated
 work-page labels and are selectable individually in the public project explorer.
+
+## Client evidence updates
+
+For the October 2026 client-provided Facebook links and RTI scans, use the separate [client evidence updater](CLIENT_PROJECT_EVIDENCE.md). It updates five existing projects once, preserves admin changes and records the three road-labelled links against their actual matching projects. The original create-only import manifests remain unchanged.

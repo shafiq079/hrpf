@@ -1,0 +1,384 @@
+{
+  "version": "client-project-evidence-v1",
+  "files": [
+    {
+      "id": "gallery:police-reply-2021-12-30",
+      "path": "progress reports/client-project-evidence-2026-10/police-reply-2021-12-30.jpeg",
+      "sha256": "2fe557f0705e0b45a87ac89f996825f974404a08b132cf73312e2781fb7a3d18",
+      "bytes": 35974,
+      "width": 825,
+      "height": 881
+    },
+    {
+      "id": "gallery:commission-order-2023-03-03",
+      "path": "progress reports/client-project-evidence-2026-10/commission-order-2023-03-03.jpeg",
+      "sha256": "16e3bbb7a8de6e974d38afb0341f42991f1b6c0317343014ffd5bc87955dcbce",
+      "bytes": 93881,
+      "width": 1189,
+      "height": 1600
+    },
+    {
+      "id": "gallery:police-forwarding-2023-03-17",
+      "path": "progress reports/client-project-evidence-2026-10/police-forwarding-2023-03-17.jpeg",
+      "sha256": "e606d751549f91da152b1343cc46f677aa089f982bd3a3c8679a62ae08b8c9c8",
+      "bytes": 70022,
+      "width": 1080,
+      "height": 1404
+    },
+    {
+      "id": "gallery:commission-order-2023-03-20",
+      "path": "progress reports/client-project-evidence-2026-10/commission-order-2023-03-20.jpeg",
+      "sha256": "e48a98b6cbbf2f9c162d6111022082d076b7464900592e99b1c0002a8118a40d",
+      "bytes": 51298,
+      "width": 1080,
+      "height": 998
+    },
+    {
+      "id": "gallery:union-council-letter-2026-04-09",
+      "path": "progress reports/client-project-evidence-2026-10/union-council-letter-2026-04-09.jpg",
+      "sha256": "65430b00fe9174b5e31432018bfce3f45744171cc7e5d2953f88745a8440e675",
+      "bytes": 106816,
+      "width": 600,
+      "height": 862
+    },
+    {
+      "id": "gallery:road-drainage-letter-2026-04-08",
+      "path": "progress reports/client-project-evidence-2026-10/road-drainage-letter-2026-04-08.jpg",
+      "sha256": "b943679fc764445d8dc39fb5b184cef7aced753380c4c738c4bbf1fbf5e6213e",
+      "bytes": 119811,
+      "width": 600,
+      "height": 900
+    },
+    {
+      "id": "gallery:police-inquiry-followup-2025-02-05",
+      "path": "progress reports/client-project-evidence-2026-10/police-inquiry-followup-2025-02-05.jpg",
+      "sha256": "f6fe59c6ce2f555d06078fa10d88ac4369e37c72bb3f0472c0e8e9e06a927804",
+      "bytes": 99603,
+      "width": 600,
+      "height": 965
+    },
+    {
+      "id": "gallery:crime-rti-newspaper",
+      "path": "progress reports/client-project-evidence-2026-10/crime-rti-newspaper.jpg",
+      "sha256": "ff12aa961c577a8d035e68134375fc9b732c63e702d0f1fd8ea611e30e46e9ce",
+      "bytes": 85751,
+      "width": 846,
+      "height": 600
+    },
+    {
+      "id": "gallery:sialkot-health-reply-2024-05-23",
+      "path": "progress reports/client-project-evidence-2026-10/sialkot-health-reply-2024-05-23.jpg",
+      "sha256": "87848b365cec04699f9d16fbba24d702e79fbfa40656b0496d9f41eb6b98f437",
+      "bytes": 61955,
+      "width": 691,
+      "height": 600
+    },
+    {
+      "id": "gallery:canal-pollution-video-preview",
+      "path": "progress reports/client-project-evidence-2026-10/canal-pollution-video-preview.jpg",
+      "sha256": "0395dc39465fd8e25150cdd583699560824f934ec77cd34777e18868c1703a99",
+      "bytes": 33276,
+      "width": 720,
+      "height": 720
+    }
+  ],
+  "projects": [
+    {
+      "key": "work-project:union-council-building-advocacy",
+      "sourceLinks": [
+        "https://www.facebook.com/share/p/19tZSJZXd5/"
+      ],
+      "retrieval": "verified",
+      "patch": {
+        "summary": {
+          "en": "HRPF requested repairs and maintenance for the Union Council building in Mianwal Ranjha to protect public property and support local services."
+        },
+        "details": {
+          "overview": "HRPF raised concerns about the condition of the Union Council building in Mianwal Ranjha, District Mandi Bahauddin. In a letter dated 9 April 2026 to the Punjab Local Government and Community Development Department, the Foundation requested attention to maintenance, damaged furniture, closed washrooms and roof drainage, with the aim of protecting public property and supporting usable local-government services.",
+          "challenge": "Deteriorating local-government premises required the attention of the department responsible for the facility.",
+          "approach": "HRPF submitted a formal departmental complaint seeking attention to the building\u2019s condition.",
+          "period": "Representation dated 9 April 2026",
+          "targetCommunity": "Residents using local-government services",
+          "objectives": [
+            "Seek attention to the condition of local-government premises."
+          ],
+          "activities": [
+            "Submitted a representation to the Punjab Local Government and Community Development Department.",
+            "Requested building repairs, furniture replacement, functioning washrooms and roof drainage."
+          ],
+          "outcomes": [
+            "A formal representation dated 9 April 2026 documents the concerns and requested remedial measures.",
+            "Completion of repairs or replacement work has not been confirmed."
+          ],
+          "partners": [],
+          "milestones": [
+            {
+              "period": "9 April 2026",
+              "title": "Building-maintenance representation",
+              "description": "HRPF requested departmental attention to the condition and upkeep of the Union Council building in Mianwal Ranjha."
+            }
+          ],
+          "metrics": [],
+          "sections": []
+        }
+      },
+      "images": [
+        {
+          "fileId": "gallery:union-council-letter-2026-04-09",
+          "alt": "HRPF letter requesting repairs to the Union Council building, 9 April 2026",
+          "caption": "Request to the Local Government and Community Development Department concerning the Union Council building in Mianwal Ranjha."
+        }
+      ]
+    },
+    {
+      "key": "work-project:road-visibility-public-safety",
+      "sourceLinks": [
+        "https://www.facebook.com/share/p/1KJWphQ2X8/",
+        "https://www.facebook.com/share/v/14reGzBWGjo/",
+        "https://www.facebook.com/share/p/1e4ssmDcd2/"
+      ],
+      "retrieval": "mismatch",
+      "patch": {},
+      "images": []
+    },
+    {
+      "key": "work-project:public-safety-information-research",
+      "sourceLinks": [
+        "https://www.facebook.com/share/p/1DFokyXfAK/",
+        "https://www.facebook.com/share/p/1c5WyjxZ1k/",
+        "https://www.facebook.com/share/p/19hWwuMDxs/"
+      ],
+      "retrieval": "verified",
+      "patch": {
+        "summary": {
+          "en": "HRPF follows up police-related RTI requests and uses district crime records to support public-safety research and institutional accountability."
+        },
+        "details": {
+          "overview": "HRPF uses lawful information requests and public-interest research to raise concerns about public safety and institutional accountability in Mandi Bahauddin. Its police-related RTI follow-up includes correspondence from December 2021 and proceedings before the Punjab Information Commission in March 2023. Separately, HRPF prepared an analysis of district crime records for January to August 2024 and shared concerns and recommendations with relevant officials and human-rights organisations.",
+          "challenge": "Community concerns about crime and investigations required reliable information and an accountable institutional response.",
+          "approach": "HRPF seeks public information through the Punjab Right to Information framework, follows up with the responsible public information officers and the Punjab Information Commission, and uses available records to prepare public-interest analysis and recommendations.",
+          "period": "RTI follow-up in 2021\u20132023, crime analysis in 2024 and inquiry follow-up in 2025",
+          "targetCommunity": "Communities seeking accountable policing and public safety",
+          "objectives": [
+            "Use district records to inform public-safety advocacy."
+          ],
+          "activities": [
+            "Submitted and followed up police-related requests for public information.",
+            "Pursued an RTI complaint before the Punjab Information Commission in March 2023.",
+            "Analysed district crime records covering January to August 2024.",
+            "Shared findings and recommendations with relevant officials and human-rights organisations.",
+            "Requested follow-up on a police inquiry report in February 2025."
+          ],
+          "outcomes": [
+            "Police correspondence and Information Commission orders document the RTI follow-up process.",
+            "District crime analysis was prepared and communicated.",
+            "The available records do not confirm compliance with every information request or implementation of the recommended policing reforms."
+          ],
+          "partners": [],
+          "milestones": [
+            {
+              "period": "30 December 2021",
+              "title": "Police response correspondence",
+              "description": "The District Police Officer informed the Central Police Office that a reply had already been sent on 21 December. The enclosed reply is not included in the available material."
+            },
+            {
+              "period": "3 March 2023",
+              "title": "RTI complaint registered",
+              "description": "The Punjab Information Commission registered the complaint and directed the police and traffic information officers to provide information or explain any lawful exemption."
+            },
+            {
+              "period": "17 March 2023",
+              "title": "Request forwarded for response",
+              "description": "The Central Police Office forwarded the information request to the District Police Officer, Mandi Bahauddin."
+            },
+            {
+              "period": "20 March 2023",
+              "title": "Fresh notice issued",
+              "description": "The Commission requested certified information within seven working days and scheduled further proceedings for 5 April 2023."
+            },
+            {
+              "period": "2024",
+              "title": "District crime analysis",
+              "description": "HRPF prepared and shared analysis of district crime records covering January to August 2024."
+            },
+            {
+              "period": "5 February 2025",
+              "title": "Police inquiry follow-up requested",
+              "description": "HRPF wrote to the Inspector General of Punjab Police asking for action on the inquiry report referred to in its representation. Subsequent action is not confirmed."
+            }
+          ],
+          "metrics": [],
+          "sections": []
+        }
+      },
+      "images": [
+        {
+          "fileId": "gallery:crime-rti-newspaper",
+          "alt": "Newspaper coverage of HRPF requests for district crime information",
+          "caption": "Newspaper coverage accompanying the HRPF post about obtaining public information on district crime."
+        },
+        {
+          "fileId": "gallery:police-reply-2021-12-30",
+          "alt": "District Police Officer RTI letter, 30 December 2021",
+          "caption": "The District Police Officer reports that a reply had been sent on 21 December 2021."
+        },
+        {
+          "fileId": "gallery:commission-order-2023-03-03",
+          "alt": "Punjab Information Commission order, 3 March 2023",
+          "caption": "The Commission registers the RTI complaint and directs the police and traffic information officers to respond."
+        },
+        {
+          "fileId": "gallery:police-forwarding-2023-03-17",
+          "alt": "Central Police Office RTI letter, 17 March 2023",
+          "caption": "The Central Police Office forwards the information request to the District Police Officer for a response."
+        },
+        {
+          "fileId": "gallery:commission-order-2023-03-20",
+          "alt": "Punjab Information Commission order, 20 March 2023",
+          "caption": "The Commission issues a fresh notice requesting certified information within seven working days."
+        },
+        {
+          "fileId": "gallery:police-inquiry-followup-2025-02-05",
+          "alt": "HRPF letter requesting police inquiry follow-up, 5 February 2025",
+          "caption": "HRPF asks the Inspector General of Punjab Police to follow up on the inquiry report referred to in its letter."
+        }
+      ]
+    },
+    {
+      "key": "work-project:road-drainage-waterlogging-advocacy",
+      "sourceLinks": [
+        "https://www.facebook.com/share/p/1KJWphQ2X8/"
+      ],
+      "retrieval": "verified",
+      "patch": {
+        "details": {
+          "overview": "HRPF raised concerns about road levels and waterlogging in Mianwal Ranjha. Its letter of 8 April 2026 to the Punjab Communication and Works Department reported that adjoining streets were lower than a recently constructed road and requested attention to water accumulation, roadside drainage and departmental responsibility. The Foundation also pursued the matter through the Provincial Ombudsman.",
+          "challenge": "Waterlogging linked to road conditions created a public-service concern for local residents.",
+          "approach": "HRPF submitted a departmental complaint and pursued the matter through the Provincial Ombudsman.",
+          "period": "Representation dated 8 April 2026; subsequent complaint follow-up recorded in May 2026",
+          "targetCommunity": "Residents affected by road drainage problems",
+          "objectives": [
+            "Seek action on road drainage and waterlogging concerns."
+          ],
+          "activities": [
+            "Submitted a road-level and drainage representation to the Communication and Works Department.",
+            "Requested cleaning, repair and restoration of roadside drainage.",
+            "Pursued Ombudsman follow-up."
+          ],
+          "outcomes": [
+            "Formal complaints were recorded.",
+            "Repair completion and resolution of waterlogging are not confirmed."
+          ],
+          "partners": [],
+          "milestones": [
+            {
+              "period": "8 April 2026",
+              "title": "Road-level and drainage representation",
+              "description": "HRPF requested attention to road levels and drainage in Mianwal Ranjha."
+            }
+          ],
+          "metrics": [],
+          "sections": []
+        }
+      },
+      "images": [
+        {
+          "fileId": "gallery:road-drainage-letter-2026-04-08",
+          "alt": "HRPF letter concerning road levels and drainage, 8 April 2026",
+          "caption": "Request to the Communication and Works Department concerning street levels, water accumulation and drainage in Mianwal Ranjha."
+        }
+      ]
+    },
+    {
+      "key": "work-project:sialkot-health-data-research",
+      "sourceLinks": [
+        "https://www.facebook.com/share/p/1e4ssmDcd2/"
+      ],
+      "retrieval": "verified",
+      "patch": {
+        "details": {
+          "overview": "HRPF obtained district health data through a Right to Information request, analysed disease patterns in Sialkot and published recommendations for public-health action.",
+          "challenge": "Public-service planning required a clearer picture of disease patterns and priorities for water, sanitation and healthcare.",
+          "approach": "HRPF reviewed data supplied by the District Health Authority and prepared an analysis calling attention to public-health needs.",
+          "period": "January\u2013April 2024 data; analysis published May 2024",
+          "targetCommunity": "Communities whose health needs inform public-service planning",
+          "objectives": [
+            "Inform public-health planning through analysis of district records."
+          ],
+          "activities": [
+            "Requested district health records.",
+            "Analysed January\u2013April 2024 data.",
+            "Published recommendations for the responsible health authorities."
+          ],
+          "outcomes": [
+            "A public-health analysis and recommendations were published.",
+            "The research does not establish that recommended services were subsequently delivered."
+          ],
+          "partners": [],
+          "milestones": [
+            {
+              "period": "23 May 2024",
+              "title": "District Health Authority response",
+              "description": "The District Health Authority, Sialkot, replied to HRPF\u2019s information request and stated that district disease information was attached."
+            },
+            {
+              "period": "31 May 2024",
+              "title": "Public-health analysis shared",
+              "description": "HRPF shared its health-status report covering January to April 2024."
+            }
+          ],
+          "metrics": [],
+          "sections": []
+        }
+      },
+      "images": [
+        {
+          "fileId": "gallery:sialkot-health-reply-2024-05-23",
+          "alt": "District Health Authority Sialkot RTI reply, 23 May 2024",
+          "caption": "The District Health Authority replies to HRPF\u2019s request for district disease information. The attached dataset is not part of this image."
+        }
+      ]
+    },
+    {
+      "key": "work-project:canal-water-environmental-accountability",
+      "sourceLinks": [
+        "https://www.facebook.com/share/v/14reGzBWGjo/"
+      ],
+      "retrieval": "verified",
+      "patch": {
+        "details": {
+          "overview": "HRPF brought canal-pollution concerns before environmental authorities and the Provincial Ombudsman, seeking enforcement and departmental follow-up.",
+          "challenge": "Reported sewage and poultry-waste discharge threatened the condition of fresh canal water and the surrounding environment.",
+          "approach": "HRPF gathered information, approached the responsible departments and presented documentary evidence during Ombudsman proceedings.",
+          "period": "Environmental advocacy recorded in 2022\u20132024",
+          "targetCommunity": "Communities relying on local canals and a healthy environment",
+          "objectives": [
+            "Seek enforcement and departmental accountability for canal pollution."
+          ],
+          "activities": [
+            "Reported pollution concerns to environmental and other relevant departments.",
+            "Presented supporting documents during Ombudsman proceedings.",
+            "Sought enforcement and follow-up reports.",
+            "Shared a public video appeal seeking environmental-authority attention to reported canal pollution and unsafe waste disposal."
+          ],
+          "outcomes": [
+            "Show-cause notices and referrals for environmental proceedings were recorded.",
+            "Ombudsman directions called for departmental action and a follow-up report.",
+            "Long-term water-quality improvement is not measured in the available record."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        }
+      },
+      "images": [
+        {
+          "fileId": "gallery:canal-pollution-video-preview",
+          "alt": "Preview frame from HRPF\u2019s canal-pollution advocacy video",
+          "caption": "Preview frame from HRPF\u2019s video appeal about canal pollution in Mandi Bahauddin."
+        }
+      ]
+    }
+  ]
+}
