@@ -6,15 +6,36 @@ These interfaces and APIs work for future documents, independently of the source
 
 ## Public experience
 
-Report cards show title, year, summary, edition, actual public PDF page count,
-optional reporting period, file size and public-copy notes. Certificate cards
-show issuer, reference and dates when supplied, a summary and copy notes. Expired
-validity dates are labelled; missing dates do not imply current registration.
+Report and certificate cards show the title, issuer where supplied, and summary.
+Validity, reference and issue metadata, reporting periods, edition/page counts,
+file type/size and the public-copy notes dropdown are hidden on these cards.
 The archive introduction explains that historical documents do not establish renewal.
 
-View opens an accessible native dialog with an inline PDF or raster image;
-the file is requested only when the viewer opens. New-tab and download links are
-available as browser fallbacks. Pagination continues to use public approved records.
+View opens the inline PDF or raster image directly in a new browser tab. Download
+uses the attachment endpoint. There is no embedded document dialog or iframe, and
+files load only when selected. Pagination continues to use public approved records.
+The separate Profile document section retains its existing metadata and actions.
+
+## PCP A4 replacement
+
+`backend/seed/document-assets/replacements/pcp-npo-evaluation-a4-v2.pdf` is a
+one-page A4 (210 × 297 mm) presentation of the supplied PCP evaluation certificate.
+The black top and bottom bands are excluded from the visible page. The original
+JPEG is embedded unchanged, preserving all certificate text, the seal and the
+signature. No text or signature was recreated, and no dates were inferred.
+
+This prepared replacement is committed with the project, but it is **not a
+frontend public-folder asset** and pushing it does not replace the live certificate.
+The published certificate is an administrator-managed database record linked to
+an uploaded Cloudinary asset.
+
+To use it: open **Admin → Registration and Certificates**, edit **NPO evaluation
+certificate**, upload this PDF as the **reviewed public copy**, review the attached
+file, then **Save and publish**. Keep the existing title, issuer and summary.
+
+No new seed script is required. The existing `seed:documents` command preserves
+already-published and administrator-edited records; rerunning it will not replace
+the live file. The original seed JPEG and release manifest remain unchanged.
 
 ## Admin workflow
 
@@ -80,5 +101,5 @@ Detailed retained-page/paragraph decisions are in `backend/seed/document-review.
 `npm run check`, API integration and seed integration tests verify permissions,
 file types, draft/public access, downloads, version conflicts, withdrawal, original
 protection, rerun preservation, interrupted storage and role revocation. Frontend
-checks cover build/type/lint plus production SSR cards, dates, notes, empty/offline
+checks cover build/type/lint plus production SSR cards, new-tab links, empty/offline
 states and the admin route. All public PDF pages were rendered and visually reviewed.
