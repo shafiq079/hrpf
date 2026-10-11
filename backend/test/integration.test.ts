@@ -17,6 +17,7 @@ import { createOutbox, mailSender, startEmbeddedOutbox, startOutboxWorker, type 
 import { createForms } from '../src/services/forms.js';
 import { createUploads, MB, type UploadProvider } from '../src/services/uploads.js';
 import { registrationVersion, feeChoices, registrationAmount } from '../src/domain/membership-registration.js';
+import { ApiError } from '../src/http/errors.js';
 import { bumpPublicRevision, createPublicReadCache } from '../src/services/public-cache.js';
 const env = parseEnv({ NODE_ENV: 'test', JWT_ACCESS_SECRET: 'a'.repeat(64), JWT_REFRESH_SECRET: 'b'.repeat(64), DATA_ENCRYPTION_KEY: 'ab'.repeat(32), CNIC_HASH_KEY: 'c'.repeat(64), REDIS_URL: process.env.TEST_REDIS_URL!, ADMIN_NOTIFY_EMAILS: 'admin@example.org', FRONTEND_URL: 'http://localhost:3000', SMTP_HOST: 'test.invalid', MAIL_FROM: 'no-reply@example.org' });
 const redis = createClient({ url: env.REDIS_URL }); redis.on('error', () => {});
@@ -62,7 +63,7 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     mongoose.set('bufferCommands', false); mongoose.set('sanitizeFilter', false);
     await mongoose.connect(mongo.getUri(), { dbName: `hrpf_test_${randomUUID().replaceAll('-', '')}`, autoIndex: false });
     await ensureIndexes(); await redis.connect(); passwordHash = await hashPassword('Test-password-long');
-    app = createApp(env, async () => ({ mongo: true, redis: true }), { redis: services, bot, provider });
+    app = createApp(env, async () => ({ mongo: true, redis: true }), { redis: services, bot, provider, videoMetadata: async url => { if (url.includes('Unavailable')) throw new ApiError(422, 'VIDEO_METADATA_UNAVAILABLE', 'Unavailable video'); return { title: 'Original YouTube human rights title', sourceName: 'HRPF YouTube', thumbnailUrl: `https://i.ytimg.com/vi/${new URL(url).searchParams.get('v')}/hqdefault.jpg` }; } });
   });
   after(async () => { if (redis.isOpen) await redis.quit(); await mongoose.disconnect(); if (mongo) await mongo.stop(); });
   beforeEach(async () => {
@@ -256,7 +257,7 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     const body = { ticket, submissionKey: randomUUID(), consent: true, consentVersion: 'test-v1', name: 'Test', email: 'test@example.org', subject: 'Test', message: 'Test' };
     await request(app).post('/api/contact-messages').send({ ...body, inquiryType: 'Invented' }).expect(400);
     await request(app).post('/api/contact-messages').send({ ...body, organization: 'x'.repeat(151) }).expect(400);
-    const unavailableApp = createApp({ ...env, ADMIN_NOTIFY_EMAILS: [] }, async () => ({ mongo: true, redis: true }), { redis: services, bot, provider });
+    const unavailableApp = createApp({ ...env, ADMIN_NOTIFY_EMAILS: [] }, async () => ({ mongo: true, redis: true }), { redis: services, bot, provider, videoMetadata: async url => { if (url.includes('Unavailable')) throw new ApiError(422, 'VIDEO_METADATA_UNAVAILABLE', 'Unavailable video'); return { title: 'Original YouTube human rights title', sourceName: 'HRPF YouTube', thumbnailUrl: `https://i.ytimg.com/vi/${new URL(url).searchParams.get('v')}/hqdefault.jpg` }; } });
     await request(unavailableApp).post('/api/contact-messages').send(body).expect(503);
     assert.equal(await ContactMessage.countDocuments(), 0); assert.equal(await EmailOutbox.countDocuments(), 0);
   });
@@ -306,7 +307,7 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     await request(app).post('/api/newsletter/subscriptions').send({ ...body, ticket: await form('contact') }).expect(403);
     assert.equal(await NewsletterSubscription.countDocuments(), 0);
     await redis.flushDb();
-    const unavailableApp = createApp({ ...env, FRONTEND_URL: undefined }, async () => ({ mongo: true, redis: true }), { redis: services, bot, provider });
+    const unavailableApp = createApp({ ...env, FRONTEND_URL: undefined }, async () => ({ mongo: true, redis: true }), { redis: services, bot, provider, videoMetadata: async url => { if (url.includes('Unavailable')) throw new ApiError(422, 'VIDEO_METADATA_UNAVAILABLE', 'Unavailable video'); return { title: 'Original YouTube human rights title', sourceName: 'HRPF YouTube', thumbnailUrl: `https://i.ytimg.com/vi/${new URL(url).searchParams.get('v')}/hqdefault.jpg` }; } });
     await request(unavailableApp).post('/api/newsletter/subscriptions').send(body).expect(503);
     assert.equal(await EmailOutbox.countDocuments(), 0);
     await redis.flushDb(); // Isolate retry contracts from the deliberate per-address abuse limit.
@@ -865,16 +866,44 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
     await editor.agent.post(`/api/admin/publication/gallery/${noImage.body.data.id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:0,action:'publish',releaseReviewed:true}).expect(400);
     const restricted = await login('case_manager'); await restricted.agent.get('/api/admin/gallery').expect(403); await request(app).get('/api/admin/gallery').expect(401);
   });
+  it('YouTube management uses original metadata, rejects duplicates, separates pages and preserves order and hiding', async () => {
+    const editor = await login('editor');
+    const url = 'https://youtu.be/f1ZNo-4YzzE?si=share';
+    await request(app).get('/api/admin/interviews/metadata').query({ videoUrl: url }).expect(401);
+    const metadata = await editor.agent.get('/api/admin/interviews/metadata').query({ videoUrl: url }).expect(200);
+    assert.equal(metadata.body.data.title, 'Original YouTube human rights title');
+    const input = { videoUrl: url, category: 'media-coverage', description: { en: '' }, sortOrder: 50 };
+    const created = await editor.agent.post('/api/admin/interviews').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(input).expect(201);
+    const id = created.body.data.id;
+    await editor.agent.post('/api/admin/interviews').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({ ...input, videoUrl: 'https://www.youtube.com/watch?v=f1ZNo-4YzzE' }).expect(409);
+    const row = await VideoInterview.findById(id); assert.equal(row!.title!.en, metadata.body.data.title); assert.equal(row!.videoUrl, 'https://www.youtube.com/watch?v=f1ZNo-4YzzE');
+    await editor.agent.post(`/api/admin/publication/interview/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:0,action:'publish',releaseReviewed:true}).expect(200);
+    assert.equal((await request(app).get('/api/interviews')).body.meta.total, 0);
+    const publicRow = (await request(app).get('/api/interviews?category=media-coverage')).body.data[0];
+    assert.equal(publicRow.category, 'media-coverage'); assert.equal(publicRow.thumbnail, metadata.body.data.thumbnailUrl);
+    assert.equal((await request(app).get('/api/interviews?category=media-coverage&locale=ur')).body.data[0].title, metadata.body.data.title);
+    await request(app).get('/api/interviews?category=in-action').expect(400);
+    await editor.agent.get('/api/admin/interviews/metadata').query({videoUrl:'https://youtu.be/Unavailable'}).expect(422);
+    await editor.agent.patch(`/api/admin/interviews/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...input,category:'tv-interviews',sortOrder:1,title:{en:'Override ignored'},version:1}).expect(200);
+    assert.equal((await request(app).get('/api/interviews?category=media-coverage')).body.meta.total, 0);
+    await editor.agent.post(`/api/admin/publication/interview/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:2,action:'publish',releaseReviewed:true}).expect(200);
+    await VideoInterview.create({ title:{en:'Later interview'}, videoUrl:'https://vimeo.com/12345679', sortOrder:99, reviewStatus:'approved', publishedAt:new Date() });
+    const ordered = (await request(app).get('/api/interviews?category=tv-interviews')).body.data;
+    assert.equal(ordered[0].id, id); assert.equal(ordered[0].title, metadata.body.data.title);
+    await editor.agent.post(`/api/admin/publication/interview/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:3,action:'withdraw',releaseReviewed:true}).expect(200);
+    assert.equal((await request(app).get('/api/interviews')).body.meta.total, 1);
+  });
+
   it('TV interviews normalize only supported individual video links; optional thumbnails are bound, private and revocable', async () => {
     const editor = await login('editor');
-    const input = { title:{en:'Human rights conversation'},description:{en:'Reviewed interview topics'},videoUrl:'https://youtu.be/Abcdef123_-?t=30',sourceName:'Test channel',eventDate:'2021-11-29' };
+    const input = { title:{en:'Human rights conversation'},description:{en:'Reviewed interview topics'},videoUrl:'https://vimeo.com/23456789',sourceName:'Test channel',eventDate:'2021-11-29' };
     const send = (body: object) => editor.agent.post('/api/admin/interviews').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send(body);
     for (const videoUrl of ['https://youtube.com/@hrpfpakistan','https://youtube.com/watch?v=bad','https://youtube.com.evil.example/watch?v=Abcdef123_-','javascript:alert(1)','https://user:pass@www.youtube.com/watch?v=Abcdef123_-','https://player.vimeo.com/video/123456?secret=1','<iframe src="https://example.org"></iframe>']) await send({...input,videoUrl}).expect(400);
     const created = await send(input).expect(201), id = created.body.data.id;
     assert.equal((await request(app).get('/api/interviews')).body.meta.total,0);
     await editor.agent.post(`/api/admin/publication/interview/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({version:0,action:'publish',releaseReviewed:true}).expect(200);
     const result = await request(app).get('/api/interviews?q=rights').expect(200);
-    assert.equal(result.body.meta.total,1); assert.equal(result.body.data[0].embedUrl,'https://www.youtube-nocookie.com/embed/Abcdef123_-'); assert.equal(result.body.data[0].thumbnail,null);
+    assert.equal(result.body.meta.total,1); assert.equal(result.body.data[0].embedUrl,'https://player.vimeo.com/video/23456789'); assert.equal(result.body.data[0].thumbnail,null);
     assert.equal((await request(app).get('/api/interviews?q=.*')).body.meta.total,0);
     const file = await editor.agent.post('/api/admin/assets?purpose=content').set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).attach('file',png,{filename:'thumbnail.png',contentType:'image/png'}).expect(201);
     await editor.agent.patch(`/api/admin/interviews/${id}`).set('Origin','http://localhost:3000').set('X-CSRF-Token',editor.csrf).send({...input,assetId:file.body.data.assetId,version:1}).expect(200);
@@ -1204,7 +1233,7 @@ describe('M2 real Mongo replica-set and Redis integration', { timeout: 180000 },
   });
   it('complaint submission requires admin recipients and rejects contradictory proceedings and oversized combined uploads', async () => {
     const ticket = await form(), body = complaintBody(ticket, await upload(ticket), await upload(ticket, pdf, 'complaint', 'complaint.pdf'));
-    const unconfigured = createApp({ ...env, ADMIN_NOTIFY_EMAILS: [] }, async () => ({ mongo: true, redis: true }), { redis: services, bot, provider });
+    const unconfigured = createApp({ ...env, ADMIN_NOTIFY_EMAILS: [] }, async () => ({ mongo: true, redis: true }), { redis: services, bot, provider, videoMetadata: async url => { if (url.includes('Unavailable')) throw new ApiError(422, 'VIDEO_METADATA_UNAVAILABLE', 'Unavailable video'); return { title: 'Original YouTube human rights title', sourceName: 'HRPF YouTube', thumbnailUrl: `https://i.ytimg.com/vi/${new URL(url).searchParams.get('v')}/hqdefault.jpg` }; } });
     await request(unconfigured).post('/api/complaints').send(body).expect(503);
     assert.equal(await Complaint.countDocuments(), 0);
     await request(app).post('/api/complaints').send({ ...body, priorProceedings: true }).expect(400);

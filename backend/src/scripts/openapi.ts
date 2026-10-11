@@ -93,12 +93,12 @@ const listSchemas = {
   'blog-categories': z.object({ slug: z.string(), name: z.string() }),
   blogs: z.object({ title: z.string(), slug: z.string(), excerpt: z.string(), publishedAt: z.string() }),
   gallery: z.object({ id: z.string(), title: z.string(), file: z.string(), category: z.enum(['in-action', 'media-coverage']), alt: z.string(), caption: z.string(), treatment: z.enum(['ORIGINAL', 'AI_RESTORATION']), mediaType: z.enum(['newspaper','photo','graphic']), sourceName: z.string(), sourceUrl: z.string(), eventDate: z.string().optional(), width: z.number().optional(), height: z.number().optional() }),
-  interviews: z.object({ id: z.string(), title: z.string(), description: z.string(), provider: z.enum(['youtube','vimeo']), watchUrl: z.string(), embedUrl: z.string(), thumbnail: z.string().nullable(), thumbnailAlt: z.string(), sourceName: z.string(), eventDate: z.string().optional() }),
+  interviews: z.object({ category: z.enum(['tv-interviews','media-coverage']), id: z.string(), title: z.string(), description: z.string(), provider: z.enum(['youtube','vimeo']), watchUrl: z.string(), embedUrl: z.string(), thumbnail: z.string().nullable(), thumbnailAlt: z.string(), sourceName: z.string(), eventDate: z.string().optional() }),
   reports: z.object({ id: z.string(), title: z.string(), file: z.string(), slug: z.string(), year: z.number().optional(), summary: z.string(), pages: z.number().optional(), download: z.string(), view: z.string(), format: z.string(), bytes: z.number(), edition: z.enum(['complete','public-edition']), releaseNote: z.string(), coverageStart: z.string().optional(), coverageEnd: z.string().optional() }),
   certificates: z.object({ id: z.string(), title: z.string(), file: z.string(), issuer: z.string(), reference: z.string().optional(), issuedAt: z.string().optional(), validFrom: z.string().optional(), expiresAt: z.string().optional(), summary: z.string(), releaseNote: z.string(), view: z.string(), download: z.string(), format: z.string(), bytes: z.number() }),
 };
 for (const [path, schema] of Object.entries(listSchemas)) {
-  operation(`/api/${path}`, 'get', 'Read explicitly projected published records; no provider URLs or private source fields', z.array(schema), { parameters: publicParameters });
+  operation(`/api/${path}`, 'get', 'Read explicitly projected published records; no provider URLs or private source fields', z.array(schema), { parameters: path === 'interviews' ? [...publicParameters.filter(p => p.name !== 'category'), { name: 'category', in: 'query', schema: { type: 'string', enum: ['tv-interviews','media-coverage'], default: 'tv-interviews' } }] : publicParameters });
   if (['blogs', 'gallery', 'interviews', 'reports', 'certificates'].includes(path)) {
     const op = paths[`/api/${path}`]!.get as { responses: Record<string, unknown> };
     op.responses['200'] = { description: 'Bounded page of reviewed public records', content: { 'application/json': { schema: jsonSchema(z.object({ data: z.array(schema), meta: z.object({ page: z.number(), limit: z.number(), total: z.number(), pages: z.number() }) })) } } };
@@ -149,6 +149,7 @@ for (const [kind, input, output] of [['projects',projectInput,publicProject],['b
  remove.requestBody={required:true,content:{'application/json':{schema:jsonSchema(z.object({version:z.number().int().nonnegative()}).strict())}}};
 }
 for (const kind of ['projects', 'blogs', 'news']) operation(`/api/admin/${kind}/{id}`, 'get', 'Read a project editor record including bound file IDs; excludes private provider metadata', z.unknown(), { parameters: [parameter('id')], security: [adminSecurity] });
+operation('/api/admin/interviews/metadata','get','Load original YouTube title, channel and thumbnail from a public individual link',z.object({title:z.string(),sourceName:z.string(),thumbnailUrl:z.string()}),{security:[adminSecurity],parameters:[{name:'videoUrl',in:'query',required:true,schema:{type:'string',maxLength:2000}}]});
 for (const [kind, input] of [['gallery',galleryInput],['interviews',interviewInput]] as const) {
  operation(`/api/admin/${kind}`,'get','List 20 media editor records with versions; content role',z.array(z.unknown()),{security:[adminSecurity]});
  operation(`/api/admin/${kind}/{id}`,'get','Read safe editor fields and bound image ID; no provider metadata',z.unknown(),{parameters:[parameter('id')],security:[adminSecurity]});

@@ -148,6 +148,9 @@ gallery.pre('validate', function () {
 });
 export const GalleryItem = mongoose.model('GalleryItem', gallery);
 const interview = new Schema({
+  seedKey: { ...text(200), unique: true, sparse: true },
+  category: { type: String, enum: ['tv-interviews', 'media-coverage'], default: 'tv-interviews' },
+  youtubeThumbnailUrl: text(2000),
   title: { type: localized, required: true }, description: localized,
   videoUrl: { ...requiredText(2000), match: canonicalVideoPattern }, thumbnail: assetRefSchema,
   thumbnailAlt: text(300), sourceName: text(200), eventDate: Date,
