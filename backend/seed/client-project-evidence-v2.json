@@ -1,0 +1,936 @@
+{
+  "version": "client-project-evidence-v2",
+  "files": [
+    {
+      "id": "gallery:batch2:migration-forwarding-2026-08-10",
+      "path": "progress reports/client-project-evidence-2026-10-batch2/migration-forwarding-2026-08-10.jpg",
+      "sha256": "a2aba3be3fd87a3551836250dc79a397d37fc157728b3300cd0bdc6637a2d534",
+      "bytes": 50056,
+      "width": 600,
+      "height": 866
+    },
+    {
+      "id": "gallery:batch2:connection-charge-review",
+      "path": "progress reports/client-project-evidence-2026-10-batch2/connection-charge-review.jpg",
+      "sha256": "647127ebf4d1ad8451d1be3a128912a4b2d12295028f1410fdbd13eb0141d5e1",
+      "bytes": 75800,
+      "width": 725,
+      "height": 600
+    },
+    {
+      "id": "gallery:batch2:feeder-community-engagement",
+      "path": "progress reports/client-project-evidence-2026-10-batch2/feeder-community-engagement.jpg",
+      "sha256": "e0efa277ef69f0ac739e1d2405a516e1c7e7bd6144e5352f0636b91d2ced6e77",
+      "bytes": 40424,
+      "width": 953,
+      "height": 593
+    },
+    {
+      "id": "gallery:batch2:lt-ht-materials-2023-07-18",
+      "path": "progress reports/client-project-evidence-2026-10-batch2/lt-ht-materials-2023-07-18.jpg",
+      "sha256": "fcff717d363fa7d43ee375d256a4ef80084e76dc3ec41b3dcc49550ffb0ac563",
+      "bytes": 99841,
+      "width": 600,
+      "height": 847
+    },
+    {
+      "id": "gallery:batch2:police-followup-2025-03-16",
+      "path": "progress reports/client-project-evidence-2026-10-batch2/police-followup-2025-03-16.jpg",
+      "sha256": "9d465c6c5ca15ee0bee4024120a94c0fadf589d357c77845ea98f4770bc32c4c",
+      "bytes": 114002,
+      "width": 600,
+      "height": 888
+    },
+    {
+      "id": "gallery:batch2:sanitation-inspection",
+      "path": "other_images_final/project-photos/mianwal-ranjha-sanitation.webp",
+      "sha256": "64936b8907acc9b9364bcbd9d03ddc8fef27b1e88d0651ec73374ba16c992af1",
+      "bytes": 270378,
+      "width": 960,
+      "height": 1280
+    },
+    {
+      "id": "gallery:batch2:pandowal-drain-cleaning",
+      "path": "progress reports/client-project-evidence-2026-10-batch2/pandowal-drain-cleaning.jpg",
+      "sha256": "38786f6132cc393212a8ffea6e9a04e524721fe06f033ba2a878afc5bc2b4809",
+      "bytes": 120896,
+      "width": 600,
+      "height": 929
+    },
+    {
+      "id": "gallery:batch2:sewage-handover-2023-01-10",
+      "path": "progress reports/client-project-evidence-2026-10-batch2/sewage-handover-2023-01-10.jpg",
+      "sha256": "280f1d9ab7d4a2f091b8d5bfaecc337601f25293a34149e9be871ad955320c91",
+      "bytes": 47758,
+      "width": 600,
+      "height": 659
+    },
+    {
+      "id": "gallery:batch2:sewage-ombudsman-record",
+      "path": "progress reports/client-project-evidence-2026-10-batch2/sewage-ombudsman-record.jpg",
+      "sha256": "42f03f3e3fa2dcfee83a8af34a2ea98247aee5261c69e8624925657e779afbaf",
+      "bytes": 72167,
+      "width": 600,
+      "height": 898
+    },
+    {
+      "id": "gallery:batch2:canal-bank-ombudsman-record",
+      "path": "progress reports/client-project-evidence-2026-10-batch2/canal-bank-ombudsman-record.jpg",
+      "sha256": "30155e118761af27b59b3d8b3d665fadba89c361edd2f1980e35381b2d59c11f",
+      "bytes": 73314,
+      "width": 600,
+      "height": 910
+    },
+    {
+      "id": "gallery:batch2:canal-pollution-representation-2023-11-25",
+      "path": "progress reports/client-project-evidence-2026-10-batch2/canal-pollution-representation-2023-11-25.jpg",
+      "sha256": "42e9a3e1c83f2fe83fb8c140dbeead11913a7cf09bf41fd28f4e36976d4299f2",
+      "bytes": 104105,
+      "width": 600,
+      "height": 889
+    },
+    {
+      "id": "gallery:batch2:environmental-response-2022-05-31",
+      "path": "progress reports/client-project-evidence-2026-10-batch2/environmental-response-2022-05-31.jpg",
+      "sha256": "addbb4aba794e4ecb9f8bbbd87bb6b471213014332c41f9ac9c6123603234506",
+      "bytes": 115079,
+      "width": 600,
+      "height": 870
+    },
+    {
+      "id": "gallery:batch2:gas-service-repair",
+      "path": "progress reports/client-project-evidence-2026-10-batch2/gas-service-repair.jpg",
+      "sha256": "abfb7acdabb5f2174bed74a973e3183587d42e72a1acb68755adab0f9d697e35",
+      "bytes": 77514,
+      "width": 800,
+      "height": 600
+    },
+    {
+      "id": "gallery:batch2:press-freedom-newspaper",
+      "path": "progress reports/client-project-evidence-2026-10-batch2/press-freedom-newspaper.jpg",
+      "sha256": "c5aeff4aa87db90d73c6cbbbeb3e2d6731b8f64a0d4412c4847b6700e25cddc4",
+      "bytes": 147956,
+      "width": 1290,
+      "height": 600
+    },
+    {
+      "id": "gallery:batch2:school-facility-decision-2025",
+      "path": "progress reports/client-project-evidence-2026-10-batch2/school-facility-decision-2025.jpg",
+      "sha256": "51cf1015ff841cb15f14efffdb06963a054b882da3060ab45a358f0f8fb090c0",
+      "bytes": 163782,
+      "width": 1080,
+      "height": 822
+    },
+    {
+      "id": "gallery:batch2:jail-healthcare-decision-2025",
+      "path": "progress reports/client-project-evidence-2026-10-batch2/jail-healthcare-decision-2025.jpg",
+      "sha256": "7cff1668777b54bcf2dbe749af7c1d19648446bc7a9829223619f7935d32aea5",
+      "bytes": 246271,
+      "width": 1080,
+      "height": 2195
+    },
+    {
+      "id": "gallery:batch2:darulaman-decision-page-1",
+      "path": "progress reports/client-project-evidence-2026-10-batch2/darulaman-decision-page-1.jpg",
+      "sha256": "54fef89544678fca3822efd7d454c47de5ec8a04216cdeb0f4221e8b76081f44",
+      "bytes": 135906,
+      "width": 1032,
+      "height": 1536
+    },
+    {
+      "id": "gallery:batch2:darulaman-decision-page-2",
+      "path": "progress reports/client-project-evidence-2026-10-batch2/darulaman-decision-page-2.jpg",
+      "sha256": "b6cda41b817e584e44abde67bde9bafb1723c50044bfda0c299651ce2d00c0d0",
+      "bytes": 159978,
+      "width": 1024,
+      "height": 1536
+    }
+  ],
+  "projects": [
+    {
+      "key": "work-project:trafficking-prevention-migration-awareness",
+      "sourceLinks": [
+        "https://www.facebook.com/share/p/1FLMueiaCx/",
+        "https://www.facebook.com/share/p/19ueA4U2hY/"
+      ],
+      "retrieval": "verified",
+      "patch": {
+        "details": {
+          "overview": "HRPF promotes awareness of human smuggling and trafficking risks and supports lawful institutional follow-up for affected families. Its public appeals include concerns about Pakistani nationals reported missing along the Mauritania–Europe migration route. In August 2026, the overseas-grievance mechanism forwarded HRPF’s representation to the Ministry of Foreign Affairs for examination and a response.",
+          "challenge": "Families in the region faced loss, exploitation and uncertainty linked to dangerous migration routes and trafficking networks.",
+          "approach": "HRPF combined public-interest research, media awareness and representations to authorities to bring the risks and families’ concerns into public discussion.",
+          "period": "Migration awareness and advocacy recorded in 2024–2026",
+          "targetCommunity": "Young people and families affected by unsafe migration",
+          "objectives": [
+            "Increase public understanding of trafficking and unsafe migration risks."
+          ],
+          "activities": [
+            "Published research and awareness material on trafficking.",
+            "Raised concerns with senior officials.",
+            "Highlighted the need for safer migration information and family support.",
+            "Raised a humanitarian appeal and sought official follow-up concerning reported missing Pakistani nationals on an irregular migration route."
+          ],
+          "outcomes": [
+            "Trafficking risks and affected families’ concerns were documented and communicated.",
+            "Government prevention and rehabilitation proposals are advocacy requests, not HRPF-delivered programmes.",
+            "Official forwarding correspondence records a request for examination; recovery, repatriation and final case outcomes are not confirmed by the supplied material."
+          ],
+          "partners": [],
+          "milestones": [
+            {
+              "period": "10 August 2026",
+              "title": "Representation forwarded for examination",
+              "description": "The Office of the Wafaqi Mohtasib requested examination and a report from the Ministry of Foreign Affairs."
+            }
+          ],
+          "metrics": [],
+          "sections": []
+        },
+        "summary": {
+          "en": "HRPF raises awareness of human smuggling and trafficking risks and seeks lawful institutional follow-up for affected families."
+        }
+      },
+      "images": [
+        {
+          "fileId": "gallery:batch2:migration-forwarding-2026-08-10",
+          "alt": "Wafaqi Mohtasib forwarding letter, 10 August 2026",
+          "caption": "Official forwarding of HRPF’s representation to the Ministry of Foreign Affairs for examination and a report."
+        }
+      ],
+      "clientNumber": "16"
+    },
+    {
+      "key": "work-project:electricity-connection-fairness",
+      "sourceLinks": [
+        "https://www.facebook.com/share/p/1MVhFn63B2/"
+      ],
+      "retrieval": "verified",
+      "patch": {
+        "details": {
+          "overview": "HRPF challenged revised electricity-connection charges through the Power Division, GEPCO and NEPRA, prompting a regulatory inquiry.",
+          "challenge": "Revised demand notices created concerns about affordability and fair treatment for households seeking electricity connections.",
+          "approach": "HRPF sought a review through the responsible provider and regulator and considered further lawful remedies.",
+          "period": "Regulatory inquiry recorded in 2025",
+          "targetCommunity": "Households seeking new electricity connections",
+          "objectives": [
+            "Seek review of revised electricity-connection charges."
+          ],
+          "activities": [
+            "Raised connection-charge concerns with the provider and Power Division.",
+            "Submitted a petition to NEPRA.",
+            "Requested review of revised estimates and notices.",
+            "Requested review of revised connection rates and honouring of previously issued demand notices."
+          ],
+          "outcomes": [
+            "NEPRA initiated an inquiry and requested a report from GEPCO.",
+            "A final tariff decision or completed court proceeding is not established."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": [
+            {
+              "heading": "Affordability and fair treatment",
+              "body": "HRPF’s representation challenged the burden of revised connection charges and asked the Power Division to review the rates in the public interest. It also requested that previously issued demand notices be honoured at their approved rates. This records the Foundation’s requested remedy, rather than a confirmed reversal of the charges."
+            }
+          ]
+        }
+      },
+      "images": [
+        {
+          "fileId": "gallery:batch2:connection-charge-review",
+          "alt": "HRPF representation seeking review of GEPCO connection charges",
+          "caption": "HRPF’s request for review of revised connection charges and treatment of existing demand notices."
+        }
+      ],
+      "clientNumber": "5"
+    },
+    {
+      "key": "work-project:electricity-distribution-mianwal-ranjha",
+      "sourceLinks": [
+        "https://www.facebook.com/share/p/14qYmNksLnt/",
+        "https://www.facebook.com/share/p/14qQbSpQE6S/"
+      ],
+      "retrieval": "verified",
+      "patch": {
+        "details": {
+          "overview": "HRPF followed electricity-distribution proposals with GEPCO and oversight authorities, supporting approval and delivery of transformer, pole and cable improvements in Mianwal Ranjha.",
+          "challenge": "Overloading and distribution problems affected local electricity supply and required coordinated infrastructure action.",
+          "approach": "HRPF raised unresolved proposals with the Power Division, GEPCO and the Federal Ombudsman and followed implementation by the electricity provider.",
+          "period": "Electricity infrastructure advocacy recorded in 2023–2025",
+          "targetCommunity": "Residents affected by overloading and distribution problems",
+          "objectives": [
+            "Seek improvements to overloaded electricity-distribution infrastructure."
+          ],
+          "activities": [
+            "Raised distribution and overloading concerns.",
+            "Followed HT/LT proposals with GEPCO and oversight authorities.",
+            "Pursued remaining infrastructure work.",
+            "Followed up approved LT/HT proposals and requested the materials needed for implementation."
+          ],
+          "outcomes": [
+            "Approval and implementation of several infrastructure proposals were recorded.",
+            "The 2025 account describes completed work alongside remaining items under follow-up."
+          ],
+          "partners": [],
+          "milestones": [
+            {
+              "period": "18 July 2023",
+              "title": "Materials requested for approved proposals",
+              "description": "HRPF requested release of materials for approved LT/HT proposals in the Mianwal Ranjha feeder area."
+            }
+          ],
+          "metrics": [],
+          "sections": []
+        }
+      },
+      "images": [
+        {
+          "fileId": "gallery:batch2:feeder-community-engagement",
+          "alt": "Community engagement photograph shared with HRPF’s feeder-supply update",
+          "caption": "HRPF community engagement on electricity supply in Mianwal Ranjha."
+        },
+        {
+          "fileId": "gallery:batch2:lt-ht-materials-2023-07-18",
+          "alt": "HRPF LT/HT materials request, 18 July 2023",
+          "caption": "Request for materials needed for approved electricity-distribution proposals."
+        }
+      ],
+      "clientNumber": "5 — feeder post; GEPCO consumers"
+    },
+    {
+      "key": "work-project:public-safety-information-research",
+      "sourceLinks": [
+        "https://www.facebook.com/share/p/1CSW5EPj1U/"
+      ],
+      "retrieval": "verified",
+      "patch": {
+        "details": {
+          "overview": "HRPF uses lawful information requests and public-interest research to raise concerns about public safety and institutional accountability in Mandi Bahauddin. Its police-related RTI follow-up includes correspondence from December 2021 and proceedings before the Punjab Information Commission in March 2023. Separately, HRPF prepared an analysis of district crime records for January to August 2024 and shared concerns and recommendations with relevant officials and human-rights organisations.",
+          "challenge": "Community concerns about crime and investigations required reliable information and an accountable institutional response.",
+          "approach": "HRPF seeks public information through the Punjab Right to Information framework, follows up with the responsible public information officers and the Punjab Information Commission, and uses available records to prepare public-interest analysis and recommendations.",
+          "period": "RTI follow-up in 2021–2023, crime analysis in 2024 and inquiry follow-up in 2025",
+          "targetCommunity": "Communities seeking accountable policing and public safety",
+          "objectives": [
+            "Use district records to inform public-safety advocacy."
+          ],
+          "activities": [
+            "Submitted and followed up police-related requests for public information.",
+            "Pursued an RTI complaint before the Punjab Information Commission in March 2023.",
+            "Analysed district crime records covering January to August 2024.",
+            "Shared findings and recommendations with relevant officials and human-rights organisations.",
+            "Requested follow-up on a police inquiry report in February 2025."
+          ],
+          "outcomes": [
+            "Police correspondence and Information Commission orders document the RTI follow-up process.",
+            "District crime analysis was prepared and communicated.",
+            "The available records do not confirm compliance with every information request or implementation of the recommended policing reforms."
+          ],
+          "partners": [],
+          "milestones": [
+            {
+              "period": "30 December 2021",
+              "title": "Police response correspondence",
+              "description": "The District Police Officer informed the Central Police Office that a reply had already been sent on 21 December. The enclosed reply is not included in the available material."
+            },
+            {
+              "period": "3 March 2023",
+              "title": "RTI complaint registered",
+              "description": "The Punjab Information Commission registered the complaint and directed the police and traffic information officers to provide information or explain any lawful exemption."
+            },
+            {
+              "period": "17 March 2023",
+              "title": "Request forwarded for response",
+              "description": "The Central Police Office forwarded the information request to the District Police Officer, Mandi Bahauddin."
+            },
+            {
+              "period": "20 March 2023",
+              "title": "Fresh notice issued",
+              "description": "The Commission requested certified information within seven working days and scheduled further proceedings for 5 April 2023."
+            },
+            {
+              "period": "2024",
+              "title": "District crime analysis",
+              "description": "HRPF prepared and shared analysis of district crime records covering January to August 2024."
+            },
+            {
+              "period": "5 February 2025",
+              "title": "Police inquiry follow-up requested",
+              "description": "HRPF wrote to the Inspector General of Punjab Police asking for action on the inquiry report referred to in its representation. Subsequent action is not confirmed."
+            },
+            {
+              "period": "16 March 2025",
+              "title": "Further police inquiry reminder",
+              "description": "HRPF requested follow-up action on the inquiry report referred to in its police-station representation."
+            }
+          ],
+          "metrics": [],
+          "sections": [
+            {
+              "heading": "Police-station inquiry follow-up",
+              "body": "A further representation concerning Kuthiala Sheikhan referred to an earlier inquiry and reminders, asking senior police authorities to act on the reported findings. These are HRPF’s representations and requested remedies; the material does not establish final disciplinary action or a court outcome."
+            }
+          ]
+        }
+      },
+      "images": [
+        {
+          "fileId": "gallery:batch2:police-followup-2025-03-16",
+          "alt": "HRPF police inquiry reminder, 16 March 2025",
+          "caption": "Further representation requesting follow-up on police investigation concerns in Kuthiala Sheikhan."
+        }
+      ],
+      "clientNumber": "4 — police station"
+    },
+    {
+      "key": "home-project:mianwal-ranjha-sanitation",
+      "sourceLinks": [
+        "https://www.facebook.com/share/p/19pRgfw5cS/",
+        "https://www.facebook.com/share/p/1F91oS516G/",
+        "https://www.facebook.com/share/p/1BoxPa6xuJ/",
+        "https://www.facebook.com/share/p/1E6ML7SKQp/"
+      ],
+      "retrieval": "verified",
+      "patch": {
+        "details": {
+          "period": "Documented in the 2024 progress report",
+          "targetCommunity": "Residents of Mianwal Ranjha using the local sanitation infrastructure",
+          "overview": "HRPF followed up sewage-scheme repairs, drainage maintenance and departmental responsibility in Mianwal Ranjha. Its public updates describe attention to manhole levels and local drainage, while correspondence records the request for repair and lawful handover of the sewage scheme. A separate update reports Pandowal drain-cleaning work after representations to the responsible department.",
+          "challenge": "Damaged sewerage pipes and the condition of roadside openings required attention to support public health and sanitation. The report identifies repair and cleaning of the existing scheme as the immediate work undertaken.\n\nA request for greater drainage capacity was also submitted. The report does not provide technical measurements or confirm that the capacity expansion was completed.",
+          "approach": "The reported intervention focused on cleaning the existing scheme, repairing broken pipes and raising the level of roadside openings. A separate institutional request addressed the capacity of the Fifth Drain.\n\nThe completed repairs and the pending capacity request are presented separately so visitors can understand the reported outcome accurately.",
+          "objectives": [
+            "Support public health and sanitation in Mianwal Ranjha.",
+            "Restore damaged parts of the existing sewerage scheme.",
+            "Raise the drainage-capacity concern with the relevant department."
+          ],
+          "activities": [
+            "Cleaning of the local sewerage scheme.",
+            "Repair of broken pipes.",
+            "Raising of roadside openings.",
+            "Submission of a request to increase the Fifth Drain’s capacity.",
+            "Raised concerns about repair and departmental handover of the sewage scheme.",
+            "Followed up manhole levels and cleaning of the connected Pandowal drain."
+          ],
+          "outcomes": [
+            "The report records completion of cleaning and repair work.",
+            "Broken pipes were repaired.",
+            "Roadside openings were raised.",
+            "The drainage-capacity request was submitted; completion of an expansion is not established.",
+            "HRPF’s public update reports a cleaning-budget approval and drain-cleaning work; it does not establish permanent resolution of every sewage or drainage problem."
+          ],
+          "milestones": [
+            {
+              "period": "10 January 2023",
+              "title": "Repair and handover report requested",
+              "description": "The Public Health Engineering Department requested a report on repair and handover concerns."
+            },
+            {
+              "period": "19 May 2023",
+              "title": "Sewage-scheme complaint registered",
+              "description": "The Ombudsman record concerns departmental responsibility for the sewage scheme."
+            },
+            {
+              "period": "2024",
+              "title": "Local repair and drainage updates",
+              "description": "HRPF reported local repairs and sought further attention to drainage capacity."
+            }
+          ],
+          "metrics": [
+            {
+              "value": "Repairs completed",
+              "label": "Reported infrastructure outcome"
+            },
+            {
+              "value": "Request submitted",
+              "label": "Drainage-capacity action"
+            }
+          ],
+          "sections": [],
+          "partners": []
+        },
+        "blocks": [],
+        "summary": {
+          "en": "HRPF followed up sewage repairs, drain cleaning and departmental responsibility in Mianwal Ranjha to improve local community conditions."
+        }
+      },
+      "images": [
+        {
+          "fileId": "gallery:batch2:sanitation-inspection",
+          "alt": "HRPF inspecting drainage works in Mianwal Ranjha",
+          "caption": "Inspection of local sewage and drainage works."
+        },
+        {
+          "fileId": "gallery:batch2:pandowal-drain-cleaning",
+          "alt": "Drain-cleaning machinery at the Pandowal drain",
+          "caption": "Cleaning work shown in HRPF’s Pandowal drain update."
+        },
+        {
+          "fileId": "gallery:batch2:sewage-handover-2023-01-10",
+          "alt": "Public Health Engineering Department letter on scheme handover",
+          "caption": "Departmental request for a report on repair and lawful handover of the Mianwal Ranjha sewage scheme."
+        },
+        {
+          "fileId": "gallery:batch2:sewage-ombudsman-record",
+          "alt": "Ombudsman record concerning sewage-scheme responsibility",
+          "caption": "Ombudsman correspondence accompanying HRPF’s sewage-scheme follow-up."
+        }
+      ],
+      "clientNumber": "6 — sewage repair posts; drain cleaning"
+    },
+    {
+      "key": "work-project:canal-bank-road-safety",
+      "sourceLinks": [
+        "https://www.facebook.com/share/p/1Qg9byoJR8/"
+      ],
+      "retrieval": "verified",
+      "patch": {
+        "details": {
+          "overview": "HRPF sought priority repairs to damaged canal banks beside the road between Mandi Bahauddin District Complex and Bhojwal through the Provincial Ombudsman.",
+          "challenge": "Damaged canal banks beside a public road raised a community safety and maintenance concern.",
+          "approach": "HRPF submitted an application to the Provincial Ombudsman Regional Office requesting action in the public interest.",
+          "period": "Repair directions recorded in 2024",
+          "targetCommunity": "People travelling along the canal-side road",
+          "objectives": [
+            "Seek priority repair of canal banks beside a public road."
+          ],
+          "activities": [
+            "Brought the damaged canal banks to the Ombudsman’s attention.",
+            "Sought priority repair by the responsible department."
+          ],
+          "outcomes": [
+            "An Ombudsman decision directed priority repairs.",
+            "Completion of those repairs is not confirmed in the available account."
+          ],
+          "partners": [],
+          "milestones": [
+            {
+              "period": "30 October 2023",
+              "title": "Canal-bank safety complaint registered",
+              "description": "The Ombudsman record concerns damaged canal banks and road safety in the district-complex to Bhojowal area."
+            }
+          ],
+          "metrics": [],
+          "sections": [
+            {
+              "heading": "Canal-bank repair follow-up",
+              "body": "HRPF raised concerns about damaged canal banks and the adjoining road between the district complex and Bhojowal. The Ombudsman record describes a departmental repair proposal and a request for funds. It does not confirm that repair work was completed."
+            }
+          ]
+        }
+      },
+      "images": [
+        {
+          "fileId": "gallery:batch2:canal-bank-ombudsman-record",
+          "alt": "Ombudsman record concerning canal-bank and road safety",
+          "caption": "Record of HRPF’s canal-bank safety complaint and the departmental response."
+        }
+      ],
+      "clientNumber": "7"
+    },
+    {
+      "key": "work-project:overseas-travel-document-support",
+      "sourceLinks": [
+        "https://www.facebook.com/share/p/1DU4imx6As/"
+      ],
+      "retrieval": "partial",
+      "patch": {
+        "details": {
+          "overview": "HRPF pursued travel-document processing through Pakistani authorities and the overseas-grievance mechanism, helping an overseas Pakistani return home from Saudi Arabia.",
+          "challenge": "A person remained abroad in detention while unresolved travel-document arrangements prevented a return to Pakistan.",
+          "approach": "HRPF wrote to the responsible Interior and passport authorities and followed the matter through the Commissioner for Overseas Pakistanis.",
+          "period": "Return to Pakistan recorded in the 2024 report",
+          "targetCommunity": "An overseas Pakistani facing prolonged detention and documentation barriers",
+          "objectives": [
+            "Resolve travel-document barriers preventing a return to Pakistan."
+          ],
+          "activities": [
+            "Raised the documentation barrier with the relevant Pakistani authorities.",
+            "Pursued the matter through the overseas-grievance mechanism.",
+            "Followed travel-document processing.",
+            "Followed official passport verification and emergency travel-document arrangements through the overseas-grievance mechanism."
+          ],
+          "outcomes": [
+            "The 2024 report records that the documents were processed and the person returned safely to Pakistan."
+          ],
+          "partners": [],
+          "milestones": [
+            {
+              "period": "11 June 2024",
+              "title": "Travel-document grievance followed up",
+              "description": "The overseas-grievance mechanism scheduled further consideration of verification and emergency travel-document arrangements."
+            }
+          ],
+          "metrics": [],
+          "sections": []
+        }
+      },
+      "images": [],
+      "clientNumber": "15"
+    },
+    {
+      "key": "work-project:canal-water-environmental-accountability",
+      "sourceLinks": [
+        "https://www.facebook.com/share/p/19PvZN8pYa/",
+        "https://www.facebook.com/share/p/1KuAwkroc8/",
+        "https://www.facebook.com/share/p/19Qms6B1Xe/"
+      ],
+      "retrieval": "verified",
+      "patch": {
+        "details": {
+          "overview": "HRPF brought canal-pollution concerns before environmental authorities and the Provincial Ombudsman, seeking enforcement and departmental follow-up.",
+          "challenge": "Reported sewage and poultry-waste discharge threatened the condition of fresh canal water and the surrounding environment.",
+          "approach": "HRPF gathered information, approached the responsible departments and presented documentary evidence during Ombudsman proceedings.",
+          "period": "Environmental advocacy recorded in 2022–2024",
+          "targetCommunity": "Communities relying on local canals and a healthy environment",
+          "objectives": [
+            "Seek enforcement and departmental accountability for canal pollution."
+          ],
+          "activities": [
+            "Reported pollution concerns to environmental and other relevant departments.",
+            "Presented supporting documents during Ombudsman proceedings.",
+            "Sought enforcement and follow-up reports.",
+            "Shared a public video appeal seeking environmental-authority attention to reported canal pollution and unsafe waste disposal.",
+            "Followed inspection, departmental notices and interdepartmental coordination concerning reported pollution."
+          ],
+          "outcomes": [
+            "Show-cause notices and referrals for environmental proceedings were recorded.",
+            "Ombudsman directions called for departmental action and a follow-up report.",
+            "Long-term water-quality improvement is not measured in the available record."
+          ],
+          "partners": [],
+          "milestones": [
+            {
+              "period": "31 May 2022",
+              "title": "Environmental department response",
+              "description": "The Environmental Protection Agency recorded inspection and departmental proceedings concerning canal pollution."
+            },
+            {
+              "period": "25 November 2023",
+              "title": "Further pollution representation",
+              "description": "HRPF raised reported sewage and poultry-waste disposal concerns with the provincial environmental authorities."
+            }
+          ],
+          "metrics": [],
+          "sections": []
+        }
+      },
+      "images": [
+        {
+          "fileId": "gallery:batch2:canal-pollution-representation-2023-11-25",
+          "alt": "HRPF canal-pollution representation, 25 November 2023",
+          "caption": "Representation seeking environmental-authority attention to reported canal pollution."
+        },
+        {
+          "fileId": "gallery:batch2:environmental-response-2022-05-31",
+          "alt": "Environmental Protection Agency response, 31 May 2022",
+          "caption": "Departmental response recording inspection and proceedings concerning canal pollution."
+        }
+      ]
+    },
+    {
+      "key": "work-project:right-to-information-public-accountability",
+      "sourceLinks": [
+        "https://www.facebook.com/share/p/19hLgjnpBc/"
+      ],
+      "retrieval": "unavailable",
+      "patch": {},
+      "images": []
+    },
+    {
+      "key": "work-project:child-protection-institutional-advocacy",
+      "sourceLinks": [
+        "https://www.facebook.com/share/p/1F4CxuxxmN/"
+      ],
+      "retrieval": "partial",
+      "patch": {
+        "details": {
+          "overview": "HRPF advocates for child protection and responsive public institutions. Its documented work includes engagement over a reported child-protection incident and a separate public statement calling for fair treatment and juvenile-justice safeguards for a child from a minority community. These are distinct interventions within the Foundation’s child-rights work.",
+          "challenge": "Children and families affected by violence or contested legal proceedings need protection, fair treatment and responsive institutions.",
+          "approach": "HRPF raised the concern with relevant institutions and followed the case while advocating for stronger protection of children.",
+          "period": "Child-protection work documented in 2025; separate juvenile-justice statement",
+          "targetCommunity": "Children and families seeking protection from violence",
+          "objectives": [
+            "Seek protection and a responsive investigation for a child and family."
+          ],
+          "activities": [
+            "Contacted national human-rights institutions.",
+            "Engaged Punjab Police and relevant judicial authorities.",
+            "Advocated for family support, protection and a transparent investigation.",
+            "Called for fair treatment, lawful investigation and juvenile-justice safeguards in a separate minority-child case."
+          ],
+          "outcomes": [
+            "The concern was brought to the attention of the relevant authorities.",
+            "The available record does not establish a final court outcome.",
+            "A public statement records HRPF’s concern; innocence, conviction or a final court outcome is not established by the supplied post."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        },
+        "workAreas": [
+          "childrens-rights",
+          "access-to-justice",
+          "minority-rights"
+        ],
+        "summary": {
+          "en": "HRPF raises child-protection concerns and advocates for responsive investigations and fair treatment for children, including minority communities."
+        }
+      },
+      "images": []
+    },
+    {
+      "key": "work-project:gas-service-restoration-mianwal-ranjha",
+      "sourceLinks": [
+        "https://www.facebook.com/share/p/1DNZWUxcB8/"
+      ],
+      "retrieval": "verified",
+      "patch": {
+        "details": {
+          "overview": "HRPF pursued residents’ concerns about low gas pressure, interruptions and pipeline maintenance with SNGPL and the Federal Ombudsman.",
+          "challenge": "Unreliable gas supply and maintenance issues disrupted an essential household service.",
+          "approach": "HRPF made representations to SNGPL and the Secretary of Petroleum and filed a Federal Ombudsman petition seeking redress.",
+          "period": "Gas-service grievance resolved in the 2024 record",
+          "targetCommunity": "Residents affected by poor gas supply",
+          "objectives": [
+            "Seek reliable gas supply and maintenance for residents."
+          ],
+          "activities": [
+            "Raised service concerns with SNGPL and the relevant ministry.",
+            "Filed a petition before the Federal Ombudsman.",
+            "Raised consumer service concerns with the responsible gas officials and followed local repair activity."
+          ],
+          "outcomes": [
+            "The 2024 report records that the department resolved the gas-service issues raised."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": []
+        }
+      },
+      "images": [
+        {
+          "fileId": "gallery:batch2:gas-service-repair",
+          "alt": "Repair equipment shown in HRPF’s Mianwal Ranjha gas-service update",
+          "caption": "Local repair activity shared with HRPF’s update on gas-service concerns."
+        }
+      ],
+      "clientNumber": "13"
+    },
+    {
+      "key": "work-project:press-freedom-journalist-protection",
+      "sourceLinks": [
+        "https://www.facebook.com/share/p/194rfzP615/",
+        "https://www.facebook.com/share/p/1GS5VjjuDs/",
+        "https://www.facebook.com/share/p/16JNkPtfjTG/",
+        "https://www.facebook.com/share/v/181KyHzCnE/"
+      ],
+      "retrieval": "partial",
+      "patch": {
+        "details": {
+          "overview": "HRPF documented journalist-safety concerns, raised cases with relevant institutions and published research defending freedom of expression and public-interest reporting.",
+          "challenge": "Reports of threats, violence and legal pressure on journalists raised concerns about safety and access to independent information.",
+          "approach": "HRPF combined public statements, institutional representations and press-freedom analysis to call for impartial investigations and protection of journalists.",
+          "period": "Journalist-safety advocacy recorded in 2024–2026",
+          "targetCommunity": "Journalists and communities relying on independent information",
+          "objectives": [
+            "Promote journalist safety and freedom of expression."
+          ],
+          "activities": [
+            "Documented reported threats and attacks.",
+            "Raised concerns with relevant authorities and human-rights organisations.",
+            "Published press-freedom analysis and recommendations.",
+            "Issued public representations concerning reported legal pressure on journalists and requested impartial review."
+          ],
+          "outcomes": [
+            "Journalist-safety concerns were communicated through public and institutional channels.",
+            "The available records do not establish final outcomes for all individual cases."
+          ],
+          "partners": [],
+          "milestones": [],
+          "metrics": [],
+          "sections": [
+            {
+              "heading": "Protection for public-interest reporting",
+              "body": "HRPF’s public statements call for protection of journalists and impartial consideration of concerns about cases brought against media workers. The supplied newspaper coverage supports the advocacy context. Statements about alleged misuse of legal proceedings are presented as concerns raised by HRPF, rather than final judicial findings."
+            }
+          ]
+        }
+      },
+      "images": [
+        {
+          "fileId": "gallery:batch2:press-freedom-newspaper",
+          "alt": "Newspaper coverage accompanying HRPF’s journalist-protection statement",
+          "caption": "Newspaper coverage shared with HRPF’s press-freedom advocacy update."
+        }
+      ],
+      "clientNumber": "10"
+    },
+    {
+      "key": "work-project:safe-classrooms-mianwal-ranjha",
+      "sourceLinks": [
+        "https://www.linkedin.com/posts/human-rights-protection-foundation-pakistan-hrpf-3b545677_hrpf-performance-report-government-primary-share-7429422383830212608-vb2N/"
+      ],
+      "retrieval": "verified",
+      "patch": {
+        "details": {
+          "overview": "HRPF raised concerns about the safety of the Government Primary School building in Mianwal Ranjha. It submitted representations to education officials and pursued oversight through the Provincial Ombudsman Punjab. The recorded response concerns classroom construction subject to the necessary funding, rather than proof of completed new classrooms.",
+          "challenge": "Children continued attending lessons in a deteriorated building. Safe premises and functioning classrooms were the central concerns.",
+          "approach": "HRPF submitted applications to the education authorities, brought the matter before the Provincial Ombudsman Punjab and provided supporting records during follow-up.",
+          "period": "School safety advocacy recorded in 2025; update shared in 2026",
+          "targetCommunity": "Children attending Government Primary School Mianwal Ranjha",
+          "objectives": [
+            "Seek safe classrooms for primary-school children."
+          ],
+          "activities": [
+            "Raised concerns with the responsible education officials.",
+            "Submitted an application to the Provincial Ombudsman Punjab.",
+            "Provided records and followed the proceedings."
+          ],
+          "outcomes": [
+            "An Ombudsman decision called for new classrooms once the necessary funding is approved.",
+            "Construction completion and funding approval remain unconfirmed."
+          ],
+          "partners": [],
+          "milestones": [
+            {
+              "period": "3 October 2025",
+              "title": "School-facility decision",
+              "description": "The Ombudsman record discusses education-department responses and classroom works subject to funding."
+            }
+          ],
+          "metrics": [],
+          "sections": []
+        }
+      },
+      "images": [
+        {
+          "fileId": "gallery:batch2:school-facility-decision-2025",
+          "alt": "Ombudsman decision concerning Government Primary School facilities",
+          "caption": "Decision accompanying HRPF’s report on safe classrooms in Mianwal Ranjha."
+        }
+      ],
+      "clientNumber": "4 — school post"
+    },
+    {
+      "key": "work-project:prison-healthcare-mandi-bahauddin",
+      "sourceLinks": [
+        "https://www.linkedin.com/posts/human-rights-protection-foundation-pakistan-hrpf-3b545677_improvement-in-medical-facilities-at-district-share-7429414867389976576-6qkG/"
+      ],
+      "retrieval": "verified",
+      "patch": {
+        "details": {
+          "overview": "HRPF raised concerns about access to medical care at District Jail Mandi Bahauddin and pursued a complaint before the Provincial Ombudsman Punjab. The supplied decision records the jail administration’s medical-care arrangements and HRPF’s satisfaction during the proceedings. This concerns the recorded intervention and does not guarantee present-day conditions.",
+          "challenge": "Concerns about the absence of the designated doctor indicated that prisoners were having difficulty obtaining basic medical attention.",
+          "approach": "HRPF contacted jail authorities and submitted a complaint to the Ombudsman Punjab. The proceedings sought information from the jail administration and led to a decision addressing the concerns.",
+          "period": "Healthcare intervention recorded in 2025",
+          "targetCommunity": "People detained at District Jail Mandi Bahauddin",
+          "objectives": [
+            "Improve detained people’s access to basic medical care."
+          ],
+          "activities": [
+            "Raised the medical-care concern with jail authorities.",
+            "Filed and followed an Ombudsman complaint.",
+            "Sought reports and corrective action concerning staff availability."
+          ],
+          "outcomes": [
+            "The Ombudsman issued a decision on the complaint.",
+            "Improved availability of medical staff was recorded after implementation."
+          ],
+          "partners": [],
+          "milestones": [
+            {
+              "period": "11 August 2025",
+              "title": "Jail healthcare complaint concluded",
+              "description": "The Ombudsman decision records the parties’ responses and concludes the complaint after consideration of medical-care arrangements."
+            }
+          ],
+          "metrics": [],
+          "sections": []
+        }
+      },
+      "images": [
+        {
+          "fileId": "gallery:batch2:jail-healthcare-decision-2025",
+          "alt": "Ombudsman decision on District Jail healthcare, 11 August 2025",
+          "caption": "Decision accompanying HRPF’s report on medical facilities at District Jail Mandi Bahauddin."
+        }
+      ]
+    },
+    {
+      "key": "home-project:shelter-dignity-advocacy",
+      "sourceLinks": [
+        "https://www.linkedin.com/posts/human-rights-protection-foundation-pakistan-hrpf-3b545677_human-rights-protection-foundation-hrpf-ugcPost-7429408009006546944-fh0M/"
+      ],
+      "retrieval": "verified",
+      "patch": {
+        "details": {
+          "period": "Dar-ul-Aman complaint and decision recorded in 2025",
+          "targetCommunity": "Women residing at Dar-ul-Aman in Mandi Bahauddin",
+          "overview": "HRPF pursued concerns about basic facilities, food, healthcare and cleanliness at Dar-ul-Aman in Mandi Bahauddin through the Provincial Ombudsman Punjab. The supplied decision records the department’s response about facility arrangements and the complainant’s satisfaction during review. HRPF’s public report also describes improvements in sanitation and facility management.",
+          "challenge": "The report describes poor sanitation and cleanliness, inadequate healthcare arrangements, weak oversight and deficiencies in monitoring. These conditions affected women living in a government shelter established to provide protection and rehabilitation.\n\nThe issue required an institutional response to the facilities and accountability concerns identified in the complaint.",
+          "approach": "HRPF brought the reported deficiencies to the attention of an oversight institution through a detailed complaint. The complaint called for urgent inspection, immediate rectification of deficiencies, administrative accountability and protection of residents’ rights.\n\nEngagement with the Provincial Ombudsman’s office helped draw official attention to the shelter and initiate administrative inquiries and corrective measures.",
+          "objectives": [
+            "Protect residents’ dignity and access to basic necessities.",
+            "Seek inspection and correction of sanitation and healthcare deficiencies.",
+            "Strengthen monitoring and administrative accountability."
+          ],
+          "activities": [
+            "Gathered information about deficiencies at the shelter.",
+            "Submitted a detailed complaint to the Provincial Ombudsman Punjab.",
+            "Requested inspection, corrective measures and accountability.",
+            "Engaged with the oversight office about residents’ protection and facility conditions."
+          ],
+          "outcomes": [
+            "The concerns received official attention.",
+            "Administrative inquiries were initiated.",
+            "Corrective measures were undertaken.",
+            "The report records noticeable improvements in sanitation and facility management."
+          ],
+          "milestones": [
+            {
+              "period": "8 March 2025",
+              "title": "Shelter-facilities complaint registered",
+              "description": "The Ombudsman record concerns basic facilities at Dar-ul-Aman."
+            },
+            {
+              "period": "18 July 2025",
+              "title": "Shelter-facility review concluded",
+              "description": "The decision records the departmental response and concludes the complaint after review."
+            }
+          ],
+          "metrics": [
+            {
+              "value": "Sanitation improved",
+              "label": "Reported facility outcome"
+            },
+            {
+              "value": "Inquiries initiated",
+              "label": "Reported accountability response"
+            }
+          ],
+          "sections": [],
+          "partners": []
+        },
+        "blocks": [],
+        "summary": {
+          "en": "HRPF sought improvements in sanitation, healthcare and basic facilities at Dar-ul-Aman through institutional follow-up."
+        }
+      },
+      "images": [
+        {
+          "fileId": "gallery:batch2:darulaman-decision-page-1",
+          "alt": "Dar-ul-Aman facilities decision, first page",
+          "caption": "First page of the decision concerning basic facilities at Dar-ul-Aman."
+        },
+        {
+          "fileId": "gallery:batch2:darulaman-decision-page-2",
+          "alt": "Dar-ul-Aman facilities decision and conclusion",
+          "caption": "Departmental response, hearing and conclusion of the Dar-ul-Aman facilities review."
+        }
+      ],
+      "clientNumber": "23"
+    }
+  ]
+}

@@ -67,3 +67,7 @@ Deleted, withdrawn, scheduled/unapproved or unmanaged projects are not recreated
 Check all five project pages, their cards on `/programmes` and their already-selected work pages. In the admin project editor, confirm matching cover/gallery images and dates. Road Visibility should retain its placeholder. Repeat `--apply` to confirm that no additional uploads or duplicate gallery entries appear. Removing/replacing an image later in the admin panel remains authoritative.
 
 No live database or client Cloudinary credentials were accessed during implementation. Tests use disposable MongoDB replica sets and a fake upload provider.
+
+## Second client batch
+
+The [second evidence revision](CLIENT_PROJECT_EVIDENCE_V2.md) maps the 25 links supplied on 12 October, prepares fourteen further existing-project updates and keeps this first batch immutable. Apply the first batch before the second when both are needed.
