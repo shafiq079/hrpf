@@ -1,0 +1,53 @@
+{
+  "version": "client-project-evidence-v3",
+  "files": [
+    {
+      "id": "gallery:batch3:national-minorities-day-poster",
+      "path": "progress reports/client-project-evidence-2026-10-batch3/national-minorities-day-poster.jpg",
+      "sha256": "f0a831703a889c516f9d575cf2a81c92dc6e8baee2f55967ab996d32e068ff40",
+      "bytes": 128424,
+      "width": 600,
+      "height": 900
+    },
+    {
+      "id": "gallery:batch3:flood-accountability-video-still",
+      "path": "progress reports/client-project-evidence-2026-10-batch3/flood-accountability-video-still.jpg",
+      "sha256": "586212790d594d7de423efee6542607461f0f8fd96f9b6fb951b230b686ed1dd",
+      "bytes": 28750,
+      "width": 360,
+      "height": 640
+    }
+  ],
+  "projects": [
+    {
+      "key": "work-project:national-minorities-day-awareness",
+      "sourceLinks": [
+        "https://www.facebook.com/hrpfpk/posts/message-on-national-minorities-day-11-august-2026human-rights-protection-foundat/1597481469085450/"
+      ],
+      "retrieval": "partial",
+      "patch": {},
+      "images": [
+        {
+          "fileId": "gallery:batch3:national-minorities-day-poster",
+          "alt": "HRPF National Minorities Day awareness poster with the chairman and a message of equality.",
+          "caption": "HRPF\u2019s published National Minorities Day awareness poster."
+        }
+      ]
+    },
+    {
+      "key": "work-project:flood-relief-access-accountability",
+      "sourceLinks": [
+        "https://www.facebook.com/hrpfpk/posts/human-rights-protection-foundationhrpf-detailed-concern-reporton-fake-relief-cam/1273355634831370/"
+      ],
+      "retrieval": "partial",
+      "patch": {},
+      "images": [
+        {
+          "fileId": "gallery:batch3:flood-accountability-video-still",
+          "alt": "A speaker in the video published with HRPF\u2019s flood-relief accountability statement.",
+          "caption": "Video still published with HRPF\u2019s flood-relief accountability statement."
+        }
+      ]
+    }
+  ]
+}
