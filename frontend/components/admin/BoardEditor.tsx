@@ -1,4 +1,5 @@
 "use client";
+import { notify } from "@/lib/notifications";
 import { useState, type FormEvent } from "react";
 import { Plus, Trash2, Upload, ArrowLeft } from "lucide-react";
 import { ManualUrduNote } from "@/components/admin/AdminField";
@@ -74,7 +75,7 @@ export default function BoardEditor({
       await discardStaged(staged);
       onCancel();
     } catch (failure) {
-      setError(failureText(failure));
+      notify.error(failureText(failure));
     } finally {
       setBusy(false);
     }
@@ -101,8 +102,9 @@ export default function BoardEditor({
       setStaged(result.assetId);
       change({ assetId: result.assetId });
       await discardStaged(previous);
+      notify.success("Photograph uploaded. Save the profile to keep it.");
     } catch (failure) {
-      setError(failureText(failure));
+      notify.error(failureText(failure));
     } finally {
       setBusy(false);
     }
@@ -114,8 +116,9 @@ export default function BoardEditor({
       await discardStaged(staged);
       setStaged(null);
       change({ assetId: null, photoAlt: "", photoZoom: 1 });
+      notify.success("Photograph removed from the form. Save to apply the change.");
     } catch (failure) {
-      setError(failureText(failure));
+      notify.error(failureText(failure));
     } finally {
       setBusy(false);
     }
@@ -134,6 +137,7 @@ export default function BoardEditor({
     const { id, version, ...fields } = record;
     const payload = { ...fields, showOnBoard: true, showOnTeam: false } as Partial<BoardRecord>;
     delete payload.status;
+    let draftSaved = false;
     try {
       const saved = await adminRequest<{ id: string; version: number }>(
         id ? "/admin/board/" + id : "/admin/board",
@@ -142,6 +146,7 @@ export default function BoardEditor({
           body: JSON.stringify({ ...payload, ...(id ? { version } : {}) }),
         },
       );
+      draftSaved = true;
       setRecord((previous) => ({ ...previous, ...saved, status: "draft" }));
       setStaged(null);
       if (publish)
@@ -156,7 +161,9 @@ export default function BoardEditor({
       onSaved(publish ? "Profile published." : "Profile saved as a draft.");
     } catch (failure) {
       setReviewed(false);
-      setError(failureText(failure));
+      const message = failureText(failure);
+      if (draftSaved) notify.warning(`Draft saved, but publication failed. ${message}`);
+      else notify.error(message);
     } finally {
       setBusy(false);
     }

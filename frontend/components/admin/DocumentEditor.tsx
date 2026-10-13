@@ -1,4 +1,5 @@
 "use client";
+import { notify } from "@/lib/notifications";
 
 import { useRef, useState, type FormEvent } from "react";
 import { AdminField as Field, ManualUrduNote } from "@/components/admin/AdminField";
@@ -117,13 +118,14 @@ export default function DocumentEditor({
       staged.current = result.assetId;
       setRecord((r) => ({ ...r, ...result }));
       setReviewed(false);
+      notify.success("Document uploaded and checked. Save the record to keep it.");
       if (previous)
         await adminRequest(`/admin/assets/${previous}`, {
           method: "DELETE",
           body: "{}",
         }).catch(() => {});
     } catch (failure) {
-      setError(failure instanceof Error ? failure.message : "Upload failed.");
+      notify.error(failure instanceof Error ? failure.message : "Upload failed.");
     } finally {
       setUploading(false);
     }
@@ -136,6 +138,7 @@ export default function DocumentEditor({
     }
     setBusy(true);
     setError("");
+    let draftSaved = false;
     try {
       const common = {
         title: record.title,
@@ -173,6 +176,7 @@ export default function DocumentEditor({
           ...(record.id ? { version: record.version } : {}),
         }),
       });
+      draftSaved = true;
       setRecord((r) => ({ ...r, ...saved }));
       staged.current = null;
       if (publish)
@@ -191,11 +195,11 @@ export default function DocumentEditor({
         publish ? "Document published." : "Document saved as a private draft.",
       );
     } catch (failure) {
-      setError(
-        failure instanceof Error
+      const message = failure instanceof Error
           ? failure.message
-          : "Document could not be saved.",
-      );
+          : "Document could not be saved.";
+      if (draftSaved) notify.warning(`Draft saved, but publication failed. ${message}`);
+      else notify.error(message);
     } finally {
       setBusy(false);
     }

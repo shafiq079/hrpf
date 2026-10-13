@@ -1,18 +1,17 @@
 "use client";
+import { notify } from "@/lib/notifications";
 
-import { useState } from "react";
 import { Copy } from "lucide-react";
 import TranslationText from "@/components/translation/TranslationText";
 
 export default function PaymentDetail({ label, value }: { label: string; value: string }) {
-  const [message, setMessage] = useState("");
 
   async function copy() {
     try {
       await navigator.clipboard.writeText(value);
-      setMessage("Copied to clipboard.");
+      notify.success("Copied to clipboard.");
     } catch {
-      setMessage("Select the number above and copy it manually.");
+      notify.warning("Select the number above and copy it manually.");
     }
   }
 
@@ -27,7 +26,6 @@ export default function PaymentDetail({ label, value }: { label: string; value: 
             <TranslationText>Copy</TranslationText>
           </button>
         </div>
-        <p role="status" className="mt-1 text-sm text-teal-dark"><TranslationText>{message}</TranslationText></p>
       </dd>
     </div>
   );

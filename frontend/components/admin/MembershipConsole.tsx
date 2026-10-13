@@ -1,6 +1,7 @@
 "use client";
+import { notify } from "@/lib/notifications";
 /* eslint-disable @next/next/no-img-element -- Private evidence previews use the authenticated original-file stream. */
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import AdminNavigation from "./AdminNavigation";
 import Container from "@/components/shared/Container";
 import { adminRequest } from "@/lib/admin-api";
@@ -140,8 +141,8 @@ export default function MembershipConsole() {
   const [user, setUser] = useState<User | null>(null),
     [loading, setLoading] = useState(true),
     [busy, setBusy] = useState(false),
-    [error, setError] = useState(""),
-    [notice, setNotice] = useState("");
+    [error, trackError] = useState("");
+  const setError = useCallback((message: string) => { trackError(message); notify.error(message); }, []);
   const [listing, setListing] = useState<{
       rows: Row[];
       total: number;
@@ -194,13 +195,13 @@ export default function MembershipConsole() {
     return () => {
       active = false;
     };
-  }, [allowed, page, status, query, revision]);
+  }, [allowed, page, status, query, revision, setError]);
   async function action(work: () => Promise<void>) {
     if (acting.current) return;
     acting.current = true;
     setBusy(true);
     setError("");
-    setNotice("");
+
     try {
       await work();
     } catch (e) {
@@ -234,6 +235,7 @@ export default function MembershipConsole() {
         }),
       });
       setUser(result.user);
+      notify.success("Signed in successfully.");
     });
   }
   function save(e: FormEvent<HTMLFormElement>) {
@@ -254,7 +256,7 @@ export default function MembershipConsole() {
       });
       await open(current.id);
       setRevision((v) => v + 1);
-      setNotice(
+      notify.result(
         changed
           ? "Review saved. The applicant’s status update email has been queued."
           : "Review saved. The internal note is visible only to HRPF administrators.",
@@ -283,6 +285,7 @@ export default function MembershipConsole() {
                   body: "{}",
                 });
                 setUser(null);
+                notify.success("Signed out successfully.");
                 setDetail(null);
                 setListing({ rows: [], total: 0, pages: 0 });
               })
@@ -293,31 +296,7 @@ export default function MembershipConsole() {
         )}
       </div>
       {user && <AdminNavigation contentAllowed={allowed} />}
-      {error && (
-        <p
-          role="alert"
-          className="mb-5 rounded-lg border border-red-dark bg-white p-4 text-sm text-red-dark"
-        >
-          {error}
-          {detail && (
-            <button
-              className="ml-3 min-h-11 font-semibold underline"
-              disabled={busy}
-              onClick={() => void action(() => open(detail.id))}
-            >
-              Reload application
-            </button>
-          )}
-        </p>
-      )}
-      {notice && (
-        <p
-          role="status"
-          className="mb-5 rounded-lg border border-teal bg-white p-4 text-sm"
-        >
-          {notice}
-        </p>
-      )}
+      {error && detail && <button className="mb-5 min-h-11 font-semibold text-teal-dark underline" disabled={busy} onClick={() => void action(() => open(detail.id))}>Reload application</button>}
       {loading ? (
         <p>Loading administration…</p>
       ) : !user ? (
@@ -360,7 +339,7 @@ export default function MembershipConsole() {
               className={button}
               onClick={() => {
                 setDetail(null);
-                setNotice("");
+
                 setError("");
               }}
             >

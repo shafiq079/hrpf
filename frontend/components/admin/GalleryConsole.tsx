@@ -1,4 +1,5 @@
 "use client";
+import { notify } from "@/lib/notifications";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
@@ -18,8 +19,6 @@ export default function GalleryConsole() {
   const [editor, setEditor] = useState<MediaRecord | null>(null);
   const [page, setPage] = useState(1);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
   const allowed =
     !!user && ["super_admin", "admin", "editor"].includes(user.role);
   useEffect(() => {
@@ -40,7 +39,7 @@ export default function GalleryConsole() {
     try {
       setRows(await adminRequest<MediaRow[]>(`/admin/${kind}?page=${page}`));
     } catch (failure) {
-      setError(
+      notify.error(
         failure instanceof Error
           ? failure.message
           : "Gallery records could not be loaded.",
@@ -58,7 +57,7 @@ export default function GalleryConsole() {
       })
       .catch((failure) => {
         if (active)
-          setError(
+          notify.error(
             failure instanceof Error
               ? failure.message
               : "Gallery records could not be loaded.",
@@ -74,7 +73,6 @@ export default function GalleryConsole() {
   async function login(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
-    setError("");
     const fields = new FormData(event.currentTarget);
     try {
       const result = await adminRequest<{ user: User }>("/auth/login", {
@@ -85,35 +83,33 @@ export default function GalleryConsole() {
         }),
       });
       setUser(result.user);
+      notify.success("Signed in successfully.");
     } catch (failure) {
-      setError(failure instanceof Error ? failure.message : "Sign-in failed.");
+      notify.error(failure instanceof Error ? failure.message : "Sign-in failed.");
     } finally {
       setBusy(false);
     }
   }
   async function logout() {
     setBusy(true);
-    setError("");
     try {
       await adminRequest("/auth/logout", { method: "POST", body: "{}" });
       setUser(null);
+      notify.success("Signed out successfully.");
       setEditor(null);
       setRows([]);
-      setNotice("");
     } catch (failure) {
-      setError(failure instanceof Error ? failure.message : "Sign-out failed.");
+      notify.error(failure instanceof Error ? failure.message : "Sign-out failed.");
     } finally {
       setBusy(false);
     }
   }
   async function edit(id: string) {
     setBusy(true);
-    setError("");
-    setNotice("");
     try {
       setEditor(await adminRequest<MediaRecord>(`/admin/${kind}/${id}`));
     } catch (failure) {
-      setError(
+      notify.error(
         failure instanceof Error
           ? failure.message
           : "Gallery record could not be opened.",
@@ -132,8 +128,6 @@ export default function GalleryConsole() {
     )
       return;
     setBusy(true);
-    setError("");
-    setNotice("");
     try {
       await adminRequest(
         action === "delete"
@@ -152,12 +146,12 @@ export default function GalleryConsole() {
           ),
         },
       );
-      setNotice(
+      notify.result(
         action === "delete" ? "Media deleted." : "Media withdrawn.",
       );
       await loadMedia();
     } catch (failure) {
-      setError(
+      notify.error(
         failure instanceof Error
           ? failure.message
           : "The change could not be completed.",
@@ -190,22 +184,6 @@ export default function GalleryConsole() {
             Sign out
           </button>
         </div>
-      )}
-      {error && (
-        <p
-          role="alert"
-          className="mb-5 border-l-4 border-red bg-red/5 p-4 text-sm"
-        >
-          {error}
-        </p>
-      )}
-      {notice && (
-        <p
-          role="status"
-          className="mb-5 border-l-4 border-teal bg-soft-gray p-4 text-sm"
-        >
-          {notice}
-        </p>
       )}
       {!user ? (
         <form
@@ -259,8 +237,7 @@ export default function GalleryConsole() {
           onCancel={() => setEditor(null)}
           onSaved={(message) => {
             setEditor(null);
-            setNotice(message);
-            setError("");
+            notify.result(message);
           }}
         />
       ) : (
@@ -278,8 +255,7 @@ export default function GalleryConsole() {
               disabled={busy}
               onClick={() => {
                 setEditor({ ...newMedia(), category: kind === "interviews" ? "tv-interviews" : "media-coverage" });
-                setNotice("");
-                setError("");
+
               }}
               className="inline-flex items-center gap-2 bg-navy px-5 py-3 text-sm font-semibold text-white hover:bg-teal-dark disabled:opacity-50"
             >
@@ -287,7 +263,7 @@ export default function GalleryConsole() {
               Add media
             </button>
           </div>
-          <nav aria-label="Media management" className="mb-6 flex gap-3">{(["gallery", "interviews"] as MediaKind[]).map(value => <button type="button" key={value} disabled={busy} aria-pressed={kind === value} onClick={() => { setKind(value); setPage(1); setRows([]); setError(""); setNotice(""); }} className={`border border-border px-5 py-3 text-sm font-semibold ${kind === value ? "bg-navy text-white" : "bg-white text-navy"}`}>{value === "gallery" ? "Images and cuttings" : "Videos"}</button>)}</nav>
+          <nav aria-label="Media management" className="mb-6 flex gap-3">{(["gallery", "interviews"] as MediaKind[]).map(value => <button type="button" key={value} disabled={busy} aria-pressed={kind === value} onClick={() => { setKind(value); setPage(1); setRows([]);   }} className={`border border-border px-5 py-3 text-sm font-semibold ${kind === value ? "bg-navy text-white" : "bg-white text-navy"}`}>{value === "gallery" ? "Images and cuttings" : "Videos"}</button>)}</nav>
           <div className="space-y-4">
             {rows.map((row) => (
               <article

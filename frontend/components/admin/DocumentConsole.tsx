@@ -1,4 +1,5 @@
 "use client";
+import { notify } from "@/lib/notifications";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
@@ -22,8 +23,6 @@ export default function DocumentConsole() {
   const [editor, setEditor] = useState<DocumentRecord | null>(null);
   const [page, setPage] = useState(1);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
   const allowed =
     !!user && ["super_admin", "admin", "editor"].includes(user.role);
   useEffect(() => {
@@ -44,7 +43,7 @@ export default function DocumentConsole() {
     try {
       setRows(await adminRequest<DocumentRow[]>(`/admin/${kind}?page=${page}`));
     } catch (failure) {
-      setError(
+      notify.error(
         failure instanceof Error
           ? failure.message
           : "Documents could not be loaded.",
@@ -62,7 +61,7 @@ export default function DocumentConsole() {
       })
       .catch((failure) => {
         if (active)
-          setError(
+          notify.error(
             failure instanceof Error
               ? failure.message
               : "Documents could not be loaded.",
@@ -78,7 +77,6 @@ export default function DocumentConsole() {
   async function login(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
-    setError("");
     const fields = new FormData(event.currentTarget);
     try {
       const result = await adminRequest<{ user: User }>("/auth/login", {
@@ -89,35 +87,33 @@ export default function DocumentConsole() {
         }),
       });
       setUser(result.user);
+      notify.success("Signed in successfully.");
     } catch (failure) {
-      setError(failure instanceof Error ? failure.message : "Sign-in failed.");
+      notify.error(failure instanceof Error ? failure.message : "Sign-in failed.");
     } finally {
       setBusy(false);
     }
   }
   async function logout() {
     setBusy(true);
-    setError("");
     try {
       await adminRequest("/auth/logout", { method: "POST", body: "{}" });
       setUser(null);
+      notify.success("Signed out successfully.");
       setEditor(null);
       setRows([]);
-      setNotice("");
     } catch (failure) {
-      setError(failure instanceof Error ? failure.message : "Sign-out failed.");
+      notify.error(failure instanceof Error ? failure.message : "Sign-out failed.");
     } finally {
       setBusy(false);
     }
   }
   async function edit(id: string) {
     setBusy(true);
-    setError("");
-    setNotice("");
     try {
       setEditor(await adminRequest<DocumentRecord>(`/admin/${kind}/${id}`));
     } catch (failure) {
-      setError(
+      notify.error(
         failure instanceof Error
           ? failure.message
           : "Document could not be opened.",
@@ -136,8 +132,6 @@ export default function DocumentConsole() {
     )
       return;
     setBusy(true);
-    setError("");
-    setNotice("");
     try {
       await adminRequest(
         action === "delete"
@@ -156,12 +150,12 @@ export default function DocumentConsole() {
           ),
         },
       );
-      setNotice(
+      notify.result(
         action === "delete" ? "Document deleted." : "Document withdrawn.",
       );
       await loadDocuments();
     } catch (failure) {
-      setError(
+      notify.error(
         failure instanceof Error
           ? failure.message
           : "The change could not be completed.",
@@ -194,22 +188,6 @@ export default function DocumentConsole() {
             Sign out
           </button>
         </div>
-      )}
-      {error && (
-        <p
-          role="alert"
-          className="mb-5 border-l-4 border-red bg-red/5 p-4 text-sm"
-        >
-          {error}
-        </p>
-      )}
-      {notice && (
-        <p
-          role="status"
-          className="mb-5 border-l-4 border-teal bg-soft-gray p-4 text-sm"
-        >
-          {notice}
-        </p>
       )}
       {!user ? (
         <form
@@ -265,8 +243,7 @@ export default function DocumentConsole() {
           onCancel={() => setEditor(null)}
           onSaved={(message) => {
             setEditor(null);
-            setNotice(message);
-            setError("");
+            notify.result(message);
           }}
         />
       ) : (
@@ -284,8 +261,7 @@ export default function DocumentConsole() {
               disabled={busy}
               onClick={() => {
                 setEditor(newDocument(kind));
-                setNotice("");
-                setError("");
+
               }}
               className="inline-flex items-center gap-2 bg-navy px-5 py-3 text-sm font-semibold text-white hover:bg-teal-dark disabled:opacity-50"
             >
@@ -306,8 +282,6 @@ export default function DocumentConsole() {
                   setKind(value);
                   setPage(1);
                   setRows([]);
-                  setError("");
-                  setNotice("");
                 }}
                 className={`border border-border px-5 py-3 text-sm font-semibold ${kind === value ? "bg-navy text-white" : "bg-white text-navy"}`}
               >

@@ -1,4 +1,5 @@
 "use client";
+import { notify } from "@/lib/notifications";
 import {
   useCallback,
   useEffect,
@@ -209,7 +210,6 @@ export default function MembershipForm() {
     [configRevision, setConfigRevision] = useState(0);
   const [review, setReview] = useState(false),
     [busy, setBusy] = useState(false),
-    [message, setMessage] = useState(""),
     [progress, setProgress] = useState(""),
     [reference, setReference] = useState(""),
     [token, setToken] = useState(""),
@@ -221,7 +221,8 @@ export default function MembershipForm() {
   const [frozen, setFrozen] = useState(false),
     [hasSession, setHasSession] = useState(false);
   const locked = busy || frozen;
-  const onError = useCallback((text: string) => setMessage(text), []);
+  const onToken = useCallback((value: string) => { setToken(value); if (value) notify.dismiss("verification-membership"); }, []);
+  const onError = useCallback((text: string) => notify.error(text, "verification-membership"), []);
   useEffect(() => {
     const controller = new AbortController();
     fetch("/api/membership-registration/config", {
@@ -304,7 +305,6 @@ export default function MembershipForm() {
     if (acting.current) return;
     acting.current = true;
     setBusy(true);
-    setMessage("");
     try {
       const result = await submitMembership(
         answers,
@@ -317,12 +317,13 @@ export default function MembershipForm() {
         throw new Error(
           "Receipt could not be confirmed. Retry this same submission.",
         );
+      notify.success("Your membership application has been received. Approval is pending.");
       setReference(result.reference);
       attempt.current = newMembershipAttempt();
       setAnswers(emptyAnswers());
       setFiles({ cnic: [], photo: [], payment: [], police: [] });
     } catch (err) {
-      setMessage(
+      notify.error(
         err instanceof Error
           ? err.message
           : "Submission could not be confirmed. Retry this same submission.",
@@ -689,22 +690,12 @@ export default function MembershipForm() {
             <ComplaintVerification
               key={verification}
               purpose="membership_registration"
-              onToken={setToken}
+              onToken={onToken}
               onError={onError}
             />
           </div>
         )}
-        {message && (
-          <p
-            role="alert"
-            className="rounded-lg border border-red-dark bg-white p-4 text-sm text-red-dark"
-            translate="no"
-          >
-            {message}
-            {frozen &&
-              " Your answers are locked so you can safely retry the same application."}
-          </p>
-        )}
+        {frozen && !busy && <p className="text-sm text-muted">Your answers are locked so you can safely retry the same application.</p>}
         {busy && (
           <p
             role="status"

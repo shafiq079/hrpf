@@ -294,3 +294,10 @@ html[lang="ps"], html[lang="sd"] {
   font-family: var(--font-arabic), Tahoma, sans-serif;
   line-height: 1.8;
 }
+
+/* Action feedback remains above menus and editors, with readable long errors. */
+[data-sonner-toaster] { z-index: 10000 !important; }
+.hrpf-toast { overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) {
+  [data-sonner-toast] { transition: none !important; animation: none !important; }
+}

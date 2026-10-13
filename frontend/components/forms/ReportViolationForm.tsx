@@ -1,4 +1,5 @@
 "use client";
+import { notify } from "@/lib/notifications";
 import TranslationText from "@/components/translation/TranslationText";
 import { useCallback, useRef, useState, type FormEvent } from "react";
 import Link from "@/components/translation/TranslationLink";
@@ -133,9 +134,9 @@ export default function ReportViolationForm() {
   const attempt = useRef(newComplaintAttempt()),
     submitting = useRef(false),
     heading = useRef<HTMLHeadingElement>(null);
-  const tokenChanged = useCallback((token: string) => setBotToken(token), []);
+  const tokenChanged = useCallback((token: string) => { setBotToken(token); if (token) notify.dismiss("verification-complaint"); }, []);
   const verificationError = useCallback(
-    (message: string) => setError(message),
+    (message: string) => notify.error(message, "verification-complaint"),
     [],
   );
   const change = (key: keyof ComplaintData, value: string | boolean) => {
@@ -186,13 +187,14 @@ export default function ReportViolationForm() {
         botToken,
         setProgress,
       );
+      notify.success("Your complaint has been received.");
       setReference(result.reference);
       setData(initial);
       setFiles(initialFiles);
       attempt.current = newComplaintAttempt();
     } catch (failure) {
       setRequestStarted(attempt.current.submissionStarted);
-      setError(
+      notify.error(
         failure instanceof Error
           ? failure.message
           : "Submission could not be confirmed. Retry this same submission.",

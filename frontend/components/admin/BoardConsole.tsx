@@ -1,4 +1,5 @@
 "use client";
+import { notify } from "@/lib/notifications";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
@@ -20,8 +21,6 @@ export default function BoardConsole({ kind = "board" }: { kind?: "board" | "tea
   const [editor, setEditor] = useState<BoardRecord | TeamRecord | null>(null);
   const [page, setPage] = useState(1);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
   const allowed = !!user && ["super_admin", "admin"].includes(user.role);
   useEffect(() => {
     let active = true;
@@ -41,7 +40,7 @@ export default function BoardConsole({ kind = "board" }: { kind?: "board" | "tea
     try {
       setRows(await adminRequest<MediaRow[]>(`/admin/${kind}?page=${page}`));
     } catch (failure) {
-      setError(
+      notify.error(
         failure instanceof Error
           ? failure.message
           : "Profiles records could not be loaded.",
@@ -59,7 +58,7 @@ export default function BoardConsole({ kind = "board" }: { kind?: "board" | "tea
       })
       .catch((failure) => {
         if (active)
-          setError(
+          notify.error(
             failure instanceof Error
               ? failure.message
               : "Profiles records could not be loaded.",
@@ -75,7 +74,6 @@ export default function BoardConsole({ kind = "board" }: { kind?: "board" | "tea
   async function login(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
-    setError("");
     const fields = new FormData(event.currentTarget);
     try {
       const result = await adminRequest<{ user: User }>("/auth/login", {
@@ -86,35 +84,33 @@ export default function BoardConsole({ kind = "board" }: { kind?: "board" | "tea
         }),
       });
       setUser(result.user);
+      notify.success("Signed in successfully.");
     } catch (failure) {
-      setError(failure instanceof Error ? failure.message : "Sign-in failed.");
+      notify.error(failure instanceof Error ? failure.message : "Sign-in failed.");
     } finally {
       setBusy(false);
     }
   }
   async function logout() {
     setBusy(true);
-    setError("");
     try {
       await adminRequest("/auth/logout", { method: "POST", body: "{}" });
       setUser(null);
+      notify.success("Signed out successfully.");
       setEditor(null);
       setRows([]);
-      setNotice("");
     } catch (failure) {
-      setError(failure instanceof Error ? failure.message : "Sign-out failed.");
+      notify.error(failure instanceof Error ? failure.message : "Sign-out failed.");
     } finally {
       setBusy(false);
     }
   }
   async function edit(id: string) {
     setBusy(true);
-    setError("");
-    setNotice("");
     try {
       setEditor(await adminRequest<BoardRecord | TeamRecord>(`/admin/${kind}/${id}`));
     } catch (failure) {
-      setError(
+      notify.error(
         failure instanceof Error
           ? failure.message
           : "Profiles record could not be opened.",
@@ -133,8 +129,6 @@ export default function BoardConsole({ kind = "board" }: { kind?: "board" | "tea
     )
       return;
     setBusy(true);
-    setError("");
-    setNotice("");
     try {
       await adminRequest(
         action === "delete"
@@ -153,12 +147,12 @@ export default function BoardConsole({ kind = "board" }: { kind?: "board" | "tea
           ),
         },
       );
-      setNotice(
+      notify.result(
         action === "delete" ? "Profile deleted." : "Profile withdrawn.",
       );
       await loadMedia();
     } catch (failure) {
-      setError(
+      notify.error(
         failure instanceof Error
           ? failure.message
           : "The change could not be completed.",
@@ -191,22 +185,6 @@ export default function BoardConsole({ kind = "board" }: { kind?: "board" | "tea
             Sign out
           </button>
         </div>
-      )}
-      {error && (
-        <p
-          role="alert"
-          className="mb-5 border-l-4 border-red bg-red/5 p-4 text-sm"
-        >
-          {error}
-        </p>
-      )}
-      {notice && (
-        <p
-          role="status"
-          className="mb-5 border-l-4 border-teal bg-soft-gray p-4 text-sm"
-        >
-          {notice}
-        </p>
       )}
       {!user ? (
         <form
@@ -257,11 +235,11 @@ export default function BoardConsole({ kind = "board" }: { kind?: "board" | "tea
         team ? <TeamEditor
           initial={editor as TeamRecord}
           onCancel={() => setEditor(null)}
-          onSaved={(message) => { setEditor(null); setNotice(message); setError(""); }}
+          onSaved={(message) => { setEditor(null); notify.result(message); }}
         /> : <BoardEditor
           initial={editor as BoardRecord}
           onCancel={() => setEditor(null)}
-          onSaved={(message) => { setEditor(null); setNotice(message); setError(""); }}
+          onSaved={(message) => { setEditor(null); notify.result(message); }}
         />
       ) : (
         <>
@@ -278,8 +256,7 @@ export default function BoardConsole({ kind = "board" }: { kind?: "board" | "tea
               disabled={busy}
               onClick={() => {
                 setEditor(team ? newTeamMember() : newProfile());
-                setNotice("");
-                setError("");
+
               }}
               className="inline-flex items-center gap-2 bg-navy px-5 py-3 text-sm font-semibold text-white hover:bg-teal-dark disabled:opacity-50"
             >

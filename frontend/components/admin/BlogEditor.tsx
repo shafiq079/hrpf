@@ -1,4 +1,5 @@
 "use client";
+import { notify } from "@/lib/notifications";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
 import {
@@ -143,7 +144,6 @@ export default function BlogEditor({
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
   const [preview, setPreview] = useState(false);
   const [reviewed, setReviewed] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
@@ -202,7 +202,7 @@ export default function BlogEditor({
     }
     setUploading(true);
     setError("");
-    setNotice("");
+
     try {
       for (const file of batch) {
         const limit = kind === "image" ? 5 : 10;
@@ -258,11 +258,11 @@ export default function BlogEditor({
         );
         setReviewed(false);
       }
-      setNotice(
+      notify.result(
         "Files uploaded and checked. Save the blog to keep them in your draft.",
       );
     } catch (failure) {
-      setError(
+      notify.error(
         failure instanceof Error
           ? failure.message
           : "Upload failed. Please try again.",
@@ -311,7 +311,7 @@ export default function BlogEditor({
   async function save(publish: boolean) {
     setBusy(true);
     setError("");
-    setNotice("");
+
     try {
       const body = {
         title: form.title,
@@ -361,7 +361,7 @@ export default function BlogEditor({
         );
       } else onSaved(saved, "Blog draft saved.");
     } catch (failure) {
-      setError(
+      notify.failure(
         failure instanceof Error
           ? failure.message
           : "The blog could not be saved.",
@@ -408,14 +408,6 @@ export default function BlogEditor({
             className="mb-5 border-l-4 border-red bg-red/5 p-4 text-sm"
           >
             {error}
-          </p>
-        )}
-        {notice && (
-          <p
-            role="status"
-            className="mb-5 border-l-4 border-teal bg-soft-gray p-4 text-sm"
-          >
-            {notice}
           </p>
         )}
         <fieldset disabled={busy || uploading} className="space-y-6">
