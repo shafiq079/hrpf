@@ -1,4 +1,5 @@
 "use client";
+import { notify } from "@/lib/notifications";
 
 import { useState, type FormEvent } from "react";
 import { ArrowLeft, Trash2 } from "lucide-react";
@@ -36,7 +37,7 @@ export default function TeamEditor({ initial, onCancel, onSaved }: { initial: Te
   async function cancel() {
     setBusy(true); setError("");
     try { await discardStaged(staged); onCancel(); }
-    catch (failure) { setError(failureText(failure)); }
+    catch (failure) { notify.error(failureText(failure)); }
     finally { setBusy(false); }
   }
   async function upload(file?: File) {
@@ -51,13 +52,14 @@ export default function TeamEditor({ initial, onCancel, onSaved }: { initial: Te
       const previous = staged;
       setStaged(result.assetId); change({ assetId: result.assetId });
       await discardStaged(previous);
-    } catch (failure) { setError(failureText(failure)); }
+      notify.success("Photograph uploaded. Save the profile to keep it.");
+    } catch (failure) { notify.error(failureText(failure)); }
     finally { setBusy(false); }
   }
   async function deletePhoto() {
     setBusy(true); setError("");
-    try { await discardStaged(staged); setStaged(null); change({ assetId: null }); }
-    catch (failure) { setError(failureText(failure)); }
+    try { await discardStaged(staged); setStaged(null); change({ assetId: null }); notify.success("Photograph removed from the form. Save to apply the change."); }
+    catch (failure) { notify.error(failureText(failure)); }
     finally { setBusy(false); }
   }
   async function save(event: FormEvent<HTMLFormElement>) {
@@ -65,16 +67,21 @@ export default function TeamEditor({ initial, onCancel, onSaved }: { initial: Te
     if (!record.assetId) { setError("Add a photograph before saving this team member."); return; }
     const publish = (event.nativeEvent as SubmitEvent).submitter?.getAttribute("value") === "publish";
     setBusy(true); setError("");
+    let draftSaved = false;
     try {
       const fields = { name: record.name, designation: record.designation, responsibilities: record.responsibilities, reportingTo: record.reportingTo, rank: record.rank, assetId: record.assetId };
       const saved = await adminRequest<{ id: string; version: number }>(record.id ? `/admin/team/${record.id}` : "/admin/team", {
         method: record.id ? "PATCH" : "POST",
         body: JSON.stringify({ ...fields, ...(record.id ? { version: record.version } : {}) }),
       });
+      draftSaved = true;
       setRecord(previous => ({ ...previous, ...saved, status: "draft" })); setStaged(null);
       if (publish) await adminRequest(`/admin/publication/team/${saved.id}`, { method: "POST", body: JSON.stringify({ version: saved.version, action: "publish", releaseReviewed: true }) });
       onSaved(publish ? "Team member published." : "Team member saved as a draft.");
-    } catch (failure) { setError(failureText(failure)); }
+    } catch (failure) {
+      const message = failureText(failure);
+      if (draftSaved) notify.warning(`Draft saved, but publication failed. ${message}`);
+      else notify.error(message); }
     finally { setBusy(false); }
   }
   return (

@@ -1,4 +1,5 @@
 "use client";
+import { notify } from "@/lib/notifications";
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -98,7 +99,8 @@ export default function LanguageSwitcher() {
         const translator = window.__GT?.translator;
         if (translator?.error || Date.now() - started > 30000) {
           stop();
-          setMessage("Translation is unavailable. Try another language or return to English.");
+          setMessage("");
+          notify.error("Translation is unavailable. Try another language or return to English.", "translation");
         } else if (translator?.libReady && translator.finished) {
           stop();
           direction(language);
@@ -152,7 +154,7 @@ export default function LanguageSwitcher() {
         if (loadTimeout) clearTimeout(loadTimeout);
         loading = false;
         setStatus("failed");
-        setMessage("Languages could not load. You can continue using the English website.");
+        notify.error("Languages could not load. You can continue using the English website.", "translation");
       };
       document.body.appendChild(script);
       loadTimeout = setTimeout(() => {
@@ -160,7 +162,7 @@ export default function LanguageSwitcher() {
           loading = false;
           script?.remove();
           setStatus("failed");
-          setMessage("Languages could not load. You can continue using the English website.");
+          notify.error("Languages could not load. You can continue using the English website.", "translation");
         }
       }, 30000);
     };

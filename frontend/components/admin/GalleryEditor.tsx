@@ -1,4 +1,5 @@
 "use client";
+import { notify } from "@/lib/notifications";
 
 import { useRef, useState, type FormEvent } from "react";
 import { ImagePlus, Trash2 } from "lucide-react";
@@ -80,7 +81,6 @@ export default function GalleryEditor({
   const [busy, setBusy] = useState(false),
     [uploading, setUploading] = useState(false),
     [error, setError] = useState(""),
-    [imageNotice, setImageNotice] = useState(""),
     [reviewed, setReviewed] = useState(false);
   const preview = useRef<HTMLDialogElement>(null),
     staged = useRef<string | null>(null),
@@ -101,8 +101,9 @@ export default function GalleryEditor({
         sourceName: metadata.sourceName,
         youtubeThumbnailUrl: metadata.thumbnailUrl
       }));
+      notify.success("YouTube title and thumbnail loaded. Save the record to keep them.");
     } catch (failure) {
-      setError(failure instanceof Error ? failure.message : "YouTube information could not be loaded.");
+      notify.error(failure instanceof Error ? failure.message : "YouTube information could not be loaded.");
     } finally {
       setBusy(false);
     }
@@ -128,7 +129,7 @@ export default function GalleryEditor({
   async function upload(file?: File) {
     if (!file) return;
     setError("");
-    setImageNotice("");
+
     if (file.size > 5 * 1024 * 1024 || !["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
       setError("Choose a JPG, PNG or WebP image up to 5 MB.");
       return;
@@ -147,13 +148,13 @@ export default function GalleryEditor({
       staged.current = uploaded.assetId;
       update("assetId", uploaded.assetId);
       if (isImage) update("treatment", "ORIGINAL");
-      setImageNotice(`${file.name} uploaded. Save the record to keep this image.`);
+      notify.success(`${file.name} uploaded. Save the record to keep this image.`);
       if (previous) await adminRequest(`/admin/assets/${previous}`, {
         method: "DELETE",
         body: "{}"
       }).catch(() => {});
     } catch (failure) {
-      setError(failure instanceof Error ? failure.message : "Upload failed.");
+      notify.error(failure instanceof Error ? failure.message : "Upload failed.");
     } finally {
       setUploading(false);
     }
@@ -168,9 +169,9 @@ export default function GalleryEditor({
         staged.current = null;
       }
       update("assetId", null);
-      setImageNotice("Image deleted from this form. Save your changes to apply the deletion.");
+      notify.success("Image deleted from this form. Save your changes to apply the deletion.");
     } catch (failure) {
-      setError(failure instanceof Error ? failure.message : "The image could not be deleted.");
+      notify.error(failure instanceof Error ? failure.message : "The image could not be deleted.");
     } finally {
       setUploading(false);
     }
@@ -183,6 +184,7 @@ export default function GalleryEditor({
     }
     setBusy(true);
     setError("");
+    let draftSaved = false;
     try {
       const common = {
         title: record.title,
@@ -219,6 +221,7 @@ export default function GalleryEditor({
           } : {})
         })
       });
+      draftSaved = true;
       setRecord(current => ({
         ...current,
         ...saved
@@ -234,7 +237,9 @@ export default function GalleryEditor({
       });
       onSaved(publish ? "Media published to the Gallery." : "Draft saved privately.");
     } catch (failure) {
-      setError(failure instanceof Error ? failure.message : "The record could not be saved.");
+      const message = failure instanceof Error ? failure.message : "The record could not be saved.";
+      if (draftSaved) notify.warning(`Draft saved, but publication failed. ${message}`);
+      else notify.error(message);
     } finally {
       setBusy(false);
     }
@@ -284,7 +289,6 @@ export default function GalleryEditor({
               {file && <button type="button" onClick={() => void deleteImage()} className="inline-flex cursor-pointer items-center gap-2 rounded border border-red/30 bg-white px-5 py-3 text-sm font-semibold text-red hover:bg-red/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red disabled:cursor-not-allowed disabled:opacity-40"><Trash2 size={18} aria-hidden="true" />Delete image</button>}
             </div>
             {uploading && <p role="status" className="mt-4 text-sm text-muted">Updating image…</p>}
-            {imageNotice && <p role="status" className="mt-4 break-words text-sm leading-relaxed text-teal-dark">{imageNotice}</p>}
             {file && <a href={file} target="_blank" rel="noopener noreferrer" className="mt-5 inline-block text-sm font-semibold text-teal-dark underline underline-offset-4">Open full-size image</a>}
           </div>
         </div>

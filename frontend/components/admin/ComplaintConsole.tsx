@@ -1,4 +1,5 @@
 "use client";
+import { notify } from "@/lib/notifications";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import AdminNavigation from "@/components/admin/AdminNavigation";
 import Container from "@/components/shared/Container";
@@ -73,9 +74,7 @@ const button =
 export default function ComplaintConsole() {
   const [user, setUser] = useState<User | null>(null),
     [loading, setLoading] = useState(true),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState(""),
-    [notice, setNotice] = useState("");
+    [busy, setBusy] = useState(false);
   const [listing, setListing] = useState<Listing>({
       rows: [],
       page: 1,
@@ -120,7 +119,7 @@ export default function ComplaintConsole() {
         if (active) setListing(result);
       })
       .catch((failure) => {
-        if (active) setError(failure.message);
+        if (active) notify.error(failure.message);
       });
     return () => {
       active = false;
@@ -134,7 +133,7 @@ export default function ComplaintConsole() {
         if (active) setReviewers(result);
       })
       .catch((failure) => {
-        if (active) setError(failure.message);
+        if (active) notify.error(failure.message);
       });
     return () => {
       active = false;
@@ -144,12 +143,10 @@ export default function ComplaintConsole() {
     if (acting.current) return;
     acting.current = true;
     setBusy(true);
-    setError("");
-    setNotice("");
     try {
       await work();
     } catch (failure) {
-      setError(
+      notify.error(
         failure instanceof Error
           ? failure.message
           : "The request could not be completed.",
@@ -178,6 +175,7 @@ export default function ComplaintConsole() {
         }),
       });
       setUser(result.user);
+      notify.success("Signed in successfully.");
     });
   }
   function save(event: FormEvent<HTMLFormElement>) {
@@ -196,7 +194,7 @@ export default function ComplaintConsole() {
       });
       await open(current.id);
       setRevision((value) => value + 1);
-      setNotice(
+      notify.result(
         "Review saved. Internal notes and status changes are not sent to the complainant.",
       );
     });
@@ -223,6 +221,7 @@ export default function ComplaintConsole() {
                   body: "{}",
                 });
                 setUser(null);
+                notify.success("Signed out successfully.");
                 setDetail(null);
                 setListing({ rows: [], page: 1, pages: 0, total: 0 });
               })
@@ -233,22 +232,6 @@ export default function ComplaintConsole() {
         )}
       </div>
       {allowed && <AdminNavigation contentAllowed={canRetry} />}
-      {error && (
-        <p
-          role="alert"
-          className="mb-5 rounded-md border border-red/30 bg-red/5 p-4 text-sm text-red-dark"
-        >
-          {error}
-        </p>
-      )}
-      {notice && (
-        <p
-          role="status"
-          className="mb-5 rounded-md bg-teal/10 p-4 text-sm text-teal-dark"
-        >
-          {notice}
-        </p>
-      )}
       {loading ? (
         <p>Loading complaint management…</p>
       ) : !user ? (
@@ -293,8 +276,7 @@ export default function ComplaintConsole() {
               className={button}
               onClick={() => {
                 setDetail(null);
-                setError("");
-                setNotice("");
+
               }}
             >
               Back to complaints
@@ -460,7 +442,7 @@ export default function ComplaintConsole() {
                                 { method: "POST", body: "{}" },
                               );
                               await open(detail.id);
-                              setNotice(
+                              notify.result(
                                 "Email retry queued. The worker will send the complete original submission.",
                               );
                             })

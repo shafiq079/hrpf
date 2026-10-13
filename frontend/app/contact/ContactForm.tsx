@@ -1,4 +1,5 @@
 "use client";
+import { notify } from "@/lib/notifications";
 
 import { useCallback, useRef, useState } from "react";
 import Link from "@/components/translation/TranslationLink";
@@ -17,17 +18,16 @@ export default function ContactForm({ defaultInquiryType = "General" }: { defaul
   const [data, setData] = useState({ ...initial, inquiryType: defaultInquiryType });
   const [errors, setErrors] = useState<Partial<Record<keyof ContactData, string>>>({});
   const [busy, setBusy] = useState(false), [locked, setLocked] = useState(false);
-  const [error, setError] = useState(""), [reference, setReference] = useState("");
+  const [reference, setReference] = useState("");
   const [botToken, setBotToken] = useState(""), [verificationKey, setVerificationKey] = useState(0);
   const attempt = useRef(newContactAttempt()), submitting = useRef(false);
-  const tokenChanged = useCallback((token: string) => setBotToken(token), []);
-  const verificationError = useCallback((message: string) => setError(message), []);
+  const tokenChanged = useCallback((token: string) => { setBotToken(token); if (token) notify.dismiss("verification-contact"); }, []);
+  const verificationError = useCallback((message: string) => notify.error(message, "verification-contact"), []);
   const change = (key: keyof ContactData, value: string | boolean) => setData(previous => ({ ...previous, [key]: value }));
 
   async function send(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (submitting.current) return;
-    setError("");
     if (!attempt.current.submissionStarted) {
       const next: Partial<Record<keyof ContactData, string>> = {};
       if (!data.name.trim() || data.name.trim().length > 150) next.name = "Enter your name using up to 150 characters.";
@@ -42,9 +42,9 @@ export default function ContactForm({ defaultInquiryType = "General" }: { defaul
     submitting.current = true; setBusy(true); setLocked(true);
     try {
       const result = await submitContact(data, attempt.current, botToken);
-      setReference(result.reference); setData(initial); attempt.current = newContactAttempt();
+      notify.success("Your message has been received."); setReference(result.reference); setData(initial); attempt.current = newContactAttempt();
     } catch (failure) {
-      setError(failure instanceof Error ? failure.message : "Your message could not be confirmed. Please try again.");
+      notify.error(failure instanceof Error ? failure.message : "Your message could not be confirmed. Please try again.");
       if (!attempt.current.submissionStarted || (failure instanceof ContactRequestError && ["VALIDATION_ERROR", "INVALID_FORM_TICKET"].includes(failure.code || ""))) {
         attempt.current = newContactAttempt(); setLocked(false); setBotToken(""); setVerificationKey(previous => previous + 1);
       }
@@ -74,7 +74,6 @@ export default function ContactForm({ defaultInquiryType = "General" }: { defaul
       <p className="text-sm text-muted"><Link href="/privacy-policy" className="font-semibold text-teal-dark underline">Read the Privacy Policy</Link></p>
     </fieldset>
     {!locked ? <ComplaintVerification key={verificationKey} purpose="contact" onToken={tokenChanged} onError={verificationError} /> : null}
-    {error ? <FormMessage type="error" title="Message not confirmed"><p>{error}</p></FormMessage> : null}
     {locked && !busy ? <p role="status" className="text-sm text-muted"><TranslationText>Retry to confirm the same message. Your original details are kept on this page to avoid duplicate enquiries.</TranslationText></p> : null}
     <SubmitButton loading={busy}><TranslationText>{locked ? "Retry message" : "Send message"}</TranslationText></SubmitButton>
   </form>;

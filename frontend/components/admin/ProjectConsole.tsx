@@ -1,4 +1,5 @@
 "use client";
+import { notify } from "@/lib/notifications";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
@@ -26,8 +27,6 @@ export default function ProjectConsole() {
   const [editor, setEditor] = useState<EditorRecord | null>(null);
   const [page, setPage] = useState(1);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
   const allowed =
     !!user && ["super_admin", "admin", "editor"].includes(user.role);
   useEffect(() => {
@@ -48,7 +47,7 @@ export default function ProjectConsole() {
     try {
       setRows(await adminRequest<ProjectRow[]>(`/admin/projects?page=${page}`));
     } catch (failure) {
-      setError(
+      notify.error(
         failure instanceof Error
           ? failure.message
           : "Projects could not be loaded.",
@@ -66,7 +65,7 @@ export default function ProjectConsole() {
       })
       .catch((failure) => {
         if (active)
-          setError(
+          notify.error(
             failure instanceof Error
               ? failure.message
               : "Projects could not be loaded.",
@@ -82,7 +81,6 @@ export default function ProjectConsole() {
   async function login(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
-    setError("");
     const fields = new FormData(event.currentTarget);
     try {
       const result = await adminRequest<{ user: User }>("/auth/login", {
@@ -93,35 +91,33 @@ export default function ProjectConsole() {
         }),
       });
       setUser(result.user);
+      notify.success("Signed in successfully.");
     } catch (failure) {
-      setError(failure instanceof Error ? failure.message : "Sign-in failed.");
+      notify.error(failure instanceof Error ? failure.message : "Sign-in failed.");
     } finally {
       setBusy(false);
     }
   }
   async function logout() {
     setBusy(true);
-    setError("");
     try {
       await adminRequest("/auth/logout", { method: "POST", body: "{}" });
       setUser(null);
+      notify.success("Signed out successfully.");
       setEditor(null);
       setRows([]);
-      setNotice("");
     } catch (failure) {
-      setError(failure instanceof Error ? failure.message : "Sign-out failed.");
+      notify.error(failure instanceof Error ? failure.message : "Sign-out failed.");
     } finally {
       setBusy(false);
     }
   }
   async function edit(id: string) {
     setBusy(true);
-    setError("");
-    setNotice("");
     try {
       setEditor(await adminRequest<EditorRecord>(`/admin/projects/${id}`));
     } catch (failure) {
-      setError(
+      notify.error(
         failure instanceof Error
           ? failure.message
           : "Project could not be opened.",
@@ -140,8 +136,6 @@ export default function ProjectConsole() {
     )
       return;
     setBusy(true);
-    setError("");
-    setNotice("");
     try {
       await adminRequest(
         action === "delete"
@@ -160,12 +154,12 @@ export default function ProjectConsole() {
           ),
         },
       );
-      setNotice(
+      notify.result(
         action === "delete" ? "Project deleted." : "Project withdrawn.",
       );
       await loadProjects();
     } catch (failure) {
-      setError(
+      notify.error(
         failure instanceof Error
           ? failure.message
           : "The change could not be completed.",
@@ -198,22 +192,6 @@ export default function ProjectConsole() {
             Sign out
           </button>
         </div>
-      )}
-      {error && (
-        <p
-          role="alert"
-          className="mb-5 border-l-4 border-red bg-red/5 p-4 text-sm"
-        >
-          {error}
-        </p>
-      )}
-      {notice && (
-        <p
-          role="status"
-          className="mb-5 border-l-4 border-teal bg-soft-gray p-4 text-sm"
-        >
-          {notice}
-        </p>
       )}
       {!user ? (
         <form
@@ -266,8 +244,7 @@ export default function ProjectConsole() {
           onCancel={() => setEditor(null)}
           onSaved={(_record, message) => {
             setEditor(null);
-            setNotice(message);
-            setError("");
+            notify.result(message);
           }}
         />
       ) : (
@@ -286,8 +263,6 @@ export default function ProjectConsole() {
               disabled={busy}
               onClick={() => {
                 setEditor(newProject());
-                setNotice("");
-                setError("");
               }}
               className="inline-flex items-center gap-2 bg-navy px-5 py-3 text-sm font-semibold text-white hover:bg-teal-dark disabled:opacity-50"
             >

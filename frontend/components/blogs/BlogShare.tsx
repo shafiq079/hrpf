@@ -1,15 +1,14 @@
 "use client";
+import { notify } from "@/lib/notifications";
 import TranslationText from "@/components/translation/TranslationText";
-import { useState } from "react";
 import { Copy, Share2 } from "lucide-react";
 export default function BlogShare({ title }: { title: string }) {
-  const [message, setMessage] = useState("");
   async function copy() {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      setMessage("Link copied.");
+      notify.success("Link copied.");
     } catch {
-      setMessage("Copy the page address from your browser to share this blog.");
+      notify.warning("Copy the page address from your browser to share this blog.");
     }
   }
   function share(service: "facebook" | "whatsapp" | "x") {
@@ -53,9 +52,6 @@ export default function BlogShare({ title }: { title: string }) {
           </button>
         ))}
       </div>
-      <p role="status" className="mt-2 text-xs text-teal-dark">
-        <TranslationText>{message}</TranslationText>
-      </p>
     </div>
   );
 }
