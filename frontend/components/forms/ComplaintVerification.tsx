@@ -37,7 +37,7 @@ export default function ComplaintVerification({
       sitekey,
       action: purpose,
       theme,
-      size: purpose === "newsletter" ? "compact" : "normal",
+      size: purpose === "newsletter" ? "flexible" : "normal",
       callback: onToken,
       "expired-callback": () => onToken(""),
       "error-callback": () => {

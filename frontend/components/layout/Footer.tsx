@@ -83,8 +83,8 @@ function FooterColumn({
 export default function Footer() {
   return (
     <footer className="bg-navy-dark text-white">
-      <Container className="py-14 lg:py-16">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.4fr] lg:gap-10">
+      <Container className="py-14 max-[335px]:px-2 lg:py-16">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_minmax(300px,1.4fr)] lg:gap-10">
           {/* Brand column */}
           <div>
             <Link

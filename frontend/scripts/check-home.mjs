@@ -112,7 +112,14 @@ try{
  console.log('Donation page checks passed: exact sourced bank/JazzCash details, copy controls, no payment form or unsourced wallet.');
  assert.equal((await read('/our-work/unknown-area')).status,404);
  console.log('Women rights checks passed: general content, managed field projects, one H1, archive photo, actions and removal of hardcoded case/source notes.');
- for(const text of ['Managed project 1','Managed news 1','Our Guiding Principles','Muhammad Yousaf Badar','/videos/home-banner/v1/poster.webp','home-about.webp','home-chairman.webp'])assert.ok(page.html.includes(text),text);
+ for(const text of ['Managed project 1','Managed news 1','Our Guiding Principles','Muhammad Yousaf Badar','/videos/home-banner/v2/poster.webp','home-about.webp','home-chairman.webp'])assert.ok(page.html.includes(text),text);
+ const banner=await fetch(`http://127.0.0.1:${port}/videos/home-banner/v2/banner.mp4`,{headers:{Range:'bytes=0-31'}});
+ assert.equal(banner.status,206,'Hero video supports partial downloads');
+ assert.ok(banner.headers.get('cache-control')?.includes('immutable'),'Versioned hero video is cached');
+ assert.equal(Buffer.from(await banner.arrayBuffer()).subarray(4,8).toString(),'ftyp','Hero source is an MP4');
+ const poster=await fetch(`http://127.0.0.1:${port}/videos/home-banner/v2/poster.webp`);
+ assert.equal(poster.status,200,'Updated hero poster is available');
+ assert.equal(poster.headers.get('content-type'),'image/webp');
  for(const text of ['Ana Ortiz','UNHCR','ICRC','World Bank','5000+','500K','Safe Haven Initiative','since 2015'])assert.ok(!page.html.includes(text),`Unverified claim: ${text}`);
  revision=2;assert.ok((await read('/our-work/womens-rights')).html.includes('Managed project 2'),'Field projects reflect managed updates');page=await read();assert.ok(page.html.includes('Managed project 2')&&page.html.includes('Managed news 2'),'Managed homepage feeds must refresh');
  assert.ok((await read('/programmes')).html.includes('Managed project 2'));

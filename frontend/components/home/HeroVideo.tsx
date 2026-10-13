@@ -3,11 +3,7 @@
 import { useEffect, useRef } from "react";
 import AppImage from "@/components/shared/AppImage";
 
-const base = "/videos/home-banner/v1";
-
-function sourceForScreen() {
-  return `${base}/${window.matchMedia("(max-width: 767px)").matches ? "banner-mobile" : "banner"}.mp4`;
-}
+const base = "/videos/home-banner/v2";
 
 /** Decorative background: no audio or controls, with a still fallback. */
 export default function HeroVideo() {
@@ -26,7 +22,7 @@ export default function HeroVideo() {
         player.removeAttribute("src");
         player.load();
       } else {
-        player.src = sourceForScreen();
+        player.src = `${base}/banner.mp4`;
         void player.play().catch(() => { /* Keep the poster if autoplay is blocked. */ });
       }
     };
@@ -57,8 +53,8 @@ export default function HeroVideo() {
           playsInline
           preload="none"
           poster={`${base}/poster.webp`}
-          width={1280}
-          height={720}
+          width={400}
+          height={220}
           tabIndex={-1}
           className="absolute inset-0 h-full w-full object-cover"
           onError={() => {
