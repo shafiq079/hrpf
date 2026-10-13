@@ -17,7 +17,7 @@ import { recordChecksum, seedId, sourceFileSchema, type Manifest, type SeedRecor
 import { loadLegacyWorkProjectsManifest, loadWorkProjectsManifest } from './work-projects.js';
 
 const schema = z.object({
-  version: z.enum(['client-project-evidence-v1', 'client-project-evidence-v2']),
+  version: z.enum(['client-project-evidence-v1', 'client-project-evidence-v2', 'client-project-evidence-v3']),
   files: z.array(sourceFileSchema).min(1),
   projects: z.array(z.object({
     key: z.string().regex(/^(work-project|home-project):[a-z0-9-]+$/),
@@ -42,6 +42,8 @@ function checksum(manifest: EvidenceManifest, entry: Entry) {
 async function loadEvidence(filename: string, version: EvidenceManifest['version']) {
   const manifest = schema.parse(JSON.parse(await readFile(new URL('../../seed/' + filename, import.meta.url), 'utf8')));
   if (manifest.version !== version) throw new Error('Unexpected evidence revision.');
+  // This public-research batch supplies media only; earlier narrative revisions stay intact.
+  if (version === 'client-project-evidence-v3' && manifest.projects.some(entry => Object.keys(entry.patch).length)) throw new Error('The third evidence revision is image-only.');
   const allowed = new Set((await originalManifests()).flatMap(source => source.records.filter(record => record.kind === 'Project').map(record => record.key)));
   if (manifest.projects.some(entry => !allowed.has(entry.key))) throw new Error('Unknown existing project identity.');
   const ids = new Set(manifest.files.map(file => file.id));
@@ -59,6 +61,7 @@ async function loadEvidence(filename: string, version: EvidenceManifest['version
 }
 export const loadClientProjectEvidence = () => loadEvidence('client-project-evidence.json', 'client-project-evidence-v1');
 export const loadClientProjectEvidenceV2 = () => loadEvidence('client-project-evidence-v2.json', 'client-project-evidence-v2');
+export const loadClientProjectEvidenceV3 = () => loadEvidence('client-project-evidence-v3.json', 'client-project-evidence-v3');
 const originalManifests = () => Promise.all([loadLegacyWorkProjectsManifest(), loadWorkProjectsManifest(), loadHomepageManifest()]);
 export async function clientEvidenceFiles(manifest: EvidenceManifest, root: string) {
   const checks = await verifySources({ version: manifest.version, files: manifest.files, records: [] } as Manifest, root);
