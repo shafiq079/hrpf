@@ -15,10 +15,12 @@ export default function ComplaintVerification({
   onToken,
   onError,
   purpose = "complaint",
+  theme = "auto",
 }: {
   onToken: (token: string) => void;
   onError: (message: string) => void;
   purpose?: "complaint" | "contact" | "newsletter" | "membership_registration";
+  theme?: "auto" | "light" | "dark";
 }) {
   const element = useRef<HTMLDivElement>(null),
     widget = useRef<string | null>(null);
@@ -34,6 +36,7 @@ export default function ComplaintVerification({
     widget.current = window.turnstile.render(element.current, {
       sitekey,
       action: purpose,
+      theme,
       size: purpose === "newsletter" ? "compact" : "normal",
       callback: onToken,
       "expired-callback": () => onToken(""),
@@ -44,7 +47,7 @@ export default function ComplaintVerification({
         );
       },
     });
-  }, [sitekey, onToken, onError, purpose]);
+  }, [sitekey, onToken, onError, purpose, theme]);
   useEffect(() => {
     mount();
     return () => {
@@ -54,7 +57,7 @@ export default function ComplaintVerification({
   }, [mount]);
   if (!sitekey)
     return (
-      <p role="status" className="text-sm text-muted">
+      <p role="status" className={`text-sm ${theme === "dark" ? "text-white/80" : "text-muted"}`}>
         <TranslationText>{purpose === "membership_registration" ? "Online membership submission is temporarily unavailable. Please contact HRPF." : purpose === "newsletter" ? "Newsletter signup is temporarily unavailable. Please contact HRPF." : purpose === "contact" ? "Online message submission is temporarily unavailable. Please use the email or phone details on this page." : "Online complaint submission is temporarily unavailable. Please use the contact details on our Contact page."}</TranslationText></p>
     );
   return (
