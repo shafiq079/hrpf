@@ -4,20 +4,28 @@ import TranslationText from "@/components/translation/TranslationText";
 import ComplaintVerification from "@/components/forms/ComplaintVerification";
 import { newContactAttempt } from "@/lib/contact-submission";
 import { submitNewsletter, NewsletterRequestError } from "@/lib/newsletter-submission";
+const verificationRequired = "Complete the security verification before subscribing.";
 export default function NewsletterForm() {
   const [email, setEmail] = useState(""), [consent, setConsent] = useState(false), [active, setActive] = useState(false);
   const [error, setError] = useState(""), [submitted, setSubmitted] = useState(false), [busy, setBusy] = useState(false), [locked, setLocked] = useState(false);
   const [botToken, setBotToken] = useState(""), [verificationKey, setVerificationKey] = useState(0);
+  const [verificationFailure, setVerificationFailure] = useState("");
   const attempt = useRef(newContactAttempt()), submitting = useRef(false);
-  const tokenChanged = useCallback((value: string) => setBotToken(value), []);
-  const verificationError = useCallback((value: string) => setError(value), []);
+  const tokenChanged = useCallback((value: string) => {
+    setBotToken(value);
+    if (value) {
+      setVerificationFailure("");
+      setError(current => current === verificationRequired ? "" : current);
+    }
+  }, []);
+  const verificationError = useCallback((value: string) => setVerificationFailure(value), []);
   async function send(event: React.FormEvent) {
     event.preventDefault(); if (submitting.current) return;
     setError(""); setActive(true);
     if (!attempt.current.submissionStarted) {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) || email.trim().length > 254) { setError("Enter a valid email address."); return; }
       if (!consent) { setError("Please agree to receive HRPF updates."); return; }
-      if (!botToken) { setError("Complete the security verification before subscribing."); return; }
+      if (!botToken) { setError(verificationRequired); return; }
     }
     submitting.current = true; setBusy(true); setLocked(true);
     try { await submitNewsletter(email, consent, attempt.current, botToken); setSubmitted(true); setEmail(""); }
@@ -34,6 +42,7 @@ export default function NewsletterForm() {
     <input id="newsletter-email" name="email" type="email" autoComplete="email" maxLength={254} value={email} disabled={locked} onFocus={() => setActive(true)} onChange={event => setEmail(event.target.value)} translate="no" aria-invalid={!!error} aria-describedby={error ? "newsletter-error" : undefined} placeholder="you@example.com" className="w-full border border-white/30 bg-white/5 px-3 py-3 text-sm text-white focus-visible:outline-2 focus-visible:outline-teal" />
     <label className="flex items-start gap-2 text-sm leading-relaxed text-white/80"><input type="checkbox" disabled={locked} checked={consent} onChange={event => setConsent(event.target.checked)} className="mt-1" /><TranslationText>I agree to receive HRPF updates. I can unsubscribe through the link in my email.</TranslationText></label>
     {active && !locked && <div className="max-w-full"><ComplaintVerification key={verificationKey} purpose="newsletter" theme="dark" onToken={tokenChanged} onError={verificationError} /></div>}
+    {verificationFailure && <p role="alert" translate="no" className="notranslate text-sm text-red">{verificationFailure}</p>}
     {error && <p id="newsletter-error" role="alert" translate="no" className="notranslate text-sm text-red">{error}</p>}
     <button disabled={busy} className="bg-teal px-4 py-3 text-sm font-semibold text-white hover:bg-teal-dark disabled:opacity-40"><TranslationText>{busy ? "Submitting…" : locked ? "Retry request" : "Subscribe"}</TranslationText></button>
   </form>;
