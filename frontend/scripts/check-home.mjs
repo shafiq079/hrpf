@@ -46,6 +46,9 @@ const read=async(path='/')=>{const r=await fetch(`http://127.0.0.1:${port}${path
 try{
  const deadline=Date.now()+20000;while(true){try{await read();break;}catch{if(Date.now()>deadline||child.exitCode!==null)throw new Error(logs);await new Promise(r=>setTimeout(r,100));}}
  let page=await read();assert.equal(page.status,200);assert.equal(((page.html.match(/<main\b[^>]*>[\s\S]*?<\/main>/)?.[0]??'').match(/<section/g)||[]).length,9,'All original homepage sections remain');
+ assert.ok(page.html.includes('https://hrpf.org/images/hrpf/home-hero.webp'),'Homepage includes the default social preview image');
+ assert.ok(page.html.includes('rel="canonical" href="https://hrpf.org"'),'Homepage canonical uses the non-www production domain');
+ assert.ok(!page.html.includes('https://www.hrpf.org'),'Homepage metadata contains no obsolete www URL');
  assert.ok(page.html.includes('hrpf-language-widget') && page.html.includes('Languages'),'Public translation entry point');
  assert.ok(!page.html.includes('src="https://cdn.gtranslate.net/'),'Translation provider is not loaded during server rendering');
  const privatePage=await read('/admin/complaints');
@@ -134,6 +137,8 @@ try{
  await checkNavigation(read,port);
  await checkHeroes(read,port);
  const richPage=await read('/blogs/real-news');
+ assert.ok(richPage.html.includes('https://hrpf.org/images/hrpf/home-report-2023.webp'),'Blog metadata uses its published cover for social previews');
+ assert.ok(richPage.html.includes('rel="canonical" href="https://hrpf.org/blogs/real-news"'),'Blog canonical uses the non-www production domain');
  for(const content of ['Key takeaways','Important blog takeaway','Story context','Article section text','Supported detail','A verified quotation','Supplied report','Blog closing thoughts','Blog photographs','Sources and references','Historical source note','Blog source brief PDF','Illustrative archive cover','Article contents','Share this blog','Copy link','Related published blog','4','min read']) assert.ok(richPage.html.includes(content),`Blog detail: ${content}`);
  assert.ok(richPage.html.includes('article:published_time'),'Article SEO metadata');
  assert.ok((await read('/admin/blogs')).html.includes('Loading blog management'));
