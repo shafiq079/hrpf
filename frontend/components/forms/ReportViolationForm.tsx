@@ -1,4 +1,5 @@
 "use client";
+import SubmissionOverlay from "@/components/forms/SubmissionOverlay";
 import { notify } from "@/lib/notifications";
 import TranslationText from "@/components/translation/TranslationText";
 import { useCallback, useRef, useState, type FormEvent } from "react";
@@ -524,11 +525,7 @@ export default function ReportViolationForm() {
           />
         </div>
       )}
-      {progress && (
-        <p role="status" className="mt-5 text-sm font-medium text-teal-dark">
-          <TranslationText>{progress}</TranslationText>
-        </p>
-      )}
+      <SubmissionOverlay active={busy} title="Submitting your complaint" message={progress} />
       {locked && !busy && (
         <p className="mt-4 text-sm text-muted">
           <TranslationText>Retry uses the same files and reference request to prevent duplicate

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/shared/NavigationLink";
 import { usePathname } from "next/navigation";
 
 const contentLinks = [

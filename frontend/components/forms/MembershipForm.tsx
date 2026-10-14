@@ -1,4 +1,5 @@
 "use client";
+import SubmissionOverlay from "@/components/forms/SubmissionOverlay";
 import { notify } from "@/lib/notifications";
 import {
   useCallback,
@@ -217,9 +218,11 @@ export default function MembershipForm() {
   const attempt = useRef(newMembershipAttempt()),
     acting = useRef(false),
     errorSummary = useRef<HTMLDivElement>(null),
-    reviewHeading = useRef<HTMLHeadingElement>(null);
+    reviewHeading = useRef<HTMLHeadingElement>(null),
+    receipt = useRef<HTMLDivElement>(null);
   const [frozen, setFrozen] = useState(false),
     [hasSession, setHasSession] = useState(false);
+  useEffect(() => { if (reference) receipt.current?.focus(); }, [reference]);
   const locked = busy || frozen;
   const onToken = useCallback((value: string) => { setToken(value); if (value) notify.dismiss("verification-membership"); }, []);
   const onError = useCallback((text: string) => notify.error(text, "verification-membership"), []);
@@ -305,6 +308,7 @@ export default function MembershipForm() {
     if (acting.current) return;
     acting.current = true;
     setBusy(true);
+    setProgress("");
     try {
       const result = await submitMembership(
         answers,
@@ -336,12 +340,15 @@ export default function MembershipForm() {
       setFrozen(attempt.current.submissionStarted);
       setHasSession(!!hasSession);
       setBusy(false);
+      setProgress("");
       acting.current = false;
     }
   }
   if (reference)
     return (
       <div
+        ref={receipt}
+        tabIndex={-1}
         className="rounded-xl border border-teal bg-white p-6 sm:p-10"
         role="status"
       >
@@ -696,16 +703,7 @@ export default function MembershipForm() {
           </div>
         )}
         {frozen && !busy && <p className="text-sm text-muted">Your answers are locked so you can safely retry the same application.</p>}
-        {busy && (
-          <p
-            role="status"
-            aria-live="polite"
-            className="text-sm text-muted"
-            translate="no"
-          >
-            {progress}
-          </p>
-        )}
+        <SubmissionOverlay active={busy} title="Submitting your membership application" message={progress} />
         <button
           className={button}
           disabled={
