@@ -24,6 +24,7 @@ function checkDocumentCard(html, { id, title, summary, issuer, view, download })
 
 export async function checkNavigation(read, port) {
   const migrations = [
+    ['/contact-us', '/contact'],
     ['/get-involved', '/become-a-member'], ['/get-help', '/contact'],
     ['/news', '/blogs'], ['/news/real-news?from=old', '/blogs/real-news?from=old'],
     ['/updates/real-news', '/blogs/real-news'], ['/updates', '/blogs'],

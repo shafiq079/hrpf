@@ -41,6 +41,7 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      { source: "/contact-us", destination: "/contact", permanent: true },
       { source: "/get-involved", destination: "/become-a-member", permanent: true },
       { source: "/get-help", destination: "/contact", permanent: true },
       { source: "/news/:path*", destination: "/blogs/:path*", permanent: true },
