@@ -47,7 +47,7 @@ function FieldShell({
       )}
       {error && (
         <p id={errorId} className="mt-1.5 text-xs font-medium text-red-dark">
-          <span className="notranslate" translate="no">{error}</span>
+          <span className="notranslate" translate="no" lang="en" dir="ltr">{error}</span>
         </p>
       )}
     </div>
@@ -267,7 +267,7 @@ export function CheckboxField({
       </div>
       {error && (
         <p id={errorId} className="mt-1.5 text-xs font-medium text-red-dark">
-          <span className="notranslate" translate="no">{error}</span>
+          <span className="notranslate" translate="no" lang="en" dir="ltr">{error}</span>
         </p>
       )}
     </div>

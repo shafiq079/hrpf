@@ -26,6 +26,8 @@ export async function generateMetadata({
     title: project.title,
     description: project.summary,
     path: `/projects/${project.slug}`,
+    image: project.image,
+    imageAlt: project.imageAlt || project.title,
   });
 }
 export default async function ProjectPage({ params, searchParams }: Props) {

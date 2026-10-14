@@ -26,7 +26,13 @@ export async function generateMetadata({
   const path = `/blogs/${slug}${locale === "ur" ? "?locale=ur" : ""}`;
   const title = row.details?.seoTitle || row.title;
   const description = row.details?.seoDescription || row.excerpt;
-  const metadata = createMetadata({ title, description, path });
+  const metadata = createMetadata({
+    title,
+    description,
+    path,
+    image: row.image,
+    imageAlt: row.imageAlt || row.title,
+  });
   return {
     ...metadata,
     openGraph: {

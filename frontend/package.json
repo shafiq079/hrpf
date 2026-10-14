@@ -9,7 +9,7 @@
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "check": "npm run lint && npm run typecheck && npm run build",
-    "test:home": "node --test scripts/streamed-html.test.mjs scripts/navigation-feedback.test.mjs scripts/action-notifications.test.mjs scripts/membership-submission.test.mjs scripts/complaint-submission.test.mjs scripts/text-translation.test.mjs scripts/contact-submission.test.mjs scripts/newsletter-submission.test.mjs scripts/project-focus.test.mjs && node scripts/check-home.mjs",
+    "test:home": "node --test scripts/security-headers.test.mjs scripts/streamed-html.test.mjs scripts/navigation-feedback.test.mjs scripts/action-notifications.test.mjs scripts/membership-submission.test.mjs scripts/complaint-submission.test.mjs scripts/text-translation.test.mjs scripts/contact-submission.test.mjs scripts/newsletter-submission.test.mjs scripts/project-focus.test.mjs && node scripts/check-home.mjs",
     "test:loading": "node scripts/check-loading.mjs"
   },
   "dependencies": {

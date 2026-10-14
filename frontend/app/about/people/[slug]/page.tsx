@@ -20,6 +20,8 @@ export async function generateMetadata({ params }: Props) {
     title: result.data.name + " — " + result.data.designation,
     description: result.data.bio.slice(0, 160),
     path: "/about/people/" + result.data.slug,
+    image: result.data.photo,
+    imageAlt: result.data.photoAlt || result.data.name,
   });
 }
 export default async function PersonPage({ params }: Props) {

@@ -442,7 +442,7 @@ export default function MembershipForm() {
                     {answerLabels[id as keyof Answers] ||
                       fileLabels[id as keyof Files]}
                   </TranslationText>
-                  : <span translate="no">{error}</span>
+                  : <span translate="no" lang="en" dir="ltr">{error}</span>
                 </a>
               </li>
             ))}

@@ -8,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import SiteFrame from "@/components/layout/SiteFrame";
 import ActionToaster from "@/components/shared/ActionToaster";
 import LanguageSwitcher from "@/components/translation/LanguageSwitcher";
+import { createSocialImage, SITE_URL } from "@/lib/seo";
 
 // Editorial serif for headings; clean sans for body copy.
 const lora = Lora({
@@ -30,8 +31,8 @@ const arabic = Noto_Naskh_Arabic({
   variable: "--font-arabic",
 });
 
-// TODO: replace with the production domain before launch.
-const siteUrl = "https://www.hrpf.org";
+const siteUrl = SITE_URL;
+const defaultSocialImage = createSocialImage();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -52,7 +53,6 @@ export const metadata: Metadata = {
     "HRPF",
   ],
   alternates: {
-    // TODO: confirm canonical URL for production.
     canonical: "/",
   },
   openGraph: {
@@ -64,15 +64,17 @@ export const metadata: Metadata = {
       "Protecting vulnerable communities and advancing justice through advocacy, education, research and legal support.",
     url: siteUrl,
     locale: "en_US",
+    images: [defaultSocialImage],
   },
   twitter: {
     card: "summary_large_image",
     title: "Human Rights Protection Foundation",
     description:
       "Protecting vulnerable communities and advancing justice through advocacy, education, research and legal support.",
+    images: [defaultSocialImage],
   },
   icons: {
-    icon: [{ url: "/images/hrpf-logo.png", type: "image/png" }],
+    icon: [{ url: "/favicon.ico?v=hrpf-1", type: "image/x-icon" }],
     apple: [{ url: "/images/hrpf-logo.png", type: "image/png" }],
   },
   robots: {
@@ -100,6 +102,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      dir="ltr"
       className={`${lora.variable} ${inter.variable} ${arabic.variable}`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning

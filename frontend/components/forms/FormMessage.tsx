@@ -37,7 +37,7 @@ export default function FormMessage({ type, title, children }: FormMessageProps)
       />
       <div className="text-sm leading-relaxed">
         <p className="font-semibold text-text"><TranslationText>{title}</TranslationText></p>
-        {children && <div translate={isSuccess ? undefined : "no"} className={`mt-1 text-muted ${isSuccess ? "" : "notranslate"}`}>{children}</div>}
+        {children && <div translate={isSuccess ? undefined : "no"} lang={isSuccess ? undefined : "en"} dir={isSuccess ? undefined : "ltr"} className={`mt-1 text-muted ${isSuccess ? "" : "notranslate"}`}>{children}</div>}
       </div>
     </div>
   );

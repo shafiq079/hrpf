@@ -44,7 +44,7 @@ export default function NewsletterForm() {
     <input id="newsletter-email" name="email" type="email" autoComplete="email" maxLength={254} value={email} disabled={locked} onFocus={() => setActive(true)} onChange={event => setEmail(event.target.value)} translate="no" aria-invalid={!!error} aria-describedby={error ? "newsletter-error" : undefined} placeholder="you@example.com" className="w-full border border-white/30 bg-white/5 px-3 py-3 text-sm text-white focus-visible:outline-2 focus-visible:outline-teal" />
     <label className="flex items-start gap-2 text-sm leading-relaxed text-white/80"><input type="checkbox" disabled={locked} checked={consent} onChange={event => setConsent(event.target.checked)} className="mt-1" /><TranslationText>I agree to receive HRPF updates. I can unsubscribe through the link in my email.</TranslationText></label>
     {active && !locked && <div className="max-w-full"><ComplaintVerification key={verificationKey} purpose="newsletter" theme="dark" onToken={tokenChanged} onError={verificationError} /></div>}
-    {error && <p id="newsletter-error" role="alert" translate="no" className="notranslate text-sm text-red">{error}</p>}
+    {error && <p id="newsletter-error" role="alert" translate="no" lang="en" dir="ltr" className="notranslate text-sm text-red">{error}</p>}
     <SubmissionOverlay active={busy} title="Sending your subscription request" message={"Recording your request…"} />
     <button disabled={busy} className="bg-teal px-4 py-3 text-sm font-semibold text-white hover:bg-teal-dark disabled:opacity-40"><TranslationText>{busy ? "Submitting…" : locked ? "Retry request" : "Subscribe"}</TranslationText></button>
   </form>;

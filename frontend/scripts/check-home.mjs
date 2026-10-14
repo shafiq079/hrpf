@@ -5,11 +5,15 @@ import {spawn} from 'node:child_process';
 import {once} from 'node:events';
 import {checkNavigation, checkEmptyNavigation, checkOfflineNavigation} from './check-navigation.mjs';
 import {checkHeroes} from './check-heroes.mjs';
+import {checkSecurityHeaders} from './check-security-headers.mjs';
+import {checkAuditAccessibility} from './check-audit-accessibility.mjs';
 let revision=1,empty=false,richBlog=true;const requests=[];
 const workPages=[["childrens-rights", "Children's Rights"], ["access-to-justice", "Access to Justice"], ["minority-rights", "Minority Rights"], ["education-and-awareness", "Education and Awareness"], ["research-and-advocacy", "Research and Advocacy"], ["refugees-and-migrants", "Refugees and Migrants"], ["community-development", "Community Development"]];
 const privatePortraits=['dr-sidra-mubashir','dr-iqra-mubashar'].map((slug,i)=>({name:i===0?'Dr. Sidra Mubashir':'Dr. Iqra Mubashar',slug,designation:'Board member',bio:'Synthetic privacy fixture',photo:'/api/public-assets/01234567890123456789013'+(i+3),photoZoom:1.8,showOnBoard:true,sections:[]}));
 const api=createServer((req,res)=>{
  requests.push({path:req.url,cookie:req.headers.cookie});res.setHeader('Content-Type','application/json');
+ // Distinct upstream policy proves frontend headers do not overwrite API headers.
+ res.setHeader('Content-Security-Policy', "default-src 'none'");res.setHeader('X-Frame-Options', 'DENY');
  const project={title:`Managed project ${revision}`,slug:'real-project',summary:'Synthetic project summary',focusArea:'Women’s Rights',workAreas:['womens-rights'],status:'Ongoing',location:'Pakistan',startYear:2026,image:null,blocks:[{type:'paragraph',text:'Managed project body'}],details:{overview:'Project overview text',challenge:'Documented challenge',approach:'Community approach',period:'March–September 2026',targetCommunity:'Local families',objectives:['Improved access'],activities:['Community sessions'],outcomes:['Documented result'],milestones:[{period:'June 2026',title:'First milestone'}],metrics:[{value:'12',label:'Sessions',source:'Project report'}],partners:['Verified partner'],sections:[{heading:'Lessons learned',body:'Project lessons'}]},gallery:[{image:'/api/public-assets/012345678901234567890123',alt:'Community session',caption:'Reviewed caption'},{image:'/api/public-assets/012345678901234567890124',alt:'Project activity'}],documents:[{file:'/api/public-assets/012345678901234567890125',label:'Project report PDF'}]};
  const news={title:`Managed news ${revision}`,slug:'real-news',excerpt:'Synthetic news summary',publishedAt:'2026-01-01T00:00:00.000Z',image:'/images/hrpf/home-report-2023.webp',imageAlt:'Reviewed blog cover',category:'Community advocacy',authorName:'HRPF Pakistan',readingMinutes:4,blocks:[{type:'paragraph',text:'Managed news body'}],...(richBlog?{tags:['Accountability'],details:{category:'Community advocacy',authorName:'HRPF Pakistan',authorRole:'Foundation team',intro:'Blog introduction text',coverCaption:'Illustrative archive cover',takeaways:['Important blog takeaway'],sections:[{heading:'Story context',body:'Article section text',bullets:['Supported detail'],quote:'A verified quotation',attribution:'Supplied report'}],conclusion:'Blog closing thoughts',sources:[{label:'Blog source reference',url:'https://example.org/source',note:'Historical source note'}]},gallery:[{image:'/api/public-assets/012345678901234567890128',alt:'Blog archive photograph',caption:'Illustrative article photograph'},{image:'/api/public-assets/012345678901234567890129',alt:'Second archive photograph'}],documents:[{file:'/api/public-assets/012345678901234567890130',label:'Blog source brief PDF'}]}:{})};
  const path=new URL(req.url,'http://localhost').pathname;
@@ -37,7 +41,9 @@ const api=createServer((req,res)=>{
  else if(!empty&&path==='/api/board/muhammad-yousaf-badar')res.end(JSON.stringify({data:{name:'Muhammad Yousaf Badar',slug:'muhammad-yousaf-badar',designation:'Chairman',bio:'Synthetic leadership fixture',photo:'/api/public-assets/012345678901234567890132',photoAlt:'Reviewed leadership portrait',photoZoom:1.4}}));
  else{res.statusCode=404;res.end('{}');}
 });
-api.listen(0,'127.0.0.1');await once(api,'listening');
+// Next's browser API rewrites are resolved at build time. The default local
+// build targets this same fixture port, while server reads use the URL below.
+api.listen(5000,'127.0.0.1');await once(api,'listening');
 const reserve=createServer();reserve.listen(0,'127.0.0.1');await once(reserve,'listening');const port=reserve.address().port;await new Promise(r=>reserve.close(r));
 const child=spawn(process.execPath,['node_modules/next/dist/bin/next','start','--hostname','127.0.0.1','--port',String(port)],{cwd:new URL('..',import.meta.url),env:{...process.env,INTERNAL_API_URL:`http://127.0.0.1:${api.address().port}`},stdio:['ignore','pipe','pipe']});let logs='';child.stdout.on('data',x=>logs+=x);child.stderr.on('data',x=>logs+=x);
 // Streaming can send HTTP 200 before a not-found boundary resolves. Inspect
@@ -45,7 +51,14 @@ const child=spawn(process.execPath,['node_modules/next/dist/bin/next','start','-
 const read=async(path='/')=>{const r=await fetch(`http://127.0.0.1:${port}${path}`,{cache:'no-store',headers:{'Cache-Control':'no-cache'},signal:AbortSignal.timeout(15000)});const html=completedHtml(await r.text());return {status:r.status,html,notFound:r.status===404||(r.status===200&&/<meta[^>]*name="robots"[^>]*content="noindex"/.test(html)&&(html.includes('Page not found') || html.includes('Page Not Found') || html.includes('This page could not be found')))};};
 try{
  const deadline=Date.now()+20000;while(true){try{await read();break;}catch{if(Date.now()>deadline||child.exitCode!==null)throw new Error(logs);await new Promise(r=>setTimeout(r,100));}}
+ await checkSecurityHeaders(`http://127.0.0.1:${port}`);
+ await checkAuditAccessibility(read, `http://127.0.0.1:${port}`);
  let page=await read();assert.equal(page.status,200);assert.equal(((page.html.match(/<main\b[^>]*>[\s\S]*?<\/main>/)?.[0]??'').match(/<section/g)||[]).length,9,'All original homepage sections remain');
+ assert.ok(page.html.includes('https://hrpf.org/images/hrpf/home-hero.webp'),'Homepage includes the default social preview image');
+ assert.ok(page.html.includes('rel="canonical" href="https://hrpf.org"'),'Homepage canonical uses the non-www production domain');
+ const robotsResponse=await fetch(`http://127.0.0.1:${port}/robots.txt`);assert.equal(robotsResponse.status,200);assert.match(robotsResponse.headers.get('content-type')??'',/text\/plain/);const robots=await robotsResponse.text();for(const value of ['User-Agent: *','Allow: /','Disallow: /admin','Sitemap: https://hrpf.org/sitemap.xml'])assert.ok(robots.includes(value),'robots.txt: '+value);
+ const sitemapResponse=await fetch(`http://127.0.0.1:${port}/sitemap.xml`);assert.equal(sitemapResponse.status,200);assert.match(sitemapResponse.headers.get('content-type')??'',/application\/xml/);const sitemap=await sitemapResponse.text();for(const value of ['<loc>https://hrpf.org/</loc>','<loc>https://hrpf.org/contact</loc>','<loc>https://hrpf.org/projects/real-project</loc>','<loc>https://hrpf.org/blogs/real-news</loc>','<loc>https://hrpf.org/about/people/active-director</loc>'])assert.ok(sitemap.includes(value),'sitemap.xml: '+value);assert.ok(!sitemap.includes('www.hrpf.org')&&!sitemap.includes('/admin')&&!sitemap.includes('/newsletter')&&!sitemap.includes('/programmes'),'Sitemap contains only canonical public URLs');
+ assert.ok(!page.html.includes('https://www.hrpf.org'),'Homepage metadata contains no obsolete www URL');
  assert.ok(page.html.includes('hrpf-language-widget') && page.html.includes('Languages'),'Public translation entry point');
  assert.ok(!page.html.includes('src="https://cdn.gtranslate.net/'),'Translation provider is not loaded during server rendering');
  const privatePage=await read('/admin/complaints');
@@ -134,6 +147,8 @@ try{
  await checkNavigation(read,port);
  await checkHeroes(read,port);
  const richPage=await read('/blogs/real-news');
+ assert.ok(richPage.html.includes('https://hrpf.org/images/hrpf/home-report-2023.webp'),'Blog metadata uses its published cover for social previews');
+ assert.ok(richPage.html.includes('rel="canonical" href="https://hrpf.org/blogs/real-news"'),'Blog canonical uses the non-www production domain');
  for(const content of ['Key takeaways','Important blog takeaway','Story context','Article section text','Supported detail','A verified quotation','Supplied report','Blog closing thoughts','Blog photographs','Sources and references','Historical source note','Blog source brief PDF','Illustrative archive cover','Article contents','Share this blog','Copy link','Related published blog','4','min read']) assert.ok(richPage.html.includes(content),`Blog detail: ${content}`);
  assert.ok(richPage.html.includes('article:published_time'),'Article SEO metadata');
  assert.ok((await read('/admin/blogs')).html.includes('Loading blog management'));
