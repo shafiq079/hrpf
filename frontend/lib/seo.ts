@@ -19,7 +19,7 @@ export function createSocialImage(image?: string | null, imageAlt?: string) {
   const isDefault = !image;
   return {
     url: new URL(image || DEFAULT_SOCIAL_IMAGE, SITE_URL).toString(),
-    alt: imageAlt || DEFAULT_SOCIAL_IMAGE_ALT,
+    alt: isDefault ? DEFAULT_SOCIAL_IMAGE_ALT : imageAlt || DEFAULT_SOCIAL_IMAGE_ALT,
     ...(isDefault
       ? { width: 1280, height: 720, type: "image/webp" }
       : {}),

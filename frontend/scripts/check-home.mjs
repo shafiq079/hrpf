@@ -6,6 +6,7 @@ import {once} from 'node:events';
 import {checkNavigation, checkEmptyNavigation, checkOfflineNavigation} from './check-navigation.mjs';
 import {checkHeroes} from './check-heroes.mjs';
 import {checkSecurityHeaders} from './check-security-headers.mjs';
+import {checkAuditAccessibility} from './check-audit-accessibility.mjs';
 let revision=1,empty=false,richBlog=true;const requests=[];
 const workPages=[["childrens-rights", "Children's Rights"], ["access-to-justice", "Access to Justice"], ["minority-rights", "Minority Rights"], ["education-and-awareness", "Education and Awareness"], ["research-and-advocacy", "Research and Advocacy"], ["refugees-and-migrants", "Refugees and Migrants"], ["community-development", "Community Development"]];
 const privatePortraits=['dr-sidra-mubashir','dr-iqra-mubashar'].map((slug,i)=>({name:i===0?'Dr. Sidra Mubashir':'Dr. Iqra Mubashar',slug,designation:'Board member',bio:'Synthetic privacy fixture',photo:'/api/public-assets/01234567890123456789013'+(i+3),photoZoom:1.8,showOnBoard:true,sections:[]}));
@@ -51,6 +52,7 @@ const read=async(path='/')=>{const r=await fetch(`http://127.0.0.1:${port}${path
 try{
  const deadline=Date.now()+20000;while(true){try{await read();break;}catch{if(Date.now()>deadline||child.exitCode!==null)throw new Error(logs);await new Promise(r=>setTimeout(r,100));}}
  await checkSecurityHeaders(`http://127.0.0.1:${port}`);
+ await checkAuditAccessibility(read, `http://127.0.0.1:${port}`);
  let page=await read();assert.equal(page.status,200);assert.equal(((page.html.match(/<main\b[^>]*>[\s\S]*?<\/main>/)?.[0]??'').match(/<section/g)||[]).length,9,'All original homepage sections remain');
  assert.ok(page.html.includes('https://hrpf.org/images/hrpf/home-hero.webp'),'Homepage includes the default social preview image');
  assert.ok(page.html.includes('rel="canonical" href="https://hrpf.org"'),'Homepage canonical uses the non-www production domain');

@@ -1,6 +1,20 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { preferredTranslation, translationSelected } from '../lib/translation.ts';
+import { preferredTranslation, translationSelected, setDocumentLanguage } from '../lib/translation.ts';
+import {createSocialImage, DEFAULT_SOCIAL_IMAGE_ALT} from '../lib/seo.ts';
+
+test('social fallback describes the default image rather than an absent record cover', () => {
+  assert.equal(createSocialImage(null, 'Record cover description').alt, DEFAULT_SOCIAL_IMAGE_ALT);
+  assert.equal(createSocialImage('/api/public-assets/fixture', 'Reviewed cover').alt, 'Reviewed cover');
+});
+
+test('completed translation and English restoration keep language and direction together', () => {
+  const root = {lang: 'en', dir: 'ltr'};
+  for (const [language, expectedLanguage, direction] of [['ur','ur','rtl'],['ar','ar','rtl'],['iw','he','rtl'],['zh-CN','zh-CN','ltr'],['en','en','ltr']]) {
+    setDocumentLanguage(language, root);
+    assert.deepEqual(root, {lang: expectedLanguage, dir: direction});
+  }
+});
 
 test('translated document navigation stays safe when browser storage is blocked', t => {
   const previous = { storage: Object.getOwnPropertyDescriptor(globalThis, 'localStorage'), document: Object.getOwnPropertyDescriptor(globalThis, 'document') };

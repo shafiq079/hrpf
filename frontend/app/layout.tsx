@@ -102,6 +102,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      dir="ltr"
       className={`${lora.variable} ${inter.variable} ${arabic.variable}`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning

@@ -4,7 +4,7 @@ import { notify } from "@/lib/notifications";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Check, ChevronUp, Globe2, X } from "lucide-react";
-import { isAdminPath, preferredTranslation, RTL_LANGUAGES, TRANSLATION_PREFERENCE, TRANSLATION_SCRIPT } from "@/lib/translation";
+import { isAdminPath, preferredTranslation, setDocumentLanguage, TRANSLATION_PREFERENCE, TRANSLATION_SCRIPT } from "@/lib/translation";
 
 type Translator = {
   libReady: boolean;
@@ -70,8 +70,7 @@ export default function LanguageSwitcher() {
     let loadTimeout: ReturnType<typeof setTimeout> | null = null;
     const stop = () => { if (timer) clearInterval(timer); timer = null; };
     const direction = (language: string) => {
-      document.documentElement.lang = language === "iw" ? "he" : language;
-      document.documentElement.dir = RTL_LANGUAGES.has(language) ? "rtl" : "ltr";
+      setDocumentLanguage(language);
     };
     const restoreEnglish = () => {
       stop();
