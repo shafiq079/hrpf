@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
 
 function attributes(tag) {
   return Object.fromEntries([...tag.matchAll(/([\w:-]+)="([^"]*)"/g)].map(([, key, value]) => [key, value.replaceAll('&amp;', '&')]));
@@ -23,11 +24,20 @@ export async function checkAuditAccessibility(read, base) {
     assert.equal(meta(html, 'og:url'), canonical, path + ' social URL');
     for (const name of ['og:title', 'og:description', 'twitter:title', 'twitter:description', 'og:image:alt', 'twitter:image:alt']) assert.ok(meta(html, name)?.trim(), path + ': ' + name);
     for (const name of ['og:image', 'twitter:image']) assert.equal(meta(html, name), 'https://hrpf.org' + image, path + ': ' + name);
+    const icons = (html.match(/<link\b[^>]*>/g) ?? []).map(attributes).filter(tag => tag.rel === 'icon');
+    assert.ok(icons.length, path + ' has an HRPF tab icon');
+    assert.ok(icons.every(tag => ['/favicon.ico', '/icon1.png', '/images/hrpf-logo.png'].includes(new URL(tag.href, base).pathname)), path + ' only links HRPF browser icons');
     assert.equal(meta(html, 'twitter:card'), 'summary_large_image', path);
     assert.ok(!(html.match(/<link\b[^>]*>/g) ?? []).some(tag => /hrefLang=/i.test(tag)), 'No invented native language alternates');
   }
   const image = await fetch(base + '/images/hrpf/home-hero.webp');
   assert.equal(image.status, 200);assert.match(image.headers.get('content-type'), /image\/webp/);await image.arrayBuffer();
+  const favicon = await fetch(base + '/favicon.ico?v=hrpf-1');
+  assert.equal(favicon.status, 200);assert.match(favicon.headers.get('content-type'), /image\/(?:x-icon|vnd.microsoft.icon)/);
+  assert.deepEqual(Buffer.from(await favicon.arrayBuffer()), await readFile(new URL('../app/favicon.ico', import.meta.url)), 'Served favicon matches the HRPF asset');
+  const icon = await fetch(base + '/icon1.png');
+  assert.equal(icon.status, 200);assert.match(icon.headers.get('content-type'), /image\/png/);
+  assert.deepEqual(Buffer.from(await icon.arrayBuffer()), await readFile(new URL('../public/images/hrpf-logo.png', import.meta.url)), 'Tab icon is the exact existing HRPF logo');
   const robots = await (await fetch(base + '/robots.txt')).text();
   for (const value of ['Disallow: /admin', 'Disallow: /newsletter', 'Host: https://hrpf.org', 'Sitemap: https://hrpf.org/sitemap.xml']) assert.ok(robots.includes(value), value);
   const sitemap = await (await fetch(base + '/sitemap.xml')).text();

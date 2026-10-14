@@ -24,3 +24,7 @@ Focused checks verify representative meaningful image descriptions, presence of 
 Local verification passed: lint, TypeScript, the standard production build, all 28 unit tests and the complete route suite including M0–M2/M3/M4 regression checks. The React review found no new hooks, dependencies, rendering modes or request-flow changes.
 
 M5 remains the final development browser review, including actual translation/provider behaviour, security policies, forms, embeds and mobile layouts. No PR to `main` is created until owner approval.
+
+## Browser-tab icon correction
+
+The PNG icon already used the HRPF logo, but the legacy `favicon.ico` still contained the Vercel triangle. Replaced that ICO with 16/32/48/64-pixel versions of the existing HRPF logo and renamed the unchanged PNG to `icon1.png` for a fresh generated icon URL. The root metadata explicitly versions the ICO link. Regression checks confirm that page icon links target HRPF assets and that both served files match the checked-in logo/icon bytes. A clean production build and the full test suite passed.

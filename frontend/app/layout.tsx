@@ -74,7 +74,7 @@ export const metadata: Metadata = {
     images: [defaultSocialImage],
   },
   icons: {
-    icon: [{ url: "/images/hrpf-logo.png", type: "image/png" }],
+    icon: [{ url: "/favicon.ico?v=hrpf-1", type: "image/x-icon" }],
     apple: [{ url: "/images/hrpf-logo.png", type: "image/png" }],
   },
   robots: {
