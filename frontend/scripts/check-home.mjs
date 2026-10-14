@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {completedHtml} from './streamed-html.mjs';
 import {createServer} from 'node:http';
 import {spawn} from 'node:child_process';
 import {once} from 'node:events';
@@ -39,10 +40,12 @@ const api=createServer((req,res)=>{
 api.listen(0,'127.0.0.1');await once(api,'listening');
 const reserve=createServer();reserve.listen(0,'127.0.0.1');await once(reserve,'listening');const port=reserve.address().port;await new Promise(r=>reserve.close(r));
 const child=spawn(process.execPath,['node_modules/next/dist/bin/next','start','--hostname','127.0.0.1','--port',String(port)],{cwd:new URL('..',import.meta.url),env:{...process.env,INTERNAL_API_URL:`http://127.0.0.1:${api.address().port}`},stdio:['ignore','pipe','pipe']});let logs='';child.stdout.on('data',x=>logs+=x);child.stderr.on('data',x=>logs+=x);
-const read=async(path='/')=>{const r=await fetch(`http://127.0.0.1:${port}${path}`,{cache:'no-store',headers:{'Cache-Control':'no-cache'},signal:AbortSignal.timeout(15000)});return {status:r.status,html:await r.text()};};
+// Streaming can send HTTP 200 before a not-found boundary resolves. Inspect
+// the final noindex/not-found content as well as the transport status.
+const read=async(path='/')=>{const r=await fetch(`http://127.0.0.1:${port}${path}`,{cache:'no-store',headers:{'Cache-Control':'no-cache'},signal:AbortSignal.timeout(15000)});const html=completedHtml(await r.text());return {status:r.status,html,notFound:r.status===404||(r.status===200&&/<meta[^>]*name="robots"[^>]*content="noindex"/.test(html)&&(html.includes('Page not found') || html.includes('Page Not Found') || html.includes('This page could not be found')))};};
 try{
  const deadline=Date.now()+20000;while(true){try{await read();break;}catch{if(Date.now()>deadline||child.exitCode!==null)throw new Error(logs);await new Promise(r=>setTimeout(r,100));}}
- let page=await read();assert.equal(page.status,200);assert.equal((page.html.split('</main>')[0].match(/<section/g)||[]).length,9,'All original homepage sections remain');
+ let page=await read();assert.equal(page.status,200);assert.equal(((page.html.match(/<main\b[^>]*>[\s\S]*?<\/main>/)?.[0]??'').match(/<section/g)||[]).length,9,'All original homepage sections remain');
  assert.ok(page.html.includes('hrpf-language-widget') && page.html.includes('Languages'),'Public translation entry point');
  assert.ok(!page.html.includes('src="https://cdn.gtranslate.net/'),'Translation provider is not loaded during server rendering');
  const privatePage=await read('/admin/complaints');
@@ -110,7 +113,7 @@ try{
  assert.ok(!donationMain.includes('Easypaisa'),'No unsourced wallet account');
  assert.equal((donationMain.match(/<h1[ >]/g)||[]).length,1);
  console.log('Donation page checks passed: exact sourced bank/JazzCash details, copy controls, no payment form or unsourced wallet.');
- assert.equal((await read('/our-work/unknown-area')).status,404);
+ assert.equal((await read('/our-work/unknown-area')).notFound, true);
  console.log('Women rights checks passed: general content, managed field projects, one H1, archive photo, actions and removal of hardcoded case/source notes.');
  for(const text of ['Managed project 1','Managed news 1','Our Guiding Principles','Muhammad Yousaf Badar','/videos/home-banner/v2/poster.webp','home-about.webp','home-chairman.webp'])assert.ok(page.html.includes(text),text);
  const banner=await fetch(`http://127.0.0.1:${port}/videos/home-banner/v2/banner.mp4`,{headers:{Range:'bytes=0-31'}});
@@ -123,10 +126,10 @@ try{
  for(const text of ['Ana Ortiz','UNHCR','ICRC','World Bank','5000+','500K','Safe Haven Initiative','since 2015'])assert.ok(!page.html.includes(text),`Unverified claim: ${text}`);
  revision=2;assert.ok((await read('/our-work/womens-rights')).html.includes('Managed project 2'),'Field projects reflect managed updates');page=await read();assert.ok(page.html.includes('Managed project 2')&&page.html.includes('Managed news 2'),'Managed homepage feeds must refresh');
  assert.ok((await read('/programmes')).html.includes('Managed project 2'));
- assert.ok((await read('/programmes/real-project')).html.includes('Managed project body'));assert.ok((await read('/updates/real-news')).html.includes('Managed news body'));assert.equal((await read('/updates/unknown')).status,404);
+ assert.ok((await read('/programmes/real-project')).html.includes('Managed project body'));assert.ok((await read('/updates/real-news')).html.includes('Managed news body'));assert.equal((await read('/updates/unknown')).notFound, true);
  page=await read('/projects/real-project');assert.equal(page.status,200);
  for(const text of ['Project overview text','Documented challenge','Community approach','Improved access','Community sessions','Documented result','First milestone','Project report','Verified partner','Lessons learned','Project report PDF','Next photograph','Community session'])assert.ok(page.html.includes(text),`Rich project detail: ${text}`);
- assert.ok((await read('/projects')).html.includes('Managed project 2'),'Project listing must use managed records');assert.equal((await read('/projects/unknown')).status,404);
+ assert.ok((await read('/projects')).html.includes('Managed project 2'),'Project listing must use managed records');assert.equal((await read('/projects/unknown')).notFound, true);
  assert.ok((await read('/admin/projects')).html.includes('Loading project management'),'Project admin route must render');
  await checkNavigation(read,port);
  await checkHeroes(read,port);

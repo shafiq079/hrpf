@@ -19,6 +19,7 @@ export interface PageHeroAction {
 interface PageHeroProps {
   eyebrow?: string;
   title: string;
+  headingAs?: "h1" | "p";
   description?: string;
   breadcrumbs?: Crumb[];
   heroImage: HeroImageKey;
@@ -35,6 +36,7 @@ interface PageHeroProps {
 export default function PageHero({
   eyebrow,
   title,
+  headingAs = "h1",
   description,
   breadcrumbs,
   heroImage,
@@ -42,6 +44,7 @@ export default function PageHero({
   actions,
   align = "left",
 }: PageHeroProps) {
+  const Heading = headingAs;
   const isCenter = align === "center";
 
   return (
@@ -68,9 +71,9 @@ export default function PageHero({
               <TranslationText>{eyebrow}</TranslationText>
             </p>
           )}
-          <h1 className="mt-3 font-serif text-[30px] font-semibold leading-tight text-white sm:text-[38px] lg:text-[44px]">
+          <Heading className="mt-3 font-serif text-[30px] font-semibold leading-tight text-white sm:text-[38px] lg:text-[44px]">
             <TranslationText>{title}</TranslationText>
-          </h1>
+          </Heading>
           {description && (
             <p
               className={`mt-4 text-[15px] leading-relaxed text-white/95 sm:text-base ${

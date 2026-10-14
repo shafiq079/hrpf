@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/shared/NavigationLink";
 import type { ComponentProps } from "react";
+import { navigationFeedback } from "@/lib/navigation-feedback";
 import { isAdminPath, translationSelected } from "@/lib/translation";
 
 /** English keeps Next navigation. Translated pages get a fresh document so an
@@ -19,6 +20,7 @@ export default function TranslationLink({ onClick, ...props }: ComponentProps<ty
         (url.pathname === window.location.pathname && url.search === window.location.search)) return;
     if (isAdminPath(url.pathname) || translationSelected()) {
       event.preventDefault();
+      navigationFeedback.start("document");
       window.location.assign(url.href);
     }
   }} />;

@@ -1,5 +1,7 @@
+"use client";
+
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import TranslationText from "@/components/translation/TranslationText";
 
 interface FormMessageProps {
@@ -12,9 +14,13 @@ interface FormMessageProps {
 export default function FormMessage({ type, title, children }: FormMessageProps) {
   const isSuccess = type === "success";
   const Icon = isSuccess ? CheckCircle2 : AlertTriangle;
+  const receipt = useRef<HTMLDivElement>(null);
+  useEffect(() => { if (isSuccess) receipt.current?.focus(); }, [isSuccess]);
 
   return (
     <div
+      ref={receipt}
+      tabIndex={isSuccess ? -1 : undefined}
       role={isSuccess ? "status" : "alert"}
       aria-live={isSuccess ? "polite" : "assertive"}
       className={`flex gap-3 rounded-lg border p-4 ${

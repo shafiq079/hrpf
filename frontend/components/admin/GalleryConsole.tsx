@@ -2,7 +2,7 @@
 import { notify } from "@/lib/notifications";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import Link from "next/link";
+import Link from "@/components/shared/NavigationLink";
 import { FolderOpen, Plus, LogOut, Pencil, ExternalLink } from "lucide-react";
 import AdminNavigation from "@/components/admin/AdminNavigation";
 import Container from "@/components/shared/Container";

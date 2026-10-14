@@ -1,4 +1,5 @@
 "use client";
+import SubmissionOverlay from "@/components/forms/SubmissionOverlay";
 import { notify } from "@/lib/notifications";
 
 import { useCallback, useRef, useState } from "react";
@@ -75,6 +76,7 @@ export default function ContactForm({ defaultInquiryType = "General" }: { defaul
     </fieldset>
     {!locked ? <ComplaintVerification key={verificationKey} purpose="contact" onToken={tokenChanged} onError={verificationError} /> : null}
     {locked && !busy ? <p role="status" className="text-sm text-muted"><TranslationText>Retry to confirm the same message. Your original details are kept on this page to avoid duplicate enquiries.</TranslationText></p> : null}
+    <SubmissionOverlay active={busy} title="Sending your message" message={"Submitting your message securely…"} />
     <SubmitButton loading={busy}><TranslationText>{locked ? "Retry message" : "Send message"}</TranslationText></SubmitButton>
   </form>;
 }

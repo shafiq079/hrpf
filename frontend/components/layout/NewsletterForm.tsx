@@ -1,4 +1,5 @@
 "use client";
+import SubmissionOverlay from "@/components/forms/SubmissionOverlay";
 import { notify } from "@/lib/notifications";
 import { useCallback, useRef, useState } from "react";
 import TranslationText from "@/components/translation/TranslationText";
@@ -44,6 +45,7 @@ export default function NewsletterForm() {
     <label className="flex items-start gap-2 text-sm leading-relaxed text-white/80"><input type="checkbox" disabled={locked} checked={consent} onChange={event => setConsent(event.target.checked)} className="mt-1" /><TranslationText>I agree to receive HRPF updates. I can unsubscribe through the link in my email.</TranslationText></label>
     {active && !locked && <div className="max-w-full"><ComplaintVerification key={verificationKey} purpose="newsletter" theme="dark" onToken={tokenChanged} onError={verificationError} /></div>}
     {error && <p id="newsletter-error" role="alert" translate="no" className="notranslate text-sm text-red">{error}</p>}
+    <SubmissionOverlay active={busy} title="Sending your subscription request" message={"Recording your request…"} />
     <button disabled={busy} className="bg-teal px-4 py-3 text-sm font-semibold text-white hover:bg-teal-dark disabled:opacity-40"><TranslationText>{busy ? "Submitting…" : locked ? "Retry request" : "Subscribe"}</TranslationText></button>
   </form>;
 }

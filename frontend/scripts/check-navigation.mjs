@@ -63,8 +63,8 @@ export async function checkNavigation(read, port) {
   assert.equal(page.status, 200);
   assert.ok(page.html.includes('Managed news body'));
   assert.ok(/rel="canonical"[^>]*blogs\/real-news/.test(page.html));
-  assert.equal((await read('/blogs/unknown')).status, 404);
-  assert.equal((await read('/about/unknown')).status, 404);
+  assert.equal((await read('/blogs/unknown')).notFound, true);
+  assert.equal((await read('/about/unknown')).notFound, true);
   page = await read('/about/profile');
   const profile = page.html.match(/<main\b[\s\S]*?<\/main>/)[0];
   assert.equal(page.status,200);
@@ -135,7 +135,7 @@ export async function checkNavigation(read, port) {
   page = await read('/about/people/active-director');
   for(const text of ['Journalism and public service','Complete reviewed profile text.','Additional profile paragraph.','Profile contents','Reviewed director portrait']) assert.ok(page.html.includes(text), 'Full person profile: '+text);
   assert.ok(/rel="canonical"[^>]*about\/people\/active-director/.test(page.html));
-  assert.equal((await read('/about/people/missing-person')).status,404);
+  assert.equal((await read('/about/people/missing-person')).notFound, true);
   assert.ok((await read('/admin/board')).html.includes('Loading profile management'));
 
   page = await read('/about/progress-reports');
@@ -166,7 +166,7 @@ export async function checkNavigation(read, port) {
   page = await read('/become-a-member');
   assert.ok(page.html.includes('Apply for Membership')); assert.ok(page.html.includes('Review application')); assert.ok(!page.html.includes('docs.google.com/forms'));
   assert.ok(!(await read('/get-involved')).html.includes('Volunteer Application'), 'Membership replaces volunteer form');
-  for (const path of ['/campaigns', '/campaigns/old-campaign', '/events', '/events/old-event', '/careers']) assert.equal((await read(path)).status, 404, 'Permanently retired: '+path);
+  for (const path of ['/campaigns', '/campaigns/old-campaign', '/events', '/events/old-event', '/careers']) assert.equal((await read(path)).notFound, true, 'Permanently retired: '+path);
   const work = (await read('/our-work')).html;
   for (const field of ['womens-rights','childrens-rights','access-to-justice','minority-rights','education-and-awareness','research-and-advocacy','refugees-and-migrants','community-development']) assert.ok(work.includes('/our-work/'+field));
   const impact = (await read('/impact')).html;
@@ -190,8 +190,8 @@ export async function checkEmptyNavigation(read) {
   assert.ok(team.includes('Nothing to show here')&&!team.includes('Synthetic operational member')&&!team.includes('Active reviewed director'),'Empty operational team stays empty');
   const page = await read('/blogs');
   assert.ok(!page.html.includes('Managed news') && !page.html.includes('/blogs/real-news'));
-  assert.equal((await read('/blogs/real-news')).status, 404, 'Withdrawn blog must not resolve');
-  assert.equal((await read('/about/people/active-director')).status,404);
+  assert.equal((await read('/blogs/real-news')).notFound, true, 'Withdrawn blog must not resolve');
+  assert.equal((await read('/about/people/active-director')).notFound, true);
   const leadership=(await read('/about/message-of-ceo')).html.replace(/<script\b[\s\S]*?<\/script>/g,'');
   assert.ok(leadership.includes('It gives me great satisfaction') && !leadership.includes('Reviewed leadership portrait') && !leadership.includes('/api/public-assets/012345678901234567890132'), 'Withdrawn author portrait stays hidden while the supplied message remains readable');
   for (const path of publicPaths.slice(1)) {

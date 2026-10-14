@@ -1,3 +1,4 @@
+import PageRetryButton from "@/components/shared/PageRetryButton";
 import { Tv } from "lucide-react";
 import { createMetadata } from "@/lib/seo";
 import { collectionPage, readPublicCollection, type PublicInterview } from "@/lib/public-collections";
@@ -32,6 +33,7 @@ export default async function TVInterviewsPage({
     }]} /><section className="bg-off-white py-12 sm:py-16"><Container>
     <form action="/gallery/tv-interviews" className="mb-8 flex max-w-lg gap-2"><label className="flex-1"><span className="sr-only">Search interviews</span><input translate="no" name="q" defaultValue={q} maxLength={80} placeholder="Search interviews…" className="w-full rounded-md border border-border bg-white px-4 py-3 text-sm" /></label><button className="rounded-md bg-teal-dark px-4 py-3 text-sm font-semibold text-white">Search</button></form>
     {result.data.length ? <InterviewGrid items={result.data} /> : <EmptyState icon={Tv} title={result.status === "unavailable" ? "Interviews temporarily unavailable" : q ? "No matching interviews" : "Interview recordings are not available here yet"} description={result.status === "unavailable" ? "Please try again later." : "You can visit HRPF Pakistan’s YouTube channel for available videos."} action={<a href="https://youtube.com/@hrpfpakistan" target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-teal-dark">Visit HRPF on YouTube <span className="sr-only">(opens in a new tab)</span></a>} />}
+    {result.status === "unavailable" && <PageRetryButton />}
     <CollectionPagination path="/gallery/tv-interviews" page={page} pages={result.pages} query={q ? {
           q
         } : {}} />

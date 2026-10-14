@@ -1,3 +1,4 @@
+import PageRetryButton from "@/components/shared/PageRetryButton";
 import Link from "@/components/translation/TranslationLink";
 import { ArrowRight } from "lucide-react";
 import { createMetadata } from "@/lib/seo";
@@ -41,7 +42,7 @@ export default async function BlogsPage({ searchParams }: { searchParams: Promis
           </Container>
         </section>
       )}
-      {result.status === "unavailable" && <Container className="py-8"><p role="status" className="text-muted">Blogs are temporarily unavailable. Please try again later.</p></Container>}
+      {result.status === "unavailable" && <Container className="py-8"><p role="status" className="text-muted">Blogs are temporarily unavailable. Please try again later.</p><PageRetryButton /></Container>}
       <BlogExplorer articles={articles} />
       <Container className="pb-12"><CollectionPagination path="/blogs" page={page} pages={result.pages} /></Container>
     </main>

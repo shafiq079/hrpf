@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import NavigationProgress from "@/components/shared/NavigationProgress";
 import type { Metadata } from "next";
 import { Inter, Lora, Noto_Naskh_Arabic } from "next/font/google";
 import "./globals.css";
@@ -114,6 +116,7 @@ export default function RootLayout({
         </SiteFrame>
         <LanguageSwitcher />
         <ActionToaster />
+        <Suspense fallback={null}><NavigationProgress /></Suspense>
         <script
           type="application/ld+json"
           // Structured data is static and safe to inline.

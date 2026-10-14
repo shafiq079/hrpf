@@ -1,4 +1,5 @@
 "use client";
+import SubmissionOverlay from "@/components/forms/SubmissionOverlay";
 import { notify } from "@/lib/notifications";
 import { useState, useSyncExternalStore } from "react";
 import TranslationText from "@/components/translation/TranslationText";
@@ -22,6 +23,7 @@ export default function NewsletterAction() {
     finally { setBusy(false); }
   }
   return <div className="border border-border bg-white p-6 sm:p-8">
+    <SubmissionOverlay active={busy} title="Updating your newsletter subscription" message={"Saving your subscription preference…"} />
     {message ? <p role="status" className="text-lg font-semibold text-teal-dark"><TranslationText>{message}</TranslationText></p> : token ? <><p className="mb-6 text-base leading-relaxed"><TranslationText>{action === "confirm" ? "Confirm that you want to receive updates from HRPF Pakistan." : "Cancel your pending request or unsubscribe from HRPF updates."}</TranslationText></p><button disabled={busy} onClick={() => void submit()} className="bg-navy px-5 py-3 font-semibold text-white disabled:opacity-40"><TranslationText>{busy ? "Please wait…" : action === "confirm" ? "Confirm subscription" : "Unsubscribe"}</TranslationText></button></> : <p><TranslationText>Open the link in your newsletter email to confirm or unsubscribe. To request a new confirmation link, use the newsletter signup at the bottom of the website.</TranslationText></p>}
     <Link href="/contact" className="mt-6 inline-block font-semibold text-teal-dark underline"><TranslationText>Contact HRPF</TranslationText></Link>
   </div>;
