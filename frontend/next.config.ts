@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { securityHeaders } from "./lib/security-headers";
 
 const apiOrigin = new URL(process.env.INTERNAL_API_URL ?? "http://127.0.0.1:5000");
 if (!["http:", "https:"].includes(apiOrigin.protocol) || apiOrigin.username ||
@@ -9,10 +10,16 @@ const codespaceHost = process.env.CODESPACE_NAME
   ? `${process.env.CODESPACE_NAME}-3000.${process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN ?? "app.github.dev"}`
   : undefined;
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   images: { remotePatterns: [{ protocol: "https", hostname: "i.ytimg.com", pathname: "/vi/**" }, { protocol: "https", hostname: "i.ytimg.com", pathname: "/vi_webp/**" }] },
   allowedDevOrigins: codespaceHost ? [codespaceHost] : [],
   async headers() {
     return [{
+      // Express/Helmet owns API and document response headers. Do not override
+      // those via the frontend rewrite (including private PDF previews).
+      source: "/((?!api/|api$).*)",
+      headers: securityHeaders(process.env.NODE_ENV === "development", process.env.VERCEL_ENV === "preview"),
+    }, {
       // These files are versioned. Use a new directory when replacing them.
       source: "/images/header-flags/v1/:path*",
       headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
