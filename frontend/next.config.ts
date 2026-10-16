@@ -20,6 +20,9 @@ const nextConfig: NextConfig = {
       source: "/((?!api/|api$).*)",
       headers: securityHeaders(process.env.NODE_ENV === "development", process.env.VERCEL_ENV === "preview"),
     }, {
+      source: "/images/social/v1/:path*",
+      headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+    }, {
       // These files are versioned. Use a new directory when replacing them.
       source: "/images/header-flags/v1/:path*",
       headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],

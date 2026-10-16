@@ -11,9 +11,9 @@ function meta(html, name) {
 
 export async function checkAuditAccessibility(read, base) {
   for (const [path, image] of [
-    ['/', '/images/hrpf/home-hero.webp'],
-    ['/contact', '/images/hrpf/home-hero.webp'],
-    ['/projects/real-project', '/images/hrpf/home-hero.webp'],
+    ['/', '/images/social/v1/hrpf-share.jpg'],
+    ['/contact', '/images/social/v1/hrpf-share.jpg'],
+    ['/projects/real-project', '/images/social/v1/hrpf-share.jpg'],
     ['/blogs/real-news', '/images/hrpf/home-report-2023.webp'],
     ['/about/people/active-director', '/images/hrpf/home-chairman.webp'],
   ]) {
@@ -30,8 +30,8 @@ export async function checkAuditAccessibility(read, base) {
     assert.equal(meta(html, 'twitter:card'), 'summary_large_image', path);
     assert.ok(!(html.match(/<link\b[^>]*>/g) ?? []).some(tag => /hrefLang=/i.test(tag)), 'No invented native language alternates');
   }
-  const image = await fetch(base + '/images/hrpf/home-hero.webp');
-  assert.equal(image.status, 200);assert.match(image.headers.get('content-type'), /image\/webp/);await image.arrayBuffer();
+  const image = await fetch(base + '/images/social/v1/hrpf-share.jpg');
+  assert.equal(image.status, 200);assert.match(image.headers.get('content-type'), /image\/jpeg/);await image.arrayBuffer();
   const favicon = await fetch(base + '/favicon.ico?v=hrpf-1');
   assert.equal(favicon.status, 200);assert.match(favicon.headers.get('content-type'), /image\/(?:x-icon|vnd.microsoft.icon)/);
   assert.deepEqual(Buffer.from(await favicon.arrayBuffer()), await readFile(new URL('../app/favicon.ico', import.meta.url)), 'Served favicon matches the HRPF asset');
