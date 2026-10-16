@@ -11,17 +11,20 @@ interface PageMetaOptions {
 }
 
 export const SITE_URL = "https://hrpf.org";
-export const DEFAULT_SOCIAL_IMAGE = "/images/hrpf/home-hero.webp";
+// A static JPEG is readable by Meta's link crawler without the API or image optimizer.
+export const DEFAULT_SOCIAL_IMAGE = "/images/social/v1/hrpf-share.jpg";
 export const DEFAULT_SOCIAL_IMAGE_ALT =
   "Human Rights Protection Foundation Pakistan community advocacy";
 
 export function createSocialImage(image?: string | null, imageAlt?: string) {
   const isDefault = !image;
+  const url = new URL(image || DEFAULT_SOCIAL_IMAGE, SITE_URL).toString();
   return {
-    url: new URL(image || DEFAULT_SOCIAL_IMAGE, SITE_URL).toString(),
+    url,
+    secureUrl: url,
     alt: isDefault ? DEFAULT_SOCIAL_IMAGE_ALT : imageAlt || DEFAULT_SOCIAL_IMAGE_ALT,
     ...(isDefault
-      ? { width: 1280, height: 720, type: "image/webp" }
+      ? { width: 1280, height: 720, type: "image/jpeg" }
       : {}),
   };
 }
@@ -46,8 +49,10 @@ export function createMetadata({
       title: `${title} | Human Rights Protection Foundation`,
       description,
       type: "website",
+      siteName: "Human Rights Protection Foundation",
       url: path,
-      images: [socialImage],
+      // Keep the page's cover first, with a compatible public backup for crawlers.
+      images: image ? [socialImage, createSocialImage()] : [socialImage],
     },
     twitter: {
       card: "summary_large_image",
