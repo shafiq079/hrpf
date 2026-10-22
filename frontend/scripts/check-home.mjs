@@ -8,6 +8,15 @@ import {checkHeroes} from './check-heroes.mjs';
 import {checkSecurityHeaders} from './check-security-headers.mjs';
 import {checkAuditAccessibility} from './check-audit-accessibility.mjs';
 import {checkSocialPreviews} from './check-social-previews.mjs';
+// Check delivered markup without running client hydration or scroll callbacks.
+// Resolving React's completed stream is handled by read(); script payloads are
+// excluded so they cannot make missing page content appear to satisfy a check.
+function checkHomeVisibility(html) {
+ const main=html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g,'').match(/<main\b[^>]*>[\s\S]*?<\/main>/)?.[0];
+ assert.ok(main,'Homepage has rendered main content');
+ for(const text of ['Who We Are','Our Focus Areas','Muhammad Yousaf Badar'])assert.ok(main.includes(text),'Homepage content exists before hydration: '+text);
+ assert.doesNotMatch(main,/\bstyle="[^"]*\bopacity:\s*0(?:;|")/,'Homepage content must not start transparent while waiting for an animation');
+}
 let revision=1,empty=false,richBlog=true;const requests=[];
 const workPages=[["childrens-rights", "Children's Rights"], ["access-to-justice", "Access to Justice"], ["minority-rights", "Minority Rights"], ["education-and-awareness", "Education and Awareness"], ["research-and-advocacy", "Research and Advocacy"], ["refugees-and-migrants", "Refugees and Migrants"], ["community-development", "Community Development"]];
 const privatePortraits=['dr-sidra-mubashir','dr-iqra-mubashar'].map((slug,i)=>({name:i===0?'Dr. Sidra Mubashir':'Dr. Iqra Mubashar',slug,designation:'Board member',bio:'Synthetic privacy fixture',photo:'/api/public-assets/01234567890123456789013'+(i+3),photoZoom:1.8,showOnBoard:true,sections:[]}));
@@ -56,6 +65,7 @@ try{
  await checkAuditAccessibility(read, `http://127.0.0.1:${port}`);
  await checkSocialPreviews(`http://127.0.0.1:${port}`);
  let page=await read();assert.equal(page.status,200);assert.equal(((page.html.match(/<main\b[^>]*>[\s\S]*?<\/main>/)?.[0]??'').match(/<section/g)||[]).length,9,'All original homepage sections remain');
+ checkHomeVisibility(page.html);
  assert.ok(page.html.includes('https://hrpf.org/images/social/v1/hrpf-share.jpg'),'Homepage includes the default social preview image');
  assert.ok(page.html.includes('rel="canonical" href="https://hrpf.org"'),'Homepage canonical uses the non-www production domain');
  const robotsResponse=await fetch(`http://127.0.0.1:${port}/robots.txt`);assert.equal(robotsResponse.status,200);assert.match(robotsResponse.headers.get('content-type')??'',/text\/plain/);const robots=await robotsResponse.text();for(const value of ['User-Agent: *','Allow: /','Disallow: /admin','Sitemap: https://hrpf.org/sitemap.xml'])assert.ok(robots.includes(value),'robots.txt: '+value);
@@ -161,7 +171,9 @@ try{
  console.log('Blog detail checks passed: rich article, legacy text, gallery, sources, downloads, share controls, related articles, admin route and article metadata.');
  empty=true;for(const [slug] of workPages){const field=await read('/our-work/'+slug);assert.ok(field.html.includes('There are no projects listed in this field yet.')&&!field.html.includes('Field project:'),slug+' has empty field state');}const emptyWomen=await read('/our-work/womens-rights');assert.ok(emptyWomen.html.includes('Projects in this field')&&emptyWomen.html.includes('There are no projects listed in this field yet.')&&!emptyWomen.html.includes('Managed project'),'Empty field retains general page without prototypes');page=await read();assert.ok(page.html.includes('Featured Projects')&&page.html.includes('Latest News &amp; Updates'));assert.ok(!page.html.includes('Our Programmes &amp; Priorities')&&!page.html.includes('Progress Reports &amp; Updates'));assert.ok(!page.html.includes('Managed project'));
  await checkEmptyNavigation(read);
+ checkHomeVisibility(page.html);
  await new Promise(r=>api.close(r));page=await read();assert.equal(page.status,200);assert.ok(page.html.includes('Human Rights Protection Foundation Pakistan')&&page.html.includes('Featured Projects')&&page.html.includes('Latest News &amp; Updates'),'English brand heading and original content sections remain visible without backend');
+ checkHomeVisibility(page.html);
  const offlineWomen=await read('/our-work/womens-rights');assert.equal(offlineWomen.status,200);assert.ok(offlineWomen.html.includes('Projects could not be loaded.')&&offlineWomen.html.includes('Dignity, safety and a voice.'),'General page remains usable offline');
  for(const [slug] of workPages){const field=await read('/our-work/'+slug);assert.equal(field.status,200);assert.ok(field.html.includes('Projects could not be loaded.')&&field.html.includes('Our priorities'),slug+' usable without backend');}
  await checkOfflineNavigation(read);
